@@ -1,29 +1,36 @@
-# README #
+# GENERATE DATA TOOL
 
-This README would normally document whatever steps are necessary to get your application up and running.
+install hygen
 
-### What is this repository for? ###
+`npm i -g hygen`
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+## GENERATE COMPONENT
 
-### How do I get set up? ###
+`hygen generate component <name>`
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+## GENERATE ROUTE
 
-### Contribution guidelines ###
+`hygen generate route <name>`
 
-* Writing tests
-* Code review
-* Other guidelines
+## GENERATE SERVICE
 
-### Who do I talk to? ###
+`hygen generate service <name>`
 
-* Repo owner or admin
-* Other community or team contact
+## GENERATE MIGRATION
+
+#### COMMAND
+
+`hygen generate migration`
+
+
+## Các động từ nên dùng trong message title
+Add = Thêm vào mã nguồn. Ví dụ: chức năng, test, thư viện
+Drop = Xóa khỏi mã nguồn. Ví dụ: chức năng, test, thư viện
+Fix = Sửa trong mã nguồn. Ví dụ: lỗi, typo
+Bump = Thay đổi version. Ví dụ: nâng phiên bản một thư viện đang sử dụng
+Make = Thay đổi công cụ hoặc quy trình build liên quan hạ tầng
+Refactor = Sửa đổi nhằm mục đích tái cấu trúc mã nguồn cũ. Ví dụ: Tách logic xử lý trong controller layer về business layer
+Optimize = Sửa đổi nhằm mục đích tối ưu hiệu năng cho mã nguồn cũ. Ví dụ: Tối ưu hiệu năng chức năng tìm kiếm đơn hàng bằng cách sử dụng thêm caching layer để giảm thời gian truy vấn từ cơ sở dữ liệu.
+Reformat = Sửa đổi nhằm mục đích định dạng lại code cũ. Ví dụ: xóa khoảng trắng, dòng trắng sai coding convention
+Rephrase = Sửa đổi liên quan tài liệu trong source code. Ví dụ comment trong source code (TODO / FIXME / …)
+Document = Sửa đổi liên quan đến tài liệu bên ngoài source code. Ví dụ thêm mô tả vào file README.md

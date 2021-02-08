@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Login</title>
+</head>
+
+<body>
+  <div><span>+84</span><input type="tel" id="phone-number" /></div>
+  <div id="recaptcha-container"></div>
+  <div>
+    <button id="sign-in-button" disabled onclick="sendOTP()">Send OTP</button>
+  </div>
+  <p id="status" style="color: red"></p>
+  <div>
+    <input type="text" id="otp-code" />
+    <button onclick="verifyOTP()">Verify OTP</button>
+  </div>
+  <p id="fb-token" style="color: red"></p>
+  <div><button onclick="getUserToken()">Get User Token</button></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.2/firebase.js"></script>
+  <script>
+    const firebaseConfig = JSON.parse('{{{ config }}}')
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
+  <script>
+    firebase.auth().useDeviceLanguage();
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        getToken();
+      } else {
+        // No user is signed in.
+      }
+    });
+    function getToken() {
+      firebase
+        .auth()
+        .currentUser.getIdToken(true)
+        .then(idToken => {
+          document.getElementById('fb-token').textContent = [
+            idToken
+          ].join('|');
+        })
+        .catch(err => {
+          document.getElementById('status').textContent = err.message;
+        });
+    }
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+      'sign-in-button',
+      {
+        size: 'invisible', //'normal',
+        callback: function (response) {
+          document
+            .querySelector('#sign-in-button')
+            .removeAttribute('disabled');
+        },
+        'expired-callback': function () {
+          // Response expired. Ask user to solve reCAPTCHA again.
+          // ...
+        }
+      }
+    );
+    window.recaptchaVerifier.render().then(function (widgetId) {
+      window.recaptchaWidgetId = widgetId;
+    });
+    function sendOTP() {
+      var phoneNumber = document.getElementById('phone-number').value;
+      var appVerifier = window.recaptchaVerifier;
+      firebase
+        .auth()
+        .signInWithPhoneNumber('+84' + phoneNumber, appVerifier)
+        .then(function (confirmationResult) {
+          document.getElementById('status').textContent = 'Đã gửi OTP';
+          window.confirmationResult = confirmationResult;
+        })
+        .catch(function (error) {
+          console.log('ERRPR', error.message);
+          grecaptcha.reset(window.recaptchaWidgetId);
+        });
+    }
+    function verifyOTP() {
+      var code = document.getElementById('otp-code').value;
+      confirmationResult
+        .confirm(code)
+        .then(function (result) {
+          // User signed in successfully.
+          document.getElementById('status').textContent = 'Đã xác thực';
+          var user = result.user;
+          console.log('user', user);
+          getToken();
+        })
+        .catch(function (error) {
+          document.getElementById('status').textContent = err.message;
+        });
+    }
+  </script>
+</body>
+
+</html>

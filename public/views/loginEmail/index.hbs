@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Login</title>
+</head>
+
+<body>
+  <div><span>Email:</span><input type="email" id="email" /></div>
+  <div><span>Password:</span><input type="password" id="password" /></div>
+  <p id="status" style="color: red;"></p>
+  <div><button onclick="verifyEmail()">Verify Email</button></div>
+  <p id="fb-token" style="color: red;"></p>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.9.2/firebase.js"></script>
+  <script>
+    const firebaseConfig = JSON.parse('{{{ config }}}')
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
+  <script>
+    firebase.auth().useDeviceLanguage();
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        getToken();
+      } else {
+        // No user is signed in.
+      }
+    });
+    function getToken() {
+      firebase
+        .auth()
+        .currentUser.getIdToken(true)
+        .then((idToken) => {
+          document.getElementById("fb-token").textContent = [
+            idToken,
+          ].join("|");
+        })
+        .catch((err) => {
+          document.getElementById("status").textContent = err.message;
+        });
+    }
+    function verifyEmail() {
+      var email = document.getElementById("email").value;
+      var password = document.getElementById("password").value;
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(function (confirmationResult) {
+          document.getElementById("status").textContent = "Đã xác thực";
+          window.confirmationResult = confirmationResult;
+          getToken();
+        })
+        .catch(function (error) {
+          document.getElementById("status").textContent = error.message;
+        });
+    }
+  </script>
+</body>
+
+</html>

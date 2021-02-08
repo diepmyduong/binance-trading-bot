@@ -1,0 +1,136 @@
+import { Workbook } from "exceljs";
+import _ from "lodash";
+import csv from "csv-parser";
+import { ErrorHelper } from "../../base/error";
+
+export const getDataFromExcelStream = async (stream: any) => {
+  const workbook = new Workbook();
+  const streamWorkBook = await workbook.xlsx.read(stream);
+  const worksheet = streamWorkBook.getWorksheet("Sheet1");
+  const data = worksheet.getSheetValues();
+  return data;
+};
+
+export const getJsonFromCSVStream = (stream: any) => {
+  return new Promise((resolve, reject) => {
+    var result: any = [];
+    stream
+      .pipe(csv({}))
+      .on("data", (data: any) => result.push(data))
+      .on("end", () => {
+        resolve(result);
+      });
+  });
+};
+
+export const modifyExcelData = (
+  result: any[],
+  headerData: any[],
+  checkDuplication: any
+) => {
+  // Cast type unknown to any
+  let dataImport = <any[]>result;
+  // console.log('dataImport', dataImport);
+  // Kiểm tra dữ liệu
+  if (dataImport.length == 0)
+    throw ErrorHelper.requestDataInvalid("File import không có dữ liệu");
+
+  let excelHeaders = <any[]>result;
+  [, excelHeaders] = dataImport;
+
+  excelHeaders.shift();
+
+  for (let i = 0; i < excelHeaders.length; i++) {
+    const head = excelHeaders[i];
+    if (head != headerData[i]) {
+      throw ErrorHelper.requestDataInvalid("File import không hợp lệ");
+    }
+  }
+
+  // Kiểm tra cột dữ liệu
+
+  dataImport.shift();
+  dataImport.shift();
+  // console.log('excelHeader', excelHeaders);
+  // console.log('dataImport', dataImport);
+
+  // // Hàm xử lí kết quả từ file csv
+  let dataResult: any[] = [];
+  let dataError: any[] = [];
+  for (let index = 0; index < dataImport.length; index++) {
+    // console.log('start index', index);
+    const row = dataImport[index];
+    //check end of file csv
+    let item: any = {};
+
+    for (let i = 0; i < headerData.length; i++) {
+      const col = headerData[i];
+      const value = row[i + 1];
+      if (value) {
+        item[col] = value;
+      }
+    }
+    // console.log('checkDuplication', checkDuplication);
+    if (checkDuplication === true && headerData.length > 1) {
+      const header1 = headerData[0];
+      const header2 = headerData[1];
+
+      const dupMatch = dataResult.findIndex((_item: any) => {
+        // console.log('header1', header1);
+        // console.log('header2', header2);
+        // console.log('item[header1]', item[header1]);
+        // console.log('_item[header1]', _item[header1]);
+        // console.log('item[header2]', item[header2]);
+        // console.log('_item[header2]', _item[header2]);
+        return (
+          _item[header1] === item[header1] && _item[header2] === item[header2]
+        );
+      });
+
+      // console.log("dupMatch", dupMatch);
+      if (dupMatch > -1) {
+        throw ErrorHelper.requestDataInvalid("File import có dữ liệu trùng");
+      }
+    }
+    // console.log('test')
+    // kiem tra dòng đó có rỗng ko ?
+    if (!_.isEmpty(item)) {
+      item.Line = index + 1;
+      dataResult.push(item);
+    } else {
+      item.Line = index + 1;
+      dataError.push(item);
+    }
+  }
+  // console.log('=========>dataResult', dataResult);
+  // console.log('=========>dataError', dataError);
+  return [dataResult, dataError];
+};
+
+export const modifyCSVData = (result: any[], headerData: any[]) => {
+  // Cast type unknown to any
+  const dataImport = <any[]>result;
+  // Kiểm tra dữ liệu
+  if (dataImport.length == 0)
+    throw ErrorHelper.requestDataInvalid("File import không có dữ liệu");
+  // Kiểm tra cột dữ liệu
+  let importHeaders = headerData;
+  if (
+    Object.keys(dataImport[0]).toString().trim().replace(/,/g, "") !=
+    importHeaders.toString().trim().replace(/,/g, "")
+  ) {
+    throw ErrorHelper.requestDataInvalid("File import không hợp lệ");
+  }
+  importHeaders = Object.keys(dataImport[0]);
+
+  // Hàm xử lí kết quả từ file csv
+  const dataResult: any[] = [];
+  for (const m of dataImport) {
+    //check end of file csv
+    if (m[importHeaders[1]] == "" || !m[importHeaders[1]]) {
+      break;
+    }
+    dataResult.push(m);
+  }
+  return dataResult;
+};

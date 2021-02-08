@@ -26,34 +26,10 @@ const Mutation = {
   createAddressStorehouse: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.ADMIN, ROLES.EDITOR]);
     const data: IAddressStorehouse = args.data;
-    const { name, email, phone, address } = data;
+    const { email } = data;
 
-    const storehouseByName = await AddressStorehouseModel.findOne({ name });
-    if (storehouseByName) throw ErrorHelper.duplicateError("Tên kho");
-
-    if (email) {
-      if (!UtilsHelper.isEmail(email))
-        throw ErrorHelper.requestDataInvalid(".Email không đúng định dạng");
-
-      const storehouseByMail = await AddressStorehouseModel.findOne({ email });
-      if (storehouseByMail) {
-        throw ErrorHelper.duplicateError("Email");
-      }
-    }
-
-    if (phone) {
-      const storeHouseByPhone = await AddressStorehouseModel.findOne({ phone });
-      if (storeHouseByPhone) {
-        throw ErrorHelper.duplicateError("Số điện thoại");
-      }
-    }
-
-    const storeHouseByAddress = await AddressStorehouseModel.findOne({
-      address,
-    });
-    if (storeHouseByAddress) {
-      throw ErrorHelper.duplicateError("Địa chỉ");
-    }
+    if (email && !UtilsHelper.isEmail(email))
+      throw ErrorHelper.requestDataInvalid(".Email không đúng định dạng");
 
     const helper = new AddressStorehouseHelper(
       new AddressStorehouseModel(data)

@@ -4,6 +4,7 @@ import smsRoute from "./sms.route";
 import downloadRoute from "./download.route";
 import campaignRoute from "./campaign.route";
 import luckyWheelRoute from "./luckyWheel.route";
+import addressStorehouse from "./addressStorehouse.route";
 import diligencePointRoute from "./diligencePoint.route";
 import serviceRoute from "./service.route";
 
@@ -15,4 +16,5 @@ router.use("/service", serviceRoute);
 router.use("/download", downloadRoute);
 router.use("/campaign", campaignRoute);
 router.use("/luckywheel", luckyWheelRoute);
+router.use("/address-storehouse", addressStorehouse);
 export default router;

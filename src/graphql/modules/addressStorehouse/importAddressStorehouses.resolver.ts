@@ -2,22 +2,16 @@ import csv from "csv-parser";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../helpers";
 import { Context } from "../../context";
-// import { RegisServiceModel, RegisServiceStatus } from "./regisService.model";
 import {
   getDataFromExcelStream,
-  getJsonFromCSVStream,
-  modifyCSVData,
   modifyExcelData,
 } from "../../../helpers/workSheet";
 import { AddressStorehouseImportingLogModel } from "../addressStorehouseImportingLog/addressStorehouseImportingLog.model";
 import { SettingHelper } from "../setting/setting.helper";
 import { SettingKey } from "../../../configs/settingData";
 import { AddressStorehouseModel } from "./addressStorehouse.model";
-import { AddressHelper } from "../address/address.helper";
-import { AddressStorehouseHelper } from "./addressStorehouse.helper";
 import { addressStorehouseImportingLogService } from "../addressStorehouseImportingLog/addressStorehouseImportingLog.service";
 import { AddressModel } from "../address/address.model";
-import { AddressDeliveryImportingLogModel } from "../addressDeliveryImportingLog/addressDeliveryImportingLog.model";
 import { addressStorehouseService } from "./addressStorehouse.service";
 
 const STT = "STT";
@@ -56,191 +50,95 @@ const importAddressStorehouses = async (
   for (let i = 0; i < data.length; i++) {
     const excelRow = data[i];
     console.log("excelRow", excelRow);
-
-    // const no = excelRow[];
-    const name = excelRow[NAME];
-    const phone = excelRow[PHONE];
-    const email = excelRow[EMAIL];
-    const address = excelRow[ADDRESS];
-    const province = excelRow[PROVINCE];
-    const district = excelRow[DISTRICT];
-    const ward = excelRow[WARD];
-
-    let success = true;
-    let error = "";
-
-    const storehouseByName = await AddressStorehouseModel.findOne({ name });
-    if (storehouseByName) {
-      success = false;
-      error = ErrorHelper.duplicateError("Tên kho").message;
-      await addressStorehouseImportingLogService.create({
-        name,
-        phone,
-        email,
-        address,
-        province,
-        district,
-        ward,
-        success,
-        error,
-      });
-      continue;
-    }
-
-    if (email && !UtilsHelper.isEmail(email)) {
-      success = false;
-      error = ErrorHelper.requestDataInvalid(".Email không đúng định dạng")
-        .message;
-      await addressStorehouseImportingLogService.create({
-        name,
-        phone,
-        email,
-        address,
-        province,
-        district,
-        ward,
-        success,
-        error,
-      });
-      continue;
-    }
-
-    const storehouseByMail = await AddressStorehouseModel.findOne({ email });
-    if (email && storehouseByMail) {
-      success = false;
-      error = ErrorHelper.duplicateError("Email").message;
-      await addressStorehouseImportingLogService.create({
-        name,
-        phone,
-        email,
-        address,
-        province,
-        district,
-        ward,
-        success,
-        error,
-      });
-      continue;
-    }
-
-    const storeHouseByPhone = await AddressStorehouseModel.findOne({ phone });
-    if (phone && storeHouseByPhone) {
-      success = false;
-      error = ErrorHelper.duplicateError("Số điện thoại").message;
-      await addressStorehouseImportingLogService.create({
-        name,
-        phone,
-        email,
-        address,
-        province,
-        district,
-        ward,
-        success,
-        error,
-      });
-      continue;
-    }
-
-    const storeHouseByAddress = await AddressStorehouseModel.findOne({
-      address,
-    });
-    if (storeHouseByAddress) {
-      success = false;
-      error = ErrorHelper.duplicateError("Địa chỉ").message;
-      await addressStorehouseImportingLogService.create({
-        name,
-        phone,
-        email,
-        address,
-        province,
-        district,
-        ward,
-        success,
-        error,
-      });
-      continue;
-    }
-
-    const existedAddress = await AddressModel.findOne({
-      province,
-      district,
-      ward,
-    });
-    if (!existedAddress) {
-      success = false;
-      error = ErrorHelper.mgQueryFailed(
-        `. Không tìm thấy đăng ký [${PROVINCE} , ${DISTRICT}, ${WARD}] này.`
-      ).message;
-      await addressStorehouseImportingLogService.create({
-        name,
-        phone,
-        email,
-        address,
-        province,
-        district,
-        ward,
-        success,
-        error,
-      });
-      continue;
-    }
-
-    const existedStorehouse = await AddressStorehouseModel.findOne({
-      name,
-      phone,
-      email,
-      address,
-    });
-
-    if (existedStorehouse) {
-      success = false;
-      error = ErrorHelper.duplicateError(`Dòng này`).message;
-      await addressStorehouseImportingLogService.create({
-        name,
-        phone,
-        email,
-        address,
-        province,
-        district,
-        ward,
-        success,
-        error,
-      });
-      continue;
-    }
-
-    const { provinceId, wardId, districtId } = existedAddress;
-
-    await Promise.all([
-      addressStorehouseService.create({
-        name,
-        phone,
-        email,
-        address,
-        province,
-        ward,
-        district,
-        provinceId,
-        wardId,
-        districtId,
-      }),
-      addressStorehouseImportingLogService.create({
-        name,
-        phone,
-        email,
-        address,
-        province,
-        district,
-        ward,
-        success,
-        error,
-      }),
-    ]);
   }
 
-  const host = await SettingHelper.load(SettingKey.APP_DOMAIN);
+  //   // const no = excelRow[];
+  //   const name = excelRow[NAME];
+  //   const phone = excelRow[PHONE];
+  //   const email = excelRow[EMAIL];
+  //   const address = excelRow[ADDRESS];
+  //   const province = excelRow[PROVINCE];
+  //   const district = excelRow[DISTRICT];
+  //   const ward = excelRow[WARD];
 
-  return `${host}/api/address-storehouse/export-import-results?x-token=${context.token}`;
+  //   let success = true;
+  //   let error = "";
+
+  //   if (email && !UtilsHelper.isEmail(email)) {
+  //     success = false;
+  //     error = ErrorHelper.requestDataInvalid(".Email không đúng định dạng")
+  //       .message;
+  //     await addressStorehouseImportingLogService.create({
+  //       name,
+  //       phone,
+  //       email,
+  //       address,
+  //       province,
+  //       district,
+  //       ward,
+  //       success,
+  //       error,
+  //     });
+  //     continue;
+  //   }
+
+  //   const existedAddress = await AddressModel.findOne({
+  //     province,
+  //     district,
+  //     ward,
+  //   });
+    
+  //   if (!existedAddress) {
+  //     success = false;
+  //     error = ErrorHelper.mgQueryFailed(
+  //       `. Không tìm thấy đăng ký [${PROVINCE} , ${DISTRICT}, ${WARD}] này.`
+  //     ).message;
+  //     await addressStorehouseImportingLogService.create({
+  //       name,
+  //       phone,
+  //       email,
+  //       address,
+  //       province,
+  //       district,
+  //       ward,
+  //       success,
+  //       error,
+  //     });
+  //     continue;
+  //   }
+
+  //   const { provinceId, wardId, districtId } = existedAddress;
+
+  //   await Promise.all([
+  //     addressStorehouseService.create({
+  //       name,
+  //       phone,
+  //       email,
+  //       address,
+  //       province,
+  //       ward,
+  //       district,
+  //       provinceId,
+  //       wardId,
+  //       districtId,
+  //     }),
+  //     addressStorehouseImportingLogService.create({
+  //       name,
+  //       phone,
+  //       email,
+  //       address,
+  //       province,
+  //       district,
+  //       ward,
+  //       success,
+  //       error,
+  //     }),
+  //   ]);
+  // }
+
+  // const host = await SettingHelper.load(SettingKey.APP_DOMAIN);
+
+  // return `${host}/api/address-storehouse/export-import-results?x-token=${context.token}`;
 };
 
 const Mutation = {

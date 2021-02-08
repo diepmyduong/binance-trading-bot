@@ -10,7 +10,7 @@ import { Context } from "../../graphql/context";
 import { auth } from "../../middleware/auth";
 
 const path = require("path");
-class SMSRoute extends BaseRoute {
+class DownloadRoute extends BaseRoute {
   constructor() {
     super();
   }
@@ -75,4 +75,4 @@ class SMSRoute extends BaseRoute {
   }
 }
 
-export default new SMSRoute().router;
+export default new DownloadRoute().router;

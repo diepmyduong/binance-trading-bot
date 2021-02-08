@@ -25,8 +25,7 @@ export const getJsonFromCSVStream = (stream: any) => {
 
 export const modifyExcelData = (
   result: any[],
-  headerData: any[],
-  checkDuplication: any
+  headerData: any[]
 ) => {
   // Cast type unknown to any
   let dataImport = <any[]>result;
@@ -54,12 +53,18 @@ export const modifyExcelData = (
   // console.log('excelHeader', excelHeaders);
   // console.log('dataImport', dataImport);
 
-  // // Hàm xử lí kết quả từ file csv
   let dataResult: any[] = [];
   let dataError: any[] = [];
   for (let index = 0; index < dataImport.length; index++) {
     // console.log('start index', index);
     const row = dataImport[index];
+    if (!row) {
+      dataError.push({
+        line: index + 1,
+        error: "Dòng này không có dữ liệu",
+      });
+    }
+
     //check end of file csv
     let item: any = {};
 
@@ -70,36 +75,13 @@ export const modifyExcelData = (
         item[col] = value;
       }
     }
-    // console.log('checkDuplication', checkDuplication);
-    if (checkDuplication === true && headerData.length > 1) {
-      const header1 = headerData[0];
-      const header2 = headerData[1];
 
-      const dupMatch = dataResult.findIndex((_item: any) => {
-        // console.log('header1', header1);
-        // console.log('header2', header2);
-        // console.log('item[header1]', item[header1]);
-        // console.log('_item[header1]', _item[header1]);
-        // console.log('item[header2]', item[header2]);
-        // console.log('_item[header2]', _item[header2]);
-        return (
-          _item[header1] === item[header1] && _item[header2] === item[header2]
-        );
-      });
-
-      // console.log("dupMatch", dupMatch);
-      if (dupMatch > -1) {
-        throw ErrorHelper.requestDataInvalid("File import có dữ liệu trùng");
-      }
-    }
     // console.log('test')
     // kiem tra dòng đó có rỗng ko ?
     if (!_.isEmpty(item)) {
-      item.Line = index + 1;
-      dataResult.push(item);
+      dataResult.push({ ...item, line: index + 1 });
     } else {
-      item.Line = index + 1;
-      dataError.push(item);
+      
     }
   }
   // console.log('=========>dataResult', dataResult);

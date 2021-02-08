@@ -3,7 +3,10 @@ import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../helpers";
 import { Context } from "../../context";
 import { AddressHelper } from "../address/address.helper";
 import { AddressDeliveryHelper } from "./addressDelivery.helper";
-import { AddressDeliveryModel, IAddressDelivery } from "./addressDelivery.model";
+import {
+  AddressDeliveryModel,
+  IAddressDelivery,
+} from "./addressDelivery.model";
 import { addressDeliveryService } from "./addressDelivery.service";
 
 const Query = {
@@ -22,38 +25,12 @@ const Mutation = {
   createAddressDelivery: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.ADMIN]);
     const data: IAddressDelivery = args.data;
-    const { name, email, phone, address } = data;
+    const { email } = data;
 
-    const locationByName = await AddressDeliveryModel.findOne({ name });
-    if (locationByName) throw ErrorHelper.duplicateError("Tên kho");
+    if (email && !UtilsHelper.isEmail(email))
+      throw ErrorHelper.requestDataInvalid(".Email không đúng định dạng");
 
-    if (email) {
-      if (!UtilsHelper.isEmail(email))
-        throw ErrorHelper.requestDataInvalid(".Email không đúng định dạng");
-
-      const locationByMail = await AddressDeliveryModel.findOne({ email });
-      if (locationByMail) {
-        throw ErrorHelper.duplicateError("Email");
-      }
-    }
-
-    if (phone) {
-      const locationByPhone = await AddressDeliveryModel.findOne({ phone });
-      if (locationByPhone) {
-        throw ErrorHelper.duplicateError("Số điện thoại");
-      }
-    }
-
-    const locationByAddress = await AddressDeliveryModel.findOne({
-      address,
-    });
-    if (locationByAddress) {
-      throw ErrorHelper.duplicateError("Địa chỉ");
-    }
-
-    const helper = new AddressDeliveryHelper(
-      new AddressDeliveryModel(data)
-    );
+    const helper = new AddressDeliveryHelper(new AddressDeliveryModel(data));
 
     await Promise.all([
       AddressHelper.setProvinceName(helper.addressDelivery),
@@ -71,7 +48,8 @@ const Mutation = {
     const { email } = data;
 
     const existedLocation = await AddressDeliveryModel.findById(id);
-    if (!existedLocation) throw ErrorHelper.mgRecoredNotFound("địa điểm nhận hàng");
+    if (!existedLocation)
+      throw ErrorHelper.mgRecoredNotFound("địa điểm nhận hàng");
 
     if (email && !UtilsHelper.isEmail(email))
       throw ErrorHelper.requestDataInvalid(".Email không đúng định dạng");
@@ -87,7 +65,6 @@ const Mutation = {
         ]);
         return await helper.addressDelivery.save();
       });
-
   },
   deleteOneAddressDelivery: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.ADMIN]);
@@ -96,9 +73,7 @@ const Mutation = {
   },
 };
 
-const AddressDelivery = {
-  
-};
+const AddressDelivery = {};
 
 export default {
   Query,

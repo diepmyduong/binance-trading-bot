@@ -4,7 +4,16 @@ import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 const Schema = mongoose.Schema;
 
 export type IAddressDelivery = BaseDocument & {
-  name?: string;
+  name?: string; // Tên địa điểm
+  phone: string; // Số điện thoại
+  email: string; // Email liên hệ
+  address?: string; // Địa chỉ
+  wardId?: string; // Mã Phường/xã
+  districtId?: string; // Mã Quận/huyện
+  provinceId?: string; // Mã Tỉnh/thành
+  province: string; // Tỉnh/thành
+  district: string; // Quận/huyện
+  ward: string; // Phường/xã
 };
 
 //địa điểm nhận hàng

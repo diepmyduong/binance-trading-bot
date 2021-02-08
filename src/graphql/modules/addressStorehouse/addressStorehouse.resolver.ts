@@ -31,17 +31,21 @@ const Mutation = {
     const storehouseByName = await AddressStorehouseModel.findOne({ name });
     if (storehouseByName) throw ErrorHelper.duplicateError("Tên kho");
 
-    if (email && !UtilsHelper.isEmail(email))
-      throw ErrorHelper.requestDataInvalid(".Email không đúng định dạng");
+    if (email) {
+      if (!UtilsHelper.isEmail(email))
+        throw ErrorHelper.requestDataInvalid(".Email không đúng định dạng");
 
-    const storehouseByMail = await AddressStorehouseModel.findOne({ email });
-    if (email && storehouseByMail) {
-      throw ErrorHelper.duplicateError("Email");
+      const storehouseByMail = await AddressStorehouseModel.findOne({ email });
+      if (storehouseByMail) {
+        throw ErrorHelper.duplicateError("Email");
+      }
     }
 
-    const storeHouseByPhone = await AddressStorehouseModel.findOne({ phone });
-    if (phone && storeHouseByPhone) {
-      throw ErrorHelper.duplicateError("Số điện thoại");
+    if (phone) {
+      const storeHouseByPhone = await AddressStorehouseModel.findOne({ phone });
+      if (storeHouseByPhone) {
+        throw ErrorHelper.duplicateError("Số điện thoại");
+      }
     }
 
     const storeHouseByAddress = await AddressStorehouseModel.findOne({
@@ -63,6 +67,7 @@ const Mutation = {
 
     return await helper.addressStorehouse.save();
   },
+
   updateAddressStorehouse: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.ADMIN, ROLES.EDITOR]);
     const { id } = args;
@@ -75,8 +80,19 @@ const Mutation = {
     if (email && !UtilsHelper.isEmail(email))
       throw ErrorHelper.requestDataInvalid(".Email không đúng định dạng");
 
-    return await addressStorehouseService.updateOne(id, data);
+    return await addressStorehouseService
+      .updateOne(id, data)
+      .then(async (res: IAddressStorehouse) => {
+        const helper = new AddressStorehouseHelper(res);
+        await Promise.all([
+          AddressHelper.setProvinceName(helper.addressStorehouse),
+          AddressHelper.setDistrictName(helper.addressStorehouse),
+          AddressHelper.setWardName(helper.addressStorehouse),
+        ]);
+        return await helper.addressStorehouse.save();
+      });
   },
+
   deleteOneAddressStorehouse: async (
     root: any,
     args: any,

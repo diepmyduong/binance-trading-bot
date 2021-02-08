@@ -6,7 +6,7 @@ import { Context } from "../../graphql/context";
 import { auth } from "../../middleware/auth";
 import Excel from "exceljs";
 import { UtilsHelper } from "../../helpers";
-import { AddressStorehouseImportingLogModel, IAddressStorehouseImportingLog } from "../../graphql/modules/addressStorehouseImportingLog/addressStorehouseImportingLog.model"
+import { AddressDeliveryImportingLogModel, IAddressDeliveryImportingLog } from "../../graphql/modules/addressDeliveryImportingLog/addressDeliveryImportingLog.model"
 
 const STT = "STT";
 const NAME = "Tên kho";
@@ -17,7 +17,7 @@ const PROVINCE = "Tỉnh/Thành";
 const DISTRICT = "Quận/Huyện";
 const WARD = "Phường/Xã";
 
-class AddressStorehouseRoute extends BaseRoute {
+class AddressDeliveryRoute extends BaseRoute {
   constructor() {
     super();
   }
@@ -32,7 +32,7 @@ class AddressStorehouseRoute extends BaseRoute {
     context.auth(ROLES.ADMIN_EDITOR);
 
     let data: any[] = [];
-    const logs = await AddressStorehouseImportingLogModel.find({}).sort({ line: 1 });
+    const logs = await AddressDeliveryImportingLogModel.find({}).sort({ line: 1 });
 
     data = [...data, ...logs];
 
@@ -51,7 +51,7 @@ class AddressStorehouseRoute extends BaseRoute {
     
     sheet.addRow(excelHeaders);
 
-    data.forEach((d: IAddressStorehouseImportingLog, i) => {
+    data.forEach((d: IAddressDeliveryImportingLog, i) => {
       const dataRow = [
         d.no,
         d.name,
@@ -75,47 +75,9 @@ class AddressStorehouseRoute extends BaseRoute {
     const context = (req as any).context as Context;
     context.auth(ROLES.ADMIN_EDITOR);
 
-    let data: any[] = [];
-    const logs = await AddressStorehouseImportingLogModel.find({}).sort({ line: 1 });
-
-    data = [...data, ...logs];
-
-    const workbook = new Excel.Workbook();
-    const sheet = workbook.addWorksheet("Sheet1");
-    const excelHeaders = [
-      STT,
-      NAME,
-      PHONE,
-      EMAIL,
-      ADDRESS,
-      PROVINCE,
-      DISTRICT,
-      WARD
-    ]
-    
-    sheet.addRow(excelHeaders);
-
-    data.forEach((d: IAddressStorehouseImportingLog, i) => {
-      const dataRow = [
-        d.no,
-        d.name,
-        d.phone,
-        d.email,
-        d.address,
-        d.province,
-        d.district,
-        d.ward,
-        d.success ? "Thành công" : "Lỗi",
-        d.error
-      ];
-
-      sheet.addRow(dataRow);
-    });
-
-    return UtilsHelper.responseExcel(res, workbook, `ket_qua_import_kho_hang`);
   }
 
 }
 
 
-export default new AddressStorehouseRoute().router;
+export default new AddressDeliveryRoute().router;

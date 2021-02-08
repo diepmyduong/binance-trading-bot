@@ -11,6 +11,7 @@ const schema = gql`
     createAddressDelivery(data: CreateAddressDeliveryInput!): AddressDelivery
     updateAddressDelivery(id: ID!, data: UpdateAddressDeliveryInput!): AddressDelivery
     deleteOneAddressDelivery(id: ID!): AddressDelivery
+    importAddressDelivery(file: Upload!): String
     # Add Mutation
   }
 
@@ -72,13 +73,13 @@ const schema = gql`
     "Email liên hệ"
     email: String
     "Địa chỉ"
-    address: String!
+    address: String
     "Mã Phường/xã"
-    wardId: String!
+    wardId: String
     "Mã Quận/huyện"
-    districtId: String!
+    districtId: String
     "Mã Tỉnh/thành"
-    provinceId: String!
+    provinceId: String
     "Tỉnh/thành"
     province: String
     "Quận/huyện"

@@ -33,9 +33,14 @@ class DownloadRoute extends BaseRoute {
       this.route(this.evoucherTemplate)
     );
     this.router.get(
-      "/storehouse-template.xlsx",
+      "/address-storehouse-template.xlsx",
       [auth],
       this.route(this.addressStorehouse)
+    );
+    this.router.get(
+      "/address-delivery-template.xlsx",
+      [auth],
+      this.route(this.addressDelivery)
     );
   }
 
@@ -71,6 +76,13 @@ class DownloadRoute extends BaseRoute {
     const context = (req as any).context as Context;
     context.auth(ROLES.ADMIN_EDITOR);
     const file = path.resolve("public/templates", "storehouse-template.xlsx");
+    res.sendFile(file);
+  }
+
+  async addressDelivery(req: Request, res: Response) {
+    const context = (req as any).context as Context;
+    context.auth(ROLES.ADMIN_EDITOR);
+    const file = path.resolve("public/templates", "delivery-template.xlsx");
     res.sendFile(file);
   }
 }

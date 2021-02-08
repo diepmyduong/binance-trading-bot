@@ -20,14 +20,14 @@ export type IAddressDelivery = BaseDocument & {
 const addressDeliverySchema = new Schema(
   {
     name: { type: String, required: true },
-    phone: { type: String, required: true },
+    phone: { type: String },
     email: { type: String },
-    wardId: { type: String, required: true },
-    province: { type: String, required: true },
-    district: { type: String, required: true },
     address: { type: String, required: true },
-    provinceId: { type: String },
-    districtId: { type: String },
+    wardId: { type: String, required: true },
+    districtId: { type: String, required: true },
+    provinceId: { type: String, required: true },
+    province: { type: String },
+    district: { type: String },
     ward: { type: String },
   },
   { timestamps: true }

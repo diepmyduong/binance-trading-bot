@@ -56,13 +56,15 @@ export const modifyExcelData = (
   let dataResult: any[] = [];
   let dataError: any[] = [];
   for (let index = 0; index < dataImport.length; index++) {
-    // console.log('start index', index);
     const row = dataImport[index];
+    // console.log('row',row);
     if (!row) {
       dataError.push({
         line: index + 1,
+        success: false,
         error: "Dòng này không có dữ liệu",
       });
+      continue;
     }
 
     //check end of file csv
@@ -72,17 +74,21 @@ export const modifyExcelData = (
       const col = headerData[i];
       const value = row[i + 1];
       if (value) {
-        item[col] = value;
+        item[col] = value.toString().trim();
       }
     }
 
     // console.log('test')
     // kiem tra dòng đó có rỗng ko ?
-    if (!_.isEmpty(item)) {
-      dataResult.push({ ...item, line: index + 1 });
-    } else {
-      
-    }
+    if (_.isEmpty(item)) {
+      dataError.push({
+        line: index + 1,
+        success: false,
+        error: "Dòng này không có dữ liệu",
+      });
+      continue;
+    } 
+    dataResult.push({ ...item, line: index + 1 });
   }
   // console.log('=========>dataResult', dataResult);
   // console.log('=========>dataError', dataError);

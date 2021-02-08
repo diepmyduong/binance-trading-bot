@@ -100,13 +100,13 @@ export abstract class CrudService<M extends Model<Document, {}>> extends BaseSer
   async updateOne(id: string, data: any) {
     await this.model.updateOne({ _id: id }, data);
     let record = await this.model.findOne({ _id: id });
-    if (!record) throw ErrorHelper.recoredNotFound("Không tìm thấy dữ liệu");
+    if (!record) throw ErrorHelper.mgRecoredNotFound();
     return record;
   }
 
   async deleteOne(id: string) {
     let record = await this.model.findOne({ _id: id });
-    if (!record) throw ErrorHelper.recoredNotFound("Không tìm thấy dữ liệu");
+    if (!record) throw ErrorHelper.mgRecoredNotFound();
     await record.remove();
     return record;
   }

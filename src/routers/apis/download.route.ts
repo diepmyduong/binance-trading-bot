@@ -10,7 +10,7 @@ import { Context } from "../../graphql/context";
 import { auth } from "../../middleware/auth";
 
 const path = require("path");
-class SMSRoute extends BaseRoute {
+class DownloadRoute extends BaseRoute {
   constructor() {
     super();
   }
@@ -33,9 +33,14 @@ class SMSRoute extends BaseRoute {
       this.route(this.evoucherTemplate)
     );
     this.router.get(
-      "/storehouse-template.xlsx",
+      "/address-storehouse-template.xlsx",
       [auth],
       this.route(this.addressStorehouse)
+    );
+    this.router.get(
+      "/address-delivery-template.xlsx",
+      [auth],
+      this.route(this.addressDelivery)
     );
   }
 
@@ -73,6 +78,13 @@ class SMSRoute extends BaseRoute {
     const file = path.resolve("public/templates", "storehouse-template.xlsx");
     res.sendFile(file);
   }
+
+  async addressDelivery(req: Request, res: Response) {
+    const context = (req as any).context as Context;
+    context.auth(ROLES.ADMIN_EDITOR);
+    const file = path.resolve("public/templates", "delivery-template.xlsx");
+    res.sendFile(file);
+  }
 }
 
-export default new SMSRoute().router;
+export default new DownloadRoute().router;

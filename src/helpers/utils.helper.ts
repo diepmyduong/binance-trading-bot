@@ -3,6 +3,11 @@ import { Response } from "express";
 import fs from "fs";
 import path from "path";
 import _ from "lodash";
+
+import bm25 from "wink-bm25-text-search";
+import nlp from "wink-nlp-utils";
+import KhongDau from "khong-dau";
+
 import { AddressModel } from "../graphql/modules/address/address.model";
 
 export class UtilsHelper {
@@ -19,6 +24,45 @@ export class UtilsHelper {
       `attachment; filename=${filename.replace(/\ /g, "-")}.xlsx`
     );
     workBook.xlsx.write(res).then(res.end);
+  }
+
+  static search<T>(docs: any[], keyword: string, key: string, weight: any, option?: any): T[] {
+    option = option || {};
+    if (docs.length <= 3) return docs;
+    const importantFields = Object.keys(weight);
+
+    const searchEngine = bm25();
+    if (option.firstChar) {
+      importantFields.forEach((field) => {
+        weight[`$fc_${field}`] = weight[field];
+      });
+    }
+    searchEngine.defineConfig({ fldWeights: weight });
+    searchEngine.definePrepTasks([
+      nlp.string.lowerCase,
+      nlp.string.removeExtraSpaces,
+      nlp.string.tokenize0,
+      nlp.tokens.propagateNegations,
+      nlp.tokens.stem,
+    ]);
+    const copy = _.cloneDeep(docs);
+    for (const doc of copy) {
+      importantFields.forEach((field) => {
+        doc[field] = KhongDau(doc[field]);
+        if (option.firstChar) doc[`$fc_${field}`] = doc[field].match(/\b(\w)/g).join("");
+      });
+      searchEngine.learn(doc, doc[key]);
+    }
+    searchEngine.consolidate();
+
+    return searchEngine
+      .search(
+        KhongDau(keyword),
+        100,
+        (r: any) => !option.core || r[1] >= option.core,
+        option.params
+      )
+      .map((r: any) => docs.find((d) => d[key] == r[0]));
   }
 
   static walkSyncFiles(dir: string, filelist: string[] = []) {

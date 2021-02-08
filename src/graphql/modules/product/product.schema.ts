@@ -26,6 +26,11 @@ const schema = gql`
     enabledCustomerBonus: Boolean
     memberBonusFactor:Int,
     customerBonusFactor:Int
+
+    width: Int
+    length: Int
+    height: Int
+    weight: Int
   }
 
   input CreateProductInput {

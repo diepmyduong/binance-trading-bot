@@ -4,21 +4,30 @@ import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 const Schema = mongoose.Schema;
 
 export type IAddressDelivery = BaseDocument & {
-  name?: string;
+  name?: string; // Tên địa điểm
+  phone: string; // Số điện thoại
+  email: string; // Email liên hệ
+  address?: string; // Địa chỉ
+  wardId?: string; // Mã Phường/xã
+  districtId?: string; // Mã Quận/huyện
+  provinceId?: string; // Mã Tỉnh/thành
+  province: string; // Tỉnh/thành
+  district: string; // Quận/huyện
+  ward: string; // Phường/xã
 };
 
 //địa điểm nhận hàng
 const addressDeliverySchema = new Schema(
   {
     name: { type: String, required: true },
-    phone: { type: String, required: true },
+    phone: { type: String },
     email: { type: String },
-    wardId: { type: String, required: true },
-    province: { type: String, required: true },
-    district: { type: String, required: true },
     address: { type: String, required: true },
-    provinceId: { type: String },
-    districtId: { type: String },
+    wardId: { type: String, required: true },
+    districtId: { type: String, required: true },
+    provinceId: { type: String, required: true },
+    province: { type: String },
+    district: { type: String },
     ward: { type: String },
   },
   { timestamps: true }

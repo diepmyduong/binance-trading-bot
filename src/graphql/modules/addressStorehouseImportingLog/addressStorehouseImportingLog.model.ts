@@ -12,6 +12,7 @@ export type IAddressStorehouseImportingLog = BaseDocument & {
   province: string;
   district: string;
   ward: string;
+  line: Number;
   success: Boolean;
   error: string;
 };
@@ -26,6 +27,7 @@ const addressStorehouseImportingLogSchema = new Schema(
     province: { type: String },
     district: { type: String },
     ward: { type: String },
+    line: { type: Number },
     success: { type: Boolean },
     error: { type: String },
   },

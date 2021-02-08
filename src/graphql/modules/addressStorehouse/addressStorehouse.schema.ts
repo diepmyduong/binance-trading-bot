@@ -16,7 +16,7 @@ const schema = gql`
       data: UpdateAddressStorehouseInput!
     ): AddressStorehouse
     deleteOneAddressStorehouse(id: ID!): AddressStorehouse
-    importAddressStorehouses(file: Upload!): Mixed
+    importAddressStorehouses(file: Upload!): String
     # Add Mutation
   }
 

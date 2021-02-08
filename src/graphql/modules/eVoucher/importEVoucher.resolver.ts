@@ -30,7 +30,7 @@ const importEVoucher = async (root: any, args: any, context: Context) => {
 
   const { stream } = await excelFile;
   const result: any = await getDataFromExcelStream(stream);
-  const [data, errorData] = modifyExcelData(result, HEADER_DATA, false);
+  const [data, errorData] = modifyExcelData(result, HEADER_DATA);
 
   const logLength = await EVoucherImportingLogModel.count({});
   if (logLength > 0) await EVoucherImportingLogModel.collection.drop();

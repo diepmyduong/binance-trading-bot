@@ -1,34 +1,58 @@
-import { ErrorHelper } from "../../../../base/error";
-// import { OrderStatus } from "../../../../constants/model.const";
+import _, { set } from "lodash";
 import { ROLES } from "../../../../constants/role.const";
-// import { OnApprovedOrder } from "../../../../events/onApprovedOrder.event";
-import { AuthHelper } from "../../../../helpers";
+import { AuthHelper, ErrorHelper } from "../../../../helpers";
 import { Context } from "../../../context";
-// import { OrderLogModel, OrderLogType } from "../../orderLog/orderLog.model";
-import { IOrder, OrderModel } from "../order.model";
+import { OrderModel, IOrder, OrderStatus } from "../order.model";
+import { onApprovedOrder } from "../../../../events/onApprovedOrder.event";
+import { ProductModel } from "../../product/product.model";
+import { OrderItemModel } from "../../orderItem/orderItem.model";
 
-const Mutation = {
-  approveOrder: async (root: IOrder, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR);
-    // const { orderId } = args;
-    // const order = await OrderModel.findById(orderId);
-    // if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
-    // // Chỉ duyệt đơn hàng đang pending
-    // const isDeliveringOrder = order.status == OrderStatus.DELIVERING;
-    // if (!isDeliveringOrder)
-    //   throw ErrorHelper.requestDataInvalid("Đơn hàng không hợp lệ");
-    // Cập nhật đơn hàng
-    // order.status = OrderStatus.APPROVED;
-    // return await order.save().then(async (res) => {
-    //   OnApprovedOrder.next(res);
-    //   await OrderLogModel.create({
-    //     orderId: res._id,
-    //     type: OrderLogType.APPROVED,
-    //     userId: context.id,
-    //   });
-    //   return res;
-    // });
-  },
+//[Backend] Cung cấp API duyệt lịch sử đăng ký dịch vụ SMS
+const approveOrder = async (root: any, args: any, context: Context) => {
+  // AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+  const { id } = args;
+
+  if (!id) throw ErrorHelper.requestDataInvalid("mã đơn hàng");
+
+  let params: any = {
+    _id: id,
+    status: OrderStatus.PENDING,
+  };
+
+  if (context.isMember()) {
+    params.sellerId = context.id;
+    params.isPrimary = false;
+  }
+
+  const order = await OrderModel.findOne(params);
+
+  if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
+
+  // Tạo bulk product và customer
+  const productBulk = ProductModel.collection.initializeUnorderedBulkOp();
+  for (const o of order.itemIds) {
+    // Duyệt số lượng sao đó trừ inventory
+    const item = await OrderItemModel.findByIdAndUpdate(
+      o,
+      { $set: { status: OrderStatus.COMPLETED } },
+      { new: true }
+    );
+    productBulk.find({ _id: item.productId }).updateOne({
+      $inc: { crossSaleInventory: -item.qty, crossSaleOrdered: -item.qty }, // Trừ có thể ra âm
+    });
+  }
+
+  order.status = OrderStatus.COMPLETED;
+  return await Promise.all([order.save(), productBulk.execute()]).then(
+    async (res) => {
+      const result = res[0];
+      onApprovedOrder.next(result);
+      return result;
+    }
+  );
 };
 
+const Mutation = {
+  approveOrder,
+};
 export default { Mutation };

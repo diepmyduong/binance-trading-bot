@@ -5,6 +5,9 @@ const schema = gql`
   extend type Query {
     getAllOrder(q: QueryGetListInput): OrderPageData
     getOneOrder(id: ID!): Order
+    getAllDeliveryMethod: [DeliveryMethod]
+    getAllShipPrice:Mixed
+    getAllShipService(shipMethod:String!):[ShipServicePricing]
   }
 
   extend type Mutation {
@@ -12,11 +15,15 @@ const schema = gql`
     approveOrder(id: ID!): Order
     cancelOrder(id: ID!): Order
     generateDraftOrder(data: CreateOrderInput!): DraftOrderData
-    adjustOrderRewardPoint(orderId: ID!, value: Float!): Order
-    updateOrderPayment(orderId: ID!, paymentStatus: String!): Order
     deliveryOrder(orderId: ID!, deliveryInfo: DeliveryInfoInput): Mixed
+    # adjustOrderRewardPoint(orderId: ID!, value: Float!): Order
+    # updateOrderPayment(orderId: ID!, paymentStatus: String!): Order
   }
 
+  type DeliveryMethod {
+    value: String
+    label: String
+  }
 
   type DraftOrderData {
     order: Order,

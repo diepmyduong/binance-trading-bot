@@ -48,6 +48,9 @@ export type IMember = BaseDocument & {
   positionId?: string; // Mã chức vụ
   psids?: string[]; // Mã PSID ở trang fanpage chính
   chatbotStory?: ChatbotStory; // Kịch bản chatbot
+  // delivery
+  addressStorehouseIds: string[]; // danh sách id kho
+  addressDeliveryIds: string[]; // danh sách id điểm nhận
 };
 
 const memberSchema = new Schema(
@@ -75,7 +78,11 @@ const memberSchema = new Schema(
     district: { type: String },
     ward: { type: String },
     identityCardNumber: { type: String },
-    gender: { type: String, enum: Object.values(Gender), default: Gender.OTHER },
+    gender: {
+      type: String,
+      enum: Object.values(Gender),
+      default: Gender.OTHER,
+    },
     birthday: { type: Date },
     parentIds: { type: [String] },
     activedAt: { type: Date },
@@ -85,6 +92,13 @@ const memberSchema = new Schema(
     positionId: { type: Schema.Types.ObjectId, ref: "Position" },
     psids: { type: [String], default: [] },
     chatbotStory: { type: ChatbotStorySchema },
+    // delivery
+    addressStorehouseIds: {
+      type: [{ type: Schema.Types.ObjectId, ref: "AddressStorehouse" }],
+    }, // danh sách id kho
+    addressDeliveryIds: {
+      type: [{ type: Schema.Types.ObjectId, ref: "AddressDelivery" }],
+    }, //
   },
   { timestamps: true }
 );
@@ -98,12 +112,24 @@ memberSchema.index(
     shopName: "text",
     username: "text",
   },
-  { weights: { name: 2, phone: 2, fanpageName: 2, fanpageId: 2, shopName: 2, username: 4 } }
+  {
+    weights: {
+      name: 2,
+      phone: 2,
+      fanpageName: 2,
+      fanpageId: 2,
+      shopName: 2,
+      username: 4,
+    },
+  }
 );
 memberSchema.index({ username: 1 }, { unique: true });
 memberSchema.index({ uid: 1 }, { unique: true });
 
 export const MemberHook = new ModelHook<IMember>(memberSchema);
-export const MemberModel: mongoose.Model<IMember> = MainConnection.model("Member", memberSchema);
+export const MemberModel: mongoose.Model<IMember> = MainConnection.model(
+  "Member",
+  memberSchema
+);
 
 export const MemberLoader = ModelLoader<IMember>(MemberModel, MemberHook);

@@ -10,8 +10,8 @@ export enum OrderStatus {
   CANCELED = "CANCELED", // Đã huỷ
 }
 export enum ShipMethod {
-  VIETTEL_POST = "VIETTEL_POST", // Viettel Post
-  GRAB = "GRAB", // Grab Express
+  POST = "POST", // Nhận hàng tại chi nhánh
+  VNPOST = "VNPOST", // Vietnam Post
   NONE = "NONE", // Không vận chuyển
 }
 export type IOrder = BaseDocument & {
@@ -82,6 +82,8 @@ const orderSchema = new Schema(
     itemWeight: { type: Number, default: 0, min: 0 },
     shipfee: { type: Number, default: 0, min: 0 },
     deliveryInfo: { type: DeliveryInfoSchema },
+    shipMethod: { type: String, enum: Object.values(ShipMethod), required: true },
+
   },
   { timestamps: true }
 );

@@ -1,61 +1,68 @@
 import { ErrorHelper } from "../../../../base/error";
-// import { OrderStatus } from "../../../../constants/model.const";
 import { ROLES } from "../../../../constants/role.const";
-// import { OnCanceledOrder } from "../../../../events/onCanceledOrder.event";
+import { onCanceledOrder } from "../../../../events/onCanceledOrder.event";
 import { AuthHelper } from "../../../../helpers";
-import { ViettelPostHelper } from "../../../../helpers/viettelPost/viettelPost.helper";
 import { Context } from "../../../context";
-// import { OrderLogModel, OrderLogType } from "../../orderLog/orderLog.model";
-import { OrderModel } from "../order.model";
+import { OrderItemModel } from "../../orderItem/orderItem.model";
+import { ProductModel } from "../../product/product.model";
+import { OrderModel, OrderStatus } from "../order.model";
 
 const Mutation = {
-  cancelOrder: async (root: any, args: any, context: Context) => {
-    // AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_CUSTOMER);
-    // const { orderId } = args;
-    // const order = await OrderModel.findById(orderId);
-    // if (context.isCustomer() && order.buyerId.toString() != context.id) {
-    //   throw ErrorHelper.permissionDeny();
-    // }
-    // // Kiểm tra trạng thái đơn hàng
-    // if (order.status != OrderStatus.PENDING) {
-    //   if (order.status != OrderStatus.DELIVERING || context.isCustomer())
-    //     throw ErrorHelper.requestDataInvalid("Đơn hàng không thể huỷ");
-    // }
-    // Huỷ vận đơn
-    // if (
-    //   order.shipMethod == ShipMethod.VIETTEL_POST &&
-    //   order.deliveryInfo &&
-    //   order.deliveryInfo.orderNumber
-    // ) {
-    //   await ViettelPostHelper.updateOrder({
-    //     orderNumber: order.deliveryInfo.orderNumber,
-    //     type: 4,
-    //     date: new Date(),
-    //     note: "Huỷ đơn đặt hàng",
-    //   }).catch((err) => {
-    //     if (!/Đơn hàng đã hủy/.test(err.message)) throw err;
-    //   });
-    // }
-    // Thực hiện huỷ đơn
-    // order.status = OrderStatus.CANCELED;
-    // return order.save().then(async (res) => {
-    //   OnCanceledOrder.next(res);
-    //   if (context.isCustomer()) {
-    //     await OrderLogModel.create({
-    //       orderId: res._id,
-    //       type: OrderLogType.CUSTOMER_CANCELED,
-    //       customerId: context.id,
-    //     });
-    //   } else {
-    //     await OrderLogModel.create({
-    //       orderId: res._id,
-    //       type: OrderLogType.USER_CANCELED,
-    //       userId: context.id,
-    //     });
-    //   }
-    //   return res;
-    // });
-  },
-};
+    cancelOrder: async (root: any, args: any, context: Context) => {
+        AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+        const { id } = args;
+
+        let params: any = {
+            _id: id,
+            status: OrderStatus.PENDING
+        };
+
+        if (context.isMember()) {
+            params.sellerId = context.id;
+            params.isPrimary = false;
+        }
+
+        console.log('-----', params);
+
+        const order = await OrderModel.findOne(params);
+
+        if (!order)
+            throw ErrorHelper.requestDataInvalid("Đơn hàng không hợp lệ");
+
+        // Thực hiện huỷ đơn
+        order.status = OrderStatus.CANCELED;
+        // Trừ orderQty
+        for (const o of order.itemIds) {
+            // Duyệt số lượng sao đó trừ inventory
+            const item = await OrderItemModel.findByIdAndUpdate(o, { $set: { status: OrderStatus.CANCELED } }, { new: true });
+            await ProductModel.findByIdAndUpdate(item.productId, {
+                $inc: { crossSaleOrdered: -item.qty },
+            }, { new: true });
+        }
+
+        return await Promise.all([
+            order.save()
+        ]).then(async (res) => {
+            const result = res[0];
+            onCanceledOrder.next(result);
+            return result;
+        });
+    }
+}
 
 export default { Mutation };
+
+
+// (async () => {
+//     const root: any = null;
+//     const args: any = {
+//         id: "5fe463ff36c19c4310c377b3"
+//     }
+
+//     const context: any = null;
+
+//     const result = await Mutation.cancelOrder(root, args, context);
+
+//     console.log('result', result);
+
+// })();

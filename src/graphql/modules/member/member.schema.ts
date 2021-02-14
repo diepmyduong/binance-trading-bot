@@ -22,6 +22,9 @@ const schema = gql`
     memberUpdateMe(data: UpdateMemberInput!): Member
     setMemberPSID(memberId: ID!, psid: String!): Member
     generateChatbotStory(data: ChatbotStoryInput!): Member
+
+    updateMemberAddressDelivery(id: ID!, addressDeliveryIds: [ID]): Member
+    updateMemberAddressStorehouse(id: ID!, addressStorehouseIds: [ID]): Member
     # Add Mutation
   }
 
@@ -179,13 +182,21 @@ const schema = gql`
     psids: [String]
     "Kịch bản chatbot"
     chatbotStory: [ChatbotStory]
-
+    
     branch: Branch
     position: Position
     parents: [Member]
     subscribers: [SubscriberInfo]
     "Đường dẫn mở inbox fanpage"
     chatbotRef: String
+    
+    "Danh sách mã kho"
+    addressStorehouseIds: [ID]
+    addressStorehouses: [AddressStorehouse]
+
+    "Danh sách mã điểm nhận hàng"
+    addressDeliveryIds: [ID]
+    addressDeliverys: [AddressDelivery]
   }
 
   type MemberPageData {
@@ -197,3 +208,5 @@ const schema = gql`
 `;
 
 export default schema;
+
+// aeon tan phu

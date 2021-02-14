@@ -4,6 +4,7 @@ export enum SettingGroupSlug {
   CAU_HINH_CHUNG = "CAU_HINH_CHUNG",
   THONG_BAO_CHATBOT = "THONG_BAO_CHATBOT",
   KICH_BAN_BAT_DAU = "KICH_BAN_BAT_DAU",
+  CAU_HINH_VAN_CHUYEN = "CAU_HINH_VAN_CHUYEN",
 }
 export enum SettingKey {
   // CAU_HINH_CHUNG
@@ -73,7 +74,11 @@ export enum SettingKey {
   CAMPAIGN_IMAGE_MSG_FOR_SHOPPER = "CAMPAIGN_IMAGE_MSG_FOR_SHOPPER",
   CAMPAIGN_CONTENT_MSG_FOR_SHOPPER = "CAMPAIGN_CONTENT_MSG_FOR_SHOPPER",
 
-  DELIVERY_MODE = "DELIVERY_MODE",
+  //DELIVERY
+  DELIVERY_ENABLED_VNPOST = "DELIVERY_ENABLED_VNPOST",
+  DELIVERY_VNPOST_INNER_SHIP_FEE = "DELIVERY_VNPOST_INNER_SHIP_FEE",
+  DELIVERY_POST_FEE = "DELIVERY_POST_FEE",
+  DELIVERY_ENABLED_AUTO_APPROVE_ORDER = "DELIVERY_ENABLED_AUTO_APPROVE_ORDER",
 }
 export const SETTING_DATA = [
   {
@@ -114,15 +119,6 @@ export const SETTING_DATA = [
         name: "Chatbot API Key của Fanpage chính",
         key: SettingKey.CHATBOT_API_KEY,
         value: "",
-        isActive: true,
-        isPrivate: true,
-        readOnly: false,
-      },
-      {
-        type: SettingType.boolean,
-        name: "Áp dụng Phương thức vận chuyển",
-        key: SettingKey.DELIVERY_MODE,
-        value: false,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -678,6 +674,50 @@ Link đăng ký:
         name: "Đường dẫn quản trị hệ thống",
         key: SettingKey.APP_DOMAIN,
         value: `https://mb-ashop.mcom.app`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+    ],
+  },
+  {
+    slug: SettingGroupSlug.CAU_HINH_VAN_CHUYEN,
+    name: "Cấu hình vận chuyển",
+    desc: "Cấu hình thông số vận chuyển",
+    readOnly: true,
+    settings: [
+      {
+        type: SettingType.boolean,
+        name: "Bật giao hàng VNPost",
+        key: SettingKey.DELIVERY_ENABLED_VNPOST,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.number,
+        name: "Phí ship nhận hàng tại chi nhánh",
+        key: SettingKey.DELIVERY_POST_FEE,
+        value: 0,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.number,
+        name: "Phí ship cố định giao hàng VNPost nội thành",
+        key: SettingKey.DELIVERY_VNPOST_INNER_SHIP_FEE,
+        value: 30000,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.boolean,
+        name: "Bật tự động duyệt đơn khi giao hàng thành công",
+        key: SettingKey.DELIVERY_ENABLED_AUTO_APPROVE_ORDER,
+        value: true,
         isActive: true,
         isPrivate: true,
         readOnly: false,

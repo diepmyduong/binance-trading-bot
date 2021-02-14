@@ -65,11 +65,34 @@ export class VietnamPostHelper {
         ) as ShipServicePricing[]
     );
   }
+
   static getListService() {
-    return Axios.post(`${this.host}/categories/listService`, {
-      TYPE: 2,
-    }).then((res) => get(res, "data.data"));
+    type IService = {
+      IDDanhMucDichVu: number;
+      TenDanhMucDichVu: string;
+      MaDichVu: string;
+      ServiceType: number;
+      IsLo: Boolean;
+      IsDonLe: Boolean;
+      CanPhanQuyen: Boolean;
+      Checked: Boolean;
+      IsGanKhachHang: Boolean;
+    };
+
+    const url = `${this.host}/CustomerOrder/GetListDichVuChuyenPhatDonLe`;
+    return Axios.get(url, {
+      // TYPE: 2,
+    }).then((res) => {
+      let services:IService[] = get(res, "data");
+      return services.map(service => {
+        return{
+          code : service.MaDichVu,
+          name: service.TenDanhMucDichVu,
+        }
+      });
+    });
   }
+
   static getPricing({
     productWeight = 300,
     productPrice,

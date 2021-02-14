@@ -7,6 +7,8 @@ import { auth } from "../../middleware/auth";
 import Excel from "exceljs";
 import { UtilsHelper } from "../../helpers";
 import { AddressStorehouseImportingLogModel, IAddressStorehouseImportingLog } from "../../graphql/modules/addressStorehouseImportingLog/addressStorehouseImportingLog.model"
+import { IAddressStorehouse } from "../../graphql/modules/addressStorehouse/addressStorehouse.model";
+import { AddressStorehouseModel } from "../../graphql/modules/addressStorehouse/addressStorehouse.model";
 
 const STT = "STT";
 const NAME = "Tên kho";
@@ -75,8 +77,8 @@ class AddressStorehouseRoute extends BaseRoute {
     const context = (req as any).context as Context;
     context.auth(ROLES.ADMIN_EDITOR);
 
-    let data: any[] = [];
-    const logs = await AddressStorehouseImportingLogModel.find({}).sort({ line: 1 });
+    let data: IAddressStorehouse[] = [];
+    const logs = await AddressStorehouseModel.find({}).sort({ id: -1 });
 
     data = [...data, ...logs];
 
@@ -90,14 +92,14 @@ class AddressStorehouseRoute extends BaseRoute {
       ADDRESS,
       PROVINCE,
       DISTRICT,
-      WARD
-    ]
-    
+      WARD,
+    ];
     sheet.addRow(excelHeaders);
 
-    data.forEach((d: IAddressStorehouseImportingLog, i) => {
+    data.forEach((d:IAddressStorehouse, i) => {
+      
       const dataRow = [
-        d.no,
+        i+1,
         d.name,
         d.phone,
         d.email,
@@ -105,14 +107,12 @@ class AddressStorehouseRoute extends BaseRoute {
         d.province,
         d.district,
         d.ward,
-        d.success ? "Thành công" : "Lỗi",
-        d.error
       ];
 
       sheet.addRow(dataRow);
     });
 
-    return UtilsHelper.responseExcel(res, workbook, `ket_qua_import_kho_hang`);
+    return UtilsHelper.responseExcel(res, workbook, `danh_sach_kho_hang`);
   }
 
 }

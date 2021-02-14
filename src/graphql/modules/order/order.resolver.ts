@@ -24,6 +24,7 @@ const Query = {
 
     // neu la sellerId
     if (context.isMember()) {
+      delete args.q.filter.isPrimary;
       set(args, "q.filter.sellerId", context.id);
     }
 

@@ -7,7 +7,6 @@ const Query = {
   getAllShipService: async (root: any, args: any, context: Context) => {
     context.auth(ROLES.ADMIN_EDITOR);
     const { shipMethod } = args;
-    // console.log('shipMethod', shipMethod);
     let services: any = [];
     switch (shipMethod) {
       case ShipMethod.VNPOST:
@@ -17,7 +16,7 @@ const Query = {
         services = [];
         break;
     }
-    console.log("services", services);
+    // console.log("services", services);
     return services;
   },
 };

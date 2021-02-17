@@ -37,8 +37,8 @@ const Mutation = {
       throw ErrorHelper.requestDataInvalid("Danh sách sản phẩm");
 
     const itemIDs = items.map((i: any) => i.productId);
-    console.log("itemIDs", itemIDs);
-    //Lấy ra product + memberId
+    // console.log("itemIDs", itemIDs);
+    // Lấy ra product + memberId
     const allProducts = await ProductModel.find({
       _id: { $in: itemIDs },
       type: ProductType.RETAIL,
@@ -120,65 +120,65 @@ const Mutation = {
 
     // return [];
 
-    const mobiOrder = orderService.createMobiOrder(
-      mobifoneProducts,
-      sellerId,
-      initOrder
-    );
-    const shopOrder = orderService.createOrder(
-      directShoppingProducts,
-      sellerId,
-      initOrder
-    );
-    const crossSaleOrders = await orderService.createCrossSaleOrders(
-      crossSaleProducts,
-      sellerId,
-      initOrder
-    );
+    // const mobiOrder = orderService.createMobiOrder(
+    //   mobifoneProducts,
+    //   sellerId,
+    //   initOrder
+    // );
+    // const shopOrder = orderService.createOrder(
+    //   directShoppingProducts,
+    //   sellerId,
+    //   initOrder
+    // );
+    // const crossSaleOrders = await orderService.createCrossSaleOrders(
+    //   crossSaleProducts,
+    //   sellerId,
+    //   initOrder
+    // );
 
-    // console.log('mobiOrders', mobiOrder);
-    // console.log('shopOrders', shopOrder);
-    // console.log('crossSaleOrders', crossSaleOrders);
+    // // console.log('mobiOrders', mobiOrder);
+    // // console.log('shopOrders', shopOrder);
+    // // console.log('crossSaleOrders', crossSaleOrders);
 
-    if (!mobiOrder && !shopOrder && !crossSaleOrders) {
-      throw ErrorHelper.mgRecoredNotFound("sản phẩm trong shop");
-    }
+    // if (!mobiOrder && !shopOrder && !crossSaleOrders) {
+    //   throw ErrorHelper.mgRecoredNotFound("sản phẩm trong shop");
+    // }
 
-    if (crossSaleOrders) {
-      if (crossSaleOrders.length === 0)
-        throw ErrorHelper.mgRecoredNotFound("sản phẩm bán chéo trong shop");
-    }
+    // if (crossSaleOrders) {
+    //   if (crossSaleOrders.length === 0)
+    //     throw ErrorHelper.mgRecoredNotFound("sản phẩm bán chéo trong shop");
+    // }
 
-    let orderResults: any = [];
-    let mobiOrderResult = null;
-    let orderResult = null;
+    // let orderResults: any = [];
+    // let mobiOrderResult = null;
+    // let orderResult = null;
 
-    if (mobiOrder) {
-      mobiOrderResult = await orderService.insertMobifoneOrder(
-        mobiOrder,
-        campaign
-      );
-      orderResults.push(mobiOrderResult);
-    }
+    // if (mobiOrder) {
+    //   mobiOrderResult = await orderService.insertMobifoneOrder(
+    //     mobiOrder,
+    //     campaign
+    //   );
+    //   orderResults.push(mobiOrderResult);
+    // }
 
-    if (shopOrder) {
-      orderResult = await orderService.insertOrder(shopOrder);
-      orderResults.push(orderResult);
-    }
+    // if (shopOrder) {
+    //   orderResult = await orderService.insertOrder(shopOrder);
+    //   orderResults.push(orderResult);
+    // }
 
-    if (crossSaleOrders) {
-      for (const order of crossSaleOrders) {
-        // console.log('order', order);
-        const crossSaleOrderResult = await orderService.insertOrder(order);
-        orderResults.push(crossSaleOrderResult);
-      }
-    }
+    // if (crossSaleOrders) {
+    //   for (const order of crossSaleOrders) {
+    //     // console.log('order', order);
+    //     const crossSaleOrderResult = await orderService.insertOrder(order);
+    //     orderResults.push(crossSaleOrderResult);
+    //   }
+    // }
 
-    for (const order of orderResults) {
-      onOrderedProduct.next(order);
-    }
+    // for (const order of orderResults) {
+    //   onOrderedProduct.next(order);
+    // }
 
-    return orderResults;
+    // return orderResults;
   },
 };
 

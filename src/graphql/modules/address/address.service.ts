@@ -1,6 +1,6 @@
 import { CrudService } from "../../../base/crudService";
 import { ErrorHelper } from "../../../base/error";
-import { IWardType, VietnamPostHelper } from "../../../helpers";
+import { IWardTypeResponse, VietnamPostHelper } from "../../../helpers";
 import { AddressModel } from "./address.model";
 class AddressService extends CrudService<typeof AddressModel> {
   constructor() {
@@ -30,14 +30,8 @@ class AddressService extends CrudService<typeof AddressModel> {
   }
 
   async syncAddressWithVietnamPost() {
-    const wards: IWardType[] = await VietnamPostHelper.getWards();
+    const wards: IWardTypeResponse[] = await VietnamPostHelper.getWards();
     for (const address of wards) {
-      console.log(
-        "----------------------->",
-        address.TenTinhThanh,
-        address.TenQuanHuyen,
-        address.TenPhuongXa
-      );
       const data: any = {
         province: address.TenTinhThanh,
         provinceId: address.MaTinhThanh,

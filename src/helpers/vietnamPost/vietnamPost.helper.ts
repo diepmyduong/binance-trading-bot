@@ -5,7 +5,8 @@ import { configs } from "../../configs";
 import { ShipServicePricing } from "../../graphql/modules/order/types/shipServicePricing.type";
 import { ErrorHelper } from "../error.helper";
 
-export type IWardType = {
+
+export type IWardTypeResponse = {
   MaPhuongXa: string;
   TenPhuongXa: string;
   MaQuanHuyen: string;
@@ -13,6 +14,73 @@ export type IWardType = {
   MaTinhThanh: string;
   TenTinhThanh: string;
 };
+
+export type ICalculateAllShipFeeRequest = {
+  MaDichVu: string;
+  MaTinhGui: string;
+  MaQuanGui: string;
+  MaTinhNhan: string;
+  MaQuanNhan: string;
+  Dai: number;
+  Rong: number;
+  Cao: number;
+  KhoiLuong: number;
+  ThuCuocNguoiNhan: boolean;
+  LstDichVuCongThem: any[];
+};
+
+export type IServiceResponse = {
+  IDDanhMucDichVu: number;
+  TenDanhMucDichVu: string;
+  MaDichVu: string;
+  ServiceType: number;
+  IsLo: Boolean;
+  IsDonLe: Boolean;
+  CanPhanQuyen: Boolean;
+  Checked: Boolean;
+  IsGanKhachHang: Boolean;
+};
+
+export type ICreateDeliveryOrderRequest = {
+  OrderCode: string; // mã đơn hàng
+  VendorId: number; // 1;
+  PickupType: number; //1;
+  IsPackageViewable: boolean; // cho xem hàng
+  PackageContent: string; //"Món hàng A + Món hàng B"; // nội dung hàng
+  ServiceName: string; //"BK"; // tên dịch vụ
+  SenderFullname: string; // tên người gửi
+  SenderAddress: string; // địa chỉ gửi
+  SenderTel: string; // phone người gửi
+  SenderProvinceId: string; // mã tỉnh người gửi
+  SenderDistrictId: string; // mã quận người gửi
+  SenderWardId: string; // mã phường người gửi
+  ReceiverFullname: string; // tên người nhận
+  ReceiverAddress: string; // địa chỉ nhận
+  ReceiverTel: string; // phone người nhận
+  ReceiverProvinceId: string; // mã tỉnh người nhận
+  ReceiverDistrictId: string; // mã quận người nhận
+  ReceiverWardId: string; // mã phường người nhận
+  CodAmountEvaluation: string; // giá trị tiền thu hộ
+  OrderAmountEvaluation: string; // giá trị đơn hàng
+  WeightEvaluation: string; // cân nặng
+  WidthEvaluation: string; // chiều rộng
+  LengthEvaluation: string; // chiều dài
+  HeightEvaluation: string; // chiều cao
+  VASIds: number[]; //[3, 1, 2, 4]; // dịch vụ cộng thêm
+  // 0: {IDDichVuCongThem: 3, TenDichVuCongThem: "Giao hàng thu tiền", Sotien: 0, CuocDVCT: 17000}
+  // 1: {IDDichVuCongThem: 1, TenDichVuCongThem: "Khai giá", Sotien: 0, CuocDVCT: 16500}
+  // 2: {IDDichVuCongThem: 2, TenDichVuCongThem: "Báo phát", Sotien: 0, CuocDVCT: 5500}
+  // 3: {IDDichVuCongThem: 4, TenDichVuCongThem: "Dịch vụ hóa đơn", Sotien: 0, CuocDVCT: 11000}
+  IsReceiverPayFreight: boolean; // thu cước người nhận
+  CustomerNote: string; // yêu cầu khác
+  DraftOrderId: string; // đơn nháp id
+  IsDeleteDraft: boolean; // true; // xóa đơn nháp
+  ReceiverAddressType: number; // null; // loại người nhận
+  LstImageId: []; // danh sách hàng ảnh
+  // "SenderAddressType": 1,
+  // "ReceiverAddressType": 1
+};
+
 export class VietnamPostHelper {
   static host = configs.vietnamPost.host;
   static getProvinces() {
@@ -25,163 +93,39 @@ export class VietnamPostHelper {
       get(res, "data")
     );
   }
-  static getWards() {
-    return Axios.get(`${this.host}/PhuongXa/GetAll`).then((res) =>
+  static getWards(): IWardTypeResponse[] {
+    const result: any = Axios.get(`${this.host}/PhuongXa/GetAll`).then((res) =>
       get(res, "data")
     );
-  }
-  static getPriceAll({
-    senderProvince,
-    senderDistrict,
-    receiverProvince,
-    receiverDistrict,
-    producType = "HH",
-    productWeight = 300,
-    productPrice,
-    moneyCollection,
-    type = 1,
-  }: GetAllPriceProps) {
-    return Axios.post(`${this.host}/order/getPriceAll`, {
-      SENDER_PROVINCE: parseInt(senderProvince.toString()),
-      SENDER_DISTRICT: parseInt(senderDistrict.toString()),
-      RECEIVER_PROVINCE: parseInt(receiverProvince.toString()),
-      RECEIVER_DISTRICT: parseInt(receiverDistrict.toString()),
-      PRODUCT_TYPE: producType,
-      PRODUCT_WEIGHT: productWeight,
-      PRODUCT_PRICE: productPrice,
-      MONEY_COLLECTION: moneyCollection.toString(),
-      TYPE: type,
-    }).then(
-      (res) =>
-        get(res, "data", []).map(
-          (r: any) =>
-            ({
-              code: r["MA_DV_CHINH"],
-              name: r["TEN_DICHVU"],
-              price: r["GIA_CUOC"],
-              time: r["THOI_GIAN"],
-              exchangeWeight: r["EXCHANGE_WEIGHT"],
-            } as ShipServicePricing)
-        ) as ShipServicePricing[]
-    );
+    return result;
   }
 
   static getListService() {
-    type IService = {
-      IDDanhMucDichVu: number;
-      TenDanhMucDichVu: string;
-      MaDichVu: string;
-      ServiceType: number;
-      IsLo: Boolean;
-      IsDonLe: Boolean;
-      CanPhanQuyen: Boolean;
-      Checked: Boolean;
-      IsGanKhachHang: Boolean;
-    };
-
     const url = `${this.host}/CustomerOrder/GetListDichVuChuyenPhatDonLe`;
     return Axios.get(url, {
       // TYPE: 2,
     }).then((res) => {
-      let services:IService[] = get(res, "data");
-      return services.map(service => {
-        return{
-          code : service.MaDichVu,
+      let services: IServiceResponse[] = get(res, "data");
+      return services.map((service) => {
+        return {
+          code: service.MaDichVu,
           name: service.TenDanhMucDichVu,
-        }
+        };
       });
+    }).catch(()=>{
+      return{
+        code: null,
+        name:null,
+      }
     });
   }
 
-  static getPricing({
-    productWeight = 300,
-    productPrice,
-    moneyCollection,
-    orderServiceAdd = "",
-    orderService = "VCN",
-    senderProvince,
-    senderDistrict,
-    receiverProvince,
-    receiverDistrict,
-    productType = "HH",
-    nationalType = 1,
-  }: GetPricingProps) {
-    return Axios.post(`${this.host}/order/getPriceAll`, {
-      PRODUCT_WEIGHT: productWeight,
-      PRODUCT_PRICE: productPrice,
-      MONEY_COLLECTION: moneyCollection,
-      ORDER_SERVICE_ADD: orderServiceAdd,
-      ORDER_SERVICE: orderService,
-      SENDER_PROVINCE: parseInt(senderProvince.toString()),
-      SENDER_DISTRICT: parseInt(senderDistrict.toString()),
-      RECEIVER_PROVINCE: parseInt(receiverProvince.toString()),
-      RECEIVER_DISTRICT: parseInt(receiverDistrict.toString()),
-      PRODUCT_TYPE: productType,
-      NATIONAL_TYPE: nationalType,
-    }).then((res) => get(res, "data"));
-  }
-  static createOrder(data: CreateBillProps) {
-    return Axios.post(
-      `${this.host}/order/createOrder`,
-      {
-        ORDER_NUMBER: data.orderNumber,
-        GROUPADDRESS_ID: data.groupAddress,
-        CUS_ID: data.customerId,
-        DELIVERY_DATE: moment(data.deliveryDate).format("DD/MM/YYYY HH:mm:ss"),
-        SENDER_FULLNAME: data.senderName,
-        SENDER_ADDRESS: data.senderAddress,
-        SENDER_PHONE: data.senderPhone,
-        SENDER_EMAIL: data.senderEmail,
-        SENDER_WARD: data.senderWard,
-        SENDER_DISTRICT: data.senderDistrict,
-        SENDER_PROVINCE: data.senderProvince,
-        SENDER_LATITUDE: data.senderLat,
-        SENDER_LONGITUDE: data.senderLng,
-        RECEIVER_FULLNAME: data.receiverName,
-        RECEIVER_ADDRESS: data.receiverAddress,
-        RECEIVER_PHONE: data.receiverPhone,
-        RECEIVER_EMAIL: data.receiverEmail,
-        RECEIVER_WARD: data.receiverWard,
-        RECEIVER_DISTRICT: data.receiverDistrict,
-        RECEIVER_PROVINCE: data.receiverProvince,
-        RECEIVER_LATITUDE: data.receiverLat,
-        RECEIVER_LONGITUDE: data.receiverLng,
-        PRODUCT_NAME: data.productName,
-        PRODUCT_DESCRIPTION: data.productDesc,
-        PRODUCT_QUANTITY: data.productQty,
-        PRODUCT_PRICE: data.productPrice,
-        PRODUCT_WEIGHT: data.productWeight,
-        PRODUCT_LENGTH: data.productLength,
-        PRODUCT_WIDTH: data.productWidth,
-        PRODUCT_HEIGHT: data.productHeight,
-        PRODUCT_TYPE: data.productType,
-        ORDER_PAYMENT: data.orderPayment,
-        ORDER_SERVICE: data.orderService,
-        ORDER_SERVICE_ADD: data.orderServiceAdd,
-        ORDER_VOUCHER: data.orderVoucher,
-        ORDER_NOTE: data.orderNote,
-        MONEY_COLLECTION: data.moneyCollection,
-        MONEY_TOTALFEE: data.moneyTotalFee,
-        MONEY_FEECOD: data.moneyFeeCOD,
-        MONEY_FEEVAS: data.moneyFeeVAS,
-        MONEY_FEEINSURRANCE: data.moneyFeeInsurance,
-        MONEY_FEE: data.moneyFee,
-        MONEY_FEEOTHER: data.moneyFeeOther,
-        MONEY_TOTALVAT: data.moneyTotalVAT,
-        MONEY_TOTAL: data.moneyTotal,
-        LIST_ITEM: data.listItems.map((i) => ({
-          PRODUCT_NAME: i.productName,
-          PRODUCT_PRICE: i.productPrice,
-          PRODUCT_WEIGHT: i.productWeight,
-          PRODUCT_QUANTITY: i.productQty,
-        })),
+  static createDeliveryOrder(data: ICreateDeliveryOrderRequest) {
+    return Axios.post(`${this.host}/order/createOrder`, data, {
+      headers: {
+        "h-token": configs.vietnamPost.token,
       },
-      {
-        headers: {
-          token: configs.viettelPost.token,
-        },
-      }
-    ).then((res) => {
+    }).then((res) => {
       const bill = get(res, "data.data");
       return {
         orderNumber: bill["ORDER_NUMBER"],
@@ -202,113 +146,190 @@ export class VietnamPostHelper {
     });
   }
 
-  static getListInventory() {
-    return Axios.get(`${this.host}/user/listInventory`, {
-      headers: { token: configs.viettelPost.token },
-    }).then((res) => {
-      return get(res, "data.data", []).map((r: any) => {
-        return {
-          groupaddressId: r["groupaddressId"].toString(),
-          cusId: r["cusId"].toString(),
-          name: r["name"],
-          phone: r["phone"],
-          address: r["address"],
-          provinceId: r["provinceId"].toString(),
-          districtId: r["districtId"].toString(),
-          wardsId: r["wardsId"].toString(),
-        };
-      }) as Inventory[];
-    });
+  static calculateAllShipFee(
+    data: ICalculateAllShipFeeRequest
+  ): ICalculateAllShipFeeRespone {
+    //https://donhang.vnpost.vn/api/api/TinhCuoc/TinhTatCaCuoc
+    // console.log("data", data);
+    const result: any = Axios.post(
+      `${this.host}/TinhCuoc/TinhTatCaCuoc`,
+      data
+    ).then((res) => get(res, "data"));
+    return result;
   }
-  static registerInventory({ name, phone, address, wardId }: any) {
-    return Axios.post(
-      `${this.host}/user/registerInventory`,
-      {
-        PHONE: phone,
-        NAME: name,
-        ADDRESS: address,
-        WARDS_ID: parseInt(wardId),
-      },
-      {
-        headers: { token: configs.viettelPost.token },
-      }
-    ).then((res) => {
-      return get(res, "data.data", [])
-        .map((r: any) => {
-          return {
-            groupaddressId: r["groupaddressId"].toString(),
-            cusId: r["cusId"].toString(),
-            name: r["name"],
-            phone: r["phone"],
-            address: r["address"],
-            provinceId: r["provinceId"].toString(),
-            districtId: r["districtId"].toString(),
-            wardsId: r["wardsId"].toString(),
-          };
-        })
-        .find((r: any) => r.wardsId == parseInt(wardId)) as Inventory;
-    });
-  }
-  static updateOrder({ orderNumber, type, note, date }: UpdateOrderProps) {
-    return Axios.post(
-      `${this.host}/order/UpdateOrder`,
-      {
-        TYPE: type,
-        ORDER_NUMBER: orderNumber,
-        NOTE: note,
-        DATE:
-          type == UpdateOrderType.reorder
-            ? moment(date).format("DD/MM/YYYY HH:mm:ss")
-            : undefined,
-      },
-      {
-        headers: { token: configs.viettelPost.token },
-      }
-    ).then((res) => {
-      if (get(res, "data.status") == 200) return get(res, "data.message");
-      else throw ErrorHelper.externalRequestFailed(get(res, "data.message"));
-    });
-  }
-  static trackingOrderStatus(orderNumber: string) {
-    return Axios.get(
-      `https://api.viettelpost.vn/api/setting/listOrderTrackingVTP`,
-      {
-        headers: { token: configs.viettelPost.token },
-        params: { OrderNumber: orderNumber },
-      }
-    ).then((res) => {
-      return get(res, "data.0");
-    });
-  }
-  static getLinkPrint(orderNumbers: string[]) {
-    if (!configs.viettelPost.printToken)
-      throw ErrorHelper.somethingWentWrong(
-        "Chưa cấu hình khoá in vận đơn từ Viettel Post."
-      );
-    return Axios.post(
-      `${this.host}/order/encryptLinkPrint`,
-      {
-        TYPE: 1,
-        ORDER_ARRAY: orderNumbers,
-        EXPIRY_TIME: moment().add(5, "minutes").toDate().getTime(),
-        PRINT_TOKEN: configs.viettelPost.printToken,
-      },
-      {
-        headers: { token: configs.viettelPost.token },
-      }
-    ).then((res) => {
-      if (get(res, "data.status") == 200)
-        return get(res, "data.message") as string;
-      else throw ErrorHelper.externalRequestFailed(get(res, "data.message"));
-    });
-  }
+  
+  // static getPriceAll({
+  //   senderProvince,
+  //   senderDistrict,
+  //   receiverProvince,
+  //   receiverDistrict,
+  //   producType = "HH",
+  //   productWeight = 300,
+  //   productPrice,
+  //   moneyCollection,
+  //   type = 1,
+  // }: GetAllPriceProps) {
+  //   return Axios.post(`${this.host}/order/getPriceAll`, {
+  //     SENDER_PROVINCE: parseInt(senderProvince.toString()),
+  //     SENDER_DISTRICT: parseInt(senderDistrict.toString()),
+  //     RECEIVER_PROVINCE: parseInt(receiverProvince.toString()),
+  //     RECEIVER_DISTRICT: parseInt(receiverDistrict.toString()),
+  //     PRODUCT_TYPE: producType,
+  //     PRODUCT_WEIGHT: productWeight,
+  //     PRODUCT_PRICE: productPrice,
+  //     MONEY_COLLECTION: moneyCollection.toString(),
+  //     TYPE: type,
+  //   }).then(
+  //     (res) =>
+  //       get(res, "data", []).map(
+  //         (r: any) =>
+  //           ({
+  //             code: r["MA_DV_CHINH"],
+  //             name: r["TEN_DICHVU"],
+  //             price: r["GIA_CUOC"],
+  //             time: r["THOI_GIAN"],
+  //             exchangeWeight: r["EXCHANGE_WEIGHT"],
+  //           } as ShipServicePricing)
+  //       ) as ShipServicePricing[]
+  //   );
+  // }
+
+  // static getPricing({
+  //   productWeight = 300,
+  //   productPrice,
+  //   moneyCollection,
+  //   orderServiceAdd = "",
+  //   orderService = "VCN",
+  //   senderProvince,
+  //   senderDistrict,
+  //   receiverProvince,
+  //   receiverDistrict,
+  //   productType = "HH",
+  //   nationalType = 1,
+  // }: GetPricingProps) {
+  //   return Axios.post(`${this.host}/order/getPriceAll`, {
+  //     PRODUCT_WEIGHT: productWeight,
+  //     PRODUCT_PRICE: productPrice,
+  //     MONEY_COLLECTION: moneyCollection,
+  //     ORDER_SERVICE_ADD: orderServiceAdd,
+  //     ORDER_SERVICE: orderService,
+  //     SENDER_PROVINCE: parseInt(senderProvince.toString()),
+  //     SENDER_DISTRICT: parseInt(senderDistrict.toString()),
+  //     RECEIVER_PROVINCE: parseInt(receiverProvince.toString()),
+  //     RECEIVER_DISTRICT: parseInt(receiverDistrict.toString()),
+  //     PRODUCT_TYPE: productType,
+  //     NATIONAL_TYPE: nationalType,
+  //   }).then((res) => get(res, "data"));
+  // }
+
+  // static getListInventory() {
+  //   return Axios.get(`${this.host}/user/listInventory`, {
+  //     headers: { token: configs.viettelPost.token },
+  //   }).then((res) => {
+  //     return get(res, "data.data", []).map((r: any) => {
+  //       return {
+  //         groupaddressId: r["groupaddressId"].toString(),
+  //         cusId: r["cusId"].toString(),
+  //         name: r["name"],
+  //         phone: r["phone"],
+  //         address: r["address"],
+  //         provinceId: r["provinceId"].toString(),
+  //         districtId: r["districtId"].toString(),
+  //         wardsId: r["wardsId"].toString(),
+  //       };
+  //     }) as Inventory[];
+  //   });
+  // }
+
+  // static registerInventory({ name, phone, address, wardId }: any) {
+  //   return Axios.post(
+  //     `${this.host}/user/registerInventory`,
+  //     {
+  //       PHONE: phone,
+  //       NAME: name,
+  //       ADDRESS: address,
+  //       WARDS_ID: parseInt(wardId),
+  //     },
+  //     {
+  //       headers: { token: configs.viettelPost.token },
+  //     }
+  //   ).then((res) => {
+  //     return get(res, "data.data", [])
+  //       .map((r: any) => {
+  //         return {
+  //           groupaddressId: r["groupaddressId"].toString(),
+  //           cusId: r["cusId"].toString(),
+  //           name: r["name"],
+  //           phone: r["phone"],
+  //           address: r["address"],
+  //           provinceId: r["provinceId"].toString(),
+  //           districtId: r["districtId"].toString(),
+  //           wardsId: r["wardsId"].toString(),
+  //         };
+  //       })
+  //       .find((r: any) => r.wardsId == parseInt(wardId)) as Inventory;
+  //   });
+  // }
+
+  // static updateOrder({ orderNumber, type, note, date }: UpdateOrderProps) {
+  //   return Axios.post(
+  //     `${this.host}/order/UpdateOrder`,
+  //     {
+  //       TYPE: type,
+  //       ORDER_NUMBER: orderNumber,
+  //       NOTE: note,
+  //       DATE:
+  //         type == UpdateOrderType.reorder
+  //           ? moment(date).format("DD/MM/YYYY HH:mm:ss")
+  //           : undefined,
+  //     },
+  //     {
+  //       headers: { token: configs.viettelPost.token },
+  //     }
+  //   ).then((res) => {
+  //     if (get(res, "data.status") == 200) return get(res, "data.message");
+  //     else throw ErrorHelper.externalRequestFailed(get(res, "data.message"));
+  //   });
+  // }
+
+  // static trackingOrderStatus(orderNumber: string) {
+  //   return Axios.get(
+  //     `https://api.viettelpost.vn/api/setting/listOrderTrackingVTP`,
+  //     {
+  //       headers: { token: configs.viettelPost.token },
+  //       params: { OrderNumber: orderNumber },
+  //     }
+  //   ).then((res) => {
+  //     return get(res, "data.0");
+  //   });
+  // }
+
+  // static getLinkPrint(orderNumbers: string[]) {
+  //   if (!configs.viettelPost.printToken)
+  //     throw ErrorHelper.somethingWentWrong(
+  //       "Chưa cấu hình khoá in vận đơn từ Viettel Post."
+  //     );
+  //   return Axios.post(
+  //     `${this.host}/order/encryptLinkPrint`,
+  //     {
+  //       TYPE: 1,
+  //       ORDER_ARRAY: orderNumbers,
+  //       EXPIRY_TIME: moment().add(5, "minutes").toDate().getTime(),
+  //       PRINT_TOKEN: configs.viettelPost.printToken,
+  //     },
+  //     {
+  //       headers: { token: configs.viettelPost.token },
+  //     }
+  //   ).then((res) => {
+  //     if (get(res, "data.status") == 200)
+  //       return get(res, "data.message") as string;
+  //     else throw ErrorHelper.externalRequestFailed(get(res, "data.message"));
+  //   });
+  // }
 }
-type UpdateOrderProps = {
-  orderNumber: string;
-  type: UpdateOrderType;
-  note: string;
-  date: Date;
-};
+
+///////////////////////////
+
 enum UpdateOrderType {
   confirm = 1,
   returnShipping = 2,
@@ -317,6 +338,12 @@ enum UpdateOrderType {
   reorder = 5,
   deleteCancel = 11,
 }
+type UpdateOrderProps = {
+  orderNumber: string;
+  type: UpdateOrderType;
+  note: string;
+  date: Date;
+};
 type Ward = {
   wardId: string;
   wardName: string;
@@ -347,55 +374,6 @@ type GetPricingProps = {
   receiverDistrict?: string;
   productType?: string;
   nationalType?: number;
-};
-
-type CreateBillProps = {
-  orderNumber?: string;
-  groupAddress?: string;
-  customerId?: string;
-  deliveryDate?: Date;
-  senderName?: string;
-  senderAddress?: string;
-  senderPhone?: string;
-  senderEmail?: string;
-  senderWard?: string;
-  senderDistrict?: string;
-  senderProvince?: string;
-  senderLat?: number;
-  senderLng?: number;
-  receiverName?: string;
-  receiverAddress?: string;
-  receiverPhone?: string;
-  receiverEmail?: string;
-  receiverWard?: string;
-  receiverDistrict?: string;
-  receiverProvince?: string;
-  receiverLat?: number;
-  receiverLng?: number;
-  productName?: string;
-  productDesc?: string;
-  productQty?: number;
-  productPrice?: number;
-  productWeight?: number;
-  productLength?: number;
-  productWidth?: number;
-  productHeight?: number;
-  productType?: "TH" | "HH";
-  orderPayment?: 1 | 2 | 3 | 4;
-  orderService?: string;
-  orderServiceAdd?: string;
-  orderVoucher?: string;
-  orderNote?: string;
-  moneyCollection?: number;
-  moneyTotalFee?: number;
-  moneyFeeCOD?: number;
-  moneyFeeVAS?: number;
-  moneyFeeInsurance?: number;
-  moneyFee?: number;
-  moneyFeeOther?: number;
-  moneyTotalVAT?: number;
-  moneyTotal?: number;
-  listItems?: BillItem[];
 };
 
 type BillItem = {
@@ -431,4 +409,71 @@ type Bill = {
   receiverProvince: string;
   receiverDistrict: string;
   receiverWard: string;
+};
+
+export type memberProps = {
+  QuyUocVungXaHaiDaoId: string;
+  VungXa: boolean;
+  HaiDao: boolean;
+  MaDichVu: string;
+  MaTinhThanh: string;
+  MaQuanHuyen: string;
+  MaPhuongXa: string;
+};
+
+export type ICalculateAllShipFeeRespone = {
+  TrongLuongQuyDoiGoc: number; //500;
+  MaDichVu: string; //"EMS";
+  TrongLuongQuyDoi: number; //630;
+  CuocChinh: number; //41800;
+  PhuPhiVungXa: number; //0;
+  PhuPhiXangDau: number; //7106;
+  TongCuocTruocVAT: number; //48906;
+  VAT: number; //4891;
+  TongCuocSauVAT: number; //53797,
+  NgayNhan: string; //"0001-01-01T00:00:00",
+  NgayDen: string; //"0001-01-01T00:00:00",
+  LstDichVuCongThem: any[];
+  TongCuocBaoGomDVCT: number;
+  SoTienCodThuNoiNguoiNhan: number;
+  TongCuocDichVuCongThem: number;
+  CuocCod: number;
+  OrtherFreight: number;
+  OriginalMainFreight: number;
+  OriginalSubFreight: number;
+  OriginalFuelSurchargeFreight: number;
+  OriginalFarRegionFreight: number;
+  OriginalAirSurchargeFreight: number;
+  OriginalVATFreight: number;
+  OriginalVATPercentage: number;
+  OriginalTotalFreight: number;
+  OriginalTotalFreightVAT: number;
+  OriginalTotalFreightDiscount: number;
+  OriginalTotalFreightDiscountVAT: number;
+  OriginalPaymentFreight: number;
+  OriginalPaymentFreightVAT: number;
+  OriginalPaymentFreightDiscount: number;
+  OriginalPaymentFreightDiscountVAT: number;
+  OriginalRemainingFreight: number;
+  OriginalRemainingFreightVAT: number;
+  OriginalRemainingFreightDiscount: number;
+  OriginalRemainingFreightDiscountVAT: number;
+  NoiTinh: boolean;
+  HeSoVungXa: number;
+  HeSoXangDau: number;
+  HeSoHaiDao: number;
+  TiLeQuyDoiTrongLuong: number;
+  HaiDao: boolean;
+  CuocChinhChuaNhanHeSo: number;
+  NguoiGuiVxhd: memberProps;
+  NguoiNhanVxhd: memberProps;
+  Success: boolean;
+  Message: string;
+  MaDichVuBccp: string;
+  IsVungXa: boolean;
+  BangGiaNoiTinh: any;
+  BangCuocNoiTinh: any;
+  ThoiGianPhatDuKien: string;
+  ThoiGianThuGomDuKien: string;
+  KhuVuc: any;
 };

@@ -21,7 +21,7 @@ const approveOrder = async (root: any, args: any, context: Context) => {
 
   if (context.isMember()) {
     params.sellerId = context.id;
-    params.isPrimary = false;
+    // params.isPrimary = false;
   }
 
   const order = await OrderModel.findOne(params);

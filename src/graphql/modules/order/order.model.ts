@@ -62,6 +62,7 @@ export type IOrder = BaseDocument & {
   deliveryInfo: DeliveryInfo;
   shipMethod?: ShipMethod;
   paymentMethod?: PaymentMethod
+  productIds: string[];
 };
 
 const orderSchema = new Schema(

@@ -1,8 +1,20 @@
-import { ErrorHelper } from "../../../helpers";
+import { chain, keyBy } from "lodash";
+import {
+  ErrorHelper,
+  ICalculateAllShipFeeRequest,
+  ICalculateAllShipFeeRespone,
+  VietnamPostHelper,
+} from "../../../helpers";
 import { AddressModel } from "../address/address.model";
-import { addressService } from "../address/address.service";
+// import { addressService } from "../address/address.service";
 import { CounterModel } from "../counter/counter.model";
-import { IOrder, OrderModel } from "./order.model";
+import { IProduct, ProductModel, ProductType } from "../product/product.model";
+import { IOrder, OrderModel, PaymentMethod, ShipMethod } from "./order.model";
+import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
+import { AddressStorehouseModel } from "../addressStorehouse/addressStorehouse.model";
+import { MemberModel } from "../member/member.model";
+import { CrossSaleModel } from "../crossSale/crossSale.model";
+import { addressService } from "../address/address.service";
 
 export class OrderHelper {
   constructor(public order: IOrder) {}
@@ -30,6 +42,7 @@ export class OrderHelper {
     }
     return this;
   }
+
   async setProvinceName() {
     if (!this.order.buyerProvinceId) return this;
     const address = await AddressModel.findOne({
@@ -58,67 +71,287 @@ export class OrderHelper {
     return this;
   }
 
+  calculateAmount() {
+    this.order.amount = this.order.subtotal + this.order.shipfee;
+    // return this;
+  }
+
+  static createOrdersDataRaw = async (data: any) => {
+    const { items, sellerId } = data;
+
+    // kiểm tra danh sách
+    const itemsLength = Object.keys(items).length;
+    if (itemsLength === 0)
+      throw ErrorHelper.requestDataInvalid("Danh sách sản phẩm");
+
+    const itemIDs = items.map((i: any) => i.productId);
+    const allProducts = await ProductModel.find({
+      _id: { $in: itemIDs },
+      type: ProductType.RETAIL,
+      allowSale: true,
+    });
+
+    const productsLength = Object.keys(allProducts).length;
+    if (productsLength !== itemsLength)
+      throw ErrorHelper.mgQueryFailed("Danh sách sản phẩm");
+
+    const addQuantitytoProduct = (product: any) => {
+      product.qty = items.find((p: any) => p.productId === product.id).quantity;
+      return product;
+    };
+
+    // lấy ra danh sách sản phẩm của shop đó bán + sản phẩm chính (hảng bưu điện chuyển về cho bưu cục quản trị)
+    const directShoppingProducts: any = allProducts
+      .filter(
+        (p) =>
+          (p.memberId == sellerId && p.isCrossSale === false) || p.isPrimary
+      )
+      .map(addQuantitytoProduct);
+
+    // lấy ra danh sách sản phẩm của shop bán chéo
+    const crossSaleProducts = allProducts
+      .filter((p) => p.isCrossSale === true)
+      .map(addQuantitytoProduct);
+
+    // shop bán chéo thì phải check số lượng hàng tồn
+    const outOfStockProducts: string[] = [];
+
+    const isOutOfStock = ({
+      id,
+      name,
+      crossSaleInventory: dbInventory,
+      crossSaleOrdered: dbOrdered,
+    }: any) => {
+      const orderItem = items.find((i: any) => i.productId === id);
+      const condition = dbInventory < dbOrdered + orderItem.quantity;
+      condition && outOfStockProducts.push(name);
+      return condition;
+    };
+
+    // console.log('crossSaleProducts.some(isOutOfStock)', crossSaleProducts.some(isOutOfStock));
+    if (crossSaleProducts.some(isOutOfStock)) {
+      throw ErrorHelper.requestDataInvalid(
+        `. Sản phẩm [${outOfStockProducts.join(",")}] hết hàng.`
+      );
+    }
+
+    const orders = [];
+
+    if (directShoppingProducts.length > 0) {
+      orders.push({
+        ...data,
+        products: directShoppingProducts,
+        fromMemberId: sellerId,
+      });
+    }
+
+    if (crossSaleProducts.length > 0) {
+      const ids = crossSaleProducts.map((p: any) => p._id);
+      // console.log("ids", ids);
+
+      // // lay cac mat hang crossale ra
+      const crossSales = await CrossSaleModel.find({
+        productId: { $in: ids },
+        sellerId,
+      });
+      // console.log("crossSales", crossSales);
+      // kiem tra mat hang nay co trong dang ky crossale ko ?
+      if (crossSales.length !== crossSaleProducts.length)
+        throw ErrorHelper.mgQueryFailed("Danh sách sản phẩm bán chéo");
+
+      // tach cac san pham nay ra theo tung chu shop
+      chain(crossSaleProducts)
+        .groupBy("memberId")
+        .map((products, i) => {
+          orders.push({
+            ...data,
+            products,
+            sellerId: i,
+            fromMemberId: sellerId,
+          });
+        });
+    }
+
+    return orders;
+  };
+
   static async fromRaw(data: any) {
     const order = new OrderModel(data);
-    // if (order.isAnonymous) order.customerName = "Khách vảng lai";
-    // if (order.paymentMethod == PaymentMethod.CASH) order.paymentStatus = PaymentStatus.PAID;
-    // await Promise.all([
-    //   addressService.setProvinceName(order),
-    //   addressService.setDistrictName(order),
-    //   addressService.setWardName(order),
-    // ]);
-    return new OrderHelper(order);
+    // if (order.paymentMethod == PaymentMethod.) order.paymentStatus = PaymentStatus.PAID;
+    const helper = new OrderHelper(order);
+    await Promise.all([
+      helper.setProvinceName(),
+      helper.setDistrictName(),
+      helper.setWardName(),
+    ]);
+    return helper;
   }
 
-  async generateItemsFromRaw(items: any[]) {
-    // this.order.subtotal = 0;
-    // this.order.itemCount = 0;
-    // this.order.itemIds = [];
-    // this.order.items = [];
-    // this.order.itemWeight = 0;
-    // const productKeyById = await ProductModel.find({
-    //   _id: items.map((i: any) => i.productId),
-    // }).then((res) => keyBy(res, "_id"));
-    // for (let i of items) {
-    //   const { productId, quantity, note } = i;
-    //   const product = productKeyById[productId];
-    //   if (quantity < 1) throw ErrorHelper.requestDataInvalid("Số lượng sản phẩm phải nhiều hơn 1");
-    //   if (!product) {
-    //     throw ErrorHelper.requestDataInvalid("Sản phẩm không tồn tại");
-    //   }
-    //   const salePrice = new ProductHelper(product).getSalePrice();
-    //   const productDiscount = (product.basePrice - salePrice) * quantity;
-    //   const item = new OrderItemModel({
-    //     orderId: this.order._id,
-    //     productId: product._id,
-    //     productMasterId: product.productMasterId,
-    //     isOffer: false,
-    //     productName: product.name,
-    //     attributes: product.attributes,
-    //     basePrice: product.basePrice,
-    //     saleType: product.saleType,
-    //     saleValue: product.saleValue,
-    //     hasSale: product.hasSale,
-    //     quantity: quantity,
-    //     qtyRemaining: quantity,
-    //     discount: productDiscount,
-    //     salePrice: salePrice,
-    //     amount: salePrice * quantity,
-    //     note: note,
-    //     productWeight: product.weight,
-    //   });
-    //   this.order.items.push(item);
-    //   this.order.subtotal += item.amount;
-    //   this.order.itemCount += item.quantity;
-    //   this.order.itemWeight += item.productWeight * item.quantity;
-    //   this.order.itemIds.push(item._id);
-    //   this.productBulk.find({ _id: product._id }).updateOne({ $inc: { orderQty: item.quantity } });
-    // }
-    // return this.order.items;
+  async generateItemsFromRaw(products: any[]) {
+    this.order.subtotal = 0;
+    this.order.itemCount = 0;
+    this.order.itemIds = [];
+    this.order.items = [];
+    this.order.itemWeight = 0;
+
+    for (let i of products) {
+      const {
+        _id,
+        qty,
+        name,
+        basePrice,
+        weight,
+        length,
+        width,
+        height,
+      }: IProduct = i;
+
+      const orderItem: any = {
+        orderId: this.order._id,
+        productId: _id,
+        productName: name,
+        basePrice: basePrice,
+        qty: qty,
+        amount: basePrice * qty,
+        productWeight: weight,
+        productHeight: height,
+        productLength: length,
+        productWidth: width,
+      };
+
+      const item = new OrderItemModel(orderItem);
+      this.order.items.push(item);
+      this.order.subtotal += item.amount;
+      this.order.itemCount += item.qty;
+      this.order.itemWeight += item.productWeight * item.qty;
+      this.order.itemIds.push(item._id);
+    }
+
+    const itemHeight = products.reduce((prev, current) =>
+      prev.height > current.height ? prev : current
+    );
+    const itemLength = products.reduce((prev, current) =>
+      prev.length > current.length ? prev : current
+    );
+    const itemWidth = products.reduce((prev, current) =>
+      prev.width > current.width ? prev : current
+    );
+
+    console.log('itemHeight',itemHeight);
+    console.log('itemLength',itemLength);
+    console.log('itemWidth',itemWidth);
+
+    this.order.itemHeight = itemHeight;
+    this.order.itemLength = itemLength;
+    this.order.itemWidth = itemWidth;
+
+
+    return this.order.items;
   }
 
-  calculateAmount() {
-    // this.order.amount = this.order.subtotal + this.order.shipfee - this.order.discount;
-    // return this;
+  async calculateShipfee() {
+    this.order.shipfee = 0;
+    switch (this.order.shipMethod) {
+      case ShipMethod.NONE:
+        break;
+      case ShipMethod.VNPOST:
+        const member = await MemberModel.findById(this.order.sellerId);
+
+        // console.log('this.order',this.order);
+        // console.log('member',member);
+        const { addressStorehouseIds } = member;
+
+        // console.log('addressStorehouseIds',addressStorehouseIds);
+
+        const storehouses = await AddressStorehouseModel.find({
+          _id: { $in: addressStorehouseIds },
+        });
+        if (storehouses.length === 0)
+          throw ErrorHelper.somethingWentWrong("Chưa cấu hình chi nhánh kho");
+
+        let serviceList = [];
+
+        for (const storehouse of storehouses) {
+          let MaTinhGui = storehouse.provinceId,
+            MaQuanGui = storehouse.districtId,
+            MaTinhNhan = this.order.buyerProvinceId,
+            MaQuanNhan = this.order.buyerDistrictId;
+
+          const moneyCollection =
+            this.order.paymentMethod == PaymentMethod.COD
+              ? this.order.subtotal
+              : 0;
+
+          const productWeight = this.order.itemWeight;
+          const productLength = this.order.itemLength;
+          const productWidth = this.order.itemWidth;
+          const productHeight = this.order.itemHeight;
+
+          const LstDichVuCongThem = [
+            {
+              DichVuCongThemId: 3,
+              TrongLuongQuyDoi: 0,
+              SoTienTinhCuoc: this.order.subtotal,
+            },
+          ];
+
+          const data: ICalculateAllShipFeeRequest = {
+            MaDichVu: "BK",
+            MaTinhGui,
+            MaQuanGui,
+            MaTinhNhan,
+            MaQuanNhan,
+            Dai: productLength,
+            Rong: productWidth,
+            Cao: productHeight,
+            KhoiLuong: productWeight,
+            ThuCuocNguoiNhan: PaymentMethod.COD ? true : false,
+            LstDichVuCongThem,
+          };
+
+          let service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
+            data
+          );
+          serviceList.push({
+            ...service,
+            storehouse,
+            moneyCollection,
+            productWeight,
+            productLength,
+            productWidth,
+            productHeight,
+          });
+        }
+
+        serviceList = serviceList.sort(
+          (a, b) => a.TongCuocDichVuCongThem - b.TongCuocDichVuCongThem
+        );
+        // let service = services.find((s) => s.code == "BK");
+        // if (!service) service = services.find((s) => s.code == "NCOD");
+        // if (!service) service = services[0];
+        const cheapestService = serviceList[0];
+        // console.log("cheapestService", cheapestService);
+        this.order.shipfee = cheapestService.TongCuocDichVuCongThem;
+        this.order.deliveryInfo = {
+          date: new Date(),
+          serviceId: "BK",
+          // serviceName: service.name,
+          time: cheapestService.ThoiGianPhatDuKien,
+          addressStorehouseId: cheapestService.storehouse._id,
+          moneyCollection: cheapestService.moneyCollection,
+          productName: this.order.items.map((i) => i.productName).join(" + "),
+          productWeight: cheapestService.productWeight,
+          productLength: cheapestService.productLength,
+          productWidth: cheapestService.productWidth,
+          productHeight: cheapestService.productHeight,
+          // orderPayment: ,
+        };
+        break;
+      default:
+        throw ErrorHelper.requestDataInvalid(
+          "Phương thức vận chuyển chưa được hỗ trợ."
+        );
+    }
+    return this;
   }
 }

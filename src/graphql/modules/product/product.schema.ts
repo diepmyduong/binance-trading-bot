@@ -65,11 +65,11 @@ const schema = gql`
 
   input UpdateProductInput {
     code: String
-    name: String!
-    basePrice: Float!
+    name: String
+    basePrice: Float
     subtitle: String
     intro: String
-    image: String!
+    image: String
     categoryId: ID
     allowSale: Boolean
     isCrossSale: Boolean

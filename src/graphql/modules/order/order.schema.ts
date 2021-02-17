@@ -1,12 +1,11 @@
 import { gql } from "apollo-server-express";
-import { OrderStatus } from "./order.model";
+import { OrderStatus, PaymentMethod, ShipMethod } from "./order.model";
 
 const schema = gql`
   extend type Query {
     getAllOrder(q: QueryGetListInput): OrderPageData
     getOneOrder(id: ID!): Order
     getAllDeliveryMethod: [DeliveryMethod]
-    getAllShipPrice:Mixed
     getAllShipService(shipMethod:String!):[ShipServicePricing]
   }
 
@@ -14,7 +13,7 @@ const schema = gql`
     createOrder(data: CreateOrderInput!): [Order]
     approveOrder(id: ID!): Order
     cancelOrder(id: ID!): Order
-    generateDraftOrder(data: CreateOrderInput!): DraftOrderData
+    generateDraftOrder(data: CreateDraftOrderInput!): DraftOrderData
     deliveryOrder(orderId: ID!, deliveryInfo: DeliveryInfoInput): Mixed
     # adjustOrderRewardPoint(orderId: ID!, value: Float!): Order
     # updateOrderPayment(orderId: ID!, paymentStatus: String!): Order
@@ -26,9 +25,22 @@ const schema = gql`
   }
 
   type DraftOrderData {
-    order: Order,
+    orders: [Order],
     invalid: Boolean,
     invalidReason: String
+  }
+
+
+  input CreateDraftOrderInput {
+    items: [OrderItemInput]!
+    buyerName: String!
+    buyerPhone: String!
+    buyerAddress: String!
+    buyerProvinceId: String!
+    buyerDistrictId: String!
+    buyerWardId: String
+    shipMethod: String!
+    paymentMethod: String!
   }
 
   input CreateOrderInput {
@@ -40,6 +52,9 @@ const schema = gql`
     buyerDistrictId: String!
     buyerWardId: String
     campaignId: String
+       
+    shipMethod: String!
+    paymentMethod: String!
   }
   
   input OrderItemInput {
@@ -61,7 +76,15 @@ const schema = gql`
     "Thành tiền"
     amount: Float 
     "Tổng tiền hàng"
-    subTotal: Float 
+    subtotal: Float
+    "Phương thức vận chuyển ${Object.values(ShipMethod)}"
+    shipMethod: String
+    "Tiền ship"
+    shipfee: Float
+    "Phương thức thanh toán ${Object.values(PaymentMethod)}"
+    paymentMethod: String
+    "Ghi chú đơn hàng"
+    note: String
     "Số lượng sản phẩm"
     itemCount: Int
     "Chủ shop bán"
@@ -108,6 +131,10 @@ const schema = gql`
     fromMember: Member
     updatedByUser: User
     buyer: Customer
+
+    paymentMethodText: String
+    shipMethodText: String
+    statusText: String
   }
 
   type OrderPageData {

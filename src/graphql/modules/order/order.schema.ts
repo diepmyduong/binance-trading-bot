@@ -26,6 +26,7 @@ const schema = gql`
 
   type DraftOrderData {
     orders: [Order],
+    allOrder: Order,
     invalid: Boolean,
     invalidReason: String
   }

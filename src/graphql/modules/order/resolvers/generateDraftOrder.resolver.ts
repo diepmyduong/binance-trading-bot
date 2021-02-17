@@ -1,13 +1,8 @@
-import { ErrorHelper, validateJSON } from "../../../../helpers";
 import { GraphQLHelper } from "../../../../helpers/graphql.helper";
 import { Context } from "../../../context";
-import { CampaignLoader } from "../../campaign/campaign.model";
-import { EVoucherLoader } from "../../eVoucher/eVoucher.model";
 import { OrderItemLoader } from "../../orderItem/orderItem.model";
-import { ProductModel, ProductType } from "../../product/product.model";
 import { OrderHelper } from "../order.helper";
 import { IOrder } from "../order.model";
-import { orderService } from "../order.service";
 
 class OrderContext extends Context {
   isDraft: boolean; // Đơn hàng nháp
@@ -35,25 +30,39 @@ const Mutation = {
       const orders: any[] = [];
       for (let orderData of ordersData) {
         const orderHelper = await OrderHelper.fromRaw(orderData);
-        await orderHelper.generateItemsFromRaw(orderData.items);
+        await orderHelper.generateItemsFromRaw(orderData.products);
         // Calculate Shipfee
         await orderHelper.calculateShipfee();
         // Calculate Amount
         orderHelper.calculateAmount();
-        orders.push(orderHelper);
+        orders.push(orderHelper.order);
+      }
+      
+
+      const cloneObj = Object.assign({}, orders[0]._doc);
+      // orders[1] = {...cloneObj, id: "testId"}
+      const allOrder: IOrder = { ...cloneObj };
+      for (let i = 1; i <= orders.length; i++) {
+        const order: IOrder = orders[i];
+        if (order) {
+          allOrder.itemCount = allOrder.itemCount + order.itemCount;
+          allOrder.shipfee = allOrder.shipfee + order.shipfee;
+          allOrder.amount = allOrder.amount + order.amount;
+          allOrder.subtotal = allOrder.subtotal + order.subtotal;
+        }
       }
 
-      // console.log("-------------------->>>>>>>", orders);
       return {
         orders,
+        allOrder,
         invalid: false,
         invalidReason: null,
       } as DraftOrderData;
-    } catch(err) {
+    } catch (err) {
       return {
         invalid: true,
         invalidReason: err.message,
-      }
+      };
     }
   },
 };

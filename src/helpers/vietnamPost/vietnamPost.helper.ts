@@ -5,6 +5,14 @@ import { configs } from "../../configs";
 import { ShipServicePricing } from "../../graphql/modules/order/types/shipServicePricing.type";
 import { ErrorHelper } from "../error.helper";
 
+export enum ServiceCode {
+  EMS = "EMS", //"Chuyển phát nhanh",
+  BK = "BK",//"Chuyển phát thường",
+  ECOD = "ECOD", //ECOD
+  TMDT_EMS = "TMDT_EMS", //"TMĐT-Chuyển phát nhanh EMS",
+  TMDT_BK = "TMDT_BK", //TMĐT-Chuyển phát tiêu chuẩn
+  TMDT_EMS_TK ="TMDT_EMS_TK" // TMĐT-Chuyển phát nhanh EMS tiết kiệm (liên vùng)
+}
 
 export type IWardTypeResponse = {
   MaPhuongXa: string;
@@ -79,6 +87,63 @@ export type ICreateDeliveryOrderRequest = {
   LstImageId: []; // danh sách hàng ảnh
   // "SenderAddressType": 1,
   // "ReceiverAddressType": 1
+};
+
+export type ICalculateAllShipFeeRespone = {
+  TrongLuongQuyDoiGoc: number; //500;
+  MaDichVu: string; //"EMS";
+  TrongLuongQuyDoi: number; //630;
+  CuocChinh: number; //41800;
+  PhuPhiVungXa: number; //0;
+  PhuPhiXangDau: number; //7106;
+  TongCuocTruocVAT: number; //48906;
+  VAT: number; //4891;
+  TongCuocSauVAT: number; //53797,
+  NgayNhan: string; //"0001-01-01T00:00:00",
+  NgayDen: string; //"0001-01-01T00:00:00",
+  LstDichVuCongThem: any[];
+  TongCuocBaoGomDVCT: number;
+  SoTienCodThuNoiNguoiNhan: number;
+  TongCuocDichVuCongThem: number;
+  CuocCod: number;
+  OrtherFreight: number;
+  OriginalMainFreight: number;
+  OriginalSubFreight: number;
+  OriginalFuelSurchargeFreight: number;
+  OriginalFarRegionFreight: number;
+  OriginalAirSurchargeFreight: number;
+  OriginalVATFreight: number;
+  OriginalVATPercentage: number;
+  OriginalTotalFreight: number;
+  OriginalTotalFreightVAT: number;
+  OriginalTotalFreightDiscount: number;
+  OriginalTotalFreightDiscountVAT: number;
+  OriginalPaymentFreight: number;
+  OriginalPaymentFreightVAT: number;
+  OriginalPaymentFreightDiscount: number;
+  OriginalPaymentFreightDiscountVAT: number;
+  OriginalRemainingFreight: number;
+  OriginalRemainingFreightVAT: number;
+  OriginalRemainingFreightDiscount: number;
+  OriginalRemainingFreightDiscountVAT: number;
+  NoiTinh: boolean;
+  HeSoVungXa: number;
+  HeSoXangDau: number;
+  HeSoHaiDao: number;
+  TiLeQuyDoiTrongLuong: number;
+  HaiDao: boolean;
+  CuocChinhChuaNhanHeSo: number;
+  NguoiGuiVxhd: memberProps;
+  NguoiNhanVxhd: memberProps;
+  Success: boolean;
+  Message: string;
+  MaDichVuBccp: string;
+  IsVungXa: boolean;
+  BangGiaNoiTinh: any;
+  BangCuocNoiTinh: any;
+  ThoiGianPhatDuKien: string;
+  ThoiGianThuGomDuKien: string;
+  KhuVuc: any;
 };
 
 export class VietnamPostHelper {
@@ -419,61 +484,4 @@ export type memberProps = {
   MaTinhThanh: string;
   MaQuanHuyen: string;
   MaPhuongXa: string;
-};
-
-export type ICalculateAllShipFeeRespone = {
-  TrongLuongQuyDoiGoc: number; //500;
-  MaDichVu: string; //"EMS";
-  TrongLuongQuyDoi: number; //630;
-  CuocChinh: number; //41800;
-  PhuPhiVungXa: number; //0;
-  PhuPhiXangDau: number; //7106;
-  TongCuocTruocVAT: number; //48906;
-  VAT: number; //4891;
-  TongCuocSauVAT: number; //53797,
-  NgayNhan: string; //"0001-01-01T00:00:00",
-  NgayDen: string; //"0001-01-01T00:00:00",
-  LstDichVuCongThem: any[];
-  TongCuocBaoGomDVCT: number;
-  SoTienCodThuNoiNguoiNhan: number;
-  TongCuocDichVuCongThem: number;
-  CuocCod: number;
-  OrtherFreight: number;
-  OriginalMainFreight: number;
-  OriginalSubFreight: number;
-  OriginalFuelSurchargeFreight: number;
-  OriginalFarRegionFreight: number;
-  OriginalAirSurchargeFreight: number;
-  OriginalVATFreight: number;
-  OriginalVATPercentage: number;
-  OriginalTotalFreight: number;
-  OriginalTotalFreightVAT: number;
-  OriginalTotalFreightDiscount: number;
-  OriginalTotalFreightDiscountVAT: number;
-  OriginalPaymentFreight: number;
-  OriginalPaymentFreightVAT: number;
-  OriginalPaymentFreightDiscount: number;
-  OriginalPaymentFreightDiscountVAT: number;
-  OriginalRemainingFreight: number;
-  OriginalRemainingFreightVAT: number;
-  OriginalRemainingFreightDiscount: number;
-  OriginalRemainingFreightDiscountVAT: number;
-  NoiTinh: boolean;
-  HeSoVungXa: number;
-  HeSoXangDau: number;
-  HeSoHaiDao: number;
-  TiLeQuyDoiTrongLuong: number;
-  HaiDao: boolean;
-  CuocChinhChuaNhanHeSo: number;
-  NguoiGuiVxhd: memberProps;
-  NguoiNhanVxhd: memberProps;
-  Success: boolean;
-  Message: string;
-  MaDichVuBccp: string;
-  IsVungXa: boolean;
-  BangGiaNoiTinh: any;
-  BangCuocNoiTinh: any;
-  ThoiGianPhatDuKien: string;
-  ThoiGianThuGomDuKien: string;
-  KhuVuc: any;
 };

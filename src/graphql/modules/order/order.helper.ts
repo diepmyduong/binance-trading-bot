@@ -3,6 +3,7 @@ import {
   ErrorHelper,
   ICalculateAllShipFeeRequest,
   ICalculateAllShipFeeRespone,
+  ServiceCode,
   VietnamPostHelper,
 } from "../../../helpers";
 import { AddressModel } from "../address/address.model";
@@ -15,6 +16,8 @@ import { AddressStorehouseModel } from "../addressStorehouse/addressStorehouse.m
 import { MemberModel } from "../member/member.model";
 import { CrossSaleModel } from "../crossSale/crossSale.model";
 import { addressService } from "../address/address.service";
+import { SettingHelper } from "../setting/setting.helper";
+import { SettingKey } from "../../../configs/settingData";
 
 export class OrderHelper {
   constructor(public order: IOrder) {}
@@ -187,7 +190,7 @@ export class OrderHelper {
     return helper;
   }
 
-  async generateItemsFromRaw(products: any[]) {
+  async generateItemsFromRaw(products: any) {
     this.order.subtotal = 0;
     this.order.itemCount = 0;
     this.order.itemIds = [];
@@ -227,24 +230,26 @@ export class OrderHelper {
       this.order.itemIds.push(item._id);
     }
 
-    const itemHeight = products.reduce((prev, current) =>
-      prev.height > current.height ? prev : current
+    const itemHeight = Math.max.apply(
+      null,
+      products.map(({ height }: any) => height)
     );
-    const itemLength = products.reduce((prev, current) =>
-      prev.length > current.length ? prev : current
+    const itemLength = Math.max.apply(
+      null,
+      products.map(({ length }: any) => length)
     );
-    const itemWidth = products.reduce((prev, current) =>
-      prev.width > current.width ? prev : current
+    const itemWidth = Math.max.apply(
+      null,
+      products.map(({ width }: any) => width)
     );
 
-    console.log('itemHeight',itemHeight);
-    console.log('itemLength',itemLength);
-    console.log('itemWidth',itemWidth);
+    // console.log('itemHeight',itemHeight);
+    // console.log('itemLength',itemLength);
+    // console.log('itemWidth',itemWidth);
 
     this.order.itemHeight = itemHeight;
     this.order.itemLength = itemLength;
     this.order.itemWidth = itemWidth;
-
 
     return this.order.items;
   }
@@ -254,98 +259,28 @@ export class OrderHelper {
     switch (this.order.shipMethod) {
       case ShipMethod.NONE:
         break;
+      case ShipMethod.POST:
+        break;
       case ShipMethod.VNPOST:
         const member = await MemberModel.findById(this.order.sellerId);
-
-        // console.log('this.order',this.order);
-        // console.log('member',member);
         const { addressStorehouseIds } = member;
-
-        // console.log('addressStorehouseIds',addressStorehouseIds);
-
         const storehouses = await AddressStorehouseModel.find({
           _id: { $in: addressStorehouseIds },
         });
         if (storehouses.length === 0)
           throw ErrorHelper.somethingWentWrong("Chưa cấu hình chi nhánh kho");
 
-        let serviceList = [];
+        // kiem tra đơn hàng trong nội thành ?
+        const urbanStores = storehouses.filter(
+          (store) => store.provinceId === this.order.buyerProvinceId
+        );
 
-        for (const storehouse of storehouses) {
-          let MaTinhGui = storehouse.provinceId,
-            MaQuanGui = storehouse.districtId,
-            MaTinhNhan = this.order.buyerProvinceId,
-            MaQuanNhan = this.order.buyerDistrictId;
-
-          const moneyCollection =
-            this.order.paymentMethod == PaymentMethod.COD
-              ? this.order.subtotal
-              : 0;
-
-          const productWeight = this.order.itemWeight;
-          const productLength = this.order.itemLength;
-          const productWidth = this.order.itemWidth;
-          const productHeight = this.order.itemHeight;
-
-          const LstDichVuCongThem = [
-            {
-              DichVuCongThemId: 3,
-              TrongLuongQuyDoi: 0,
-              SoTienTinhCuoc: this.order.subtotal,
-            },
-          ];
-
-          const data: ICalculateAllShipFeeRequest = {
-            MaDichVu: "BK",
-            MaTinhGui,
-            MaQuanGui,
-            MaTinhNhan,
-            MaQuanNhan,
-            Dai: productLength,
-            Rong: productWidth,
-            Cao: productHeight,
-            KhoiLuong: productWeight,
-            ThuCuocNguoiNhan: PaymentMethod.COD ? true : false,
-            LstDichVuCongThem,
-          };
-
-          let service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
-            data
-          );
-          serviceList.push({
-            ...service,
-            storehouse,
-            moneyCollection,
-            productWeight,
-            productLength,
-            productWidth,
-            productHeight,
-          });
+        if (urbanStores.length > 0) {
+          await calculateUrbanShipFee(urbanStores, this);
+        } else {
+          await calculateSuburbanShipFee(storehouses, this);
         }
 
-        serviceList = serviceList.sort(
-          (a, b) => a.TongCuocDichVuCongThem - b.TongCuocDichVuCongThem
-        );
-        // let service = services.find((s) => s.code == "BK");
-        // if (!service) service = services.find((s) => s.code == "NCOD");
-        // if (!service) service = services[0];
-        const cheapestService = serviceList[0];
-        // console.log("cheapestService", cheapestService);
-        this.order.shipfee = cheapestService.TongCuocDichVuCongThem;
-        this.order.deliveryInfo = {
-          date: new Date(),
-          serviceId: "BK",
-          // serviceName: service.name,
-          time: cheapestService.ThoiGianPhatDuKien,
-          addressStorehouseId: cheapestService.storehouse._id,
-          moneyCollection: cheapestService.moneyCollection,
-          productName: this.order.items.map((i) => i.productName).join(" + "),
-          productWeight: cheapestService.productWeight,
-          productLength: cheapestService.productLength,
-          productWidth: cheapestService.productWidth,
-          productHeight: cheapestService.productHeight,
-          // orderPayment: ,
-        };
         break;
       default:
         throw ErrorHelper.requestDataInvalid(
@@ -355,3 +290,167 @@ export class OrderHelper {
     return this;
   }
 }
+
+const calculateUrbanShipFee = async (urbanStores: any, orderHelper: any) => {
+  const stores = urbanStores.filter(
+    (store: any) => store.districtId === orderHelper.order.buyerDistrictId
+  );
+
+  const storehouse = stores.length > 0 ? stores[0] : urbanStores[0];
+
+  let MaTinhGui = storehouse.provinceId,
+    MaQuanGui = storehouse.districtId,
+    MaTinhNhan = orderHelper.order.buyerProvinceId,
+    MaQuanNhan = orderHelper.order.buyerDistrictId;
+
+  const moneyCollection =
+    orderHelper.order.paymentMethod == PaymentMethod.COD
+      ? orderHelper.order.subtotal
+      : 0;
+
+  const productWeight = orderHelper.order.itemWeight;
+  const productLength = orderHelper.order.itemLength;
+  const productWidth = orderHelper.order.itemWidth;
+  const productHeight = orderHelper.order.itemHeight;
+
+  const LstDichVuCongThem = [
+    {
+      DichVuCongThemId: 3,
+      TrongLuongQuyDoi: 0,
+      SoTienTinhCuoc: orderHelper.order.subtotal,
+    },
+  ];
+
+  // console.log("LstDichVuCongThem", LstDichVuCongThem);
+
+  const data: ICalculateAllShipFeeRequest = {
+    MaDichVu: ServiceCode.BK,
+    MaTinhGui,
+    MaQuanGui,
+    MaTinhNhan,
+    MaQuanNhan,
+    Dai: productLength,
+    Rong: productWidth,
+    Cao: productHeight,
+    KhoiLuong: productWeight,
+    ThuCuocNguoiNhan: PaymentMethod.COD ? true : false,
+    LstDichVuCongThem,
+  };
+
+  let service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
+    data
+  );
+
+  const cheapestService = {
+    ...service,
+    storehouse,
+    moneyCollection,
+    productWeight,
+    productLength,
+    productWidth,
+    productHeight,
+  };
+
+  orderHelper.order.shipfee = cheapestService.TongCuocDichVuCongThem;
+  orderHelper.order.deliveryInfo = {
+    date: new Date(),
+    serviceId: ServiceCode.BK,
+    // serviceName: service.name,
+    time: cheapestService.ThoiGianPhatDuKien,
+    addressStorehouseId: cheapestService.storehouse._id,
+    moneyCollection: cheapestService.moneyCollection,
+    productName: orderHelper.order.items
+      .map((i: any) => i.productName)
+      .join(" + "),
+    productWeight: cheapestService.productWeight,
+    productLength: cheapestService.productLength,
+    productWidth: cheapestService.productWidth,
+    productHeight: cheapestService.productHeight,
+  };
+};
+
+const calculateSuburbanShipFee = async (storehouses: any, orderHelper: any) => {
+  let serviceList = [];
+  // console.log("storehouses", storehouses);
+  for (const storehouse of storehouses) {
+    let MaTinhGui = storehouse.provinceId,
+      MaQuanGui = storehouse.districtId,
+      MaTinhNhan = orderHelper.order.buyerProvinceId,
+      MaQuanNhan = orderHelper.order.buyerDistrictId;
+
+    const moneyCollection =
+      orderHelper.order.paymentMethod == PaymentMethod.COD
+        ? orderHelper.order.subtotal
+        : 0;
+
+    const productWeight = orderHelper.order.itemWeight;
+    const productLength = orderHelper.order.itemLength;
+    const productWidth = orderHelper.order.itemWidth;
+    const productHeight = orderHelper.order.itemHeight;
+
+    const LstDichVuCongThem = [
+      {
+        DichVuCongThemId: 3,
+        TrongLuongQuyDoi: 0,
+        SoTienTinhCuoc: orderHelper.order.subtotal,
+      },
+    ];
+
+    // console.log("LstDichVuCongThem", LstDichVuCongThem);
+
+    const data: ICalculateAllShipFeeRequest = {
+      MaDichVu: ServiceCode.BK,
+      MaTinhGui,
+      MaQuanGui,
+      MaTinhNhan,
+      MaQuanNhan,
+      Dai: productLength,
+      Rong: productWidth,
+      Cao: productHeight,
+      KhoiLuong: productWeight,
+      ThuCuocNguoiNhan: PaymentMethod.COD ? true : false,
+      LstDichVuCongThem,
+    };
+
+    let service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
+      data
+    );
+
+    // console.log("service", service);
+    serviceList.push({
+      ...service,
+      storehouse,
+      moneyCollection,
+      productWeight,
+      productLength,
+      productWidth,
+      productHeight,
+    });
+  }
+
+  // console.log("serviceList", serviceList);
+
+  serviceList = serviceList.sort(
+    (a, b) => a.TongCuocDichVuCongThem - b.TongCuocDichVuCongThem
+  );
+
+  const cheapestService = serviceList[0];
+  // console.log("cheapestService", cheapestService);
+  orderHelper.order.shipfee = cheapestService.TongCuocDichVuCongThem;
+  orderHelper.order.deliveryInfo = {
+    date: new Date(),
+    serviceId: ServiceCode.BK,
+    // serviceName: service.name,
+    time: cheapestService.ThoiGianPhatDuKien,
+    addressStorehouseId: cheapestService.storehouse._id,
+    moneyCollection: cheapestService.moneyCollection,
+    productName: orderHelper.order.items
+      .map((i: any) => i.productName)
+      .join(" + "),
+    productWeight: cheapestService.productWeight,
+    productLength: cheapestService.productLength,
+    productWidth: cheapestService.productWidth,
+    productHeight: cheapestService.productHeight,
+    // orderPayment: ,
+  };
+};

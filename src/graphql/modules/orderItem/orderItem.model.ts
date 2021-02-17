@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 export type IOrderItem = BaseDocument & {
   orderId?: string; // Mã đơn hàng
   sellerId?: string; // Mã người bán
-  fromMemberId: string // từ shop nào
+  fromMemberId: string; // từ shop nào
   buyerId?: string; // Mã người mua
   isPrimary?: boolean; // Sản phẩm chính của Mobifone
   productId?: string; //  Sản phẩm
@@ -20,9 +20,15 @@ export type IOrderItem = BaseDocument & {
   commission2: number; //  Hoa hồng giới thiệu
   sellerBonusPoint: number; //  Điểm thường người bán
   buyerBonusPoint: number; //  Điểm thưởng người mua
-  campaignId: string // mã chiến dịch
-  campaignSocialResultId: string // mã kết quả chiến dịch
-  status: OrderStatus
+  campaignId: string; // mã chiến dịch
+  campaignSocialResultId: string; // mã kết quả chiến dịch
+  status: OrderStatus;
+  // delivery
+  note: string; // ghi chú sản phẩm
+  productWeight: number;
+  productLength : number;
+  productWidth: number;
+  productHeight : number;
 };
 
 const orderItemSchema = new Schema(
@@ -42,9 +48,22 @@ const orderItemSchema = new Schema(
     sellerBonusPoint: { type: Number, default: 0, min: 0 },
     buyerBonusPoint: { type: Number, default: 0, min: 0 },
     amount: { type: Number, required: 0, default: 0 },
-    status: { type: String, enum: Object.values(OrderStatus), default: OrderStatus.PENDING },
+    status: {
+      type: String,
+      enum: Object.values(OrderStatus),
+      default: OrderStatus.PENDING,
+    },
     campaignId: { type: Schema.Types.ObjectId, ref: "Campaign" },
-    campaignSocialResultId: { type: Schema.Types.ObjectId, ref: "CampaignSocialResult" },
+    campaignSocialResultId: {
+      type: Schema.Types.ObjectId,
+      ref: "CampaignSocialResult",
+    },
+    // delivery
+    note: { type: Schema.Types.String },
+    productWeight: { type: Number, default: 0, min: 0 },
+    productLength: { type: Number, default: 0, min: 0 },
+    productWidth: { type: Number, default: 0, min: 0 },
+    productHeight: { type: Number, default: 0, min: 0 },
   },
   { timestamps: true }
 );
@@ -57,4 +76,7 @@ export const OrderItemModel: mongoose.Model<IOrderItem> = MainConnection.model(
   orderItemSchema
 );
 
-export const OrderItemLoader = ModelLoader<IOrderItem>(OrderItemModel, OrderItemHook);
+export const OrderItemLoader = ModelLoader<IOrderItem>(
+  OrderItemModel,
+  OrderItemHook
+);

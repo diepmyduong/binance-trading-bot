@@ -128,7 +128,7 @@ class OrderService extends CrudService<typeof OrderModel> {
       }
     );
 
-    order.subTotal = sumBy(orderItems, "amount");
+    order.subtotal = sumBy(orderItems, "amount");
     order.amount = sumBy(orderItems, "amount") + VAT - DISCOUNT;
     order.itemCount = sumBy(orderItems, "qty");
 
@@ -290,7 +290,7 @@ class OrderService extends CrudService<typeof OrderModel> {
       }
     );
 
-    order.subTotal = sumBy(orderItems, "amount");
+    order.subtotal = sumBy(orderItems, "amount");
     order.amount = sumBy(orderItems, "amount") + VAT - DISCOUNT;
     order.itemCount = sumBy(orderItems, "qty");
 
@@ -311,73 +311,6 @@ class OrderService extends CrudService<typeof OrderModel> {
     ]).then((res) => {
       return res[0];
     });
-  };
-
-  createMobiOrder = (products: any, sellerId: any, initOrder: any) => {
-    if (products.length === 0) return null;
-
-    const orders = {
-      products,
-      isPrimary: true,
-      sellerId,
-      fromMemberId: sellerId,
-      ...initOrder,
-    };
-    return orders;
-  };
-
-  createOrder = (products: any, sellerId: any, initOrder: any) => {
-    if (products.length === 0) return null;
-
-    // tao don
-    // san pham cua chu shop nen fromMember tu memberId do => sellerId === fromMemberId
-    const orders: any = {
-      products,
-      sellerId,
-      fromMemberId: sellerId,
-      ...initOrder,
-    };
-
-    // console.log('orders', orders);
-    return orders;
-  };
-
-  createCrossSaleOrders = async (
-    products: any,
-    fromMemberId: any,
-    initOrder: any
-  ) => {
-    if (products.length === 0) return null;
-
-    const ids = products.map((p: any) => p._id);
-    console.log("ids", ids);
-
-    // // lay cac mat hang crossale ra
-    const crossSales = await CrossSaleModel.find({
-      productId: { $in: ids },
-      sellerId: fromMemberId,
-    });
-    console.log("crossSales", crossSales);
-    // kiem tra mat hang nay co trong dang ky crossale ko ?
-    if (crossSales.length !== products.length)
-      throw ErrorHelper.mgQueryFailed("Danh sách sản phẩm bán chéo");
-
-    // tach cac san pham nay ra theo tung chu shop
-    const ordersByMember = _.chain(products)
-      .groupBy("memberId")
-      .map((products, i) => {
-        console.log("===================== > v", products);
-        return {
-          products,
-          sellerId: i,
-          fromMemberId,
-          ...initOrder,
-        };
-      })
-      .value();
-
-    // console.log('ordersByMember', ordersByMember);
-    return ordersByMember;
   };
 }
 

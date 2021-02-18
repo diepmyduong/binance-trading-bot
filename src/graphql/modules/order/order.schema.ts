@@ -14,7 +14,7 @@ const schema = gql`
     approveOrder(id: ID!): Order
     cancelOrder(id: ID!): Order
     generateDraftOrder(data: CreateDraftOrderInput!): DraftOrderData
-    deliveryOrder(orderId: ID!, deliveryInfo: DeliveryInfoInput): Mixed
+    deliveryOrder(orderId: ID!): Order
     # adjustOrderRewardPoint(orderId: ID!, value: Float!): Order
     # updateOrderPayment(orderId: ID!, paymentStatus: String!): Order
   }
@@ -52,8 +52,6 @@ const schema = gql`
     buyerProvinceId: String!
     buyerDistrictId: String!
     buyerWardId: String
-    campaignId: String
-       
     shipMethod: String!
     paymentMethod: String!
   }

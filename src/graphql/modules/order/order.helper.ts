@@ -7,7 +7,6 @@ import {
   VietnamPostHelper,
 } from "../../../helpers";
 import { AddressModel } from "../address/address.model";
-// import { addressService } from "../address/address.service";
 import { CounterModel } from "../counter/counter.model";
 import { IProduct, ProductModel, ProductType } from "../product/product.model";
 import { IOrder, OrderModel, PaymentMethod, ShipMethod } from "./order.model";
@@ -15,9 +14,14 @@ import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
 import { AddressStorehouseModel } from "../addressStorehouse/addressStorehouse.model";
 import { MemberModel } from "../member/member.model";
 import { CrossSaleModel } from "../crossSale/crossSale.model";
-import { addressService } from "../address/address.service";
 import { SettingHelper } from "../setting/setting.helper";
 import { SettingKey } from "../../../configs/settingData";
+import { CampaignModel } from "../campaign/campaign.model";
+import {
+  CampaignSocialResultModel,
+  ICampaignSocialResult,
+} from "../campaignSocialResult/campaignSocialResult.model";
+import { UnorderedBulkOperation } from "mongodb";
 
 export class OrderHelper {
   constructor(public order: IOrder) {}
@@ -79,7 +83,7 @@ export class OrderHelper {
     // return this;
   }
 
-  static createOrdersDataRaw = async (data: any) => {
+  static orderProducts = async (data: any) => {
     const { items, sellerId } = data;
 
     // kiểm tra danh sách
@@ -187,10 +191,12 @@ export class OrderHelper {
       helper.setDistrictName(),
       helper.setWardName(),
     ]);
+
     return helper;
   }
 
   async generateItemsFromRaw(products: any) {
+    const UNIT_PRICE = await SettingHelper.load(SettingKey.UNIT_PRICE);
     this.order.subtotal = 0;
     this.order.itemCount = 0;
     this.order.itemIds = [];
@@ -207,12 +213,23 @@ export class OrderHelper {
         length,
         width,
         height,
+        isPrimary,
+        isCrossSale,
+        commission0,
+        commission1,
+        commission2,
+        enabledMemberBonus,
+        enabledCustomerBonus,
+        memberBonusFactor,
+        customerBonusFactor,
       }: IProduct = i;
 
       const orderItem: any = {
         orderId: this.order._id,
         productId: _id,
         productName: name,
+        isPrimary,
+        isCrossSale,
         basePrice: basePrice,
         qty: qty,
         amount: basePrice * qty,
@@ -220,42 +237,61 @@ export class OrderHelper {
         productHeight: height,
         productLength: length,
         productWidth: width,
+        commission0,
+        commission1,
+        commission2,
       };
+
+      const getPointFromPrice = (factor: any, price: any) =>
+        Math.round(((price / UNIT_PRICE) * 100) / 100) * factor;
+      // Điểm thưởng khách hàng
+      if (enabledCustomerBonus)
+        orderItem.buyerBonusPoint = getPointFromPrice(
+          customerBonusFactor,
+          basePrice
+        );
+      // Điểm thưởng chủ shop
+      if (enabledMemberBonus)
+        orderItem.sellerBonusPoint = getPointFromPrice(
+          memberBonusFactor,
+          basePrice
+        );
 
       const item = new OrderItemModel(orderItem);
       this.order.items.push(item);
+
       this.order.subtotal += item.amount;
       this.order.itemCount += item.qty;
       this.order.itemWeight += item.productWeight * item.qty;
+      this.order.commission0 += item.commission0;
+      this.order.commission1 += item.commission1;
+      this.order.commission2 += item.commission2;
+
+      this.order.sellerBonusPoint += item.sellerBonusPoint;
+      this.order.buyerBonusPoint += item.buyerBonusPoint;
+
       this.order.itemIds.push(item._id);
     }
 
-    const itemHeight = Math.max.apply(
+    this.order.itemHeight = Math.max.apply(
       null,
       products.map(({ height }: any) => height)
     );
-    const itemLength = Math.max.apply(
+    this.order.itemLength = Math.max.apply(
       null,
       products.map(({ length }: any) => length)
     );
-    const itemWidth = Math.max.apply(
+    this.order.itemWidth = Math.max.apply(
       null,
       products.map(({ width }: any) => width)
     );
 
-    // console.log('itemHeight',itemHeight);
-    // console.log('itemLength',itemLength);
-    // console.log('itemWidth',itemWidth);
-
-    this.order.itemHeight = itemHeight;
-    this.order.itemLength = itemLength;
-    this.order.itemWidth = itemWidth;
-
     return this.order.items;
   }
 
-  async calculateShipfee() {
+  async calcShipfee() {
     this.order.shipfee = 0;
+
     switch (this.order.shipMethod) {
       case ShipMethod.NONE:
         break;
@@ -276,9 +312,9 @@ export class OrderHelper {
         );
 
         if (urbanStores.length > 0) {
-          await calculateUrbanShipFee(urbanStores, this);
+          await calcDraftUrbanShipFee(urbanStores, this);
         } else {
-          await calculateSuburbanShipFee(storehouses, this);
+          await calcDraftSuburbanShipFee(storehouses, this);
         }
 
         break;
@@ -289,12 +325,60 @@ export class OrderHelper {
     }
     return this;
   }
+
+  async addCampaignBulk(campaignCode: any) {
+    const campaign = await CampaignModel.findOne({ code: campaignCode });
+    const campaignSocialResultBulk: UnorderedBulkOperation = CampaignSocialResultModel.collection.initializeUnorderedBulkOp();
+    if (campaign) {
+      const campaignSocialResults = campaign
+        ? await CampaignSocialResultModel.find({
+            memberId: this.order.sellerId,
+            campaignId: campaign.id,
+          })
+        : [];
+
+      this.order.items.map((item: IOrderItem) => {
+        const campaignResultByProductId = campaignSocialResults.find(
+          (c: ICampaignSocialResult) => c.productId.toString() == item.productId
+        );
+        if (campaign.productId.toString() === item.id) {
+          item.campaignId = campaign._id;
+          item.campaignSocialResultId = campaignResultByProductId._id;
+          const { orderItemIds } = campaignResultByProductId;
+          campaignSocialResultBulk
+            .find({ _id: campaignResultByProductId._id })
+            .updateOne({
+              $set: { orderItemIds: [...orderItemIds, item._id] },
+            });
+        }
+        return item;
+      });
+    }
+    return campaignSocialResultBulk;
+  }
+
+  static executeUpdateCrossSaleOrderedQty(items: any) {
+    const productBulk = ProductModel.collection.initializeUnorderedBulkOp();
+    items.map((item: IOrderItem) => {
+      const { productId } = item;
+      productBulk.find({ productId }).updateOne({
+        $inc: { crossSaleOrdered: item.qty },
+      });
+      // if (item.isCrossSale) {
+
+      // }
+    });
+    console.log("items", items);
+    productBulk.execute();
+  }
 }
 
-const calculateUrbanShipFee = async (urbanStores: any, orderHelper: any) => {
+const calcDraftUrbanShipFee = async (urbanStores: any, orderHelper: any) => {
   const stores = urbanStores.filter(
     (store: any) => store.districtId === orderHelper.order.buyerDistrictId
   );
+
+  const deliveryServices = VietnamPostHelper.getListServiceOffline();
 
   const storehouse = stores.length > 0 ? stores[0] : urbanStores[0];
 
@@ -317,11 +401,12 @@ const calculateUrbanShipFee = async (urbanStores: any, orderHelper: any) => {
     {
       DichVuCongThemId: 3,
       TrongLuongQuyDoi: 0,
-      SoTienTinhCuoc: orderHelper.order.subtotal,
+      SoTienTinhCuoc: orderHelper.order.subtotal.toString(),
     },
+    // { DichVuCongThemId: 1, TrongLuongQuyDoi: 0, SoTienTinhCuoc: priceShow.toString() },
+    // { DichVuCongThemId: 2, TrongLuongQuyDoi: 0, SoTienTinhCuoc: null },
+    // { DichVuCongThemId: 4, TrongLuongQuyDoi: 0, SoTienTinhCuoc: null },
   ];
-
-  // console.log("LstDichVuCongThem", LstDichVuCongThem);
 
   const data: ICalculateAllShipFeeRequest = {
     MaDichVu: ServiceCode.BK,
@@ -351,11 +436,12 @@ const calculateUrbanShipFee = async (urbanStores: any, orderHelper: any) => {
     productHeight,
   };
 
-  orderHelper.order.shipfee = cheapestService.TongCuocDichVuCongThem;
+  orderHelper.order.shipfee = cheapestService.TongCuocBaoGomDVCT;
   orderHelper.order.deliveryInfo = {
     date: new Date(),
     serviceId: ServiceCode.BK,
-    // serviceName: service.name,
+    serviceName: deliveryServices.find(({ code }) => code == ServiceCode.BK)
+      .name,
     time: cheapestService.ThoiGianPhatDuKien,
     addressStorehouseId: cheapestService.storehouse._id,
     moneyCollection: cheapestService.moneyCollection,
@@ -369,8 +455,9 @@ const calculateUrbanShipFee = async (urbanStores: any, orderHelper: any) => {
   };
 };
 
-const calculateSuburbanShipFee = async (storehouses: any, orderHelper: any) => {
+const calcDraftSuburbanShipFee = async (storehouses: any, orderHelper: any) => {
   let serviceList = [];
+  const deliveryServices = VietnamPostHelper.getListServiceOffline();
   // console.log("storehouses", storehouses);
   for (const storehouse of storehouses) {
     let MaTinhGui = storehouse.provinceId,
@@ -392,11 +479,12 @@ const calculateSuburbanShipFee = async (storehouses: any, orderHelper: any) => {
       {
         DichVuCongThemId: 3,
         TrongLuongQuyDoi: 0,
-        SoTienTinhCuoc: orderHelper.order.subtotal,
+        SoTienTinhCuoc: orderHelper.order.subtotal.toString(),
       },
+      // { DichVuCongThemId: 1, TrongLuongQuyDoi: 0, SoTienTinhCuoc: priceShow.toString() },
+      // { DichVuCongThemId: 2, TrongLuongQuyDoi: 0, SoTienTinhCuoc: null },
+      // { DichVuCongThemId: 4, TrongLuongQuyDoi: 0, SoTienTinhCuoc: null },
     ];
-
-    // console.log("LstDichVuCongThem", LstDichVuCongThem);
 
     const data: ICalculateAllShipFeeRequest = {
       MaDichVu: ServiceCode.BK,
@@ -431,16 +519,17 @@ const calculateSuburbanShipFee = async (storehouses: any, orderHelper: any) => {
   // console.log("serviceList", serviceList);
 
   serviceList = serviceList.sort(
-    (a, b) => a.TongCuocDichVuCongThem - b.TongCuocDichVuCongThem
+    (a, b) => a.TongCuocBaoGomDVCT - b.TongCuocBaoGomDVCT
   );
 
   const cheapestService = serviceList[0];
   // console.log("cheapestService", cheapestService);
-  orderHelper.order.shipfee = cheapestService.TongCuocDichVuCongThem;
+  orderHelper.order.shipfee = cheapestService.TongCuocBaoGomDVCT;
   orderHelper.order.deliveryInfo = {
     date: new Date(),
     serviceId: ServiceCode.BK,
-    // serviceName: service.name,
+    serviceName: deliveryServices.find(({ code }) => code == ServiceCode.BK)
+      .name,
     time: cheapestService.ThoiGianPhatDuKien,
     addressStorehouseId: cheapestService.storehouse._id,
     moneyCollection: cheapestService.moneyCollection,
@@ -451,6 +540,5 @@ const calculateSuburbanShipFee = async (storehouses: any, orderHelper: any) => {
     productLength: cheapestService.productLength,
     productWidth: cheapestService.productWidth,
     productHeight: cheapestService.productHeight,
-    // orderPayment: ,
   };
 };

@@ -13,35 +13,27 @@ export const VietnamPostDeliveryStatusDetail = {
   170: "Phát hoàn cho người gửi thành công",
 };
 
-export function GetVietnamPostDeliveryStatusText(status: number) {
-  switch (
-    true
-    // case [].includes(status):
-    //   return "Chưa duyệt";
-    // case ["100", "102", "103", "104", "-108"].includes(status):
-    //   return "Đã duyệt";
-    // case ["-109", "-110"].includes(status):
-    //   return "Đã gửi tại cửa hàng tiện lợi";
-    // case ["107", "201"].includes(status):
-    //   return "Đã hủy";
-    // case ["105"].includes(status):
-    //   return "Đã lấy hàng";
-    // case ["200", "202", "300", "320", "400"].includes(status):
-    //   return "Đang vận chuyển";
-    // case ["500", "506", "570", "508", "509", "550"].includes(status):
-    //   return "Đang giao hàng";
-    // case ["507"].includes(status):
-    //   return "Giao hàng thất bại";
-    // case ["505", "502", "515"].includes(status):
-    //   return "Duyệt hoàn";
-    // case ["503"].includes(status):
-    //   return "Phát thành công tiêu hủy";
-    // case ["504"].includes(status):
-    //   return "Hoàn thành công";
-    // case ["505"].includes(status):
-    //   return "Chờ duyệt hoàn";
-    // case ["501"].includes(status):
-    //   return "Giao hàng thành công";
-  ) {
+export function GetVietnamPostDeliveryStatusText(status: string) {
+  switch (true) {
+    case [""].includes(status):
+      return "Chưa duyệt";
+    case ["20"].includes(status):
+      return "Đã duyệt";
+    case ["60", "62"].includes(status):
+      return "Đã hủy đơn hàng";
+    case ["70"].includes(status):
+      return "Bưu cục đã nhận đơn hàng và đang giao hàng";
+    case ["91"].includes(status):
+      return "Giao hàng thất bại";
+    case ["100"].includes(status):
+      return "Giao hàng thành công";
+    case ["161"].includes(status):
+      return "Phát hoàn người gửi thất bại";
+    case ["170"].includes(status):
+      return "Phát hoàn người gửi thành công";
+    case ["110"].includes(status):
+      return "Nhận tiền COD và nhập vào hệ thống";
+    case ["120"].includes(status):
+      return "Đã nhận tiền COD. Hoàn tất đơn hàng.";
   }
 }

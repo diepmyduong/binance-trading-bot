@@ -14,6 +14,12 @@ export enum ServiceCode {
   TMDT_EMS_TK = "TMDT_EMS_TK", // TMĐT-Chuyển phát nhanh EMS tiết kiệm (liên vùng)
 }
 
+export enum AdditionService {
+  GIAO_HANG_THU_TIEN= 3,
+  BAO_PHAT = 2,
+  DICH_VU_HOA_DON = 4
+}
+
 export type IWardTypeResponse = {
   MaPhuongXa: string;
   TenPhuongXa: string;

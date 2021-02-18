@@ -22,6 +22,7 @@ const schema = gql`
   type DeliveryMethod {
     value: String
     label: String
+    shipFee: Int
   }
 
   type DraftOrderData {

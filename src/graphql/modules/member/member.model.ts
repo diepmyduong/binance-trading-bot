@@ -93,6 +93,7 @@ const memberSchema = new Schema(
     psids: { type: [String], default: [] },
     chatbotStory: { type: ChatbotStorySchema },
     // delivery
+    mainAddressStorehouseId:{ type: Schema.Types.ObjectId, ref: "AddressStorehouse" },
     addressStorehouseIds: {
       type: [{ type: Schema.Types.ObjectId, ref: "AddressStorehouse" }],
     }, // danh sách id kho

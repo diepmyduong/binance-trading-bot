@@ -24,7 +24,7 @@ const schema = gql`
     generateChatbotStory(data: ChatbotStoryInput!): Member
 
     updateMemberAddressDelivery(id: ID!, addressDeliveryIds: [ID]): Member
-    updateMemberAddressStorehouse(id: ID!, addressStorehouseIds: [ID]): Member
+    updateMemberAddressStorehouse(id: ID!, addressStorehouseIds: [ID], mainAddressStorehouseId:ID): Member
     # Add Mutation
   }
 
@@ -193,6 +193,8 @@ const schema = gql`
     "Danh sách mã kho"
     addressStorehouseIds: [ID]
     addressStorehouses: [AddressStorehouse]
+    mainAddressStorehouseId: ID
+    mainAddressStorehouse: AddressStorehouse
 
     "Danh sách mã điểm nhận hàng"
     addressDeliveryIds: [ID]

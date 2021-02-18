@@ -1,9 +1,7 @@
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../helpers";
 import { Context } from "../../context";
-import { AddressHelper } from "../address/address.helper";
 import { MemberModel } from "../member/member.model";
-import { AddressDeliveryHelper } from "./addressDelivery.helper";
 import { AddressDeliveryModel } from "./addressDelivery.model";
 
 const Query = {

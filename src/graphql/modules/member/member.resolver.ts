@@ -96,6 +96,7 @@ const Member = {
   branch: GraphQLHelper.loadById(BranchLoader, "branchId"),
   position: GraphQLHelper.loadById(PositionLoader, "positionId"),
   parents: GraphQLHelper.loadManyById(MemberLoader, "parentIds"),
+  mainAddressStorehouse: GraphQLHelper.loadById(AddressStorehouseLoader,"mainAddressStorehouseId"),
   addressStorehouses: GraphQLHelper.loadManyById(
     AddressStorehouseLoader,
     "addressStorehouseIds"

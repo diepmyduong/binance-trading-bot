@@ -37,12 +37,13 @@ const schema = gql`
     items: [OrderItemInput]!
     buyerName: String!
     buyerPhone: String!
-    buyerAddress: String!
+    buyerAddress: String
     buyerProvinceId: String!
     buyerDistrictId: String!
     buyerWardId: String
     shipMethod: String!
     paymentMethod: String!
+    addressDeliveryId: ID
   }
 
   input CreateOrderInput {
@@ -55,6 +56,7 @@ const schema = gql`
     buyerWardId: String
     shipMethod: String!
     paymentMethod: String!
+    addressDeliveryId: ID
   }
   
   input OrderItemInput {
@@ -125,6 +127,8 @@ const schema = gql`
     sellerBonusPoint: Float
     "Điểm thưởng người mua"
     buyerBonusPoint: Float
+    "Địa điểm nhận hàng"
+    addressDeliveryId: ID
 
     items: [OrderItem]
     seller: Member
@@ -135,6 +139,7 @@ const schema = gql`
     paymentMethodText: String
     shipMethodText: String
     statusText: String
+
   }
 
   type OrderPageData {

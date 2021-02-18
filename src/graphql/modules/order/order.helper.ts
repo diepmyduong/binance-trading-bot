@@ -22,6 +22,7 @@ import {
   ICampaignSocialResult,
 } from "../campaignSocialResult/campaignSocialResult.model";
 import { UnorderedBulkOperation } from "mongodb";
+import { AddressDeliveryModel } from "../addressDelivery/addressDelivery.model";
 
 export class OrderHelper {
   constructor(public order: IOrder) {}
@@ -289,14 +290,18 @@ export class OrderHelper {
     return this.order.items;
   }
 
-  async calcShipfee() {
+  async calculateShipfee() {
     this.order.shipfee = 0;
 
     switch (this.order.shipMethod) {
       case ShipMethod.NONE:
+        this.order.shipfee = 0;
         break;
+
       case ShipMethod.POST:
+        this.order.shipfee = await SettingHelper.load(SettingKey.DELIVERY_POST_FEE);
         break;
+
       case ShipMethod.VNPOST:
         const member = await MemberModel.findById(this.order.sellerId);
         const { addressStorehouseIds } = member;
@@ -316,8 +321,8 @@ export class OrderHelper {
         } else {
           await calcDraftSuburbanShipFee(storehouses, this);
         }
-
         break;
+        
       default:
         throw ErrorHelper.requestDataInvalid(
           "Phương thức vận chuyển chưa được hỗ trợ."
@@ -357,21 +362,21 @@ export class OrderHelper {
     return campaignSocialResultBulk;
   }
 
-  static executeUpdateCrossSaleOrderedQty(items: any) {
+  static updateOrderedQtyBulk(items: any) {
     const productBulk = ProductModel.collection.initializeUnorderedBulkOp();
     items.map((item: IOrderItem) => {
-      const { productId } = item;
-      productBulk.find({ productId }).updateOne({
-        $inc: { crossSaleOrdered: item.qty },
-      });
-      // if (item.isCrossSale) {
-
-      // }
+      if (item.isCrossSale) {
+        const { productId } = item;
+        productBulk.find({ productId }).updateOne({
+          $inc: { crossSaleOrdered: item.qty },
+        });
+      }
     });
-    console.log("items", items);
+    // console.log("items", items);
     productBulk.execute();
   }
 }
+
 
 const calcDraftUrbanShipFee = async (urbanStores: any, orderHelper: any) => {
   const stores = urbanStores.filter(
@@ -481,9 +486,6 @@ const calcDraftSuburbanShipFee = async (storehouses: any, orderHelper: any) => {
         TrongLuongQuyDoi: 0,
         SoTienTinhCuoc: orderHelper.order.subtotal.toString(),
       },
-      // { DichVuCongThemId: 1, TrongLuongQuyDoi: 0, SoTienTinhCuoc: priceShow.toString() },
-      // { DichVuCongThemId: 2, TrongLuongQuyDoi: 0, SoTienTinhCuoc: null },
-      // { DichVuCongThemId: 4, TrongLuongQuyDoi: 0, SoTienTinhCuoc: null },
     ];
 
     const data: ICalculateAllShipFeeRequest = {
@@ -515,8 +517,6 @@ const calcDraftSuburbanShipFee = async (storehouses: any, orderHelper: any) => {
       productHeight,
     });
   }
-
-  // console.log("serviceList", serviceList);
 
   serviceList = serviceList.sort(
     (a, b) => a.TongCuocBaoGomDVCT - b.TongCuocBaoGomDVCT

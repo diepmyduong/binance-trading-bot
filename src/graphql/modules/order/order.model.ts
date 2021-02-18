@@ -3,7 +3,6 @@ import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 import { DeliveryInfo, DeliveryInfoSchema } from "./types/deliveryInfo.type";
 import { IOrderItem } from "../orderItem/orderItem.model";
-import { IDeviceInfo } from "../deviceInfo/deviceInfo.model";
 const Schema = mongoose.Schema;
 
 export enum OrderStatus {

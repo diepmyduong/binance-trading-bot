@@ -56,8 +56,13 @@ export class ErrorHelper extends BaseErrorHelper {
   static chatBotImageError() {
     return new BaseError(403, "-120", "Chatbot gửi ảnh bị lỗi xử lý");
   }
-
   static psIdNotfound() {
     return new BaseError(403, "-142", "Không có PsId");
+  }
+  static cannotEditOrder() {
+    return new BaseError(403, "-126", "Không thay đổi đơn hàng này.");
+  }
+  static NotConnectedInventory() {
+    return new BaseError(500, "-127", "Kho chưa được kết nối với đơn vị giao hàng");
   }
 }

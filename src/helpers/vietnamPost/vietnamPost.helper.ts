@@ -7,11 +7,11 @@ import { ErrorHelper } from "../error.helper";
 
 export enum ServiceCode {
   EMS = "EMS", //"Chuyển phát nhanh",
-  BK = "BK",//"Chuyển phát thường",
+  BK = "BK", //"Chuyển phát thường",
   ECOD = "ECOD", //ECOD
   TMDT_EMS = "TMDT_EMS", //"TMĐT-Chuyển phát nhanh EMS",
   TMDT_BK = "TMDT_BK", //TMĐT-Chuyển phát tiêu chuẩn
-  TMDT_EMS_TK ="TMDT_EMS_TK" // TMĐT-Chuyển phát nhanh EMS tiết kiệm (liên vùng)
+  TMDT_EMS_TK = "TMDT_EMS_TK", // TMĐT-Chuyển phát nhanh EMS tiết kiệm (liên vùng)
 }
 
 export type IWardTypeResponse = {
@@ -83,10 +83,9 @@ export type ICreateDeliveryOrderRequest = {
   CustomerNote: string; // yêu cầu khác
   DraftOrderId: string; // đơn nháp id
   IsDeleteDraft: boolean; // true; // xóa đơn nháp
-  ReceiverAddressType: number; // null; // loại người nhận
   LstImageId: []; // danh sách hàng ảnh
-  // "SenderAddressType": 1,
-  // "ReceiverAddressType": 1
+  SenderAddressType: number; // loại địa chỉ người gửi
+  ReceiverAddressType: number; // loại địa chỉ người nhận
 };
 
 export type ICalculateAllShipFeeRespone = {
@@ -165,24 +164,40 @@ export class VietnamPostHelper {
     return result;
   }
 
+  static getListServiceOffline() {
+    return [
+      { code: "EMS", name: "Chuyển phát nhanh" },
+      { code: "BK", name: "Chuyển phát thường" },
+      { code: "ECOD", name: "ECOD" },
+      { code: "TMDT_EMS", name: "TMĐT-Chuyển phát nhanh EMS" },
+      { code: "TMDT_BK", name: "TMĐT-Chuyển phát tiêu chuẩn" },
+      {
+        code: "TMDT_EMS_TK",
+        name: " TMĐT-Chuyển phát nhanh EMS tiết kiệm (liên vùng)",
+      },
+    ];
+  }
+
   static getListService() {
     const url = `${this.host}/CustomerOrder/GetListDichVuChuyenPhatDonLe`;
     return Axios.get(url, {
       // TYPE: 2,
-    }).then((res) => {
-      let services: IServiceResponse[] = get(res, "data");
-      return services.map((service) => {
+    })
+      .then((res) => {
+        let services: IServiceResponse[] = get(res, "data");
+        return services.map((service) => {
+          return {
+            code: service.MaDichVu,
+            name: service.TenDanhMucDichVu,
+          };
+        });
+      })
+      .catch(() => {
         return {
-          code: service.MaDichVu,
-          name: service.TenDanhMucDichVu,
+          code: null,
+          name: null,
         };
       });
-    }).catch(()=>{
-      return{
-        code: null,
-        name:null,
-      }
-    });
   }
 
   static createDeliveryOrder(data: ICreateDeliveryOrderRequest) {
@@ -191,23 +206,24 @@ export class VietnamPostHelper {
         "h-token": configs.vietnamPost.token,
       },
     }).then((res) => {
-      const bill = get(res, "data.data");
-      return {
-        orderNumber: bill["ORDER_NUMBER"],
-        moneyCollection: bill["MONEY_COLLECTION"],
-        exchangeWeight: bill["EXCHANGE_WEIGHT"],
-        moneyTotal: bill["MONEY_TOTAL"],
-        moneyTotalFee: bill["MONEY_TOTAL_FEE"],
-        moneyFee: bill["MONEY_FEE"],
-        moneyCollectionFee: bill["MONEY_COLLECTION_FEE"],
-        moneyOtherFee: bill["MONEY_OTHER_FEE"],
-        moneyVAS: bill["MONEY_VAS"],
-        moneyVAT: bill["MONEY_VAT"],
-        KPI_HT: bill["KPI_HT"],
-        receiverProvince: bill["RECEIVER_PROVINCE"].toString(),
-        receiverDistrict: bill["RECEIVER_DISTRICT"].toString(),
-        receiverWard: bill["RECEIVER_WARDS"].toString(),
-      } as Bill;
+      const data = get(res, "data");
+      console.log("data", data);
+      // return {
+      //   orderNumber: bill["ORDER_NUMBER"],
+      //   moneyCollection: bill["MONEY_COLLECTION"],
+      //   exchangeWeight: bill["EXCHANGE_WEIGHT"],
+      //   moneyTotal: bill["MONEY_TOTAL"],
+      //   moneyTotalFee: bill["MONEY_TOTAL_FEE"],
+      //   moneyFee: bill["MONEY_FEE"],
+      //   moneyCollectionFee: bill["MONEY_COLLECTION_FEE"],
+      //   moneyOtherFee: bill["MONEY_OTHER_FEE"],
+      //   moneyVAS: bill["MONEY_VAS"],
+      //   moneyVAT: bill["MONEY_VAT"],
+      //   KPI_HT: bill["KPI_HT"],
+      //   receiverProvince: bill["RECEIVER_PROVINCE"].toString(),
+      //   receiverDistrict: bill["RECEIVER_DISTRICT"].toString(),
+      //   receiverWard: bill["RECEIVER_WARDS"].toString(),
+      // } as Bill;
     });
   }
 
@@ -222,7 +238,7 @@ export class VietnamPostHelper {
     ).then((res) => get(res, "data"));
     return result;
   }
-  
+
   // static getPriceAll({
   //   senderProvince,
   //   senderDistrict,

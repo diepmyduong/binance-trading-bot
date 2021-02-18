@@ -38,8 +38,6 @@ export default gql`
     productHeight: Float
     "Phương thức thu tiền"
     orderPayment: Int
-    "Voucher giao hàng"
-    orderVoucher: String
   }
   input DeliveryInfoInput {
     "Kho giao hàng"

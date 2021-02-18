@@ -21,18 +21,18 @@ const Mutation = {
     const { sellerId, id: buyerId } = context;
     const data = args.data;
     if (context.isCustomer()) {
-      data.customerId = buyerId;
+      data.buyerId = buyerId;
       data.sellerId = sellerId;
     }
 
     try {
-      const ordersData = await OrderHelper.createOrdersDataRaw(data);
+      const ordersData = await OrderHelper.orderProducts(data);
       const orders: any[] = [];
       for (let orderData of ordersData) {
         const orderHelper = await OrderHelper.fromRaw(orderData);
         await orderHelper.generateItemsFromRaw(orderData.products);
         // Calculate Shipfee
-        await orderHelper.calculateShipfee();
+        await orderHelper.calcShipfee();
         // Calculate Amount
         orderHelper.calculateAmount();
         orders.push(orderHelper.order);

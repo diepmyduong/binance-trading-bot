@@ -78,7 +78,9 @@ export enum SettingKey {
   DELIVERY_ENABLED_VNPOST = "DELIVERY_ENABLED_VNPOST",
   DELIVERY_VNPOST_INNER_SHIP_FEE = "DELIVERY_VNPOST_INNER_SHIP_FEE",
   DELIVERY_POST_FEE = "DELIVERY_POST_FEE",
+  DELIVERY_ORDER_SHIP_FEE = "DELIVERY_ORDER_SHIP_FEE",
   DELIVERY_ENABLED_AUTO_APPROVE_ORDER = "DELIVERY_ENABLED_AUTO_APPROVE_ORDER",
+  VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE = "VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE"
 }
 export const SETTING_DATA = [
   {
@@ -706,6 +708,15 @@ Link đăng ký:
       },
       {
         type: SettingType.number,
+        name: "Phí ship đặt hàng mặc định",
+        key: SettingKey.DELIVERY_ORDER_SHIP_FEE,
+        value: 0,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.number,
         name: "Phí ship cố định giao hàng VNPost nội thành",
         key: SettingKey.DELIVERY_VNPOST_INNER_SHIP_FEE,
         value: 30000,
@@ -718,6 +729,15 @@ Link đăng ký:
         name: "Bật tự động duyệt đơn khi giao hàng thành công",
         key: SettingKey.DELIVERY_ENABLED_AUTO_APPROVE_ORDER,
         value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "Dịch vụ chuyển phát mặc định",
+        key: SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE,
+        value: "BK",
         isActive: true,
         isPrivate: true,
         readOnly: false,

@@ -24,47 +24,54 @@ export default gql`
     time: String
     "Tiền thu hộ"
     moneyCollection: Float
-    "Tên gói hàng"
+    "Nội dung hàng hóa"
     productName: String
-    "Mô tả gói hàng"
-    productDesc: String
-    "Cân nặng"
+    "Trọng lượng (gr)"
     productWeight: Float
-    "Chiều dài"
+    "Chiều dài (cm)"
     productLength: Float
-    "Chiều rộng"
+    "Chiều rộng (cm)"
     productWidth: Float
-    "Chiều cao"
+    "Chiều cao (cm)"
     productHeight: Float
-    "Phương thức thu tiền"
-    orderPayment: Int
+    "Có cho xem hàng"
+    isPackageViewable: Boolean
+    "Giao hàng thu tiền (COD)"
+    hasMoneyCollection: Boolean
+    "Khai giá"
+    showOrderAmount: Boolean
+    "Báo phát"
+    hasReport: Boolean
+    "dịch vụ hóa đơn"
+    hasInvoice: Boolean
   }
+
   input DeliveryInfoInput {
-    "Kho giao hàng"
-    storeId: ID
-    "Ngày giao hàng"
-    date: DateTime
-    "Dịch vụ giao hàng"
-    serviceId: String
-    "Ghi chú giao hàng"
+    "Có cho xem hàng"
+    isPackageViewable: Boolean
+    "Giao hàng thu tiền (COD)"
+    hasMoneyCollection: Boolean
+    "Khai giá"
+    showOrderAmount: Boolean
+    "Báo phát"
+    hasReport: Boolean
+    "Dịch vụ hóa đơn"
+    hasInvoice: Boolean
+    "Ghi chú"
     note: String
-    "Tiền thu hộ"
-    moneyCollection: Float
-    "Tên gói hàng"
-    productName: String
-    "Mô tả gói hàng"
-    productDesc: String
-    "Cân nặng"
-    productWeight: Float
-    "Chiều dài"
-    productLength: Float
-    "Chiều rộng"
-    productWidth: Float
-    "Chiều cao"
-    productHeight: Float
-    "Phương thức thu tiền"
-    orderPayment: Int
-    "Voucher giao hàng"
-    orderVoucher: String
+    "Dịch vụ chuyển phát"
+    serviceId: String
+    "Kho giao hàng"
+    addressStorehouseId: ID,
+    "Nội dung hàng hóa"
+    productName: String,
+    "Trọng lượng (gr)"
+    productWeight: Float,
+    "Chiều dài (cm)"
+    productLength: Float,
+    "Chiều rộng (cm)"
+    productWidth: Float,
+    "Chiều cao (cm)"
+    productHeight: Float,
   }
 `;

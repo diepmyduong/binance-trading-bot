@@ -32,7 +32,7 @@ const Mutation = {
         const orderHelper = await OrderHelper.fromRaw(orderData);
         await orderHelper.generateItemsFromRaw(orderData.products);
         // Calculate Shipfee
-        await orderHelper.calcShipfee();
+        await orderHelper.calculateShipfee();
         // Calculate Amount
         orderHelper.calculateAmount();
         orders.push(orderHelper.order);

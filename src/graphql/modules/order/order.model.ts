@@ -56,11 +56,11 @@ export type IOrder = BaseDocument & {
   itemWidth: number; // chiều rộng
   itemLength: number; // chiều dài
   itemHeight: number; // chiều cao
-  
   shipfee: number;
   deliveryInfo: DeliveryInfo;
   shipMethod?: ShipMethod;
-  paymentMethod?: PaymentMethod
+  paymentMethod?: PaymentMethod;
+  addressDeliveryId: string;
   productIds: string[];
 };
 
@@ -117,6 +117,7 @@ const orderSchema = new Schema(
     },
     subtotal: { type: Number, default: 0, min: 0 },
     itemCount: { type: Number, default: 0, min: 0 },
+    addressDeliveryId:{ type: Schema.Types.ObjectId, ref: "AddressDelivery" },
   },
   { timestamps: true }
 );

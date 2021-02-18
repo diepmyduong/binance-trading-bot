@@ -4,7 +4,7 @@ const schema = gql`
   extend type Query {
     getAllAddressDelivery(q: QueryGetListInput): AddressDeliveryPageData
     getOneAddressDelivery(id: ID!): AddressDelivery
-    getShopAddressDelivery(q:QueryGetListInput):[AddressDelivery]
+    getShopAddressDelivery:[AddressDelivery]
     # Add Query
   }
 

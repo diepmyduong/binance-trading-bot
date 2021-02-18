@@ -3,7 +3,7 @@ import { Context } from "../../../context";
 import { OrderModel, OrderStatus, ShipMethod } from "../order.model";
 import { ErrorHelper } from "../../../../helpers/error.helper";
 // import { OrderStatus } from "../../../../constants/model.const";
-import { VietnamPostHelper,ICreateDeliveryOrderRequest } from "../../../../helpers/vietnamPost/vietnamPost.helper";
+import { VietnamPostHelper, AdditionService, ServiceCode } from "../../../../helpers/vietnamPost/vietnamPost.helper";
 import { BranchModel } from "../../branch/branch.model";
 import { AddressModel } from "../../address/address.model";
 import { privateDecrypt } from "crypto";
@@ -15,7 +15,7 @@ import { CustomerModel } from "../../customer/customer.model";
 const Mutation = {
   deliveryOrder: async (root: any, args: any, context: Context) => {
     context.auth(ROLES.ADMIN_EDITOR_MEMBER);
-    let { orderId } = args;
+    const { orderId } = args;
     const order = await OrderModel.findById(orderId);
     if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
 
@@ -37,19 +37,33 @@ const Mutation = {
       const receiverAddress = await AddressModel.findOne({ wardId: order.buyerWardId });
       const items = await OrderItemModel.find({ orderId: order._id });
 
+      const requestInfo = {
+        isPackageViewable:true, // Có cho xem hàng
+        showOrderAmount: true, //khai giá,
+        hasReport: true, // báo phát
+        hasInvonce:true, // dịch vụ hóa đơn
+        note: "Hàng dễ vở , xin nhẹ tay", // ghi chú - yêu cầu khác
+      }
 
       const deliveryInfo = {
-        isPackageViewable:true,
+        ...requestInfo,
+        serviceCode : ServiceCode.BK,
         packageContent: items.map((i)=>`[${i.productName} - SL:${i.qty}]`).join(' '),
-        serviceCode : "BK",
-        note: "Hàng dễ vở , xin nhẹ tay"
       };
+
+      const VASIds = [
+        AdditionService.GIAO_HANG_THU_TIEN,
+      ]
+
+      deliveryInfo.hasReport && VASIds.push(AdditionService.BAO_PHAT);
+      deliveryInfo.hasInvonce && VASIds.push(AdditionService.DICH_VU_HOA_DON);
 
       const data:any = {
         OrderCode: order.code, // mã đơn hàng
         VendorId: 1, // 1;
         PickupType: 1, //1;
         IsPackageViewable: deliveryInfo.isPackageViewable, // cho xem hàng
+        IsDeleteDraft: true,
         PackageContent: deliveryInfo.packageContent, //"Món hàng A + Món hàng B"; // nội dung hàng
         ServiceName: deliveryInfo.serviceCode, //"BK"; // tên dịch vụ
         SenderFullname: seller.shopName, // tên người gửi
@@ -65,16 +79,12 @@ const Mutation = {
         ReceiverDistrictId:  receiverAddress.districtId, // mã quận người nhận
         ReceiverWardId:  receiverAddress.wardId, // mã phường người nhận
         CodAmountEvaluation: order.subtotal.toString(), // giá trị tiền thu hộ
-        // OrderAmountEvaluation:  order.subtotal.toString(), // giá trị khai giá
+        OrderAmountEvaluation:  deliveryInfo.showOrderAmount  ? order.subtotal.toString() : null, // giá trị khai giá
         WeightEvaluation: order.deliveryInfo.productWeight.toString(), // cân nặng
         WidthEvaluation: order.deliveryInfo.productWidth.toString(), // chiều rộng
         LengthEvaluation: order.deliveryInfo.productLength.toString(), // chiều dài
         HeightEvaluation: order.deliveryInfo.productHeight.toString(), // chiều cao
-        VASIds: [3], //[3, 1, 2, 4]; // dịch vụ cộng thêm
-        // 0: {IDDichVuCongThem: 3, TenDichVuCongThem: "Giao hàng thu tiền", Sotien: 0, CuocDVCT: 17000}
-        // 1: {IDDichVuCongThem: 1, TenDichVuCongThem: "Khai giá", Sotien: 0, CuocDVCT: 16500}
-        // 2: {IDDichVuCongThem: 2, TenDichVuCongThem: "Báo phát", Sotien: 0, CuocDVCT: 5500}
-        // 3: {IDDichVuCongThem: 4, TenDichVuCongThem: "Dịch vụ hóa đơn", Sotien: 0, CuocDVCT: 11000}
+        VASIds, //[3, 1, 2, 4]; // dịch vụ cộng thêm
         IsReceiverPayFreight: true, // thu cước người nhận
         CustomerNote: deliveryInfo.note, // yêu cầu khác
         SenderAddressType: 1,

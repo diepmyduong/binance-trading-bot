@@ -62,7 +62,10 @@ export class ErrorHelper extends BaseErrorHelper {
   static cannotEditOrder() {
     return new BaseError(403, "-126", "Không thay đổi đơn hàng này.");
   }
-  static NotConnectedInventory() {
+  static notConnectedInventory() {
     return new BaseError(500, "-127", "Kho chưa được kết nối với đơn vị giao hàng");
+  }
+  static cannotMatchShipMethod() {
+    return new BaseError(403, "-126", "PTVC Không hổ trợ giao hàng VNPOST");
   }
 }

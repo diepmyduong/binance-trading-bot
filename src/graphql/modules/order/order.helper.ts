@@ -295,7 +295,9 @@ export class OrderHelper {
 
     switch (this.order.shipMethod) {
       case ShipMethod.NONE:
-        this.order.shipfee = 0;
+        this.order.shipfee = await SettingHelper.load(
+          SettingKey.DELIVERY_ORDER_SHIP_FEE
+        );
         break;
 
       case ShipMethod.POST:
@@ -317,17 +319,15 @@ export class OrderHelper {
         const urbanStores = storehouses.filter(
           (store) => store.provinceId === this.order.buyerProvinceId
         );
-        
+
         // Đơn hàng nội thành - phí ship cố định
         if (urbanStores.length > 0) {
           this.order.shipfee = await SettingHelper.load(
             SettingKey.DELIVERY_VNPOST_INNER_SHIP_FEE
           );
-        } 
-        else {
+        } else {
           let serviceList = [];
           const deliveryServices = VietnamPostHelper.getListServiceOffline();
-          // console.log("storehouses", storehouses);
           for (const storehouse of storehouses) {
             let MaTinhGui = storehouse.provinceId,
               MaQuanGui = storehouse.districtId,
@@ -344,13 +344,13 @@ export class OrderHelper {
             const productWidth = this.order.itemWidth;
             const productHeight = this.order.itemHeight;
 
-            const LstDichVuCongThem = [
-              {
-                DichVuCongThemId: 3,
-                TrongLuongQuyDoi: 0,
-                SoTienTinhCuoc: this.order.subtotal.toString(),
-              },
-            ];
+            const LstDichVuCongThem = [];
+
+            this.order.paymentMethod == PaymentMethod.COD && LstDichVuCongThem.push({
+              DichVuCongThemId: 3,
+              TrongLuongQuyDoi: 0,
+              SoTienTinhCuoc: this.order.subtotal.toString(),
+            });
 
             const data: ICalculateAllShipFeeRequest = {
               MaDichVu: ServiceCode.BK,
@@ -362,14 +362,16 @@ export class OrderHelper {
               Rong: productWidth,
               Cao: productHeight,
               KhoiLuong: productWeight,
-              ThuCuocNguoiNhan: PaymentMethod.COD ? true : false,
+              ThuCuocNguoiNhan: this.order.paymentMethod == PaymentMethod.COD,
               LstDichVuCongThem,
             };
+
+            // console.log('data',data);
 
             let service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
               data
             );
-            
+
             serviceList.push({
               ...service,
               storehouse,
@@ -385,25 +387,33 @@ export class OrderHelper {
             (a, b) => a.TongCuocBaoGomDVCT - b.TongCuocBaoGomDVCT
           );
 
+          const serviceCode = await SettingHelper.load(
+            SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
+          );
+
           const cheapestService = serviceList[0];
           // console.log("cheapestService", cheapestService);
-          this.order.shipfee = cheapestService.TongCuocBaoGomDVCT;
+          this.order.shipfee = this.order.paymentMethod == PaymentMethod.COD ? cheapestService.TongCuocBaoGomDVCT : 0;
           this.order.deliveryInfo = {
             date: new Date(),
-            serviceId: ServiceCode.BK,
+            serviceId: serviceCode,
             serviceName: deliveryServices.find(
-              ({ code }) => code == ServiceCode.BK
+              ({ code }) => code == serviceCode
             ).name,
+            partnerFee :cheapestService.TongCuocBaoGomDVCT,
             time: cheapestService.ThoiGianPhatDuKien,
             addressStorehouseId: cheapestService.storehouse._id,
             moneyCollection: cheapestService.moneyCollection,
-            productName: this.order.items
-              .map((i: any) => i.productName)
-              .join(" + "),
+            productName: this.order.items.map((i)=>`[${i.productName} - SL:${i.qty}]`).join(' '),
             productWeight: cheapestService.productWeight,
             productLength: cheapestService.productLength,
             productWidth: cheapestService.productWidth,
             productHeight: cheapestService.productHeight,
+            isPackageViewable: false, // Có cho xem hàng
+            hasMoneyCollection: this.order.paymentMethod == PaymentMethod.COD,
+            showOrderAmount: false, //khai giá,
+            hasReport: false, // báo phát
+            hasInvoice: false, // dịch vụ hóa đơn
           };
         }
         break;
@@ -447,7 +457,7 @@ export class OrderHelper {
     return campaignSocialResultBulk;
   }
 
-  static updateOrderedQtyBulk(items: any) {
+  async updateOrderedQtyBulk(items: any) {
     const productBulk = ProductModel.collection.initializeUnorderedBulkOp();
     items.map((item: IOrderItem) => {
       if (item.isCrossSale) {

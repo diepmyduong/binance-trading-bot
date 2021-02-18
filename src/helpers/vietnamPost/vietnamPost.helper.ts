@@ -356,7 +356,7 @@ export class VietnamPostHelper {
       const data : ICreateDeliveryOrderResponse= get(res, "data");
       // console.log("data", data);
       return {
-        orderNumber: data.OrderCode,
+        orderNumber: data.ItemCode,
         moneyCollection: data.CodAmountEvaluation,
         exchangeWeight: data.WeightConvert,
         moneyTotal: data.CodAmountEvaluation,

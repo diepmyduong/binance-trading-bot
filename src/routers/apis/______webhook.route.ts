@@ -54,3 +54,12 @@ import { DeliveryLogModel } from "../../graphql/modules/deliveryLog/deliveryLog.
 //     },
 //   },
 // ];
+
+// const values = JSON.stringify();
+
+// const data = {
+//   values,
+//   SendDate: "2021-02-19T01:22:40",
+//   SignData:
+//     "EwGGbP8Cx3a9RAk65vjzsZ1QudeBS6gw29ew66U6YT97rLfZqqOCIWK7Rrm1/OHk+jVX2uWfuI9v2KEygeAipG5EFvpgQWouJyV+M4ClgcfeeImWdMXTDf4e6XekVLmrpYQpZyhs3W+oV9thB6qhlSfr0TOZLgTrVq6JuhX3tXbdeQkra8qhW7J8+X5j2wJcdK0FoTu8HepcbnFE9pPTxOYHQ4nIyIqL/mjb4O2beHspsvEoW0+vMb7N6K4V5oRAaKcox1UOCrEElVx0DVr8hfua0+xvRfFDMpF/2VTLE/KbVaps5r4zogMR9l/rrawAdz7MDAUJyYwA/0s3Nteqiw==",
+// };

@@ -10,6 +10,7 @@ export type IOrderItem = BaseDocument & {
   fromMemberId: string; // từ shop nào
   buyerId?: string; // Mã người mua
   isPrimary?: boolean; // Sản phẩm chính của Mobifone
+  isCrossSale: boolean; // Sản phẩm bán chéo
   productId?: string; //  Sản phẩm
   productName?: string; //  Tên sản phẩm
   basePrice?: number; //  Giá bán
@@ -38,6 +39,7 @@ const orderItemSchema = new Schema(
     fromMemberId: { type: Schema.Types.ObjectId, ref: "Member" },
     buyerId: { type: Schema.Types.ObjectId, ref: "Customer" },
     isPrimary: { type: Boolean, default: false },
+    isCrossSale: { type: Boolean, default: false },
     productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     productName: { type: String, required: true },
     basePrice: { type: Number, default: 0, min: 0 },

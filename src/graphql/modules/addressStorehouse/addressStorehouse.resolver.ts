@@ -12,11 +12,11 @@ import { addressStorehouseService } from "./addressStorehouse.service";
 
 const Query = {
   getAllAddressStorehouse: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, [ROLES.ADMIN, ROLES.EDITOR]);
+    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     return addressStorehouseService.fetch(args.q);
   },
   getOneAddressStorehouse: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, [ROLES.ADMIN, ROLES.EDITOR]);
+    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     const { id } = args;
     return await addressStorehouseService.findOne({ _id: id });
   },
@@ -24,7 +24,7 @@ const Query = {
 
 const Mutation = {
   createAddressStorehouse: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, [ROLES.ADMIN, ROLES.EDITOR]);
+    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     const data: IAddressStorehouse = args.data;
     const { email } = data;
 
@@ -45,7 +45,7 @@ const Mutation = {
   },
 
   updateAddressStorehouse: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, [ROLES.ADMIN, ROLES.EDITOR]);
+    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     const { id } = args;
     const data: IAddressStorehouse = args.data;
     const { email } = data;
@@ -74,7 +74,7 @@ const Mutation = {
     args: any,
     context: Context
   ) => {
-    AuthHelper.acceptRoles(context, [ROLES.ADMIN]);
+    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     const { id } = args;
     return await addressStorehouseService.deleteOne(id);
   },

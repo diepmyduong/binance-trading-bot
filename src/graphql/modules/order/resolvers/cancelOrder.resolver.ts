@@ -51,18 +51,3 @@ const Mutation = {
 }
 
 export default { Mutation };
-
-
-// (async () => {
-//     const root: any = null;
-//     const args: any = {
-//         id: "5fe463ff36c19c4310c377b3"
-//     }
-
-//     const context: any = null;
-
-//     const result = await Mutation.cancelOrder(root, args, context);
-
-//     console.log('result', result);
-
-// })();

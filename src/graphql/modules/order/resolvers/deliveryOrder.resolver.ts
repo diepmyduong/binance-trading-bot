@@ -1,76 +1,92 @@
 import { ROLES } from "../../../../constants/role.const";
 import { Context } from "../../../context";
-import { OrderModel } from "../order.model";
+import { OrderModel, OrderStatus, ShipMethod } from "../order.model";
 import { ErrorHelper } from "../../../../helpers/error.helper";
 // import { OrderStatus } from "../../../../constants/model.const";
-import { ViettelPostHelper } from "../../../../helpers/viettelPost/viettelPost.helper";
+import { VietnamPostHelper,ICreateDeliveryOrderRequest } from "../../../../helpers/vietnamPost/vietnamPost.helper";
 import { BranchModel } from "../../branch/branch.model";
 import { AddressModel } from "../../address/address.model";
 import { privateDecrypt } from "crypto";
 import { OrderItemModel } from "../../orderItem/orderItem.model";
+import { AddressStorehouseModel } from "../../addressStorehouse/addressStorehouse.model";
+import { MemberModel } from "../../member/member.model";
+import { CustomerModel } from "../../customer/customer.model";
 
 const Mutation = {
   deliveryOrder: async (root: any, args: any, context: Context) => {
-    // context.auth(ROLES.ADMIN_EDITOR);
-    // const { orderId, deliveryInfo } = args;
-    // const order = await OrderModel.findById(orderId);
-    // if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
-    // // Kiểm tra tình trạng đơn hàng
-    // if (order.status != OrderStatus.PENDING) throw ErrorHelper.cannotEditOrder();
-    // // Chuyển trạng thái đơn hàng
-    // order.status = OrderStatus.DELIVERING;
-    // order.deliveryInfo = { ...order.deliveryInfo, ...deliveryInfo };
-    // if (order.shipMethod == ShipMethod.VIETTEL_POST) {
-    //   const store = await BranchModel.findById(order.deliveryInfo.storeId);
-    //   if (!store.viettelInventoryId) throw ErrorHelper.branchNotConnectedInventory();
-    //   const storeAddress = await AddressModel.findOne({ wardId: store.wardId });
-    //   const receiverAddress = await AddressModel.findOne({ wardId: order.wardId });
-    //   const items = await OrderItemModel.find({ orderId: order._id });
-    //   const bill = await ViettelPostHelper.createOrder({
-    //     orderNumber: order.id,
-    //     groupAddress: store.viettelInventoryId,
-    //     customerId: store.viettelCusId,
-    //     deliveryDate: order.deliveryInfo.date,
-    //     senderName: store.name,
-    //     senderAddress: store.address,
-    //     senderPhone: store.phone,
-    //     senderEmail: store.email,
-    //     senderWard: storeAddress.viettelWardId,
-    //     senderDistrict: storeAddress.viettelDistrictId,
-    //     senderProvince: storeAddress.viettelProvinceId,
-    //     receiverName: order.customerName,
-    //     receiverAddress: order.address,
-    //     receiverPhone: order.customerPhone,
-    //     // receiverEmail: order.customerE,
-    //     receiverWard: receiverAddress.viettelWardId,
-    //     receiverDistrict: receiverAddress.viettelDistrictId,
-    //     receiverProvince: receiverAddress.viettelProvinceId,
-    //     productName: order.deliveryInfo.productName,
-    //     productDesc: order.deliveryInfo.productDesc,
-    //     productQty: 1,
-    //     productPrice: order.subtotal,
-    //     productWeight: order.deliveryInfo.productWeight,
-    //     productLength: order.deliveryInfo.productLength,
-    //     productWidth: order.deliveryInfo.productWidth,
-    //     productHeight: order.deliveryInfo.productHeight,
-    //     productType: "HH",
-    //     orderPayment: order.deliveryInfo.orderPayment,
-    //     orderService: order.deliveryInfo.serviceId,
-    //     orderServiceAdd: "",
-    //     orderVoucher: order.deliveryInfo.orderVoucher,
-    //     orderNote: order.deliveryInfo.note,
-    //     moneyCollection: order.deliveryInfo.moneyCollection,
-    //     listItems: items.map((i) => ({
-    //       productName: i.productName,
-    //       productPrice: i.salePrice,
-    //       productQty: i.quantity,
-    //       productWeight: i.productWeight,
-    //     })),
-    //   });
-    //   order.deliveryInfo.orderNumber = bill.orderNumber;
-    //   order.deliveryInfo.partnerFee = bill.moneyTotal;
-    // }
-    // return await order.save();
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER);
+    let { orderId } = args;
+    const order = await OrderModel.findById(orderId);
+    if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
+
+
+    const seller = await MemberModel.findById(context.id);
+    if (!seller) throw ErrorHelper.mgRecoredNotFound("chủ shop");
+
+    const buyer = await CustomerModel.findById(order.buyerId);
+    if (!buyer) throw ErrorHelper.mgRecoredNotFound("khách hàng");
+
+    // Kiểm tra tình trạng đơn hàng
+    if (order.status != OrderStatus.PENDING) throw ErrorHelper.cannotEditOrder();
+    // Chuyển trạng thái đơn hàng
+    order.status = OrderStatus.DELIVERING;
+    if (order.shipMethod == ShipMethod.VNPOST) {
+      const store = await AddressStorehouseModel.findById(order.deliveryInfo.addressStorehouseId);
+      if (!store) throw ErrorHelper.NotConnectedInventory();
+      const storeAddress = await AddressModel.findOne({ wardId: store.wardId });
+      const receiverAddress = await AddressModel.findOne({ wardId: order.buyerWardId });
+      const items = await OrderItemModel.find({ orderId: order._id });
+
+
+      const deliveryInfo = {
+        isPackageViewable:true,
+        packageContent: items.map((i)=>`[${i.productName} - SL:${i.qty}]`).join(' '),
+        serviceCode : "BK",
+        note: "Hàng dễ vở , xin nhẹ tay"
+      };
+
+      const data:any = {
+        OrderCode: order.code, // mã đơn hàng
+        VendorId: 1, // 1;
+        PickupType: 1, //1;
+        IsPackageViewable: deliveryInfo.isPackageViewable, // cho xem hàng
+        PackageContent: deliveryInfo.packageContent, //"Món hàng A + Món hàng B"; // nội dung hàng
+        ServiceName: deliveryInfo.serviceCode, //"BK"; // tên dịch vụ
+        SenderFullname: seller.shopName, // tên người gửi
+        SenderAddress: store.address, // địa chỉ gửi
+        SenderTel: seller.phone, // phone người gửi
+        SenderProvinceId: storeAddress.provinceId, // mã tỉnh người gửi
+        SenderDistrictId: storeAddress.districtId, // mã quận người gửi
+        SenderWardId: storeAddress.wardId ,// mã phường người gửi
+        ReceiverFullname: buyer.name, // tên người nhận
+        ReceiverAddress: buyer.address, // địa chỉ nhận
+        ReceiverTel:  buyer.phone, // phone người nhận
+        ReceiverProvinceId: receiverAddress.provinceId, // mã tỉnh người nhận
+        ReceiverDistrictId:  receiverAddress.districtId, // mã quận người nhận
+        ReceiverWardId:  receiverAddress.wardId, // mã phường người nhận
+        CodAmountEvaluation: order.subtotal.toString(), // giá trị tiền thu hộ
+        // OrderAmountEvaluation:  order.subtotal.toString(), // giá trị khai giá
+        WeightEvaluation: order.deliveryInfo.productWeight.toString(), // cân nặng
+        WidthEvaluation: order.deliveryInfo.productWidth.toString(), // chiều rộng
+        LengthEvaluation: order.deliveryInfo.productLength.toString(), // chiều dài
+        HeightEvaluation: order.deliveryInfo.productHeight.toString(), // chiều cao
+        VASIds: [3], //[3, 1, 2, 4]; // dịch vụ cộng thêm
+        // 0: {IDDichVuCongThem: 3, TenDichVuCongThem: "Giao hàng thu tiền", Sotien: 0, CuocDVCT: 17000}
+        // 1: {IDDichVuCongThem: 1, TenDichVuCongThem: "Khai giá", Sotien: 0, CuocDVCT: 16500}
+        // 2: {IDDichVuCongThem: 2, TenDichVuCongThem: "Báo phát", Sotien: 0, CuocDVCT: 5500}
+        // 3: {IDDichVuCongThem: 4, TenDichVuCongThem: "Dịch vụ hóa đơn", Sotien: 0, CuocDVCT: 11000}
+        IsReceiverPayFreight: true, // thu cước người nhận
+        CustomerNote: deliveryInfo.note, // yêu cầu khác
+        SenderAddressType: 1,
+        ReceiverAddressType: 1
+      }
+
+      const bill = await VietnamPostHelper.createDeliveryOrder(data);
+
+      // order.deliveryInfo.orderNumber = bill.orderNumber;
+      // order.deliveryInfo.partnerFee = bill.moneyTotal;
+    }
+    return await order.save();
   },
 };
 

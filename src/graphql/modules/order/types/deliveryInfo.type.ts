@@ -12,12 +12,16 @@ export type DeliveryInfo = {
   statusName?: string; // Tên tình trạng
   note?: string; // Ghi chú giao hàng
   moneyCollection?: number; // Tiền thu hộ
-  productName?: string; // Tên gói hàng
-  productDesc?: string; // Mô tả gói hàng
+  productName?: string; // Nội dung hàng hóa
   productWeight?: number; // Cân nặng
   productLength?: number; // Chiều dài
   productWidth?: number; // Chiều rộng
   productHeight?: number; // Chiều cao
+  isPackageViewable: boolean, // Có cho xem hàng
+  hasMoneyCollection: boolean, // Giao hàng thu tiền (COD)
+  showOrderAmount: boolean, //khai giá,
+  hasReport: boolean, // báo phát
+  hasInvoice: boolean, // dịch vụ hóa đơn
 };
 
 export const DeliveryInfoSchema = new Schema({
@@ -33,9 +37,13 @@ export const DeliveryInfoSchema = new Schema({
   note: { type: String },
   moneyCollection: { type: Number, min: 0 },
   productName: { type: String },
-  productDesc: { type: String },
   productWeight: { type: Number },
   productLength: { type: Number },
   productWidth: { type: Number },
   productHeight: { type: Number },
+  hasMoneyCollection:  { type: Boolean, default:true }, // thu tiền ko
+  isPackageViewable:  { type: Boolean, default:false }, // Có cho xem hàng
+  showOrderAmount:  { type: Boolean, default:false }, //khai giá,
+  hasReport:  { type: Boolean, default:false }, // báo phát
+  hasInvoice:  { type: Boolean, default:false }, // dịch vụ hóa đơn
 });

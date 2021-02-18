@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { get } from "lodash";
+import { bindAll, get } from "lodash";
 import moment from "moment";
 import { configs } from "../../configs";
 import { ShipServicePricing } from "../../graphql/modules/order/types/shipServicePricing.type";
@@ -15,9 +15,9 @@ export enum ServiceCode {
 }
 
 export enum AdditionService {
-  GIAO_HANG_THU_TIEN= 3,
+  GIAO_HANG_THU_TIEN = 3,
   BAO_PHAT = 2,
-  DICH_VU_HOA_DON = 4
+  DICH_VU_HOA_DON = 4,
 }
 
 export type IWardTypeResponse = {
@@ -92,6 +92,147 @@ export type ICreateDeliveryOrderRequest = {
   LstImageId: []; // danh sách hàng ảnh
   SenderAddressType: number; // loại địa chỉ người gửi
   ReceiverAddressType: number; // loại địa chỉ người nhận
+};
+
+export type ICreateDeliveryOrderResponse = {
+  Id: string; //"96d25919-98cd-4662-82ce-2b7decf03901",
+  ItemCode: string; //"EL491610889VN",
+  CustomerId: string; //"bf15bb9c-51cb-48c9-86da-69df295ec33d",
+  OrderCode: string; //"DH102",
+  OrderStatus: string; //null,
+  OrderStatusColor: string; //null,
+  OrderStatusId: number; //20,
+  OrderStatusName: string; //null,
+  ShippingStatusId: number;
+  PaymentStatusId: number;
+  TotalFreightExcludeVat: number;
+  TotalFreightIncludeVat: number;
+  VatFreight: number;
+  ShippingFreight: number;
+  VasFreight: number;
+  CodFreight: number;
+  CodAmount: number;
+  CodAmountEvaluation: number; //550805,
+  SenderFullname: string;
+  SenderFullAddress: string;
+  SenderAddress: string;
+  SenderTel: string;
+  ReceiverFullname: string; //"Nguyễn Văn B";
+  ReceiverFullAddress: string;//null;
+  ReceiverAddress: string;//"123 Đoàn Văn Bơ ,Phường 15, Quận 4";
+  ReceiverOldAddress: string;//null;
+  ReceiverTel: string;//"0284088888";
+  Weight: number; //: 0,
+  WeightConvert: number; // 1000,
+  Width: number; //0,
+  Length: number; //0,
+  Height: number; //0,
+  ValueAddedServiceList: string; // "[{\"IDDichVuCongThem\":3,\"CuocDVCT\":15000.0},{\"IDDichVuCongThem\":1,\"CuocDVCT\":16500.0}]",
+  AddedServiceList: string;
+  Opt: string;
+  AcceptancePoscode: string;
+  AcceptanceName: string;
+  DestinationPoscode: string;
+  DestinationName: string;
+  DeliveryID: number;
+  ToPOSCode: string;
+  CauseCode: string;
+  DeliveryTimes: number;
+  DeliveryNote: string;
+  CauseName: string;
+  InputTime: string;
+  IsDeliverable: false;
+  IsReturn: false;
+  SolutionName: string;
+  SolutionCode: string;
+  DeliveryTime: string;
+  BccpCreateTime: string;
+  BccpLastUpdateTime: string;
+  PaypostTracedate: string;
+  PaypostTransferDate: string;
+  PaypostStatus: number;
+  CancelTime: string;
+  CancelNotes: string;
+  CancelStatus: string;
+  CancelStatusDesc: string;
+  SendingTime: string;
+  CreateTime: string;
+  DeliveryDateEvaluation: string;
+  LastUpdateTime: string;
+  CustomerCode: string;
+  TotalFreightExcludeVatEvaluation: number;
+  TotalFreightIncludeVatEvaluation: number;
+  VatFreightEvaluation: number;
+  ShippingFreightEvaluation: number;
+  VasFreightEvaluation: number;
+  CodFreightEvaluation: number;
+  VendorId: number;
+  SenderProvinceId: string;
+  SenderProvince: string;
+  ReceiverProvinceId: string;
+  FuelFreight: string;
+  RegionFreight: string;
+  OrderAmount: number;
+  OrderAmountEvaluation: number;
+  PickupType: number;
+  IsPackageViewable: boolean;
+  PackageContent: string;
+  ServiceName: string;
+  ShipperTel: string;
+  ServiceId: number;
+  SenderDistrictId: string;
+  ReceiverDistrictId: string;
+  FuelFreightEvaluation: number;
+  RegionFreightEvaluation: number;
+  SenderWardId: string;
+  ReceiverWardId: string;
+  CustomerNote: string;
+  MaChia: string;
+  MaChiaBarCodeSrc: string;
+  SoHieuBuuGuiBarCodeSrc: string;
+  SoHieuBuuGuiQrCodeSrc: string;
+  SoDienThoaiBuuCuc: string;
+  WidthEvaluation: number;
+  LengthEvaluation: number;
+  HeightEvaluation: number;
+  WeightEvaluation: number;
+  OriginalCodAmountEvaluation: number;
+  PickupTypeName: string;
+  IsCancelable: boolean;
+  OrderStatusCustomer: string;
+  ReceiverProvince: string;
+  IsReceiverPayFreight: boolean;
+  IsWarningPhuongXa: boolean;
+  IsWarningQuanHuyen: boolean;
+  IsWarningTinhThanh: boolean;
+  IsXuLySau: boolean;
+  IsSuccess: boolean;
+  Message: string;
+  BatchCode: string;
+  ReceiverInBlacklist: string;
+  CodAmountNotForBatch: string;
+  TrangThaiYeuCau: string;
+  TenTrangThaiYeuCau: string;
+  CoThongTinChuyenPhatDonHang: boolean;
+  SenderAddressType: number;
+  ReceiverAddressType: number;
+  LstImage: string;
+  TenNguonTaoDon: string;
+  AdditionalDatas: string;
+  AdditionalDatasObject: string;
+  IsCreateDanhBaNguoiGui: boolean;
+  IsCreateDanhBaNguoiNhan: boolean;
+  SoLanIn: number;
+  IsBatchOrder: boolean;
+  IsCodAmountChung: boolean;
+  IsUseSmartlockerSender: boolean;
+  IsUseSmartlockerReceiver: boolean;
+  ServiceNameCode: string;
+  OrderStatusColorVersion2: string;
+  OrderStatusBackgroundVersion2: string;
+  IsShowWarning: boolean;
+  HubOfSenderName: string;
+  HubOfReceiverName: string;
 };
 
 export type ICalculateAllShipFeeRespone = {
@@ -212,24 +353,24 @@ export class VietnamPostHelper {
         "h-token": configs.vietnamPost.token,
       },
     }).then((res) => {
-      const data = get(res, "data");
-      console.log("data", data);
-      // return {
-      //   orderNumber: bill["ORDER_NUMBER"],
-      //   moneyCollection: bill["MONEY_COLLECTION"],
-      //   exchangeWeight: bill["EXCHANGE_WEIGHT"],
-      //   moneyTotal: bill["MONEY_TOTAL"],
-      //   moneyTotalFee: bill["MONEY_TOTAL_FEE"],
-      //   moneyFee: bill["MONEY_FEE"],
-      //   moneyCollectionFee: bill["MONEY_COLLECTION_FEE"],
-      //   moneyOtherFee: bill["MONEY_OTHER_FEE"],
-      //   moneyVAS: bill["MONEY_VAS"],
-      //   moneyVAT: bill["MONEY_VAT"],
-      //   KPI_HT: bill["KPI_HT"],
-      //   receiverProvince: bill["RECEIVER_PROVINCE"].toString(),
-      //   receiverDistrict: bill["RECEIVER_DISTRICT"].toString(),
-      //   receiverWard: bill["RECEIVER_WARDS"].toString(),
-      // } as Bill;
+      const data : ICreateDeliveryOrderResponse= get(res, "data");
+      // console.log("data", data);
+      return {
+        orderNumber: data.OrderCode,
+        moneyCollection: data.CodAmountEvaluation,
+        exchangeWeight: data.WeightConvert,
+        moneyTotal: data.CodAmountEvaluation,
+        moneyTotalFee: data.TotalFreightIncludeVatEvaluation,//t
+        // moneyFee: bill["MONEY_FEE"],
+        // moneyCollectionFee: bill["MONEY_COLLECTION_FEE"],
+        // moneyOtherFee: bill["MONEY_OTHER_FEE"],
+        // moneyVAS: bill["MONEY_VAS"],
+        // moneyVAT: bill["MONEY_VAT"],
+        // KPI_HT: bill["KPI_HT"],
+        receiverProvince: data.ReceiverProvince,
+        receiverDistrict: data.ReceiverDistrictId,
+        receiverWard: data.ReceiverWardId
+      } as Bill;
     });
   }
 

@@ -10,6 +10,7 @@ const Mutation = {
     AuthHelper.acceptRoles(context, [ROLES.CUSTOMER]);
     const { campaignCode, sellerId, id: buyerId } = context;
     const data = args.data;
+    
     if (context.isCustomer()) {
       data.buyerId = buyerId;
       data.sellerId = sellerId;
@@ -21,19 +22,17 @@ const Mutation = {
       const orderHelper = await OrderHelper.fromRaw(orderData);
       await orderHelper.generateItemsFromRaw(orderData.products);
       // Calculate Shipfee
-      await orderHelper.calcShipfee();
+      await orderHelper.calculateShipfee();
       // Calculate Amount
       orderHelper.calculateAmount();
+      orderHelper.order.code = await OrderHelper.generateCode();
 
       // const campaignBulk = orderHelper.addCampaignBulk(campaignCode);
       
-
-      orderHelper.order.code = await OrderHelper.generateCode();
-
       await Promise.all([
         orderHelper.order.save(),
         OrderItemModel.insertMany(orderHelper.order.items),
-        OrderHelper.executeUpdateCrossSaleOrderedQty(orderHelper.order.items),
+        // OrderHelper.updateOrderedQtyBulk(orderHelper.order.items),
         // (await campaignBulk).execute(),
       ]).then(([order]) => {
         orders.push(order);

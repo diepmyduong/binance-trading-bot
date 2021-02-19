@@ -14,8 +14,11 @@ export enum OrderStatus {
 }
 
 export enum PaymentMethod {
+  NONE = "NONE", // Không thanh toán
   COD = "COD", // Thanh toán khi nhận hàng
-  ONLINE = "ONLINE" // Thanh toán online
+  MOMO = "MOMO",
+  BAOKIM = "BAOKIM",
+  PAYPAL = "PAYPAL"
 }
 
 export enum ShipMethod {

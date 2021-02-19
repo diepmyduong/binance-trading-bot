@@ -3,6 +3,7 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, UtilsHelper } from "../../../helpers";
 import { Context } from "../../context";
 import { AddressHelper } from "../address/address.helper";
+import { MemberModel } from "../member/member.model";
 import { AddressStorehouseHelper } from "./addressStorehouse.helper";
 import {
   AddressStorehouseModel,
@@ -76,6 +77,7 @@ const Mutation = {
   ) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     const { id } = args;
+    // const existedMemberfromAddress = MemberModel.find({ addressStorehouseIds :{$in:[] })
     return await addressStorehouseService.deleteOne(id);
   },
 };

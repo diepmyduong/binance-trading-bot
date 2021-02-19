@@ -39,7 +39,7 @@ const schema = gql`
     buyerAddress: String
     buyerProvinceId: String!
     buyerDistrictId: String!
-    buyerWardId: String!
+    buyerWardId: String
     shipMethod: String!
     paymentMethod: String!
     addressDeliveryId: ID

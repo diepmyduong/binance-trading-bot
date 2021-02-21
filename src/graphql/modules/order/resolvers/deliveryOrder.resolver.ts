@@ -107,7 +107,7 @@ const Mutation = {
       LengthEvaluation: deliveryInfo.productLength.toString(), // chiều dài
       HeightEvaluation: deliveryInfo.productHeight.toString(), // chiều cao
       VASIds, //[3, 1, 2, 4]; // dịch vụ cộng thêm
-      IsReceiverPayFreight: deliveryInfo.hasMoneyCollection, // thu cước người nhận
+      IsReceiverPayFreight: deliveryInfo.IsReceiverPayFreight, // thu cước người nhận
       CustomerNote: deliveryInfo.note, // yêu cầu khác      
       VendorId: 1, // 1;
       PickupType: 1, //1;

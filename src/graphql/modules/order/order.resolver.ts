@@ -63,12 +63,13 @@ const Order = {
     switch (root.paymentMethod) {
       case PaymentMethod.COD:
         return `Thanh toán khi nhận hàng (COD)`;
-      case PaymentMethod.ONLINE:
-        return `Thanh toán online`;
+      case PaymentMethod.NONE:
+        return `Không áp dụng PTTT`;
       default:
         return root.paymentMethod;
     }
   },
+  
   // paymentStatusText: async (root: IOrder, args: any, context: Context) => {
   //   switch (root.paymentStatus) {
   //     case PaymentStatus.PENDING:

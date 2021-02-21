@@ -14,6 +14,18 @@ export enum ServiceCode {
   TMDT_EMS_TK = "TMDT_EMS_TK", // TMĐT-Chuyển phát nhanh EMS tiết kiệm (liên vùng)
 }
 
+export const OfflineServices = [
+  { code: "EMS", name: "Chuyển phát nhanh" },
+  { code: "BK", name: "Chuyển phát thường" },
+  { code: "ECOD", name: "ECOD" },
+  { code: "TMDT_EMS", name: "TMĐT-Chuyển phát nhanh EMS" },
+  { code: "TMDT_BK", name: "TMĐT-Chuyển phát tiêu chuẩn" },
+  {
+    code: "TMDT_EMS_TK",
+    name: " TMĐT-Chuyển phát nhanh EMS tiết kiệm (liên vùng)",
+  },
+]
+
 export enum AdditionService {
   GIAO_HANG_THU_TIEN = 3,
   BAO_PHAT = 2,
@@ -312,17 +324,7 @@ export class VietnamPostHelper {
   }
 
   static getListServiceOffline() {
-    return [
-      { code: "EMS", name: "Chuyển phát nhanh" },
-      { code: "BK", name: "Chuyển phát thường" },
-      { code: "ECOD", name: "ECOD" },
-      { code: "TMDT_EMS", name: "TMĐT-Chuyển phát nhanh EMS" },
-      { code: "TMDT_BK", name: "TMĐT-Chuyển phát tiêu chuẩn" },
-      {
-        code: "TMDT_EMS_TK",
-        name: " TMĐT-Chuyển phát nhanh EMS tiết kiệm (liên vùng)",
-      },
-    ];
+    return OfflineServices;
   }
 
   static getListService() {

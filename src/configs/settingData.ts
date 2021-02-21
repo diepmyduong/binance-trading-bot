@@ -1,3 +1,4 @@
+import { OfflineServices, ServiceCode } from "../helpers";
 import { SettingType } from "../graphql/modules/setting/setting.model";
 
 export enum SettingGroupSlug {
@@ -80,7 +81,7 @@ export enum SettingKey {
   DELIVERY_POST_FEE = "DELIVERY_POST_FEE",
   DELIVERY_ORDER_SHIP_FEE = "DELIVERY_ORDER_SHIP_FEE",
   DELIVERY_ENABLED_AUTO_APPROVE_ORDER = "DELIVERY_ENABLED_AUTO_APPROVE_ORDER",
-  VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE = "VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE"
+  VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE = "VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE",
 }
 export const SETTING_DATA = [
   {
@@ -735,9 +736,11 @@ Link đăng ký:
       },
       {
         type: SettingType.string,
-        name: "Dịch vụ chuyển phát mặc định",
+        name: `Dịch vụ chuyển phát mặc định ${OfflineServices.map(
+          (s) => s.code + "-" + s.name
+        ).join("|")}`,
         key: SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE,
-        value: "BK",
+        value: ServiceCode.BK,
         isActive: true,
         isPrivate: true,
         readOnly: false,

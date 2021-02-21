@@ -57,6 +57,8 @@ export default gql`
     hasReport: Boolean
     "Dịch vụ hóa đơn"
     hasInvoice: Boolean
+    "Thu cước người nhận"
+    IsReceiverPayFreight: Boolean
     "Ghi chú"
     note: String
     "Dịch vụ chuyển phát"

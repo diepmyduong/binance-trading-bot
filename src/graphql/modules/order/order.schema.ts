@@ -43,8 +43,8 @@ const schema = gql`
     buyerName: String
     buyerPhone: String
     buyerAddress: String
-    buyerProvinceId: String!
-    buyerDistrictId: String!
+    buyerProvinceId: String
+    buyerDistrictId: String
     buyerWardId: String
     shipMethod: String!
     paymentMethod: String!

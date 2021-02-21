@@ -44,13 +44,13 @@ export type IOrder = BaseDocument & {
   buyerId?: string; // Khách hàng mua
   buyerName?: string; // Tên khách hàng
   buyerPhone?: string; // Điện thoại khách hàng
-  buyerAddress?: string; // Địa chỉ khách hàng
-  buyerProvince?: string; // Tỉnh / thành
-  buyerDistrict?: string; // Quận / huyện
-  buyerWard?: string; // Phường / xã
-  buyerProvinceId?: string; // Mã Tỉnh / thành
-  buyerDistrictId?: string; // Mã Quận / huyện
-  buyerWardId?: string; // Mã Phường / xã
+  buyerAddress: string; // Địa chỉ khách hàng
+  buyerProvince: string; // Tỉnh / thành
+  buyerDistrict: string; // Quận / huyện
+  buyerWard: string; // Phường / xã
+  buyerProvinceId: string; // Mã Tỉnh / thành
+  buyerDistrictId: string; // Mã Quận / huyện
+  buyerWardId: string; // Mã Phường / xã
   sellerBonusPoint?: number; // Điểm thường người bán
   buyerBonusPoint?: number; // Điểm thưởng người mua
   fromMemberId: string; // Shoper bán chéo
@@ -91,12 +91,12 @@ const orderSchema = new Schema(
     buyerId: { type: Schema.Types.ObjectId, ref: "Customer" },
     buyerName: { type: String, required: true },
     buyerPhone: { type: String, required: true },
-    buyerAddress: { type: String, required: true },
-    buyerProvince: { type: String, required: true },
-    buyerDistrict: { type: String, required: true },
+    buyerAddress: { type: String},
+    buyerProvince: { type: String},
+    buyerDistrict: { type: String},
     buyerWard: { type: String },
-    buyerProvinceId: { type: String, required: true },
-    buyerDistrictId: { type: String, required: true },
+    buyerProvinceId: { type: String},
+    buyerDistrictId: { type: String},
     buyerWardId: { type: String },
     sellerBonusPoint: { type: Number, default: 0, min: 0 },
     buyerBonusPoint: { type: Number, default: 0, min: 0 },

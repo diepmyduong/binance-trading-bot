@@ -6,6 +6,7 @@ const schema = gql`
     getAllOrder(q: QueryGetListInput): OrderPageData
     getOneOrder(id: ID!): Order
     getAllDeliveryMethod: [DeliveryMethod]
+    getAllPaymentMethod: [PaymentMethod]
     getAllShipService(shipMethod:String!):[ShipServicePricing]
   }
 
@@ -17,6 +18,11 @@ const schema = gql`
     deliveryOrder(orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order
     # adjustOrderRewardPoint(orderId: ID!, value: Float!): Order
     # updateOrderPayment(orderId: ID!, paymentStatus: String!): Order
+  }
+
+  type PaymentMethod{
+    value: String
+    label: String
   }
 
   type DeliveryMethod {
@@ -37,8 +43,8 @@ const schema = gql`
     buyerName: String
     buyerPhone: String
     buyerAddress: String
-    buyerProvinceId: String!
-    buyerDistrictId: String!
+    buyerProvinceId: String
+    buyerDistrictId: String
     buyerWardId: String
     shipMethod: String!
     paymentMethod: String!
@@ -49,9 +55,9 @@ const schema = gql`
     items: [OrderItemInput]!
     buyerName: String!
     buyerPhone: String!
-    buyerAddress: String!
-    buyerProvinceId: String!
-    buyerDistrictId: String!
+    buyerAddress: String
+    buyerProvinceId: String
+    buyerDistrictId: String
     buyerWardId: String
     shipMethod: String!
     paymentMethod: String!

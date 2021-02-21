@@ -61,6 +61,10 @@ class DeliveryRoute extends BaseRoute {
     });
     order.deliveryInfo.status = deliveryLog.status;
     order.deliveryInfo.statusName = deliveryLog.statusName;
+
+    // kiểm tra hoàn
+
+
     await order.save();
     res.sendStatus(200);
   }

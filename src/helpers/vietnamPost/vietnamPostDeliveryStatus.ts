@@ -1,3 +1,5 @@
+import { OrderStatus } from "../../graphql/modules/order/order.model";
+
 export const VietnamPostDeliveryStatusDetail = {
   10: "Đơn hàng đã xóa",
   20: "Gửi sang hệ thống MyVNPOST thành công",
@@ -35,5 +37,14 @@ export function GetVietnamPostDeliveryStatusText(status: string) {
       return "Nhận tiền COD và nhập vào hệ thống";
     case ["120"].includes(status):
       return "Đã nhận tiền COD. Hoàn tất đơn hàng.";
+  }
+}
+
+export function GetOrderStatusByPostDeliveryStatus(status: string) {
+  switch (true) {
+    case ["120"].includes(status):
+      return OrderStatus.COMPLETED;
+    case ["170"].includes(status): // phát hoàn cho người gửi thành công
+      return OrderStatus.RETURNED;
   }
 }

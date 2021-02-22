@@ -1,3 +1,4 @@
+import { helpers } from "faker";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../helpers";
 import { Context } from "../../context";
@@ -31,6 +32,8 @@ const Mutation = {
       throw ErrorHelper.requestDataInvalid(".Email không đúng định dạng");
 
     const helper = new AddressDeliveryHelper(new AddressDeliveryModel(data));
+
+    helper.addressDelivery.code = data.code || (await AddressDeliveryHelper.generateCode());
 
     await Promise.all([
       AddressHelper.setProvinceName(helper.addressDelivery),

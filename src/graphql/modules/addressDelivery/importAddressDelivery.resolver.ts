@@ -13,6 +13,7 @@ import { AddressDeliveryImportingLogModel } from "../addressDeliveryImportingLog
 import { AddressDeliveryModel } from "./addressDelivery.model";
 
 const STT = "STT";
+const CODE = "Mã địa điểm";
 const NAME = "Tên";
 const PHONE = "Số điện thoại";
 const EMAIL = "Email";
@@ -24,6 +25,7 @@ const LINE = "line";
 
 const HEADER_DATA = [
   STT,
+  CODE,
   NAME,
   PHONE,
   EMAIL,
@@ -56,11 +58,12 @@ const importAddressDelivery = async (
 
   for (let i = 0; i < data.length; i++) {
     let success = true;
-    let error = null;
+    const errors = [];
 
     const excelRow = data[i];
     const line = excelRow[LINE];
     const no = excelRow[STT];
+    const code = excelRow[CODE];
     const name = excelRow[NAME];
     const phone = excelRow[PHONE];
     const email = excelRow[EMAIL];
@@ -69,34 +72,45 @@ const importAddressDelivery = async (
     const district = excelRow[DISTRICT];
     const ward = excelRow[WARD];
 
+    if (!code) {
+      success = false;
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${CODE}]`).message);
+    }
+
+    const addressDelivery = await AddressDeliveryModel.findOne({code});
+    if(addressDelivery){
+      success = false;
+      errors.push(ErrorHelper.duplicateError(`Cột [${CODE}]`).message);
+    }
+
     if (!name) {
       success = false;
-      error = ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${NAME}]`).message;
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${NAME}]`).message);
     }
 
     if (email && !UtilsHelper.isEmail(email)) {
       success = false;
-      error = ErrorHelper.requestDataInvalid(".Email không đúng định dạng").message;
+      errors.push(ErrorHelper.requestDataInvalid(".Email không đúng định dạng").message);
     }
 
     if (!address) {
       success = false;
-      error = ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${ADDRESS}]`).message;
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${ADDRESS}]`).message);
     }
 
     if (!province) {
       success = true;
-      error = ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${PROVINCE}]`).message;
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${PROVINCE}]`).message);
     }
 
     if (!district) {
       success = true;
-      error = ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${DISTRICT}]`).message;
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${DISTRICT}]`).message);
     }
 
     if (!ward) {
       success = true;
-      error = ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${WARD}]`).message;
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${WARD}]`).message);
     }
 
     let existedAddress = null;
@@ -109,13 +123,14 @@ const importAddressDelivery = async (
 
       if (!existedAddress) {
         success = true;
-        error = ErrorHelper.mgQueryFailed(`. Không tìm thấy [${PROVINCE} , ${DISTRICT}, ${WARD}] này.`).message;
+        errors.push(ErrorHelper.mgQueryFailed(`. Không tìm thấy [${PROVINCE} , ${DISTRICT}, ${WARD}] này.`).message);
       }
     }
 
     const params = {
       line,
       no,
+      code,
       name,
       phone,
       email,
@@ -126,7 +141,9 @@ const importAddressDelivery = async (
       ...existedAddress
     };
 
-    logList.push({ ...params, success, error });
+    // console.log('params',params);
+
+    logList.push({ ...params, success, error:errors.join('\n') });
     if(success === true){
       dataList.push(new AddressDeliveryModel(params));
     }

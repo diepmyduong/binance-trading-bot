@@ -21,6 +21,8 @@ const schema = gql`
   }
 
   input CreateAddressStorehouseInput {
+    "Mã kho"
+    code: String
     "Tên kho"
     name: String
     "Số điện thoại"
@@ -75,6 +77,8 @@ const schema = gql`
     createdAt: DateTime
     updatedAt: DateTime
 
+    "Mã kho"
+    code: String
     "Tên kho"
     name: String
     "Số điện thoại"

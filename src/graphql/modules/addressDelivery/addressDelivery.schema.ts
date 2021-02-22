@@ -17,6 +17,8 @@ const schema = gql`
   }
 
   input CreateAddressDeliveryInput {
+    "Mã địa điểm"
+    code: String
     "Tên địa điểm"
     name: String
     "Số điện thoại"
@@ -70,7 +72,8 @@ const schema = gql`
     id: String
     createdAt: DateTime
     updatedAt: DateTime
-
+    "Mã địa điểm"
+    code: String
     "Tên giao nhận"
     name: String
     "Số điện thoại"

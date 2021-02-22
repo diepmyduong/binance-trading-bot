@@ -310,7 +310,8 @@ export class OrderHelper {
     const member = await MemberModel.findById(this.order.sellerId);
     const { addressStorehouseIds } = member;
     const storehouses = await AddressStorehouseModel.find({
-      _id: { $in: addressStorehouseIds }, activated : true
+      _id: { $in: addressStorehouseIds },
+      activated: true,
     });
 
     switch (this.order.shipMethod) {
@@ -324,18 +325,37 @@ export class OrderHelper {
         if (storehouses.length === 0)
           throw ErrorHelper.somethingWentWrong("Chưa cấu hình chi nhánh kho");
 
+        // console.log('member.addressDeliveryIds',member.addressDeliveryIds);
+
+        if (
+          member.addressDeliveryIds.findIndex(
+            (id) => id.toString() == this.order.addressDeliveryId.toString()
+          ) === -1
+        ) {
+          throw ErrorHelper.somethingWentWrong("Mã địa điểm nhận không đúng");
+        }
+
+        const addressDelivery = await AddressDeliveryModel.findOne({
+          _id: this.order.addressDeliveryId,
+          activated: true,
+        });
+
+        if (!addressDelivery) {
+          throw ErrorHelper.mgRecoredNotFound("Địa điểm nhận hàng");
+        }
+
         let serviceList = [];
         const deliveryServices = VietnamPostHelper.getListServiceOffline();
-        console.log("-------------------------->storehouses", storehouses);
+        // console.log("-------------------------->storehouses", storehouses);
         for (const storehouse of storehouses) {
           let MaTinhGui = storehouse.provinceId,
             MaQuanGui = storehouse.districtId,
-            MaTinhNhan = this.order.buyerProvinceId,
-            MaQuanNhan = this.order.buyerDistrictId;
+            MaTinhNhan = addressDelivery.provinceId,
+            MaQuanNhan = addressDelivery.districtId;
 
-        this.order.shipfee = await SettingHelper.load(
-          SettingKey.DELIVERY_POST_FEE
-        );
+          this.order.shipfee = await SettingHelper.load(
+            SettingKey.DELIVERY_POST_FEE
+          );
 
           const moneyCollection =
             this.order.paymentMethod == PaymentMethod.COD
@@ -370,7 +390,7 @@ export class OrderHelper {
             LstDichVuCongThem,
           };
 
-          // console.log('data',data);
+          console.log("data", data);
 
           let service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
             data
@@ -396,15 +416,17 @@ export class OrderHelper {
         );
 
         const cheapestService = serviceList[0];
-        console.log("-------------------------->cheapestService", cheapestService);
-        
+        console.log(
+          "-------------------------->cheapestService",
+          cheapestService
+        );
+
         // đơn này ko thu tiền ship
         this.order.deliveryInfo = {
           date: new Date(),
           serviceId: serviceCode,
-          serviceName: deliveryServices.find(
-            ({ code }) => code == serviceCode
-          ).name,
+          serviceName: deliveryServices.find(({ code }) => code == serviceCode)
+            .name,
           partnerFee: cheapestService.TongCuocBaoGomDVCT,
           time: cheapestService.ThoiGianPhatDuKien,
           addressStorehouseId: cheapestService.storehouse._id,
@@ -422,6 +444,8 @@ export class OrderHelper {
           hasReport: false, // báo phát
           hasInvoice: false, // dịch vụ hóa đơn
         };
+
+        console.log(this.order);
 
         break;
 

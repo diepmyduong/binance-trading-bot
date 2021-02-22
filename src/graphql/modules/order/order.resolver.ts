@@ -7,16 +7,8 @@ import { CustomerLoader } from "../customer/customer.model";
 import { MemberLoader } from "../member/member.model";
 import { OrderItemLoader } from "../orderItem/orderItem.model";
 import { UserLoader } from "../user/user.model";
-import { IProduct, ProductModel, ProductType } from "../product/product.model";
 import { orderService } from "./order.service";
-import { ErrorHelper } from "../../../base/error";
-import { onOrderTestSendMess } from "../../../events/onOrderTestSendMess.event";
-import { onOrderedProduct } from "../../../events/onOrderedProduct.event";
-import { CampaignLoader, CampaignModel } from "../campaign/campaign.model";
-import { IOrder, OrderStatus, PaymentMethod, ShipMethod } from "./order.model";
-// import { CustomerModel } from "../customer/customer.model";
-// import { CrossSaleModel } from "../crossSale/crossSale.model";
-// import { crossSaleService } from "../crossSale/crossSale.service";
+import { IOrder, OrderStatus, PaymentMethod, ShipMethod, ShipMethods } from "./order.model";
 
 const Query = {
   // neu la admin
@@ -59,6 +51,7 @@ const Order = {
   fromMember: GraphQLHelper.loadById(MemberLoader, "fromMemberId"),
   updatedByUser: GraphQLHelper.loadById(UserLoader, "updatedByUserId"),
   buyer: GraphQLHelper.loadById(CustomerLoader, "buyerId"),
+  
   paymentMethodText: async (root: IOrder, args: any, context: Context) => {
     switch (root.paymentMethod) {
       case PaymentMethod.COD:
@@ -84,16 +77,8 @@ const Order = {
   // },
   
   shipMethodText: async (root: IOrder, args: any, context: Context) => {
-    switch (root.shipMethod) {
-      case ShipMethod.NONE:
-        return `Không vận chuyển`;
-      case ShipMethod.POST:
-        return `Nhận hàng tại chị nhánh`;
-      case ShipMethod.VNPOST:
-        return `Giao hàng VN-Post`;
-      default:
-        return root.shipMethod;
-    }
+    const shipMethod = ShipMethods.find(ship => ship.value === root.shipMethod);
+    return shipMethod ? shipMethod.label : "Không có phương thức này";
   },
   statusText: async (root: IOrder, args: any, context: Context) => {
     switch (root.status) {

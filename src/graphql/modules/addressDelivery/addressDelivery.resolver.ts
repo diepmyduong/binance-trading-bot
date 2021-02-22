@@ -3,6 +3,7 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../helpers";
 import { Context } from "../../context";
 import { AddressHelper } from "../address/address.helper";
+import { MemberModel } from "../member/member.model";
 import { AddressDeliveryHelper } from "./addressDelivery.helper";
 import {
   AddressDeliveryModel,
@@ -33,7 +34,8 @@ const Mutation = {
 
     const helper = new AddressDeliveryHelper(new AddressDeliveryModel(data));
 
-    helper.addressDelivery.code = data.code || (await AddressDeliveryHelper.generateCode());
+    helper.addressDelivery.code =
+      data.code || (await AddressDeliveryHelper.generateCode());
 
     await Promise.all([
       AddressHelper.setProvinceName(helper.addressDelivery),
@@ -69,9 +71,18 @@ const Mutation = {
         return await helper.addressDelivery.save();
       });
   },
+  
   deleteOneAddressDelivery: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     const { id } = args;
+    const existedMembersbyAddress = await MemberModel.find({
+      addressDeliveryIds: { $in: [id] },
+    });
+    // console.log('existedMembersbyAddress',existedMembersbyAddress);
+    if (existedMembersbyAddress.length > 0) {
+      throw ErrorHelper.requestDataInvalid(". Địa điểm này đang được sử dụng");
+    }
+
     return await addressDeliveryService.deleteOne(id);
   },
 };

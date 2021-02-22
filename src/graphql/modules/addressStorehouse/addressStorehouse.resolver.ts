@@ -79,7 +79,12 @@ const Mutation = {
   ) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     const { id } = args;
-    // const existedMemberfromAddress = MemberModel.find({ addressStorehouseIds :{$in:[] })
+    const existedMembersbyAddress = await MemberModel.find({ addressStorehouseIds :{$in:[id] }});
+    // console.log('existedMembersbyAddress',existedMembersbyAddress);
+    if(existedMembersbyAddress.length > 0){
+      throw ErrorHelper.requestDataInvalid(". Kho này đang được sử dụng");
+    }
+    
     return await addressStorehouseService.deleteOne(id);
   },
 };

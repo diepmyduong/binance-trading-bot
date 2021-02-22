@@ -1,20 +1,22 @@
 import { SettingKey } from "../../../../configs/settingData";
 import { Context } from "../../../context";
 import { SettingHelper } from "../../setting/setting.helper";
-import { ShipMethod } from "../order.model";
+import { ShipMethod, ShipMethods } from "../order.model";
 
 const Query = {
   getAllDeliveryMethod: async (root: any, args: any, context: Context) => {
     const [enabledVNPost] = await SettingHelper.loadMany([
       SettingKey.DELIVERY_ENABLED_VNPOST,
     ]);
-    return [
-      { label: "Tự liên hệ", value: ShipMethod.NONE},
-      { label: "Nhận hàng tại chi nhánh", value: ShipMethod.POST },
-      ...(enabledVNPost
-        ? [{ label: "Giao hàng VNPost", value: ShipMethod.VNPOST }]
-        : []),
-    ];
+    const shipMethods = ShipMethods;
+    const results = [];
+    results.push(shipMethods.find((ship) => ship.value === ShipMethod.NONE));
+    results.push(shipMethods.find((ship) => ship.value === ShipMethod.POST));
+    enabledVNPost &&
+      results.push(
+        shipMethods.find((ship) => ship.value === ShipMethod.VNPOST)
+      );
+    return results;
   },
 };
 

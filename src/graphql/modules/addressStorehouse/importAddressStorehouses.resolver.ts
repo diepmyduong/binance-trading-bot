@@ -46,14 +46,23 @@ const importAddressStorehouses = async (
   const { stream } = await excelFile;
   const result: any = await getDataFromExcelStream(stream);
   let [data, errors] = modifyExcelData(result, HEADER_DATA);
-  errors = errors.map(err => new AddressStorehouseImportingLogModel({...err}));
-  
+
+  errors = errors.map(
+    (err) => new AddressStorehouseImportingLogModel({ ...err })
+  );
   const dataList = [],
     logList = [...errors];
 
-  for (let i = 0; i < data.length; i++) {
-    const excelRow = data[i];
+  const logLength = await AddressStorehouseImportingLogModel.count({});
+  if (logLength > 0) await AddressStorehouseImportingLogModel.collection.drop();
 
+  for (let i = 0; i < data.length; i++) {
+    let success = true;
+    let bypass = true;
+    const errors = [];
+    let existedAddress = null;
+
+    const excelRow = data[i];
     const line = excelRow[LINE];
     const no = excelRow[STT];
     const name = excelRow[NAME];
@@ -63,6 +72,74 @@ const importAddressStorehouses = async (
     const province = excelRow[PROVINCE];
     const district = excelRow[DISTRICT];
     const ward = excelRow[WARD];
+
+    if (!name) {
+      success = false;
+      bypass = false;
+      errors.push(
+        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${NAME}]`).message
+      );
+    }
+
+    if (email && !UtilsHelper.isEmail(email)) {
+      success = false;
+      bypass = false;
+      errors.push(
+        ErrorHelper.requestDataInvalid(".Email không đúng định dạng").message
+      );
+    }
+
+    if (!address) {
+      success = false;
+      bypass = false;
+      errors.push(
+        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${ADDRESS}]`)
+          .message
+      );
+    }
+
+    if (bypass) {
+      if (!province) {
+        success = true;
+        errors.push(
+          ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${PROVINCE}]`)
+            .message
+        );
+      }
+
+      if (!district) {
+        success = true;
+        errors.push(
+          ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${DISTRICT}]`)
+            .message
+        );
+      }
+
+      if (!ward) {
+        success = true;
+        errors.push(
+          ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${WARD}]`)
+            .message
+        );
+      }
+
+      if (province && district && ward) {
+        existedAddress = await AddressModel.findOne({
+          province,
+          district,
+          ward,
+        });
+
+        if (!existedAddress) {
+          success = true;
+          errors.push(
+            ErrorHelper.mgQueryFailed(
+              `. Không tìm thấy [${PROVINCE} , ${DISTRICT}, ${WARD}] này.`
+            ).message
+          );
+        }
+      }
+    }
 
     const params = {
       line,
@@ -74,95 +151,17 @@ const importAddressStorehouses = async (
       province,
       district,
       ward,
+      ...existedAddress,
     };
 
-    if (!name) {
-      logList.push(new AddressStorehouseImportingLogModel({
-        ...params,
-        success: false,
-        error: ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${NAME}]`).message
-      }));
-      continue;
+    logList.push({ ...params, success, error:errors.join('\n') });
+    if (success === true) {
+      dataList.push(new AddressStorehouseModel(params));
     }
-
-
-    if (!address) {
-      logList.push(new AddressStorehouseImportingLogModel({
-        ...params,
-        success: false,
-        error: ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${ADDRESS}]`).message
-      }));
-      continue;
-    }
-
-
-    if (!province) {
-      logList.push(new AddressStorehouseImportingLogModel({
-        ...params,
-        success: false,
-        error: ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${PROVINCE}]`).message
-      }));
-      continue;
-    }
-
-    if (!district) {
-      logList.push(new AddressStorehouseImportingLogModel({
-        ...params,
-        success: false,
-        error: ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${DISTRICT}]`).message
-      }));
-      continue;
-    }
-
-    if (!ward) {
-      logList.push(new AddressStorehouseImportingLogModel({
-        ...params,
-        success: false,
-        error: ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${WARD}]`).message
-      }));
-      continue;
-    }
-
-
-    if (params.email && !UtilsHelper.isEmail(params.email)) {
-      logList.push(new AddressStorehouseImportingLogModel({
-        ...params,
-        success: false,
-        error: ErrorHelper.requestDataInvalid(".Email không đúng định dạng")
-          .message,
-      }));
-      continue;
-    }
-
-    const existedAddress = await AddressModel.findOne({
-      province,
-      district,
-      ward,
-    });
-
-    if (!existedAddress) {
-      logList.push(new AddressStorehouseImportingLogModel({
-        ...params,
-        success: false,
-        error: ErrorHelper.mgQueryFailed(
-          `. Không tìm thấy [${PROVINCE} , ${DISTRICT}, ${WARD}] này.`
-        ).message,
-      }));
-      continue;
-    }
-
-    const { provinceId, wardId, districtId } = existedAddress;
-    logList.push({ ...params, provinceId, wardId, districtId, success: true });
-    dataList.push(
-      new AddressStorehouseModel({ ...params, provinceId, wardId, districtId })
-    );
   }
 
   // console.log("dataList", dataList);
   // console.log("logList", logList);
-
-  const logLength = await AddressStorehouseImportingLogModel.count({});
-  if (logLength > 0) await AddressStorehouseImportingLogModel.collection.drop();
 
   await Promise.all([
     AddressStorehouseModel.insertMany(dataList),

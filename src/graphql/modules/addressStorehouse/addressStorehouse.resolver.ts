@@ -36,6 +36,8 @@ const Mutation = {
       new AddressStorehouseModel(data)
     );
 
+    helper.addressStorehouse.code = data.code || (await AddressStorehouseHelper.generateCode());
+
     await Promise.all([
       AddressHelper.setProvinceName(helper.addressStorehouse),
       AddressHelper.setDistrictName(helper.addressStorehouse),

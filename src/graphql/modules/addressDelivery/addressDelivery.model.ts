@@ -4,6 +4,7 @@ import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 const Schema = mongoose.Schema;
 
 export type IAddressDelivery = BaseDocument & {
+  code?: string; // Mã địa điểm
   name?: string; // Tên địa điểm
   phone: string; // Số điện thoại
   email: string; // Email liên hệ
@@ -20,6 +21,7 @@ export type IAddressDelivery = BaseDocument & {
 //địa điểm nhận hàng
 const addressDeliverySchema = new Schema(
   {
+    code: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     phone: { type: String },
     email: { type: String },

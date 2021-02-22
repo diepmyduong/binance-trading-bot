@@ -15,6 +15,7 @@ import { AddressModel } from "../address/address.model";
 import { addressStorehouseService } from "./addressStorehouse.service";
 
 const STT = "STT";
+const CODE = "Mã kho";
 const NAME = "Tên kho";
 const PHONE = "Số điện thoại";
 const EMAIL = "Email";
@@ -26,6 +27,7 @@ const LINE = "line";
 
 const HEADER_DATA = [
   STT,
+  CODE,
   NAME,
   PHONE,
   EMAIL,
@@ -65,6 +67,7 @@ const importAddressStorehouses = async (
     const excelRow = data[i];
     const line = excelRow[LINE];
     const no = excelRow[STT];
+    const code = excelRow[CODE];
     const name = excelRow[NAME];
     const phone = excelRow[PHONE];
     const email = excelRow[EMAIL];
@@ -72,6 +75,18 @@ const importAddressStorehouses = async (
     const province = excelRow[PROVINCE];
     const district = excelRow[DISTRICT];
     const ward = excelRow[WARD];
+
+    if (!code) {
+      success = false;
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${CODE}]`).message);
+    }
+
+    const addressStorehouse = await AddressStorehouseModel.findOne({code});
+    if(addressStorehouse){
+      success = false;
+      errors.push(ErrorHelper.duplicateError(`Cột [${CODE}]`).message);
+    }
+
 
     if (!name) {
       success = false;
@@ -144,6 +159,7 @@ const importAddressStorehouses = async (
     const params = {
       line,
       no,
+      code,
       name,
       phone,
       email,

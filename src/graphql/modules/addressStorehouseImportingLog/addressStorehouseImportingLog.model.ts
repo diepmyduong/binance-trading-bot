@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 
 export type IAddressStorehouseImportingLog = BaseDocument & {
   no: string;
+  code: string;
   name: string;
   phone: string;
   email: string;
@@ -20,6 +21,7 @@ export type IAddressStorehouseImportingLog = BaseDocument & {
 const addressStorehouseImportingLogSchema = new Schema(
   {
     no: { type: String },
+    code: {type: String},
     name: { type: String },
     phone: { type: String },
     email: { type: String },

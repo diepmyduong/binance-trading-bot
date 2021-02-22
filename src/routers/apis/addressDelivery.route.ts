@@ -19,6 +19,7 @@ import { AddressDeliveryModel } from "../../graphql/modules/addressDelivery/addr
 import { IAddressDelivery } from "../../graphql/modules/addressDelivery/addressDelivery.model";
 
 const STT = "STT";
+const CODE = "Mã";
 const NAME = "Tên";
 const PHONE = "Số điện thoại";
 const EMAIL = "Email";
@@ -64,6 +65,7 @@ class AddressDeliveryRoute extends BaseRoute {
     const sheet = workbook.addWorksheet(SHEET_NAME);
     const excelHeaders = [
       STT,
+      CODE,
       NAME,
       PHONE,
       EMAIL,
@@ -80,6 +82,7 @@ class AddressDeliveryRoute extends BaseRoute {
     data.forEach((d: IAddressDeliveryImportingLog, i) => {
       const dataRow = [
         d.no,
+        d.code,
         d.name,
         d.phone,
         d.email,
@@ -110,6 +113,7 @@ class AddressDeliveryRoute extends BaseRoute {
     const sheet = workbook.addWorksheet(SHEET_NAME);
     const excelHeaders = [
       STT,
+      CODE,
       NAME,
       PHONE,
       EMAIL,
@@ -124,6 +128,7 @@ class AddressDeliveryRoute extends BaseRoute {
       
       const dataRow = [
         i+1,
+        d.code,
         d.name,
         d.phone,
         d.email,

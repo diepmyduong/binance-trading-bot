@@ -28,12 +28,17 @@ const Mutation = {
     }
     
     const existedAddresses = await AddressStorehouseModel.find({
-      _id: { $in: addressStorehouseIds },
+      _id: { $in: addressStorehouseIds }, activated : true
     });
+
+    if ( Object.keys(existedAddresses).length  === 0) {
+      throw ErrorHelper.recoredNotFound("Kho");
+    }
+    
     const validAddesses =
       Object.keys(existedAddresses).length === storehouseLength;
     if (!validAddesses) {
-      throw ErrorHelper.recoredNotFound("mã kho");
+      throw ErrorHelper.mgQueryFailed("Có 1 hoặc nhiều kho không còn hiệu lực.");
     }
 
 

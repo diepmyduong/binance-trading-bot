@@ -15,11 +15,14 @@ const Mutation = {
     if (deliveryAddressLength === 0) {
       throw ErrorHelper.requestDataInvalid("mã kho");
     }
-    const existedAddresses = await AddressDeliveryModel.find({_id: {$in: addressDeliveryIds}});
+    const existedAddresses = await AddressDeliveryModel.find({_id: {$in: addressDeliveryIds}, activated : true});
+    if ( Object.keys(existedAddresses).length  === 0) {
+      throw ErrorHelper.recoredNotFound("Địa điểm nhận");
+    }
     const validAddesses =
       Object.keys(existedAddresses).length === deliveryAddressLength;
     if (!validAddesses) {
-      throw ErrorHelper.recoredNotFound("mã địa điểm nhận");
+      throw ErrorHelper.mgQueryFailed("Có 1 hoặc nhiều địa điểm nhận không còn hiệu lực.");
     }
     const data = {addressDeliveryIds};
 

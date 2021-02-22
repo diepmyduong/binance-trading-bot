@@ -326,6 +326,7 @@ export class OrderHelper {
 
         let serviceList = [];
         const deliveryServices = VietnamPostHelper.getListServiceOffline();
+        console.log("-------------------------->storehouses", storehouses);
         for (const storehouse of storehouses) {
           let MaTinhGui = storehouse.provinceId,
             MaQuanGui = storehouse.districtId,
@@ -391,7 +392,7 @@ export class OrderHelper {
         );
 
         const cheapestService = serviceList[0];
-        // console.log("cheapestService", cheapestService);
+        console.log("-------------------------->cheapestService", cheapestService);
 
         this.order.shipfee = await SettingHelper.load(
           SettingKey.DELIVERY_POST_FEE

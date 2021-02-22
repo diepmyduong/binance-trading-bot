@@ -18,6 +18,13 @@ const ADDRESS = "Địa chỉ";
 const PROVINCE = "Tỉnh/Thành";
 const DISTRICT = "Quận/Huyện";
 const WARD = "Phường/Xã";
+const RESULT = "Kết quả";
+const ERROR = "Lỗi";
+const THANH_CONG = "Thành công"; 
+const LOI = "Lỗi";
+const RESULT_IMPORT_FILE_NAME = "ket_qua_import_kho_hang";
+const RESULT_FILE_NAME = "danh_sach_kho_hang";
+const SHEET_NAME = "Sheet1";
 
 class AddressStorehouseRoute extends BaseRoute {
   constructor() {
@@ -39,7 +46,7 @@ class AddressStorehouseRoute extends BaseRoute {
     data = [...data, ...logs];
 
     const workbook = new Excel.Workbook();
-    const sheet = workbook.addWorksheet("Sheet1");
+    const sheet = workbook.addWorksheet(SHEET_NAME);
     const excelHeaders = [
       STT,
       NAME,
@@ -48,7 +55,9 @@ class AddressStorehouseRoute extends BaseRoute {
       ADDRESS,
       PROVINCE,
       DISTRICT,
-      WARD
+      WARD,
+      RESULT,
+      ERROR
     ]
     
     sheet.addRow(excelHeaders);
@@ -63,14 +72,14 @@ class AddressStorehouseRoute extends BaseRoute {
         d.province,
         d.district,
         d.ward,
-        d.success ? "Thành công" : "Lỗi",
+        d.success ? THANH_CONG : LOI,
         d.error
       ];
 
       sheet.addRow(dataRow);
     });
 
-    return UtilsHelper.responseExcel(res, workbook, `ket_qua_import_kho_hang`);
+    return UtilsHelper.responseExcel(res, workbook, RESULT_IMPORT_FILE_NAME);
   }
 
   async exportToExcel(req: Request, res: Response) {
@@ -83,7 +92,7 @@ class AddressStorehouseRoute extends BaseRoute {
     data = [...data, ...logs];
 
     const workbook = new Excel.Workbook();
-    const sheet = workbook.addWorksheet("Sheet1");
+    const sheet = workbook.addWorksheet(SHEET_NAME);
     const excelHeaders = [
       STT,
       NAME,
@@ -112,7 +121,7 @@ class AddressStorehouseRoute extends BaseRoute {
       sheet.addRow(dataRow);
     });
 
-    return UtilsHelper.responseExcel(res, workbook, `danh_sach_kho_hang`);
+    return UtilsHelper.responseExcel(res, workbook, RESULT_FILE_NAME);
   }
 
 }

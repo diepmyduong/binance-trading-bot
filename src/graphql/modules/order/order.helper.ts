@@ -310,7 +310,7 @@ export class OrderHelper {
     const member = await MemberModel.findById(this.order.sellerId);
     const { addressStorehouseIds } = member;
     const storehouses = await AddressStorehouseModel.find({
-      _id: { $in: addressStorehouseIds },
+      _id: { $in: addressStorehouseIds }, activated : true
     });
 
     switch (this.order.shipMethod) {
@@ -332,6 +332,10 @@ export class OrderHelper {
             MaQuanGui = storehouse.districtId,
             MaTinhNhan = this.order.buyerProvinceId,
             MaQuanNhan = this.order.buyerDistrictId;
+
+        this.order.shipfee = await SettingHelper.load(
+          SettingKey.DELIVERY_POST_FEE
+        );
 
           const moneyCollection =
             this.order.paymentMethod == PaymentMethod.COD
@@ -362,7 +366,7 @@ export class OrderHelper {
             Rong: productWidth,
             Cao: productHeight,
             KhoiLuong: productWeight,
-            ThuCuocNguoiNhan: this.order.paymentMethod == PaymentMethod.COD,
+            ThuCuocNguoiNhan: false,
             LstDichVuCongThem,
           };
 
@@ -393,10 +397,6 @@ export class OrderHelper {
 
         const cheapestService = serviceList[0];
         console.log("-------------------------->cheapestService", cheapestService);
-
-        this.order.shipfee = await SettingHelper.load(
-          SettingKey.DELIVERY_POST_FEE
-        );
         
         // đơn này ko thu tiền ship
         this.order.deliveryInfo = {

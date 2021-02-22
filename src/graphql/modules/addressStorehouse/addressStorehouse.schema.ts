@@ -41,6 +41,8 @@ const schema = gql`
     district: String
     "Phường/xã"
     ward: String
+    "Hiệu lực"
+    activated: Boolean
   }
 
   input UpdateAddressStorehouseInput {
@@ -51,19 +53,21 @@ const schema = gql`
     "Email liên hệ"
     email: String
     "Địa chỉ kho"
-    address: String!
+    address: String
     "Mã Phường/xã"
-    wardId: String!
+    wardId: String
     "Mã Quận/huyện"
-    districtId: String!
+    districtId: String
     "Mã Tỉnh/thành"
-    provinceId: String!
+    provinceId: String
     "Tỉnh/thành"
     province: String
     "Quận/huyện"
     district: String
     "Phường/xã"
     ward: String
+    "Hiệu lực"
+    activated: Boolean
   }
 
   type AddressStorehouse {
@@ -78,19 +82,21 @@ const schema = gql`
     "Email liên hệ"
     email: String
     "Địa chỉ kho"
-    address: String!
+    address: String
     "Mã Phường/xã"
-    wardId: String!
+    wardId: String
     "Mã Quận/huyện"
-    districtId: String!
+    districtId: String
     "Mã Tỉnh/thành"
-    provinceId: String!
+    provinceId: String
     "Tỉnh/thành"
     province: String
     "Quận/huyện"
     district: String
     "Phường/xã"
     ward: String
+    "Hiệu lực"
+    activated: Boolean
   }
 
   type AddressStorehousePageData {

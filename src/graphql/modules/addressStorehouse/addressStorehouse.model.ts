@@ -8,12 +8,13 @@ export type IAddressStorehouse = BaseDocument & {
   phone: string; // Số điện thoại
   email: string; // Email liên hệ
   address?: string; // Địa chỉ kho
-  wardId?: string; // Mã Phường/xã
-  districtId?: string; // Mã Quận/huyện
-  provinceId?: string; // Mã Tỉnh/thành
+  wardId: string; // Mã Phường/xã
+  districtId: string; // Mã Quận/huyện
+  provinceId: string; // Mã Tỉnh/thành
   province: string; // Tỉnh/thành
   district: string; // Quận/huyện
   ward: string; // Phường/xã
+  activated: boolean; // hiệu lực hay không hiệu lực
 };
 
 //địa điểm kho
@@ -23,12 +24,13 @@ const addressStorehouseSchema = new Schema(
     phone: { type: String },
     email: { type: String },
     address: { type: String, required: true },
-    wardId: { type: String, required: true },
-    districtId: { type: String, required: true },
-    provinceId: { type: String, required: true },
+    wardId: { type: String},
+    districtId: { type: String },
+    provinceId: { type: String },
     province: { type: String },
     district: { type: String },
     ward: { type: String },
+    activated: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

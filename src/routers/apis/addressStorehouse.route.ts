@@ -11,6 +11,7 @@ import { IAddressStorehouse } from "../../graphql/modules/addressStorehouse/addr
 import { AddressStorehouseModel } from "../../graphql/modules/addressStorehouse/addressStorehouse.model";
 
 const STT = "STT";
+const CODE = "Mã kho";
 const NAME = "Tên kho";
 const PHONE = "Số điện thoại";
 const EMAIL = "Email";
@@ -49,6 +50,7 @@ class AddressStorehouseRoute extends BaseRoute {
     const sheet = workbook.addWorksheet(SHEET_NAME);
     const excelHeaders = [
       STT,
+      CODE,
       NAME,
       PHONE,
       EMAIL,
@@ -65,6 +67,7 @@ class AddressStorehouseRoute extends BaseRoute {
     data.forEach((d: IAddressStorehouseImportingLog, i) => {
       const dataRow = [
         d.no,
+        d.code,
         d.name,
         d.phone,
         d.email,
@@ -95,6 +98,7 @@ class AddressStorehouseRoute extends BaseRoute {
     const sheet = workbook.addWorksheet(SHEET_NAME);
     const excelHeaders = [
       STT,
+      CODE,
       NAME,
       PHONE,
       EMAIL,
@@ -109,6 +113,7 @@ class AddressStorehouseRoute extends BaseRoute {
       
       const dataRow = [
         i+1,
+        d.code,
         d.name,
         d.phone,
         d.email,

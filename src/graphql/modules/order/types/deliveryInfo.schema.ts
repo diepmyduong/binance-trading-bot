@@ -42,8 +42,10 @@ export default gql`
     showOrderAmount: Boolean
     "Báo phát"
     hasReport: Boolean
-    "dịch vụ hóa đơn"
+    "Dịch vụ hóa đơn"
     hasInvoice: Boolean
+    "Thu cước người nhận"
+    hasReceiverPayFreight: Boolean
   }
 
   input DeliveryInfoInput {
@@ -58,7 +60,7 @@ export default gql`
     "Dịch vụ hóa đơn"
     hasInvoice: Boolean
     "Thu cước người nhận"
-    IsReceiverPayFreight: Boolean
+    hasReceiverPayFreight: Boolean
     "Ghi chú"
     note: String
     "Dịch vụ chuyển phát"

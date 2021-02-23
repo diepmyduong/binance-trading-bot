@@ -24,7 +24,7 @@ export const OfflineServices = [
     code: "TMDT_EMS_TK",
     name: " TMĐT-Chuyển phát nhanh EMS tiết kiệm (liên vùng)",
   },
-]
+];
 
 export enum AdditionService {
   GIAO_HANG_THU_TIEN = 3,
@@ -130,10 +130,10 @@ export type ICreateDeliveryOrderResponse = {
   SenderAddress: string;
   SenderTel: string;
   ReceiverFullname: string; //"Nguyễn Văn B";
-  ReceiverFullAddress: string;//null;
-  ReceiverAddress: string;//"123 Đoàn Văn Bơ ,Phường 15, Quận 4";
-  ReceiverOldAddress: string;//null;
-  ReceiverTel: string;//"0284088888";
+  ReceiverFullAddress: string; //null;
+  ReceiverAddress: string; //"123 Đoàn Văn Bơ ,Phường 15, Quận 4";
+  ReceiverOldAddress: string; //null;
+  ReceiverTel: string; //"0284088888";
   Weight: number; //: 0,
   WeightConvert: number; // 1000,
   Width: number; //0,
@@ -355,14 +355,14 @@ export class VietnamPostHelper {
         "h-token": configs.vietnamPost.token,
       },
     }).then((res) => {
-      const data : ICreateDeliveryOrderResponse= get(res, "data");
+      const data: ICreateDeliveryOrderResponse = get(res, "data");
       // console.log("data", data);
       return {
-        orderNumber: data.ItemCode,
+        orderNumber: data.Id,
         moneyCollection: data.CodAmountEvaluation,
         exchangeWeight: data.WeightConvert,
         moneyTotal: data.CodAmountEvaluation,
-        moneyTotalFee: data.TotalFreightIncludeVatEvaluation,//t
+        moneyTotalFee: data.TotalFreightIncludeVatEvaluation, //t
         // moneyFee: bill["MONEY_FEE"],
         // moneyCollectionFee: bill["MONEY_COLLECTION_FEE"],
         // moneyOtherFee: bill["MONEY_OTHER_FEE"],
@@ -371,7 +371,7 @@ export class VietnamPostHelper {
         // KPI_HT: bill["KPI_HT"],
         receiverProvince: data.ReceiverProvince,
         receiverDistrict: data.ReceiverDistrictId,
-        receiverWard: data.ReceiverWardId
+        receiverWard: data.ReceiverWardId,
       } as Bill;
     });
   }
@@ -384,6 +384,16 @@ export class VietnamPostHelper {
     const result: any = Axios.post(
       `${this.host}/TinhCuoc/TinhTatCaCuoc`,
       data
+    ).then((res) => get(res, "data"));
+    return result;
+  }
+
+  static cancelOrder(orderId: string) {
+    //https://donhang.vnpost.vn/api/api/TinhCuoc/TinhTatCaCuoc
+    // console.log("data", data);
+    const result: any = Axios.post(
+      `${this.host}/Order/CancelOrder?${orderId}`,
+      {}
     ).then((res) => get(res, "data"));
     return result;
   }

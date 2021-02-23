@@ -17,7 +17,7 @@ const Mutation = {
 
     // User customer - PENDING    -> CANCELED
 
-    // User member   PENDING- DELIVERING -> CANCEL DELIVERING -> CHECK DELIVERING CANCELED -> CANCELED
+    // User member PENDING- DELIVERING -> CANCEL DELIVERING -> CHECK DELIVERING CANCELED -> CANCELED
 
     if (context.isMember()) {
       params.sellerId = context.id;
@@ -42,8 +42,8 @@ const Mutation = {
 
     if (context.isMember) {
       if (order.status.toString() !== OrderStatus.PENDING 
-        || order.status.toString() !== OrderStatus.DELIVERING 
-        || order.status.toString() !== OrderStatus.RETURNED
+        && order.status.toString() !== OrderStatus.DELIVERING 
+        && order.status.toString() !== OrderStatus.RETURNED
         ) {
         throw ErrorHelper.somethingWentWrong(
           "Đơn hàng này đã hủy hoặc đã hoàn tất."
@@ -51,9 +51,19 @@ const Mutation = {
       }
     }
 
-    if(order.status !== OrderStatus.DELIVERING){
+    if(order.status === OrderStatus.DELIVERING){
     //  CANCEL DELIVERING -> CHECK DELIVERING CANCELED
-       const result = await VietnamPostHelper.cancelOrder(order.deliveryInfo.orderNumber);
+      await VietnamPostHelper.cancelOrder(order.deliveryInfo.orderNumber);
+      // console.log('result',result);
+      const checkCanceledOrder = await VietnamPostHelper.getOrdersByItemCodes([order.deliveryInfo.orderCode]);
+      // 60: "Đơn hàng đã hủy",
+      // 61: "Báo hủy đơn hàng",
+      // 62: "Đã nhận báo hủy",
+      if(![60, 62].includes(checkCanceledOrder.OrderStatusId)){
+        throw ErrorHelper.somethingWentWrong(
+          "Không thể hủy đơn hàng vì vận đơn hủy không thành công"
+        );
+      }
     }
 
     // Thực hiện huỷ đơn

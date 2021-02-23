@@ -1,14 +1,7 @@
 import { Job } from "agenda";
 import moment from "moment-timezone";
-
-import { onGivenGifts } from "../../events/onGivenGifts.event";
-import { CustomerModel } from "../../graphql/modules/customer/customer.model";
-import { CustomerPointLogType } from "../../graphql/modules/customerPointLog/customerPointLog.model";
-import { customerPointLogService } from "../../graphql/modules/customerPointLog/customerPointLog.service";
-import { EVoucherItemModel } from "../../graphql/modules/eVoucherItem/eVoucherItem.model";
-import { LuckyWheelModel, WheelStatus } from "../../graphql/modules/luckyWheel/luckyWheel.model";
-import { GiftType, ILuckyWheelGift, LuckyWheelGiftModel } from "../../graphql/modules/luckyWheelGift/luckyWheelGift.model";
-import { ILuckyWheelResult, LuckyWheelResultModel, SpinStatus } from "../../graphql/modules/luckyWheelResult/luckyWheelResult.model";
+import { SettingKey } from "../../configs/settingData";
+import { SettingHelper } from "../../graphql/modules/setting/setting.helper";
 import { Agenda } from "../agenda";
 
 
@@ -27,7 +20,8 @@ export class OrderJob {
 export default OrderJob;
 
 const doBusiness = async() => {
-
+  
+  const host = await SettingHelper.load(SettingKey.DELIVERY_ENABLED_AUTO_APPROVE_ORDER);
 }
 
 // (async () => {

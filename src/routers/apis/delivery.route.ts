@@ -16,6 +16,7 @@ import { auth } from "../../middleware/auth";
 import { GetVietnamPostDeliveryStatusText } from "../../helpers/vietnamPost/vietnamPostDeliveryStatus";
 import moment from 'moment';
 
+const DEFAULT_WEBHOOK_ORDER_ID = "00000000-0000-0000-0000-000000000000"
 class DeliveryRoute extends BaseRoute {
   constructor() {
     super();
@@ -38,6 +39,11 @@ class DeliveryRoute extends BaseRoute {
     // if (!req.body.SignData || req.body.SignData != configs.viettelPost.secret)
     //         throw ErrorHelper.badToken();
     const data: webhookResponseData = JSON.parse(Data);
+
+    if(data.Id === DEFAULT_WEBHOOK_ORDER_ID){
+      return res.sendStatus(200);
+    }
+
     const order = await OrderModel.findOne({code:data.OrderCode});
     if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
 

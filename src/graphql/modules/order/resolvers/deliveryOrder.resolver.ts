@@ -2,16 +2,11 @@ import { ROLES } from "../../../../constants/role.const";
 import { Context } from "../../../context";
 import { OrderModel, OrderStatus, ShipMethod } from "../order.model";
 import { ErrorHelper } from "../../../../helpers/error.helper";
-// import { OrderStatus } from "../../../../constants/model.const";
 import {
   VietnamPostHelper,
   AdditionService,
-  ServiceCode,
 } from "../../../../helpers/vietnamPost/vietnamPost.helper";
-import { BranchModel } from "../../branch/branch.model";
 import { AddressModel } from "../../address/address.model";
-import { privateDecrypt } from "crypto";
-import { OrderItemModel } from "../../orderItem/orderItem.model";
 import { AddressStorehouseModel } from "../../addressStorehouse/addressStorehouse.model";
 import { MemberModel } from "../../member/member.model";
 import { CustomerModel } from "../../customer/customer.model";
@@ -116,7 +111,15 @@ const Mutation = {
     };
 
     const bill = await VietnamPostHelper.createDeliveryOrder(data);
+    
+    order.deliveryInfo = {
+      ...deliveryInfo
+    };
 
+    // orderCode: { type: String }, // itemCode
+    // orderNumber: { type: String }, // id
+
+    order.deliveryInfo.orderCode = bill.orderCode;
     order.deliveryInfo.orderNumber = bill.orderNumber;
     order.deliveryInfo.partnerFee = bill.moneyTotalFee;
     return await order.save();

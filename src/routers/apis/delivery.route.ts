@@ -25,6 +25,7 @@ class DeliveryRoute extends BaseRoute {
   }
 
   async webHook(req: Request, res: Response) {
+    console.log('test hook');
     WebhookLogModel.create({
       name: "delivery",
       body: req.body,
@@ -36,7 +37,6 @@ class DeliveryRoute extends BaseRoute {
 
     // if (!req.body.SignData || req.body.SignData != configs.viettelPost.secret)
     //         throw ErrorHelper.badToken();
-
     const data: webhookResponseData = JSON.parse(Data);
     const order = await OrderModel.findById(data.OrderCode);
     if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");

@@ -25,7 +25,7 @@ class DeliveryRoute extends BaseRoute {
   }
 
   async webHook(req: Request, res: Response) {
-    console.log('test hook');
+    // console.log('test hook');
     WebhookLogModel.create({
       name: "delivery",
       body: req.body,
@@ -38,17 +38,22 @@ class DeliveryRoute extends BaseRoute {
     // if (!req.body.SignData || req.body.SignData != configs.viettelPost.secret)
     //         throw ErrorHelper.badToken();
     const data: webhookResponseData = JSON.parse(Data);
-    const order = await OrderModel.findById(data.OrderCode);
+    const order = await OrderModel.findOne({code:data.OrderCode});
     if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
+
+    // console.log('data',data);
+    // console.log('order',order);
+
     const deliveryLog = await DeliveryLogModel.create({
       orderId: order._id,
-      // customerId: order.customerId,
-      orderNumber: data.ItemCode,
+      customerId: order.buyerId,
+      orderCode : data.ItemCode, 
+      orderNumber: data.Id,
       shipMethod: ShipMethod.VNPOST,
       status: data.OrderStatusId.toString(),
       statusName: GetVietnamPostDeliveryStatusText(data.OrderStatusId.toString()),
       statusDetail: GetVietnamPostDeliveryStatusText(data.OrderStatusId.toString()),
-      statusDate: moment(data.LastUpdateTime, "DD/MM/YYYY HH:mm:ss"),
+      statusDate: moment(data.LastUpdateTime),
       note: data.DeliveryNote,
       moneyCollection: parseFloat(data.CodAmountEvaluation),
       moneyFeeCOD: data.CodFreight,
@@ -57,13 +62,10 @@ class DeliveryRoute extends BaseRoute {
       productWeight: data.WeightConvert,
       orderService: data.ServiceDisplayName,
       // locationCurrently: data["LOCALION_CURRENTLY"],
-      // detail: data["DETAIL"],
+      detail: data.PackageContent,
     });
     order.deliveryInfo.status = deliveryLog.status;
     order.deliveryInfo.statusName = deliveryLog.statusName;
-
-    // kiểm tra hoàn
-
 
     await order.save();
     res.sendStatus(200);

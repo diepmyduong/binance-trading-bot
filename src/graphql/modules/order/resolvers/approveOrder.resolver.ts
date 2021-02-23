@@ -9,19 +9,18 @@ import { OrderItemModel } from "../../orderItem/orderItem.model";
 
 //[Backend] Cung cấp API duyệt lịch sử đăng ký dịch vụ SMS
 const approveOrder = async (root: any, args: any, context: Context) => {
-  // AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const { id } = args;
 
   if (!id) throw ErrorHelper.requestDataInvalid("mã đơn hàng");
 
   let params: any = {
     _id: id,
-    status: OrderStatus.PENDING,
+    status: {$in:[OrderStatus.PENDING , OrderStatus.DELIVERING ]},
   };
 
   if (context.isMember()) {
     params.sellerId = context.id;
-    // params.isPrimary = false;
   }
 
   const order = await OrderModel.findOne(params);

@@ -1,4 +1,5 @@
 import { gql } from "apollo-server-express";
+import { OfflineServices, VietnamPostHelper } from "../../../../helpers";
 
 export default gql`
   type DeliveryInfo {
@@ -6,7 +7,7 @@ export default gql`
     date: DateTime
     "Kho giao hàng"
     storeId: ID
-    "Mã Dịch vụ giao hàng"
+    "Mã Dịch vụ giao hàng ${OfflineServices.map(s=>`${s.code}-${s.name}`).join('|')}"
     serviceId: String
     "Tên Dịch vụ giao hàng"
     serviceName: String
@@ -52,7 +53,7 @@ export default gql`
     "Có cho xem hàng"
     isPackageViewable: Boolean
     "Giao hàng thu tiền (COD)"
-    hasMoneyCollection: Boolean
+    hasMoneyCollection: Boolean!
     "Khai giá"
     showOrderAmount: Boolean
     "Báo phát"
@@ -63,19 +64,19 @@ export default gql`
     hasReceiverPayFreight: Boolean
     "Ghi chú"
     note: String
-    "Dịch vụ chuyển phát"
-    serviceId: String
-    "Kho giao hàng"
-    addressStorehouseId: ID,
+    "Mã Dịch vụ giao hàng ${OfflineServices.map(s=>`${s.code}-${s.name}`).join('|')}"
+    serviceId: String!
+    "Mã kho giao hàng"
+    addressStorehouseId: ID!
     "Nội dung hàng hóa"
-    productName: String,
+    productName: String!
     "Trọng lượng (gr)"
-    productWeight: Float,
+    productWeight: Float!
     "Chiều dài (cm)"
-    productLength: Float,
+    productLength: Float!
     "Chiều rộng (cm)"
-    productWidth: Float,
+    productWidth: Float!
     "Chiều cao (cm)"
-    productHeight: Float,
+    productHeight: Float!
   }
 `;

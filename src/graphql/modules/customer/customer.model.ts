@@ -18,6 +18,7 @@ const customerPageAccountSchema = new Schema({
   pageId: { type: String, required: true },
   memberId: { type: Schema.Types.ObjectId, ref: "Member", required: true },
 });
+
 export type ICustomer = BaseDocument & {
   code?: string; // Mã khách hàng
   name?: string; // Tên khách hàng

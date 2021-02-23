@@ -17,11 +17,13 @@ export type DeliveryInfo = {
   productLength?: number; // Chiều dài
   productWidth?: number; // Chiều rộng
   productHeight?: number; // Chiều cao
-  isPackageViewable: boolean, // Có cho xem hàng
-  hasMoneyCollection: boolean, // Giao hàng thu tiền (COD)
-  showOrderAmount: boolean, //khai giá,
-  hasReport: boolean, // báo phát
-  hasInvoice: boolean, // dịch vụ hóa đơn
+  isPackageViewable: boolean; // Có cho xem hàng
+  hasMoneyCollection: boolean; // Giao hàng thu tiền (COD)
+  showOrderAmount: boolean; //khai giá,
+  hasReport: boolean; // báo phát
+  hasInvoice: boolean; // dịch vụ hóa đơn
+  hasReceiverPayFreight: boolean; // thu cước người nhận 
+  isUrbanDelivery: boolean // giao hang noi thanh
 };
 
 export const DeliveryInfoSchema = new Schema({
@@ -46,4 +48,6 @@ export const DeliveryInfoSchema = new Schema({
   showOrderAmount:  { type: Boolean, default:false }, //khai giá,
   hasReport:  { type: Boolean, default:false }, // báo phát
   hasInvoice:  { type: Boolean, default:false }, // dịch vụ hóa đơn
+  hasReceiverPayFreight:  { type: Boolean, default:false }, // dịch vụ hóa đơn
+  isUrbanDelivery: {type:Boolean , default: false}
 });

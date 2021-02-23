@@ -1,12 +1,13 @@
 import { gql } from "apollo-server-express";
-import { CumulativePointLogType } from "./cumulativePointLog.model";
+import { CustomerCommissionLogType } from "./customerCommissionLog.model";
 
 const schema = gql`
   extend type Query {
-    getAllCumulativePointLog(q: QueryGetListInput): CumulativePointLogPageData
+    getAllCustomerCommissionLog(q: QueryGetListInput): CustomerCommissionLogPageData
+
   }
 
-  type CumulativePointLog {
+  type CustomerCommissionLog {
     id: String
     createdAt: DateTime
     updatedAt: DateTime
@@ -17,7 +18,7 @@ const schema = gql`
     customerId: ID
     "Giá trị"
     value: String
-    "Loại sự kiện ${Object.values(CumulativePointLogType).join('|')}"
+    "Loại sự kiện ${Object.values(CustomerCommissionLogType).join('|')}"
     type: String
     "Mã đơn hàng"
     orderId: ID
@@ -33,8 +34,8 @@ const schema = gql`
     regisService: RegisService
   }
 
-  type CumulativePointLogPageData {
-    data: [CumulativePointLog]
+  type CustomerCommissionLogPageData {
+    data: [CustomerCommissionLog]
     total: Int
     pagination: Pagination
   }

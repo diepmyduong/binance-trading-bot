@@ -42,12 +42,8 @@ const Mutation = {
     // Chuyển trạng thái đơn hàng
     order.status = OrderStatus.DELIVERING;
 
-    //nếu post vận đơn
-    //lấy ra địa chỉ kho chính + addressDeliveryId -> deliveryInfo chạy đơn
+  
 
-    // nếu vnpost vận đơn
-    // lấy địa chỉ kho trong delivery info -> deliveryInfo chạy đơn
-    
     const store = await AddressStorehouseModel.findById(
       deliveryInfo.addressStorehouseId
     );
@@ -57,6 +53,8 @@ const Mutation = {
 
     let receiverAddress = null;
 
+    //nếu post vận đơn
+    //lấy ra địa chỉ kho chính + addressDeliveryId -> deliveryInfo chạy đơn
     if (order.shipMethod === ShipMethod.POST){
       const addressDelivery = await AddressDeliveryModel.findById(order.addressDeliveryId);
       receiverAddress = await AddressModel.findOne({
@@ -64,6 +62,8 @@ const Mutation = {
       });
     }
 
+    // nếu vnpost vận đơn
+    // lấy địa chỉ kho trong delivery info -> deliveryInfo chạy đơn
     if (order.shipMethod === ShipMethod.VNPOST){
       receiverAddress = await AddressModel.findOne({
         wardId: order.buyerWardId,
@@ -107,7 +107,7 @@ const Mutation = {
       LengthEvaluation: deliveryInfo.productLength.toString(), // chiều dài
       HeightEvaluation: deliveryInfo.productHeight.toString(), // chiều cao
       VASIds, //[3, 1, 2, 4]; // dịch vụ cộng thêm
-      IsReceiverPayFreight: deliveryInfo.IsReceiverPayFreight, // thu cước người nhận
+      IsReceiverPayFreight: deliveryInfo.hasReceiverPayFreight, // thu cước người nhận
       CustomerNote: deliveryInfo.note, // yêu cầu khác      
       VendorId: 1, // 1;
       PickupType: 1, //1;

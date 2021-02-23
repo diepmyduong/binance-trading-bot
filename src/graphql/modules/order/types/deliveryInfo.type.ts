@@ -7,6 +7,7 @@ export type DeliveryInfo = {
   serviceName?: string; // Tên dịch vụ giao hàng
   time?: string; // Thời gian dự kiến
   partnerFee?: number; // Phí giao hàng trả cho đối tác
+  orderCode?: string; // Mã vận đơn định danh
   orderNumber?: string; // Mã vận đơn
   status?: string; // Trạng thái giao hàng
   statusName?: string; // Tên tình trạng
@@ -33,7 +34,8 @@ export const DeliveryInfoSchema = new Schema({
   serviceName: { type: String },
   time: { type: String },
   partnerFee: { type: Number, min: 0, default: 0 },
-  orderNumber: { type: String },
+  orderCode: { type: String }, // itemCode
+  orderNumber: { type: String }, // id
   status: { type: String },
   statusName: { type: String },
   note: { type: String },

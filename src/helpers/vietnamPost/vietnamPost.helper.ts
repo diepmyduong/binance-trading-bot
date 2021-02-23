@@ -358,6 +358,7 @@ export class VietnamPostHelper {
       const data: ICreateDeliveryOrderResponse = get(res, "data");
       // console.log("data", data);
       return {
+        orderCode: data.ItemCode,
         orderNumber: data.Id,
         moneyCollection: data.CodAmountEvaluation,
         exchangeWeight: data.WeightConvert,
@@ -396,6 +397,21 @@ export class VietnamPostHelper {
       {}
     ).then((res) => get(res, "data"));
     return result;
+  }
+
+  static getAnOrderByItemCode(itemCode: string) {
+    //https://donhang.vnpost.vn/api/api/TinhCuoc/TinhTatCaCuoc
+    // console.log("data", data);
+    const result: any = Axios.post(
+      `${this.host}/Order/GetListOrderByManagerWithCustomCode`,
+      {
+        PageSize: 1,
+        ListItemCode: [itemCode],
+      }
+    ).then((res) => get(res, "data"));
+    console.log("result.data", result.data);
+    const data = result.data.items[0];
+    return data;
   }
 
   // static getPriceAll({
@@ -635,6 +651,7 @@ type Inventory = {
 };
 
 type Bill = {
+  orderCode: string;
   orderNumber: string;
   moneyCollection: number;
   exchangeWeight: number;

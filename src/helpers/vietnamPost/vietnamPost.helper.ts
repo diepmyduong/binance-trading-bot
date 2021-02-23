@@ -390,28 +390,32 @@ export class VietnamPostHelper {
   }
 
   static cancelOrder(orderId: string) {
-    //https://donhang.vnpost.vn/api/api/TinhCuoc/TinhTatCaCuoc
-    // console.log("data", data);
+    console.log('testcancelOrdercancelOrdercancelOrder')
     const result: any = Axios.post(
-      `${this.host}/Order/CancelOrder?${orderId}`,
-      {}
+      `${this.host}/Order/CancelOrder?orderId=${orderId}`,
+      {},{
+        headers: {
+          "h-token": configs.vietnamPost.token,
+        }
+      }
     ).then((res) => get(res, "data"));
     return result;
   }
 
-  static getAnOrderByItemCode(itemCode: string) {
+  static getOrdersByItemCodes(itemCodes: string[]) {
     //https://donhang.vnpost.vn/api/api/TinhCuoc/TinhTatCaCuoc
-    // console.log("data", data);
     const result: any = Axios.post(
       `${this.host}/Order/GetListOrderByManagerWithCustomCode`,
       {
         PageSize: 1,
-        ListItemCode: [itemCode],
+        ListItemCode: itemCodes,
+      }, {
+        headers: {
+          "h-token": configs.vietnamPost.token,
+        },
       }
     ).then((res) => get(res, "data"));
-    console.log("result.data", result.data);
-    const data = result.data.items[0];
-    return data;
+    return result;
   }
 
   // static getPriceAll({

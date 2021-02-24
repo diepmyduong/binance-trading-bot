@@ -9,28 +9,44 @@ export enum ServiceCode {
   EMS = "EMS", //"Chuyển phát nhanh",
   BK = "BK", //"Chuyển phát thường",
   ECOD = "ECOD", //ECOD
+  DONG_GIA = "DONG_GIA", //đồng giá
   TMDT_EMS = "TMDT_EMS", //"TMĐT-Chuyển phát nhanh EMS",
   TMDT_BK = "TMDT_BK", //TMĐT-Chuyển phát tiêu chuẩn
   TMDT_EMS_TK = "TMDT_EMS_TK", // TMĐT-Chuyển phát nhanh EMS tiết kiệm (liên vùng)
 }
 
-export const OfflineServices = [
-  { code: "EMS", name: "Chuyển phát nhanh" },
-  { code: "BK", name: "Chuyển phát thường" },
-  { code: "ECOD", name: "ECOD" },
-  { code: "TMDT_EMS", name: "TMĐT-Chuyển phát nhanh EMS" },
-  { code: "TMDT_BK", name: "TMĐT-Chuyển phát tiêu chuẩn" },
+export const DeliveryServices = [
+  { code: ServiceCode.EMS, name: "Chuyển phát nhanh" },
+  { code: ServiceCode.BK, name: "Chuyển phát thường" },
+  { code: ServiceCode.DONG_GIA, name: "Đồng giá" },
+  { code: ServiceCode.ECOD, name: "ECOD" },
+  { code: ServiceCode.TMDT_EMS, name: "TMĐT-Chuyển phát nhanh EMS" },
+  { code: ServiceCode.TMDT_BK, name: "TMĐT-Chuyển phát tiêu chuẩn" },
   {
-    code: "TMDT_EMS_TK",
-    name: " TMĐT-Chuyển phát nhanh EMS tiết kiệm (liên vùng)",
+    code: ServiceCode.TMDT_EMS_TK,
+    name: "TMĐT-Chuyển phát nhanh EMS tiết kiệm (liên vùng)",
   },
 ];
 
-export enum AdditionService {
-  GIAO_HANG_THU_TIEN = 3,
-  BAO_PHAT = 2,
-  DICH_VU_HOA_DON = 4,
+export enum AddressType {
+  NHA_RIENG = 1,
+  CO_QUAN = 2,
 }
+
+export const AddressTypes = [
+  { code: AddressType.NHA_RIENG, name: "Nhà riêng" },
+  { code: AddressType.CO_QUAN, name: "Cơ quan" },
+];
+
+export enum PickupType {
+  PICK_UP = 1,
+  DROP_OFF = 2,
+}
+
+export const PickupTypes = [
+  { code: PickupType.PICK_UP, name: "Thu gom tận nơi" },
+  { code: PickupType.DROP_OFF, name: "Gửi hàng tại bưu cục" },
+];
 
 export type IWardTypeResponse = {
   MaPhuongXa: string;
@@ -68,42 +84,44 @@ export type IServiceResponse = {
 };
 
 export type ICreateDeliveryOrderRequest = {
+  SenderFullname?: string; // tên người gửi *
+  SenderTel?: string; // Số điện thoại người gửi * (maxlength: 50)
+  SenderAddress?: string; // địa chỉ gửi *
+  SenderWardId?: string; // mã phường người gửi *
+  SenderProvinceId?: string; // mã tỉnh người gửi *
+  SenderDistrictId?: string; // mã quận người gửi *
+
+  ReceiverFullname?: string; // tên người nhận *
+  ReceiverAddress?: string; // địa chỉ nhận *
+  ReceiverTel?: string; // phone người nhận *
+  ReceiverProvinceId?: string; // mã tỉnh người nhận *
+  ReceiverDistrictId?: string; // mã quận người nhận *
+  ReceiverWardId?: string; // mã phường người nhận *
+
+  ReceiverAddressType: AddressType; // Kiểu địa chỉ người nhận: 1 Nhà riêng, 2: Cơ quan Nếu không có thông tin thì để null
+
+  ServiceName?: ServiceCode; //"BK"; // tên dịch vụ *
+
   OrderCode: string; // mã đơn hàng
-  VendorId: number; // 1;
-  PickupType: number; //1;
-  IsPackageViewable: boolean; // cho xem hàng
   PackageContent: string; //"Món hàng A + Món hàng B"; // nội dung hàng
-  ServiceName: string; //"BK"; // tên dịch vụ
-  SenderFullname: string; // tên người gửi
-  SenderAddress: string; // địa chỉ gửi
-  SenderTel: string; // phone người gửi
-  SenderProvinceId: string; // mã tỉnh người gửi
-  SenderDistrictId: string; // mã quận người gửi
-  SenderWardId: string; // mã phường người gửi
-  ReceiverFullname: string; // tên người nhận
-  ReceiverAddress: string; // địa chỉ nhận
-  ReceiverTel: string; // phone người nhận
-  ReceiverProvinceId: string; // mã tỉnh người nhận
-  ReceiverDistrictId: string; // mã quận người nhận
-  ReceiverWardId: string; // mã phường người nhận
-  CodAmountEvaluation: string; // giá trị tiền thu hộ
-  OrderAmountEvaluation: string; // giá trị đơn hàng
-  WeightEvaluation: string; // cân nặng
-  WidthEvaluation: string; // chiều rộng
-  LengthEvaluation: string; // chiều dài
-  HeightEvaluation: string; // chiều cao
-  VASIds: number[]; //[3, 1, 2, 4]; // dịch vụ cộng thêm
-  // 0: {IDDichVuCongThem: 3, TenDichVuCongThem: "Giao hàng thu tiền", Sotien: 0, CuocDVCT: 17000}
-  // 1: {IDDichVuCongThem: 1, TenDichVuCongThem: "Khai giá", Sotien: 0, CuocDVCT: 16500}
-  // 2: {IDDichVuCongThem: 2, TenDichVuCongThem: "Báo phát", Sotien: 0, CuocDVCT: 5500}
-  // 3: {IDDichVuCongThem: 4, TenDichVuCongThem: "Dịch vụ hóa đơn", Sotien: 0, CuocDVCT: 11000}
-  IsReceiverPayFreight: boolean; // thu cước người nhận
+
+  WeightEvaluation?: number; // cân nặng *
+  WidthEvaluation: number; // chiều rộng
+  LengthEvaluation: number; // chiều dài
+  HeightEvaluation: number; // chiều cao
+
+  CodAmountEvaluation: number; // tiền thu hộ tạm tính
+
+  IsPackageViewable?: boolean; // cho xem hàng
+
+  PickupType?: PickupType; //1;
+
+  OrderAmountEvaluation: number; // giá trị đơn hàng tạm tính
+
+  IsReceiverPayFreight: boolean; // Cộng thêm cước vào tiền thu hộ
   CustomerNote: string; // yêu cầu khác
-  DraftOrderId: string; // đơn nháp id
-  IsDeleteDraft: boolean; // true; // xóa đơn nháp
-  LstImageId: []; // danh sách hàng ảnh
-  SenderAddressType: number; // loại địa chỉ người gửi
-  ReceiverAddressType: number; // loại địa chỉ người nhận
+  UseBaoPhat: boolean;
+  UseHoaDon: boolean;
 };
 
 export type ICreateDeliveryOrderResponse = {
@@ -178,7 +196,7 @@ export type ICreateDeliveryOrderResponse = {
   ShippingFreightEvaluation: number;
   VasFreightEvaluation: number;
   CodFreightEvaluation: number;
-  VendorId: number;
+  VendorId: string;
   SenderProvinceId: string;
   SenderProvince: string;
   ReceiverProvinceId: string;
@@ -323,10 +341,6 @@ export class VietnamPostHelper {
     return result;
   }
 
-  static getListServiceOffline() {
-    return OfflineServices;
-  }
-
   static getListService() {
     const url = `${this.host}/CustomerOrder/GetListDichVuChuyenPhatDonLe`;
     return Axios.get(url, {
@@ -356,24 +370,7 @@ export class VietnamPostHelper {
       },
     }).then((res) => {
       const data: ICreateDeliveryOrderResponse = get(res, "data");
-      // console.log("data", data);
-      return {
-        orderCode: data.ItemCode,
-        orderNumber: data.Id,
-        moneyCollection: data.CodAmountEvaluation,
-        exchangeWeight: data.WeightConvert,
-        moneyTotal: data.CodAmountEvaluation,
-        moneyTotalFee: data.TotalFreightIncludeVatEvaluation, //t
-        // moneyFee: bill["MONEY_FEE"],
-        // moneyCollectionFee: bill["MONEY_COLLECTION_FEE"],
-        // moneyOtherFee: bill["MONEY_OTHER_FEE"],
-        // moneyVAS: bill["MONEY_VAS"],
-        // moneyVAT: bill["MONEY_VAT"],
-        // KPI_HT: bill["KPI_HT"],
-        receiverProvince: data.ReceiverProvince,
-        receiverDistrict: data.ReceiverDistrictId,
-        receiverWard: data.ReceiverWardId,
-      } as Bill;
+      return data;
     });
   }
 
@@ -390,13 +387,14 @@ export class VietnamPostHelper {
   }
 
   static cancelOrder(orderId: string) {
-    console.log('testcancelOrdercancelOrdercancelOrder')
+    console.log("testcancelOrdercancelOrdercancelOrder");
     const result: any = Axios.post(
       `${this.host}/Order/CancelOrder?orderId=${orderId}`,
-      {},{
+      {},
+      {
         headers: {
           "h-token": configs.vietnamPost.token,
-        }
+        },
       }
     ).then((res) => get(res, "data"));
     return result;
@@ -409,7 +407,8 @@ export class VietnamPostHelper {
       {
         PageSize: 1,
         ListItemCode: itemCodes,
-      }, {
+      },
+      {
         headers: {
           "h-token": configs.vietnamPost.token,
         },

@@ -50,28 +50,29 @@ class DeliveryRoute extends BaseRoute {
     // console.log('data',data);
     // console.log('order',order);
 
-    const deliveryLog = await DeliveryLogModel.create({
-      orderId: order._id,
-      customerId: order.buyerId,
-      orderCode : data.ItemCode, 
-      orderNumber: data.Id,
-      shipMethod: ShipMethod.VNPOST,
-      status: data.OrderStatusId.toString(),
-      statusName: GetVietnamPostDeliveryStatusText(data.OrderStatusId.toString()),
-      statusDetail: GetVietnamPostDeliveryStatusText(data.OrderStatusId.toString()),
-      statusDate: moment(data.LastUpdateTime),
-      note: data.DeliveryNote,
-      moneyCollection: parseFloat(data.CodAmountEvaluation),
-      moneyFeeCOD: data.CodFreight,
-      moneyTotal: data.TotalFreightIncludeVat,
-      // expectedDelivery: data["EXPECTED_DELIVERY"],
-      productWeight: data.WeightConvert,
-      orderService: data.ServiceDisplayName,
-      // locationCurrently: data["LOCALION_CURRENTLY"],
-      detail: data.PackageContent,
-    });
-    order.deliveryInfo.status = deliveryLog.status;
-    order.deliveryInfo.statusName = deliveryLog.statusName;
+    // const deliveryLog = await DeliveryLogModel.create({
+    //   orderId: order._id,
+    //   customerId: order.buyerId,
+    //   orderCode : data.ItemCode, 
+    //   orderNumber: data.Id,
+    //   shipMethod: ShipMethod.VNPOST,
+    //   status: data.OrderStatusId.toString(),
+    //   statusName: GetVietnamPostDeliveryStatusText(data.OrderStatusId.toString()),
+    //   statusDetail: GetVietnamPostDeliveryStatusText(data.OrderStatusId.toString()),
+    //   statusDate: moment(data.LastUpdateTime),
+    //   note: data.DeliveryNote,
+    //   moneyCollection: parseFloat(data.CodAmountEvaluation),
+    //   moneyFeeCOD: data.CodFreight,
+    //   moneyTotal: data.TotalFreightIncludeVat,
+    //   // expectedDelivery: data["EXPECTED_DELIVERY"],
+    //   productWeight: data.WeightConvert,
+    //   orderService: data.ServiceDisplayName,
+    //   // locationCurrently: data["LOCALION_CURRENTLY"],
+    //   detail: data.PackageContent,
+    // });
+
+    // order.deliveryInfo.status = deliveryLog.status;
+    // order.deliveryInfo.statusName = deliveryLog.statusName;
 
     await order.save();
     res.sendStatus(200);

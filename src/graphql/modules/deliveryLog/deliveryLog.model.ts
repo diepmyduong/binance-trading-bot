@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 
 export type IDeliveryLog = BaseDocument & {
   orderId?: string; // Mã đơn hàng
+  memberId?: string; // Mã người bán
   customerId?: string; // Mã khách hàng
   orderCode?: string; // Mã vận đợn
   orderNumber?: string; // Mã vận đợn
@@ -28,6 +29,7 @@ export type IDeliveryLog = BaseDocument & {
 const deliveryLogSchema = new Schema(
   {
     orderId: { type: Schema.Types.ObjectId, ref: 'Order', required: true },
+    memberId: { type: Schema.Types.ObjectId, ref: 'Member', required: true },
     customerId: { type: Schema.Types.ObjectId, ref: 'Customer', required: true },
     orderCode: { type: String, required: true },
     orderNumber: { type: String, required: true },

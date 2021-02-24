@@ -53,9 +53,9 @@ const Mutation = {
 
     if(order.status === OrderStatus.DELIVERING){
     //  CANCEL DELIVERING -> CHECK DELIVERING CANCELED
-      await VietnamPostHelper.cancelOrder(order.deliveryInfo.orderNumber);
+      await VietnamPostHelper.cancelOrder(order.deliveryInfo.orderId);
       // console.log('result',result);
-      const checkCanceledOrder = await VietnamPostHelper.getOrdersByItemCodes([order.deliveryInfo.orderCode]);
+      const checkCanceledOrder = await VietnamPostHelper.getOrdersByItemCodes([order.deliveryInfo.itemCode]);
       // 60: "Đơn hàng đã hủy",
       // 61: "Báo hủy đơn hàng",
       // 62: "Đã nhận báo hủy",

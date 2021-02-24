@@ -1,82 +1,177 @@
 import { gql } from "apollo-server-express";
-import { OfflineServices, VietnamPostHelper } from "../../../../helpers";
+import { DeliveryServices, PickupTypes, VietnamPostHelper } from "../../../../helpers";
 
 export default gql`
   type DeliveryInfo {
-    "Ngày giao hàng"
-    date: DateTime
-    "Kho giao hàng"
-    storeId: ID
-    "Mã Dịch vụ giao hàng ${OfflineServices.map(s=>`${s.code}-${s.name}`).join('|')}"
-    serviceId: String
-    "Tên Dịch vụ giao hàng"
-    serviceName: String
-    "Phí giao hàng trả cho đối tác"
-    partnerFee: Float
-    "Mã vận đơn"
-    orderNumber: String
-    "Trạng thái giao hàng"
-    status: String
-    "Tên tình trạng"
-    statusName: String
-    "Ghi chú giao hàng"
-    note: String
-    "Thời gian dự kiến"
-    time: String
-    "Tiền thu hộ"
-    moneyCollection: Float
-    "Nội dung hàng hóa"
-    productName: String
+    "Tên người gửi *"
+    senderFullname: String!
+    "Số điện thoại người gửi"
+    senderTel: String!
+    "Địa chỉ gửi"
+    senderAddress: String!
+    "Mã phường người gửi"
+    senderWardId: String!
+    "Mã tỉnh người gửi"
+    senderProvinceId: String!
+    "Mã quận người gửi"
+    senderDistrictId: String!
+
+    "Tên người nhận"
+    receiverFullname: String!
+    "Địa chỉ nhận"
+    receiverAddress: String!
+    "Phone người nhận"
+    receiverTel: String!
+    "Mã tỉnh người nhận"
+    receiverProvinceId: String!
+    "Mã quận người nhận"
+    receiverDistrictId: String!
+    "Mã phường người nhận"
+    receiverWardId: String!
+    "Loại địa chỉ người nhận '1=Nhà riêng | 2=Cơ quan | null=Không có thông tin'"
+    receiverAddressType: Int
+
+    "Mã Dịch vụ chuyển phát '${DeliveryServices.map(s=>`${s.code}-${s.name}`).join(' | ')}'"
+    serviceName: String!
+
+    "Mã hóa đơn liên quan"
+    orderCode: String
+
+    "Nội dung hàng"
+    packageContent: String
+
     "Trọng lượng (gr)"
-    productWeight: Float
-    "Chiều dài (cm)"
-    productLength: Float
+    weightEvaluation: Int!
     "Chiều rộng (cm)"
-    productWidth: Float
+    widthEvaluation: Int
+    "Chiều dài (cm)"
+    lengthEvaluation: Int
     "Chiều cao (cm)"
-    productHeight: Float
-    "Có cho xem hàng"
-    isPackageViewable: Boolean
-    "Giao hàng thu tiền (COD)"
-    hasMoneyCollection: Boolean
-    "Khai giá"
-    showOrderAmount: Boolean
+    heightEvaluation: Int
+
+    "Số tiền thu hộ"
+    codAmountEvaluation: Float
+
+    "Cho xem hàng không ?"
+    isPackageViewable: Boolean!
+
+    "Hình thức thu gom '${PickupTypes.map(s=>`${s.code}-${s.name}`).join(' | ')}'"
+    pickupType: String!
+
+    "Giá trị đơn hàng tạm tính"
+    orderAmountEvaluation: Float
+
+    "Cộng thêm cước vào phí thu hộ"
+    isReceiverPayFreight: Boolean
+
+    "Yêu cầu khác"
+    customerNote: String
+    
     "Báo phát"
-    hasReport: Boolean
-    "Dịch vụ hóa đơn"
-    hasInvoice: Boolean
-    "Thu cước người nhận"
-    hasReceiverPayFreight: Boolean
+    useBaoPhat: Boolean
+
+    "Hóa đơn"
+    useHoaDon: Boolean
+
+    "Mã khách hàng"
+    customerCode: String
+    
+    "Mã nhà cung cấp"
+    vendorId: String
+
+    "Code đơn vận"
+    itemCode: String
+    
+    "Mã đơn vận"
+    orderId: String
+
+    "Thời gian tạo đơn"
+    createTime: String
+    "Cập nhật lần cuối"
+    lastUpdateTime: String
+    "Ngày dự kiến giao hàng"
+    deliveryDateEvaluation: String
+    "Thời gian hủy đơn"
+    cancelTime: String
+    "Thời gian giao hàng"
+    deliveryTime: String
+    "Số lần báo phát"
+    deliveryTimes: Int
+    "Mã tình trạng"
+    status: String
+    "Tình trạng"
+    statusText: String
   }
 
   input DeliveryInfoInput {
-    "Có cho xem hàng"
-    isPackageViewable: Boolean
-    "Giao hàng thu tiền (COD)"
-    hasMoneyCollection: Boolean!
-    "Khai giá"
-    showOrderAmount: Boolean
-    "Báo phát"
-    hasReport: Boolean
-    "Dịch vụ hóa đơn"
-    hasInvoice: Boolean
-    "Thu cước người nhận"
-    hasReceiverPayFreight: Boolean
-    "Ghi chú"
-    note: String
-    "Mã Dịch vụ giao hàng ${OfflineServices.map(s=>`${s.code}-${s.name}`).join('|')}"
-    serviceId: String!
-    "Mã kho giao hàng"
-    addressStorehouseId: ID!
-    "Nội dung hàng hóa"
-    productName: String!
+    "Tên người gửi *"
+    senderFullname: String!
+    "Số điện thoại người gửi"
+    senderTel: String!
+    "Địa chỉ gửi"
+    senderAddress: String!
+    "Mã phường người gửi"
+    senderWardId: String!
+    "Mã tỉnh người gửi"
+    senderProvinceId: String!
+    "Mã quận người gửi"
+    senderDistrictId: String!
+
+    "Tên người nhận"
+    receiverFullname: String!
+    "Địa chỉ nhận"
+    receiverAddress: String!
+    "Phone người nhận"
+    receiverTel: String!
+    "Mã tỉnh người nhận"
+    receiverProvinceId: String!
+    "Mã quận người nhận"
+    receiverDistrictId: String!
+    "Mã phường người nhận"
+    receiverWardId: String!
+    "Loại địa chỉ người nhận '1=Nhà riêng | 2=Cơ quan | null=Không có thông tin'"
+    receiverAddressType: Int
+
+    "Mã Dịch vụ chuyển phát '${DeliveryServices.map(s=>`${s.code}-${s.name}`).join(' | ')}'"
+    serviceName: String!
+
+    "Mã hóa đơn liên quan"
+    orderCode: String
+
+    "Nội dung hàng"
+    packageContent: String
+
     "Trọng lượng (gr)"
-    productWeight: Float!
-    "Chiều dài (cm)"
-    productLength: Float!
+    weightEvaluation: Int!
     "Chiều rộng (cm)"
-    productWidth: Float!
+    widthEvaluation: Int
+    "Chiều dài (cm)"
+    lengthEvaluation: Int
     "Chiều cao (cm)"
-    productHeight: Float!
+    heightEvaluation: Int
+
+    "Số tiền thu hộ"
+    codAmountEvaluation: Float
+
+    "Cho xem hàng không ?"
+    isPackageViewable: Boolean!
+
+    "Hình thức thu gom '${PickupTypes.map(s=>`${s.code}-${s.name}`).join(' | ')}'"
+    pickupType: Int!
+
+    "Giá trị đơn hàng tạm tính"
+    orderAmountEvaluation: Float
+
+    "Cộng thêm cước vào phí thu hộ"
+    isReceiverPayFreight: Boolean
+
+    "Yêu cầu khác"
+    customerNote: String
+    
+    "Báo phát"
+    useBaoPhat: Boolean
+
+    "Hóa đơn"
+    useHoaDon: Boolean
   }
 `;

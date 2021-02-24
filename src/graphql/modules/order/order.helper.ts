@@ -5,6 +5,8 @@ import {
   ICalculateAllShipFeeRespone,
   ServiceCode,
   VietnamPostHelper,
+  DeliveryServices,
+  PickupType,
 } from "../../../helpers";
 import { AddressModel } from "../address/address.model";
 import { CounterModel } from "../counter/counter.model";
@@ -306,7 +308,7 @@ export class OrderHelper {
 
   async calculateShipfee() {
     this.order.shipfee = 0;
-    const deliveryServices = VietnamPostHelper.getListServiceOffline();
+    const deliveryServices = DeliveryServices;
     const serviceCode = await SettingHelper.load(
       SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
     );
@@ -317,6 +319,7 @@ export class OrderHelper {
       _id: { $in: addressStorehouseIds },
       activated: true,
     });
+    let deliveryInfo:any = null;
 
     switch (this.order.shipMethod) {
       case ShipMethod.NONE:
@@ -379,7 +382,7 @@ export class OrderHelper {
             });
 
           const data: ICalculateAllShipFeeRequest = {
-            MaDichVu: ServiceCode.BK,
+            MaDichVu: serviceCode,
             MaTinhGui,
             MaQuanGui,
             MaTinhNhan,
@@ -401,6 +404,7 @@ export class OrderHelper {
           servicePostList.push({
             ...service,
             storehouse,
+            addressDelivery,
             moneyCollection,
             productWeight,
             productLength,
@@ -416,33 +420,41 @@ export class OrderHelper {
         const cheapestPostService = servicePostList[0];
 
         // đơn này ko thu tiền ship
-        this.order.deliveryInfo = {
-          date: new Date(),
-          serviceId: serviceCode,
-          serviceName: deliveryServices.find(({ code }) => code == serviceCode)
-            .name,
-          partnerFee: cheapestPostService.TongCuocBaoGomDVCT,
-          time: cheapestPostService.ThoiGianPhatDuKien,
-          addressStorehouseId: cheapestPostService.storehouse._id,
-          moneyCollection: cheapestPostService.moneyCollection,
-          productName: this.order.items
-            .map((i) => `[${i.productName} - SL:${i.qty}]`)
-            .join(" "),
-          productWeight: cheapestPostService.productWeight,
-          productLength: cheapestPostService.productLength,
-          productWidth: cheapestPostService.productWidth,
-          productHeight: cheapestPostService.productHeight,
-          isPackageViewable: false, // Có cho xem hàng
-          hasMoneyCollection: this.order.paymentMethod == PaymentMethod.COD,
-          showOrderAmount: false, //khai giá,
-          hasReport: false, // báo phát
-          hasInvoice: false, // dịch vụ hóa đơn
-          hasReceiverPayFreight: false,
-          isUrbanDelivery: false
+        this.order.addressStorehouseId = cheapestPostService.storehouse._id;
+        this.order.addressDeliveryId = cheapestPostService.addressDelivery._id;
+
+        this.order.isUrbanDelivery = false;
+         deliveryInfo = {
+          serviceName: serviceCode,
+          codAmountEvaluation: cheapestPostService.moneyCollection,
+          deliveryDateEvaluation: cheapestPostService.ThoiGianPhatDuKien,
+          heightEvaluation:cheapestPostService.productHeight,
+          isReceiverPayFreight:false,
+          lengthEvaluation: cheapestPostService.productLength,
+          weightEvaluation: cheapestPostService.productWeight,
+          widthEvaluation: cheapestPostService.productWidth,
+          packageContent:this.order.items
+             .map((i) => `[${i.productName} - SL:${i.qty}]`)
+             .join(" "),
+          isPackageViewable: false,
+          pickupType:PickupType.PICK_UP,
+
+          senderFullname: member.shopName, // tên người gửi *
+          senderTel: cheapestPostService.storehouse.phone, // Số điện thoại người gửi * (maxlength: 50)
+          senderAddress: cheapestPostService.storehouse.address, // địa chỉ gửi *
+          senderWardId: cheapestPostService.storehouse.wardId, // mã phường người gửi *
+          senderProvinceId: cheapestPostService.storehouse.provinceId, // mã tỉnh người gửi *
+          senderDistrictId: cheapestPostService.storehouse.districtId, // mã quận người gửi *
+        
+          receiverFullname: this.order.buyerName, // tên người nhận *
+          receiverTel: this.order.buyerPhone, // phone người nhận *
+          receiverAddress: cheapestPostService.addressDelivery.address, // địa chỉ nhận *
+          receiverProvinceId: cheapestPostService.addressDelivery.provinceId, // mã tỉnh người nhận *
+          receiverDistrictId: cheapestPostService.addressDelivery.districtId, // mã quận người nhận *
+          receiverWardId: cheapestPostService.addressDelivery.wardId, // mã phường người nhận *
         };
 
-        // console.log(this.order);
-
+        this.order.deliveryInfo = deliveryInfo;
         break;
 
       case ShipMethod.VNPOST:
@@ -458,7 +470,7 @@ export class OrderHelper {
             MaTinhNhan = this.order.buyerProvinceId,
             MaQuanNhan = this.order.buyerDistrictId;
 
-          const moneyCollection =
+          const codAmountEvaluation =
             this.order.paymentMethod == PaymentMethod.COD
               ? this.order.subtotal
               : 0;
@@ -500,7 +512,7 @@ export class OrderHelper {
           serviceList.push({
             ...service,
             storehouse,
-            moneyCollection,
+            codAmountEvaluation,
             productWeight,
             productLength,
             productWidth,
@@ -515,45 +527,54 @@ export class OrderHelper {
         const cheapestService = serviceList[0];
         // console.log("cheapestService", cheapestService);
          // Đơn hàng nội thành - phí ship cố định
-        let isUrbanDelivery = false; 
         if (urbanStores.length > 0) {
-          isUrbanDelivery = true;
+          this.order.isUrbanDelivery = true;
           this.order.shipfee = await SettingHelper.load(
             SettingKey.DELIVERY_VNPOST_INNER_SHIP_FEE
           );
         } 
         else {
-          isUrbanDelivery = false;
+          this.order.isUrbanDelivery = false;
           this.order.shipfee = this.order.paymentMethod == PaymentMethod.COD
             ? cheapestService.TongCuocBaoGomDVCT
             : 0;
         }
+
+        this.order.addressStorehouseId = cheapestService.storehouse._id;
+
+        this.order.isUrbanDelivery = false;
+
+        deliveryInfo = {
+          serviceName: serviceCode,
+          codAmountEvaluation: cheapestService.codAmountEvaluation,
+          deliveryDateEvaluation: cheapestService.ThoiGianPhatDuKien,
+          heightEvaluation:cheapestService.productHeight,
+          isReceiverPayFreight: PaymentMethod.COD ? true : false,
+          lengthEvaluation: cheapestService.productLength,
+          weightEvaluation: cheapestService.productWeight,
+          widthEvaluation: cheapestService.productWidth,
+          packageContent:this.order.items
+             .map((i) => `[${i.productName} - SL:${i.qty}]`)
+             .join(" "),
+          isPackageViewable: false,
+          pickupType:PickupType.PICK_UP,
+
+          senderFullname: member.shopName, // tên người gửi *
+          senderTel: cheapestService.storehouse.phone, // Số điện thoại người gửi * (maxlength: 50)
+          senderAddress: cheapestService.storehouse.address, // địa chỉ gửi *
+          senderWardId: cheapestService.storehouse.wardId, // mã phường người gửi *
+          senderProvinceId: cheapestService.storehouse.provinceId, // mã tỉnh người gửi *
+          senderDistrictId: cheapestService.storehouse.districtId, // mã quận người gửi *
         
-        this.order.deliveryInfo = {
-          date: new Date(),
-          serviceId: serviceCode,
-          serviceName: deliveryServices.find(
-            ({ code }) => code == serviceCode
-          ).name,
-          partnerFee: cheapestService.TongCuocBaoGomDVCT,
-          time: cheapestService.ThoiGianPhatDuKien,
-          addressStorehouseId: cheapestService.storehouse._id,
-          moneyCollection: cheapestService.moneyCollection,
-          productName: this.order.items
-            .map((i) => `[${i.productName} - SL:${i.qty}]`)
-            .join(" "),
-          productWeight: cheapestService.productWeight,
-          productLength: cheapestService.productLength,
-          productWidth: cheapestService.productWidth,
-          productHeight: cheapestService.productHeight,
-          isPackageViewable: false, // Có cho xem hàng
-          hasMoneyCollection: this.order.paymentMethod == PaymentMethod.COD,
-          showOrderAmount: false, //khai giá,
-          hasReport: false, // báo phát
-          hasInvoice: false, // dịch vụ hóa đơn
-          hasReceiverPayFreight: isUrbanDelivery ? false : true,
-          isUrbanDelivery
+          receiverFullname: this.order.buyerName, // tên người nhận *
+          receiverAddress: this.order.buyerAddress, // địa chỉ nhận *
+          receiverTel: this.order.buyerPhone, // phone người nhận *
+          receiverProvinceId: this.order.buyerProvinceId, // mã tỉnh người nhận *
+          receiverDistrictId: this.order.buyerDistrictId, // mã quận người nhận *
+          receiverWardId: this.order.buyerWardId, // mã phường người nhận *
         };
+
+        this.order.deliveryInfo = deliveryInfo;
         break;
 
       default:

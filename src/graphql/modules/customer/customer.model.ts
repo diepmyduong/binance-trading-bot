@@ -37,6 +37,7 @@ export type ICustomer = BaseDocument & {
   districtId?: string; // Mã Quận / huyện
   wardId?: string; // Mã Phường / xã
   cumulativePoint?: number; // Điểm tích lũy
+  commissionPoint: number; // Hoa hồng cộng tác viên
   pageAccounts?: CustomerPageAccount[]; // Danh sách account facebook của người dùng
 };
 
@@ -59,6 +60,7 @@ const customerSchema = new Schema(
     districtId: { type: String },
     wardId: { type: String },
     cumulativePoint: { type: Number, default: 0 },
+    commissionPoint: { type: Number, default: 0 },
     pageAccounts: { type: [customerPageAccountSchema], default: [] },
   },
   { timestamps: true }

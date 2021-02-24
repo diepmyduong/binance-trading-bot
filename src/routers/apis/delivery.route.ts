@@ -49,9 +49,9 @@ class DeliveryRoute extends BaseRoute {
 
     // console.log('data',data);
     // console.log('order',order);
-
     const deliveryLog = await DeliveryLogModel.create({
       orderId: order._id,
+      memberId: order.sellerId,
       customerId: order.buyerId,
       deliveryCode : data.ItemCode, 
       deliveryId: data.Id,

@@ -11,7 +11,7 @@ const Query = {
       set(args, 'q.filter.customerId', context.id);
     }
     if (context.isMember()) {
-      set(args, 'q.filter.customerId', context.id);
+      set(args, 'q.filter.memberId', context.id);
     }
     return deliveryLogService.fetch(args.q);
   },

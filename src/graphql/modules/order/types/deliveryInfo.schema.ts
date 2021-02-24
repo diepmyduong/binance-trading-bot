@@ -4,28 +4,28 @@ import { DeliveryServices, PickupTypes, VietnamPostHelper } from "../../../../he
 export default gql`
   type DeliveryInfo {
     "Tên người gửi *"
-    senderFullname: String!
+    senderFullname: String
     "Số điện thoại người gửi"
-    senderTel: String!
+    senderTel: String
     "Địa chỉ gửi"
-    senderAddress: String!
+    senderAddress: String
     "Mã phường người gửi"
-    senderWardId: String!
+    senderWardId: String
     "Mã tỉnh người gửi"
-    senderProvinceId: String!
+    senderProvinceId: String
     "Mã quận người gửi"
-    senderDistrictId: String!
+    senderDistrictId: String
 
     "Tên người nhận"
-    receiverFullname: String!
+    receiverFullname: String
     "Địa chỉ nhận"
-    receiverAddress: String!
+    receiverAddress: String
     "Phone người nhận"
-    receiverTel: String!
+    receiverTel: String
     "Mã tỉnh người nhận"
-    receiverProvinceId: String!
+    receiverProvinceId: String
     "Mã quận người nhận"
-    receiverDistrictId: String!
+    receiverDistrictId: String
     "Mã phường người nhận"
     receiverWardId: String!
     "Loại địa chỉ người nhận '1=Nhà riêng | 2=Cơ quan | null=Không có thông tin'"
@@ -53,10 +53,10 @@ export default gql`
     codAmountEvaluation: Float
 
     "Cho xem hàng không ?"
-    isPackageViewable: Boolean!
+    isPackageViewable: Boolean
 
     "Hình thức thu gom '${PickupTypes.map(s=>`${s.code}-${s.name}`).join(' | ')}'"
-    pickupType: String!
+    pickupType: Int
 
     "Giá trị đơn hàng tạm tính"
     orderAmountEvaluation: Float

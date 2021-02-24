@@ -97,6 +97,10 @@ export default gql`
     deliveryTime: String
     "Số lần báo phát"
     deliveryTimes: Int
+    "Mã tình trạng"
+    status: String
+    "Tình trạng"
+    statusText: String
   }
 
   input DeliveryInfoInput {

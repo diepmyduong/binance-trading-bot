@@ -59,6 +59,8 @@ export type DeliveryInfo = {
   cancelTime: string; // thời gian hủy
   deliveryTime: string; // thời gian vận chuyển
   deliveryTimes: number; // Số lần báo phát
+  status: string;
+  statusText: string;
 };
 
 export const DeliveryInfoSchema = new Schema({
@@ -127,4 +129,6 @@ export const DeliveryInfoSchema = new Schema({
   cancelTime: { type: Schema.Types.String }, // thời gian hủy
   deliveryTime: { type: Schema.Types.String }, // thời gian vận chuyển
   deliveryTimes: { type: Schema.Types.Number }, // Số lần báo phát
+  status: { type: Schema.Types.String }, // Mã tình trạng
+  statusText: { type: Schema.Types.String },
 });

@@ -4,18 +4,18 @@ import { OrderModel, OrderStatus, ShipMethod } from "../order.model";
 import { ErrorHelper } from "../../../../helpers/error.helper";
 import {
   VietnamPostHelper,
-  AdditionService,
+  ICreateDeliveryOrderRequest,
 } from "../../../../helpers/vietnamPost/vietnamPost.helper";
-import { AddressModel } from "../../address/address.model";
-import { AddressStorehouseModel } from "../../addressStorehouse/addressStorehouse.model";
 import { MemberModel } from "../../member/member.model";
 import { CustomerModel } from "../../customer/customer.model";
-import { AddressDeliveryModel } from "../../addressDelivery/addressDelivery.model";
+import { DeliveryInfo } from "../types/deliveryInfo.type";
 
 const Mutation = {
   deliveryOrder: async (root: any, args: any, context: Context) => {
     context.auth(ROLES.ADMIN_EDITOR_MEMBER);
-    const { orderId, deliveryInfo } = args;
+    const { orderId } = args;
+
+    const deliveryInfo: DeliveryInfo = args.deliveryInfo;
 
     const order = await OrderModel.findById(orderId);
     if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
@@ -25,8 +25,6 @@ const Mutation = {
 
     const buyer = await CustomerModel.findById(order.buyerId);
     if (!buyer) throw ErrorHelper.mgRecoredNotFound("khách hàng");
-    // post vận đơn
-    //vnpost vận đơn
 
     // Kiểm tra tình trạng đơn hàng
     if (order.status != OrderStatus.PENDING)
@@ -37,110 +35,70 @@ const Mutation = {
     // Chuyển trạng thái đơn hàng
     order.status = OrderStatus.DELIVERING;
 
-  
+    // bat address tai day
 
-    const store = await AddressStorehouseModel.findById(
-      deliveryInfo.addressStorehouseId
-    );
-    if (!store) throw ErrorHelper.notConnectedInventory();
-    const storeAddress = await AddressModel.findOne({ wardId: store.wardId });
+    const data: ICreateDeliveryOrderRequest = {
+      SenderFullname: deliveryInfo.senderFullname, // tên người gửi *
+      SenderTel: deliveryInfo.senderTel, // Số điện thoại người gửi * (maxlength: 50)
+      SenderAddress: deliveryInfo.senderAddress, // địa chỉ gửi *
+      SenderWardId: deliveryInfo.senderWardId, // mã phường người gửi *
+      SenderProvinceId: deliveryInfo.senderProvinceId, // mã tỉnh người gửi *
+      SenderDistrictId: deliveryInfo.senderDistrictId, // mã quận người gửi *
 
+      // Kiểu địa chỉ người nhận: 1 Nhà riêng, 2: Cơ quan Nếu không có thông tin thì để null
 
-    let receiverAddress = null;
+      ReceiverFullname: deliveryInfo.receiverFullname, // tên người nhận *
+      ReceiverAddress: deliveryInfo.receiverAddress, // địa chỉ nhận *
+      ReceiverTel: deliveryInfo.receiverTel, // phone người nhận *
+      ReceiverProvinceId: deliveryInfo.receiverProvinceId, // mã tỉnh người nhận *
+      ReceiverDistrictId: deliveryInfo.receiverDistrictId, // mã quận người nhận *
+      ReceiverWardId: deliveryInfo.receiverWardId, // mã phường người nhận *
 
-    //nếu post vận đơn
-    //lấy ra địa chỉ kho chính + addressDeliveryId -> deliveryInfo chạy đơn
-    if (order.shipMethod === ShipMethod.POST){
-      const addressDelivery = await AddressDeliveryModel.findById(order.addressDeliveryId);
-      receiverAddress = await AddressModel.findOne({
-        wardId: addressDelivery.wardId,
-      });
-    }
+      ReceiverAddressType: deliveryInfo.receiverAddressType, // null
+      ServiceName: deliveryInfo.serviceName, //"BK"; // tên dịch vụ *
 
-    // nếu vnpost vận đơn
-    // lấy địa chỉ kho trong delivery info -> deliveryInfo chạy đơn
-    if (order.shipMethod === ShipMethod.VNPOST){
-      receiverAddress = await AddressModel.findOne({
-        wardId: order.buyerWardId,
-      });
-    }
-    
-    if(!receiverAddress) 
-      throw ErrorHelper.recoredNotFound("địa điểm nhận hàng");
-
-    const VASIds = [];
-
-    deliveryInfo.hasMoneyCollection &&
-      VASIds.push(AdditionService.GIAO_HANG_THU_TIEN);
-    deliveryInfo.hasReport && VASIds.push(AdditionService.BAO_PHAT);
-    deliveryInfo.hasInvoice && VASIds.push(AdditionService.DICH_VU_HOA_DON);
-
-    const data: any = {
       OrderCode: order.code, // mã đơn hàng
-      SenderFullname: seller.shopName, // tên người gửi
-      SenderAddress: store.address, // địa chỉ gửi
-      SenderTel: seller.phone, // phone người gửi
-      SenderProvinceId: storeAddress.provinceId, // mã tỉnh người gửi
-      SenderDistrictId: storeAddress.districtId, // mã quận người gửi
-      SenderWardId: storeAddress.wardId, // mã phường người gửi
-      ReceiverFullname: buyer.name, // tên người nhận
-      ReceiverAddress: buyer.address, // địa chỉ nhận
-      ReceiverTel: buyer.phone, // phone người nhận
-      ReceiverProvinceId: receiverAddress.provinceId, // mã tỉnh người nhận
-      ReceiverDistrictId: receiverAddress.districtId, // mã quận người nhận
-      ReceiverWardId: receiverAddress.wardId, // mã phường người nhận
-      CodAmountEvaluation: order.subtotal.toString(), // giá trị tiền thu hộ
+      PackageContent: deliveryInfo.packageContent, //"Món hàng A + Món hàng B"; // nội dung hàng
+
+      WeightEvaluation: deliveryInfo.weightEvaluation, // cân nặng *
+      WidthEvaluation: deliveryInfo.widthEvaluation, // chiều rộng
+      LengthEvaluation: deliveryInfo.lengthEvaluation, // chiều dài
+      HeightEvaluation: deliveryInfo.heightEvaluation, // chiều cao
+
+      CodAmountEvaluation: deliveryInfo.codAmountEvaluation, // giá trị tiền thu hộ
+
       IsPackageViewable: deliveryInfo.isPackageViewable, // cho xem hàng
-      IsDeleteDraft: true,
-      PackageContent: deliveryInfo.productName, //"Món hàng A + Món hàng B"; // nội dung hàng
-      ServiceName: deliveryInfo.serviceId, //"BK"; // tên dịch vụ
-      OrderAmountEvaluation: deliveryInfo.showOrderAmount // khai giá lấy giá trị subtotal
-        ? order.subtotal.toString()
-        : null, // giá trị khai giá
-      WeightEvaluation: deliveryInfo.productWeight.toString(), // cân nặng
-      WidthEvaluation: deliveryInfo.productWidth.toString(), // chiều rộng
-      LengthEvaluation: deliveryInfo.productLength.toString(), // chiều dài
-      HeightEvaluation: deliveryInfo.productHeight.toString(), // chiều cao
-      VASIds, //[3, 1, 2, 4]; // dịch vụ cộng thêm
-      IsReceiverPayFreight: deliveryInfo.hasReceiverPayFreight, // thu cước người nhận
-      CustomerNote: deliveryInfo.note, // yêu cầu khác      
-      VendorId: 1, // 1;
-      PickupType: 1, //1;
-      SenderAddressType: 1,
-      ReceiverAddressType: 1,
-    };
 
+      OrderAmountEvaluation: deliveryInfo.orderAmountEvaluation, // khai giá lấy giá trị subtotal
+
+      IsReceiverPayFreight: deliveryInfo.isReceiverPayFreight, // thu cước người nhận
+      CustomerNote: deliveryInfo.customerNote, // yêu cầu khác
+
+      UseBaoPhat: deliveryInfo.useBaoPhat,
+      UseHoaDon: deliveryInfo.useHoaDon,
+      PickupType: deliveryInfo.pickupType, //1;
+    };
     const bill = await VietnamPostHelper.createDeliveryOrder(data);
-    
+
     order.deliveryInfo = {
-      ...deliveryInfo
+      ...deliveryInfo,
     };
+    
+    order.deliveryInfo.itemCode = bill.ItemCode;
+    order.deliveryInfo.orderId = bill.Id;
 
-    // orderCode: { type: String }, // itemCode
-    // orderNumber: { type: String }, // id
+    order.deliveryInfo.customerCode = bill.CustomerCode;
+    order.deliveryInfo.vendorId = bill.VendorId;
 
-    order.deliveryInfo.orderCode = bill.orderCode;
-    order.deliveryInfo.orderNumber = bill.orderNumber;
-    order.deliveryInfo.partnerFee = bill.moneyTotalFee;
+    order.deliveryInfo.itemCode = bill.ItemCode;
+    order.deliveryInfo.orderId = bill.Id;
+
+    // kết quả delivery
+    order.deliveryInfo.createTime = bill.CreateTime; // thời gian tạo đơn
+    order.deliveryInfo.lastUpdateTime = bill.LastUpdateTime; // thời gian cập nhật lần cuối
+    order.deliveryInfo.deliveryDateEvaluation = bill.DeliveryDateEvaluation; // ngày dự kiến giao hàng
     return await order.save();
   },
 };
 
 export default { Mutation };
-
-
-    // const deliveryInfo = {
-    //   isPackageViewable: true, // Có cho xem hàng
-    //   hasMoneyCollection: true,
-    //   showOrderAmount: true, //khai giá,
-    //   hasReport: true, // báo phát
-    //   hasInvoice: true, // dịch vụ hóa đơn
-    //   note: order.deliveryInfo.note, // ghi chú - yêu cầu khác
-    //   serviceId: order.deliveryInfo.serviceId, // servicelist or servicelisst offline
-    //   addressStorehouseId: order.deliveryInfo.addressStorehouseId,
-    //   productWeight: order.deliveryInfo.productWeight,
-    //   productLength: order.deliveryInfo.productLength,
-    //   productWidth: order.deliveryInfo.productWidth,
-    //   productHeight: order.deliveryInfo.productHeight,
-    //   productName: order.deliveryInfo.productName,
-    // };

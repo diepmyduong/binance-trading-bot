@@ -53,8 +53,8 @@ class DeliveryRoute extends BaseRoute {
     const deliveryLog = await DeliveryLogModel.create({
       orderId: order._id,
       customerId: order.buyerId,
-      orderCode : data.ItemCode, 
-      orderNumber: data.Id,
+      deliveryCode : data.ItemCode, 
+      deliveryId: data.Id,
       shipMethod: ShipMethod.VNPOST,
       status: data.OrderStatusId.toString(),
       statusName: GetVietnamPostDeliveryStatusText(data.OrderStatusId.toString()),
@@ -64,14 +64,14 @@ class DeliveryRoute extends BaseRoute {
       moneyCollection: parseFloat(data.CodAmountEvaluation),
       moneyFeeCOD: data.CodFreight,
       moneyTotal: data.TotalFreightIncludeVat,
-      // expectedDelivery: data["EXPECTED_DELIVERY"],
+      expectedDelivery: data.DeliveryDateEvaluation,
       productWeight: data.WeightConvert,
       orderService: data.ServiceDisplayName,
-      // locationCurrently: data["LOCALION_CURRENTLY"],
       detail: data.PackageContent,
     });
+
     order.deliveryInfo.status = deliveryLog.status;
-    order.deliveryInfo.statusName = deliveryLog.statusName;
+    order.deliveryInfo.statusText = deliveryLog.statusName;
 
     await order.save();
     res.sendStatus(200);

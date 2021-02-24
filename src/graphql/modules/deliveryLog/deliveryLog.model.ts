@@ -6,9 +6,10 @@ const Schema = mongoose.Schema;
 
 export type IDeliveryLog = BaseDocument & {
   orderId?: string; // Mã đơn hàng
+  memberId?: string; // Mã người bán
   customerId?: string; // Mã khách hàng
-  orderCode?: string; // Mã vận đợn
-  orderNumber?: string; // Mã vận đợn
+  deliveryCode?: string; // Code vận đợn
+  deliveryId?: string; // Mã vận đợn
   shipMethod?: ShipMethod; // Phương thức vận chuyển
   status?: string; // Trạng thái vận chuyển
   statusName?: string; // Thông tin trạng thái vận chuyển
@@ -28,9 +29,10 @@ export type IDeliveryLog = BaseDocument & {
 const deliveryLogSchema = new Schema(
   {
     orderId: { type: Schema.Types.ObjectId, ref: 'Order', required: true },
+    memberId: { type: Schema.Types.ObjectId, ref: 'Member', required: true },
     customerId: { type: Schema.Types.ObjectId, ref: 'Customer', required: true },
-    orderCode: { type: String, required: true },
-    orderNumber: { type: String, required: true },
+    deliveryCode: { type: String, required: true },
+    deliveryId: { type: String, required: true },
     shipMethod: { type: String, enum: Object.values(ShipMethod) },
     status: { type: String, required: true },
     statusName: { type: String },

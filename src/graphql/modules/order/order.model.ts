@@ -10,7 +10,7 @@ export enum OrderStatus {
   DELIVERING = "DELIVERING", // Đang vận chuyển
   COMPLETED = "COMPLETED", // Đã duyệt
   CANCELED = "CANCELED", // Đã huỷ
-  RETURNED = "RETURNED" // Đã hoàn hàng
+  RETURNED = "RETURNED", // Đã hoàn hàng
 }
 
 export enum PaymentMethod {
@@ -18,7 +18,7 @@ export enum PaymentMethod {
   COD = "COD", // Thanh toán khi nhận hàng
   MOMO = "MOMO",
   BAOKIM = "BAOKIM",
-  PAYPAL = "PAYPAL"
+  PAYPAL = "PAYPAL",
 }
 
 export enum ShipMethod {
@@ -28,9 +28,9 @@ export enum ShipMethod {
 }
 
 export const ShipMethods = [
-  { label: "Tự liên hệ", value: ShipMethod.NONE},
+  { label: "Tự liên hệ", value: ShipMethod.NONE },
   { label: "Nhận hàng tại chi nhánh", value: ShipMethod.POST },
-  { label: "Giao hàng VNPost", value: ShipMethod.VNPOST }
+  { label: "Giao hàng VNPost", value: ShipMethod.VNPOST },
 ];
 
 export type IOrder = BaseDocument & {
@@ -69,8 +69,10 @@ export type IOrder = BaseDocument & {
   deliveryInfo: DeliveryInfo;
   shipMethod?: ShipMethod;
   paymentMethod?: PaymentMethod;
-  addressDeliveryId: string;
   productIds: string[];
+  addressStorehouseId?: string; // Mã kho
+  addressDeliveryId: string; // Mã điểm nhận
+  isUrbanDelivery: boolean;
 };
 
 const orderSchema = new Schema(
@@ -97,12 +99,12 @@ const orderSchema = new Schema(
     buyerId: { type: Schema.Types.ObjectId, ref: "Customer" },
     buyerName: { type: String, required: true },
     buyerPhone: { type: String, required: true },
-    buyerAddress: { type: String},
-    buyerProvince: { type: String},
-    buyerDistrict: { type: String},
+    buyerAddress: { type: String },
+    buyerProvince: { type: String },
+    buyerDistrict: { type: String },
     buyerWard: { type: String },
-    buyerProvinceId: { type: String},
-    buyerDistrictId: { type: String},
+    buyerProvinceId: { type: String },
+    buyerDistrictId: { type: String },
     buyerWardId: { type: String },
     sellerBonusPoint: { type: Number, default: 0, min: 0 },
     buyerBonusPoint: { type: Number, default: 0, min: 0 },
@@ -126,7 +128,13 @@ const orderSchema = new Schema(
     },
     subtotal: { type: Number, default: 0, min: 0 },
     itemCount: { type: Number, default: 0, min: 0 },
-    addressDeliveryId:{ type: Schema.Types.ObjectId, ref: "AddressDelivery" },
+
+    addressStorehouseId: {
+      type: Schema.Types.ObjectId,
+      ref: "AddressStorehouse",
+    },
+    addressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery" },
+    isUrbanDelivery: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

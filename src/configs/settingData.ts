@@ -1,4 +1,4 @@
-import { OfflineServices, ServiceCode } from "../helpers";
+import { DeliveryServices, ServiceCode } from "../helpers";
 import { SettingType } from "../graphql/modules/setting/setting.model";
 
 export enum SettingGroupSlug {
@@ -736,7 +736,7 @@ Link đăng ký:
       },
       {
         type: SettingType.string,
-        name: `Dịch vụ chuyển phát mặc định ${OfflineServices.map(
+        name: `Dịch vụ chuyển phát mặc định ${DeliveryServices.map(
           (s) => s.code + "-" + s.name
         ).join("|")}`,
         key: SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE,

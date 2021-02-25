@@ -36,8 +36,10 @@ const schema = gql`
     phone: String
     "Tên khách hàng"
     customerId: ID
-    "Danh sách chủ shop"
-    memberIds: [ID]
+    "Chủ shop"
+    memberId: ID
+
+    member: Member
   }
 
   type CollaboratorPageData {

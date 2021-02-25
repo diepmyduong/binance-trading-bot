@@ -84,8 +84,8 @@ const importCollaborators = async (root: any, args: any, context: Context) => {
     CollaboratorImportingLogModel.insertMany(logList),
   ]);
 
-  // const host = await SettingHelper.load(SettingKey.APP_DOMAIN);
-  const host = "http://localhost:5555";
+  const host = await SettingHelper.load(SettingKey.APP_DOMAIN);
+  // const host = "http://localhost:5555";
   return `${host}/api/collaborator/export-import-results?x-token=${context.token}`;
 };
 

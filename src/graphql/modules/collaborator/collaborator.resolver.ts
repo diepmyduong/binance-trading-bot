@@ -1,6 +1,8 @@
+import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper } from "../../../helpers";
 import { Context } from "../../context";
+import { MemberLoader } from "../member/member.model";
 import { CollaboratorModel } from "./collaborator.model";
 import { collaboratorService } from "./collaborator.service";
 
@@ -65,7 +67,9 @@ const Mutation = {
   },
 };
 
-const Collaborator = {};
+const Collaborator = {
+  member: GraphQLHelper.loadById(MemberLoader, 'memberId')
+};
 
 export default {
   Query,

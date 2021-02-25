@@ -68,6 +68,8 @@ const schema = gql`
     cumulativePoint: Float
     "Danh sách account facebook của người dùng"
     pageAccounts: [CustomerPageAccount]
+    "Danh sách shop đang cộng tác"
+    isCollaborator: Boolean
   }
 
   type CustomerPageAccount {

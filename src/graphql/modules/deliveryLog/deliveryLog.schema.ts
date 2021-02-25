@@ -18,10 +18,12 @@ const schema = gql`
     memberId: ID
     "Mã khách hàng"
     customerId: ID
-    "Mã vận đợn"
+    "Mã vận đơn"
     deliveryId: String
-    "Code vận đợn"
+    "Code vận đơn"
     deliveryCode: String
+    "Mã vận đơn cũ"
+    orderNumber: String
     "Phương thức vận chuyển"
     shipMethod: String
     "Trạng thái vận chuyển"

@@ -7,7 +7,6 @@ const Schema = mongoose.Schema;
 export type ICollaborator = BaseDocument & {
   name?: string; // Tên khách hàng
   phone?: string; // Số điện thoại
-  customerId: string; // Khách hàng
   memberId: string; // Chủ shop
 };
 
@@ -15,7 +14,6 @@ const collaboratorSchema = new Schema(
   {
     name: { type: String, required: true },
     phone: { type: String, required: true },
-    customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
     memberId: { type: Schema.Types.ObjectId, ref: "Member" },
   },
   { timestamps: true }

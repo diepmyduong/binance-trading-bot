@@ -3,8 +3,9 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper } from "../../../helpers";
 import { Context } from "../../context";
 import { MemberLoader } from "../member/member.model";
-import { CollaboratorModel } from "./collaborator.model";
+import { CollaboratorModel, ICollaborator } from "./collaborator.model";
 import { collaboratorService } from "./collaborator.service";
+import { CustomerModel } from "../customer/customer.model";
 
 const Query = {
   getAllCollaborator: async (root: any, args: any, context: Context) => {
@@ -68,7 +69,10 @@ const Mutation = {
 };
 
 const Collaborator = {
-  member: GraphQLHelper.loadById(MemberLoader, 'memberId')
+  member: GraphQLHelper.loadById(MemberLoader, 'memberId'),
+  customer: async (root: ICollaborator, args: any, context: Context) => {
+    return await CustomerModel.findOne({phone: root.phone});
+  },
 };
 
 export default {

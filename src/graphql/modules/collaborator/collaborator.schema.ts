@@ -39,6 +39,7 @@ const schema = gql`
     "Chủ shop"
     memberId: ID
 
+    customer: Customer
     member: Member
   }
 

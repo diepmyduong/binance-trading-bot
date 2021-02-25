@@ -66,10 +66,14 @@ const schema = gql`
     wardId: String
     "Điểm tích lũy"
     cumulativePoint: Float
+    "Hoa hồng cộng tác viên"
+    commissionPoint: Float
     "Danh sách account facebook của người dùng"
     pageAccounts: [CustomerPageAccount]
-    "Danh sách shop đang cộng tác"
+    "Là cộng tác viên"
     isCollaborator: Boolean
+    "Danh sách shop đang cộng tác "
+    collaboratorShops: [Member]
   }
 
   type CustomerPageAccount {

@@ -6,7 +6,9 @@ import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
 import { MemberHelper } from "../member/member.helper";
 import { MemberLoader } from "../member/member.model";
+import { ICustomer } from "./customer.model";
 import { customerService } from "./customer.service";
+import { CustomerIsCollaborator } from "./loader/customerIsCollaborator.loader";
 
 const Query = {
   getAllCustomer: async (root: any, args: any, context: Context) => {
@@ -26,7 +28,11 @@ const Query = {
 
 const Mutation = {};
 
-const Customer = {};
+const Customer = {
+  isCollaborator: async (root: ICustomer, args: any, context: Context) => {
+    return CustomerIsCollaborator.loader.load(root.phone);
+  }
+};
 
 const CustomerPageAccount = {
   member: GraphQLHelper.loadById(MemberLoader, "memberId"),

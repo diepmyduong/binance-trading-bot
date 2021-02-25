@@ -7,6 +7,7 @@ import luckyWheelRoute from "./luckyWheel.route";
 import addressStorehouse from "./addressStorehouse.route";
 import addressDelivery from "./addressDelivery.route";
 import delivery from "./delivery.route";
+import collaborator from "./collaborator.route";
 import diligencePointRoute from "./diligencePoint.route";
 import serviceRoute from "./service.route";
 
@@ -21,4 +22,5 @@ router.use("/luckywheel", luckyWheelRoute);
 router.use("/address-storehouse", addressStorehouse);
 router.use("/address-delivery", addressDelivery);
 router.use("/delivery", delivery);
+router.use("/collaborator", collaborator);
 export default router;

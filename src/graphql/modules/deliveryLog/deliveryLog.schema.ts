@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { ShipMethod } from "../order/order.model";
+import {  ShipMethods } from "../order/order.model";
 
 const schema = gql`
   extend type Query {
@@ -14,11 +14,15 @@ const schema = gql`
 
     "Mã đơn hàng"
     orderId: ID
+    "Mã chủ shop"
+    memberId: ID
     "Mã khách hàng"
     customerId: ID
     "Mã vận đợn"
-    orderNumber: String
-    "Phương thức vận chuyển ${Object.values(ShipMethod)}"
+    deliveryId: String
+    "Code vận đợn"
+    deliveryCode: String
+    "Phương thức vận chuyển"
     shipMethod: String
     "Trạng thái vận chuyển"
     status: String

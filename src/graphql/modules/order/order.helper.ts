@@ -110,13 +110,20 @@ export class OrderHelper {
       return product;
     };
 
+    // console.log('allProducts',allProducts);
+
+    const validDirectShop = (p: IProduct) => {
+      // console.log('p.memberId',p.memberId);
+      // console.log('sellerId',sellerId);
+      return p.memberId == sellerId && p.isCrossSale === false;
+    };
+
     // lấy ra danh sách sản phẩm của shop đó bán + sản phẩm chính (hảng bưu điện chuyển về cho bưu cục quản trị)
     const directShoppingProducts: any = allProducts
-      .filter(
-        (p) =>
-          (p.memberId == sellerId && p.isCrossSale === false) || p.isPrimary
-      )
+      .filter((p) => validDirectShop(p))
       .map(addQuantitytoProduct);
+
+    // console.log('directShoppingProducts',directShoppingProducts);
 
     // lấy ra danh sách sản phẩm của shop bán chéo
     const crossSaleProducts = allProducts
@@ -319,7 +326,7 @@ export class OrderHelper {
       _id: { $in: addressStorehouseIds },
       activated: true,
     });
-    let deliveryInfo:any = null;
+    let deliveryInfo: any = null;
 
     switch (this.order.shipMethod) {
       case ShipMethod.NONE:
@@ -416,7 +423,7 @@ export class OrderHelper {
         servicePostList = servicePostList.sort(
           (a, b) => a.TongCuocBaoGomDVCT - b.TongCuocBaoGomDVCT
         );
-        
+
         const cheapestPostService = servicePostList[0];
 
         // đơn này ko thu tiền ship
@@ -424,20 +431,20 @@ export class OrderHelper {
         this.order.addressDeliveryId = cheapestPostService.addressDelivery._id;
 
         this.order.isUrbanDelivery = false;
-         deliveryInfo = {
+        deliveryInfo = {
           serviceName: serviceCode,
           codAmountEvaluation: cheapestPostService.moneyCollection,
           deliveryDateEvaluation: cheapestPostService.ThoiGianPhatDuKien,
-          heightEvaluation:cheapestPostService.productHeight,
-          isReceiverPayFreight:false,
+          heightEvaluation: cheapestPostService.productHeight,
+          isReceiverPayFreight: false,
           lengthEvaluation: cheapestPostService.productLength,
           weightEvaluation: cheapestPostService.productWeight,
           widthEvaluation: cheapestPostService.productWidth,
-          packageContent:this.order.items
-             .map((i) => `[${i.productName} - SL:${i.qty}]`)
-             .join(" "),
+          packageContent: this.order.items
+            .map((i) => `[${i.productName} - SL:${i.qty}]`)
+            .join(" "),
           isPackageViewable: false,
-          pickupType:PickupType.PICK_UP,
+          pickupType: PickupType.PICK_UP,
 
           senderFullname: member.shopName, // tên người gửi *
           senderTel: cheapestPostService.storehouse.phone, // Số điện thoại người gửi * (maxlength: 50)
@@ -445,7 +452,7 @@ export class OrderHelper {
           senderWardId: cheapestPostService.storehouse.wardId, // mã phường người gửi *
           senderProvinceId: cheapestPostService.storehouse.provinceId, // mã tỉnh người gửi *
           senderDistrictId: cheapestPostService.storehouse.districtId, // mã quận người gửi *
-        
+
           receiverFullname: this.order.buyerName, // tên người nhận *
           receiverTel: this.order.buyerPhone, // phone người nhận *
           receiverAddress: cheapestPostService.addressDelivery.address, // địa chỉ nhận *
@@ -458,6 +465,7 @@ export class OrderHelper {
         break;
 
       case ShipMethod.VNPOST:
+        // console.log('Vao VNPOST');
         // kiem tra đơn hàng trong nội thành ?
         const urbanStores = storehouses.filter(
           (store) => store.provinceId === this.order.buyerProvinceId
@@ -489,6 +497,8 @@ export class OrderHelper {
               SoTienTinhCuoc: this.order.subtotal.toString(),
             });
 
+          // console.log("Vao VNPOST", this.order);
+
           const data: ICalculateAllShipFeeRequest = {
             MaDichVu: ServiceCode.BK,
             MaTinhGui,
@@ -519,6 +529,7 @@ export class OrderHelper {
             productHeight,
           });
         }
+        // console.log("serviceList", serviceList);
 
         serviceList = serviceList.sort(
           (a, b) => a.TongCuocBaoGomDVCT - b.TongCuocBaoGomDVCT
@@ -526,18 +537,18 @@ export class OrderHelper {
 
         const cheapestService = serviceList[0];
         // console.log("cheapestService", cheapestService);
-         // Đơn hàng nội thành - phí ship cố định
+        // Đơn hàng nội thành - phí ship cố định
         if (urbanStores.length > 0) {
           this.order.isUrbanDelivery = true;
           this.order.shipfee = await SettingHelper.load(
             SettingKey.DELIVERY_VNPOST_INNER_SHIP_FEE
           );
-        } 
-        else {
+        } else {
           this.order.isUrbanDelivery = false;
-          this.order.shipfee = this.order.paymentMethod == PaymentMethod.COD
-            ? cheapestService.TongCuocBaoGomDVCT
-            : 0;
+          this.order.shipfee =
+            this.order.paymentMethod == PaymentMethod.COD
+              ? cheapestService.TongCuocBaoGomDVCT
+              : 0;
         }
 
         this.order.addressStorehouseId = cheapestService.storehouse._id;
@@ -548,16 +559,16 @@ export class OrderHelper {
           serviceName: serviceCode,
           codAmountEvaluation: cheapestService.codAmountEvaluation,
           deliveryDateEvaluation: cheapestService.ThoiGianPhatDuKien,
-          heightEvaluation:cheapestService.productHeight,
+          heightEvaluation: cheapestService.productHeight,
           isReceiverPayFreight: PaymentMethod.COD ? true : false,
           lengthEvaluation: cheapestService.productLength,
           weightEvaluation: cheapestService.productWeight,
           widthEvaluation: cheapestService.productWidth,
-          packageContent:this.order.items
-             .map((i) => `[${i.productName} - SL:${i.qty}]`)
-             .join(" "),
+          packageContent: this.order.items
+            .map((i) => `[${i.productName} - SL:${i.qty}]`)
+            .join(" "),
           isPackageViewable: false,
-          pickupType:PickupType.PICK_UP,
+          pickupType: PickupType.PICK_UP,
 
           senderFullname: member.shopName, // tên người gửi *
           senderTel: cheapestService.storehouse.phone, // Số điện thoại người gửi * (maxlength: 50)
@@ -565,7 +576,7 @@ export class OrderHelper {
           senderWardId: cheapestService.storehouse.wardId, // mã phường người gửi *
           senderProvinceId: cheapestService.storehouse.provinceId, // mã tỉnh người gửi *
           senderDistrictId: cheapestService.storehouse.districtId, // mã quận người gửi *
-        
+
           receiverFullname: this.order.buyerName, // tên người nhận *
           receiverAddress: this.order.buyerAddress, // địa chỉ nhận *
           receiverTel: this.order.buyerPhone, // phone người nhận *

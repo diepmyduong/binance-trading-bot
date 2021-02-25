@@ -57,10 +57,10 @@ const schema = gql`
     memberBonusFactor: Int
     customerBonusFactor: Int
     #delivery
+    weight: Int!
     width: Int
     length: Int
     height: Int
-    weight: Int
   }
 
   input UpdateProductInput {
@@ -87,10 +87,10 @@ const schema = gql`
     memberBonusFactor: Int
     customerBonusFactor: Int
     #delivery
+    weight: Int!
     width: Int
     length: Int
     height: Int
-    weight: Int
   }
 
   type Product {

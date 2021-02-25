@@ -77,7 +77,7 @@ const productSchema = new Schema(
     width: { type: Number, default: 0 }, // chiều rộng
     length: { type: Number, default: 0 }, // chiều dài
     height: { type: Number, default: 0 }, // chiều cao
-    weight: { type: Number, default: 0 }, // cân nặng
+    weight: { type: Number, default: 1 }, // cân nặng
   },
   { timestamps: true }
 );

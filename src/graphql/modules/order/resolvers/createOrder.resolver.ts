@@ -29,7 +29,7 @@ const Mutation = {
       // console.log('log loi tai day 2', orderHelper.order);
       // Calculate Shipfee
       await orderHelper.calculateShipfee();
-      console.log('log loi tai day 3',orderHelper.order.code);
+      // console.log('log loi tai day 3',orderHelper.order.code);
       // Calculate Amount
       orderHelper.calculateAmount();
       orderHelper.order.code = await OrderHelper.generateCode();

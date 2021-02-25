@@ -16,7 +16,9 @@ const Query = {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     const memberHelper = await MemberHelper.fromContext(context);
     if (memberHelper) {
-      set(args, "q.filter.pageAccounts", { $elemMatch: { memberId: memberHelper.member._id } });
+      set(args, "q.filter.pageAccounts", {
+        $elemMatch: { memberId: memberHelper.member._id },
+      });
     }
     return customerService.fetch(args.q);
   },
@@ -34,12 +36,12 @@ const Customer = {
     return CustomerIsCollaborator.loader.load(root.phone);
   },
   //Danh sách các cửa hàng mà khách hàng đang cộng tác
-  collaboratorShops : async (root: ICustomer, args: any, context: Context) => {
-    const collaborator = await CollaboratorModel.find({phone : root.phone});
-    const memberIds = collaborator.map(c=>c.memberId);
-    const members = await MemberModel.find({_id: {$in: memberIds }});
+  collaboratorShops: async (root: ICustomer, args: any, context: Context) => {
+    const collaborator = await CollaboratorModel.find({ phone: root.phone });
+    const memberIds = collaborator.map((c) => c.memberId);
+    const members = await MemberModel.find({ _id: { $in: memberIds } });
     return members;
-  }
+  },
 };
 
 const CustomerPageAccount = {

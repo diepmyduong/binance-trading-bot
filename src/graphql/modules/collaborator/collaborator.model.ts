@@ -5,20 +5,18 @@ import { Gender } from "../member/member.model";
 const Schema = mongoose.Schema;
 
 export type ICollaborator = BaseDocument & {
-  code?: string; // Mã cộng tác viên
   name?: string; // Tên khách hàng
   phone?: string; // Số điện thoại
-  customerId: string; // danh sách khách hàng
-  memberIds: string[]; // danh sách chủ shop
+  customerId: string; // Khách hàng
+  memberId: string; // Chủ shop
 };
 
 const collaboratorSchema = new Schema(
   {
-    code: { type: String, required: true },
     name: { type: String, required: true },
     phone: { type: String, required: true },
     customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
-    memberIds: [{ type: Schema.Types.ObjectId, ref: "Member" }],
+    memberId: { type: Schema.Types.ObjectId, ref: "Member" },
   },
   { timestamps: true }
 );

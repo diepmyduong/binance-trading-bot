@@ -10,6 +10,7 @@ export type IDeliveryLog = BaseDocument & {
   customerId?: string; // Mã khách hàng
   deliveryCode?: string; // Code vận đợn
   deliveryId?: string; // Mã vận đợn
+  orderNumber: string; //Mã vận đơn
   shipMethod?: ShipMethod; // Phương thức vận chuyển
   status?: string; // Trạng thái vận chuyển
   statusName?: string; // Thông tin trạng thái vận chuyển
@@ -33,6 +34,7 @@ const deliveryLogSchema = new Schema(
     customerId: { type: Schema.Types.ObjectId, ref: 'Customer', required: true },
     deliveryCode: { type: String, required: true },
     deliveryId: { type: String, required: true },
+    orderNumber: { type: String },
     shipMethod: { type: String, enum: Object.values(ShipMethod) },
     status: { type: String, required: true },
     statusName: { type: String },

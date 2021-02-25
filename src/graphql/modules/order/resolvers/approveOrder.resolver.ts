@@ -2,7 +2,7 @@ import _, { set } from "lodash";
 import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper, ErrorHelper } from "../../../../helpers";
 import { Context } from "../../../context";
-import { OrderModel, IOrder, OrderStatus } from "../order.model";
+import { OrderModel, IOrder, OrderStatus, ShipMethod } from "../order.model";
 import { onApprovedOrder } from "../../../../events/onApprovedOrder.event";
 import { ProductModel } from "../../product/product.model";
 import { OrderItemModel } from "../../orderItem/orderItem.model";
@@ -13,6 +13,9 @@ const approveOrder = async (root: any, args: any, context: Context) => {
   const { id } = args;
 
   if (!id) throw ErrorHelper.requestDataInvalid("mã đơn hàng");
+
+  // kiem tra ptvc
+  // neu Tu lien he ->PENDING ->
 
   let params: any = {
     _id: id,
@@ -27,6 +30,11 @@ const approveOrder = async (root: any, args: any, context: Context) => {
 
   if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
 
+  if(order.shipMethod === ShipMethod.VNPOST || order.shipMethod === ShipMethod.POST){
+    if(order.status === OrderStatus.PENDING){
+      throw ErrorHelper.somethingWentWrong("Không thể duyệt đơn hàng này do chưa tạo vận đơn.");
+    }
+  }
   // Tạo bulk product và customer
   const productBulk = ProductModel.collection.initializeUnorderedBulkOp();
   for (const o of order.itemIds) {

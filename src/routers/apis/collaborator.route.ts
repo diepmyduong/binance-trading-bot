@@ -4,19 +4,14 @@ import {
   Response,
   NextFunction,
 } from "../../base/baseRoute";
-import { ErrorHelper } from "../../base/error";
 import { ROLES } from "../../constants/role.const";
 import { Context } from "../../graphql/context";
 
 import { auth } from "../../middleware/auth";
 import Excel from "exceljs";
 import { UtilsHelper } from "../../helpers";
-import {
-  AddressDeliveryImportingLogModel,
-  IAddressDeliveryImportingLog,
-} from "../../graphql/modules/addressDeliveryImportingLog/addressDeliveryImportingLog.model";
-import { AddressDeliveryModel } from "../../graphql/modules/addressDelivery/addressDelivery.model";
-import { IAddressDelivery } from "../../graphql/modules/addressDelivery/addressDelivery.model";
+import { CollaboratorModel, ICollaborator } from "../../graphql/modules/collaborator/collaborator.model";
+import { CollaboratorImportingLogModel, ICollaboratorImportingLog } from "../../graphql/modules/collaboratorImportingLog/collaboratorImportingLog.model";
 
 const STT = "STT";
 const NAME = "Tên";
@@ -49,7 +44,7 @@ class CollaboratorRoute extends BaseRoute {
     context.auth(ROLES.ADMIN_EDITOR_MEMBER);
 
     let data: any[] = [];
-    const logs = await AddressDeliveryImportingLogModel.find({}).sort({
+    const logs = await CollaboratorImportingLogModel.find({}).sort({
       line: 1,
     });
 
@@ -67,7 +62,7 @@ class CollaboratorRoute extends BaseRoute {
 
     sheet.addRow(excelHeaders);
 
-    data.forEach((d: IAddressDeliveryImportingLog, i) => {
+    data.forEach((d: ICollaboratorImportingLog, i) => {
       const dataRow = [
         d.no,
         d.name,
@@ -86,8 +81,8 @@ class CollaboratorRoute extends BaseRoute {
     const context = (req as any).context as Context;
     context.auth(ROLES.ADMIN_EDITOR_MEMBER);
 
-    let data: IAddressDelivery[] = [];
-    const logs = await AddressDeliveryModel.find({}).sort({ id: -1 });
+    let data: ICollaborator[] = [];
+    const logs = await CollaboratorModel.find({}).sort({ id: -1 });
 
     data = [...data, ...logs];
 
@@ -100,11 +95,10 @@ class CollaboratorRoute extends BaseRoute {
     ];
     sheet.addRow(excelHeaders);
 
-    data.forEach((d:IAddressDelivery, i) => {
+    data.forEach((d:ICollaborator, i) => {
       
       const dataRow = [
         i+1,
-        d.code,
         d.name,
         d.phone,
       ];

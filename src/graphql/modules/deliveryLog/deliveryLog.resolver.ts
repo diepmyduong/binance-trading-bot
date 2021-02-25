@@ -8,19 +8,18 @@ const Query = {
   getAllDeliveryLog: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
     if (context.isCustomer()) {
-      set(args, 'q.filter.customerId', context.id);
+      set(args, "q.filter.customerId", context.id);
     }
     if (context.isMember()) {
-      set(args, 'q.filter.memberId', context.id);
+      set(args, "q.filter.memberId", context.id);
     }
+
+    console.log("q.filter.memberId", args.q.filter);
     return deliveryLogService.fetch(args.q);
   },
 };
 
-
-const DeliveryLog = {
-  
-};
+const DeliveryLog = {};
 
 export default {
   Query,

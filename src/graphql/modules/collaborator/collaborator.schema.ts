@@ -11,23 +11,33 @@ const schema = gql`
     createCollaborator(data: CreateCollaboratorInput!): Collaborator
     updateCollaborator(id: ID!, data: UpdateCollaboratorInput!): Collaborator
     deleteOneCollaborator(id: ID!): Collaborator
+    importCollaborators(file: Upload!): String
     # Add Mutation
   }
 
   input CreateCollaboratorInput {
-    name: String
+    name: String!
+    phone: String!
   }
 
   input UpdateCollaboratorInput {
     name: String
+    phone: String
   }
 
   type Collaborator {
     id: String    
     createdAt: DateTime
     updatedAt: DateTime
-
+    
+    "Tên khách hàng"
     name: String
+    "Số điện thoại" 
+    phone: String
+    "Tên khách hàng"
+    customerId: ID
+    "Danh sách chủ shop"
+    memberIds: [ID]
   }
 
   type CollaboratorPageData {

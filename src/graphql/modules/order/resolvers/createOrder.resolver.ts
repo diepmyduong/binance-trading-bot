@@ -17,15 +17,24 @@ const Mutation = {
     }
 
     const ordersData = await OrderHelper.orderProducts(data);
+    
+    // console.log('log loi tai day 1', ordersData);
+
     const orders: any[] = [];
     for (let orderData of ordersData) {
       const orderHelper = await OrderHelper.fromRaw(orderData);
+      // console.log('log loi tai day 1', orderHelper.order);
       await orderHelper.generateItemsFromRaw(orderData.products);
+
+      // console.log('log loi tai day 2', orderHelper.order);
       // Calculate Shipfee
       await orderHelper.calculateShipfee();
+      console.log('log loi tai day 3',orderHelper.order.code);
       // Calculate Amount
       orderHelper.calculateAmount();
       orderHelper.order.code = await OrderHelper.generateCode();
+
+      // console.log('log loi tai day 4',orderHelper.order.code);
 
       // const campaignBulk = orderHelper.addCampaignBulk(campaignCode);
       

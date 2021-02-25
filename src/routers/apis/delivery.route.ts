@@ -54,6 +54,7 @@ class DeliveryRoute extends BaseRoute {
       orderId: order._id,
       memberId: order.sellerId,
       customerId: order.buyerId,
+      orderNumber: data.ItemCode,
       deliveryCode : data.ItemCode, 
       deliveryId: data.Id,
       shipMethod: ShipMethod.VNPOST,

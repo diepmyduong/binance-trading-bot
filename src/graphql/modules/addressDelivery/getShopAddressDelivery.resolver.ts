@@ -15,6 +15,7 @@ const Query = {
 
     const addresses = await AddressDeliveryModel.find({
       _id: { $in: member.addressDeliveryIds },
+      activated: true
     });
 
     // console.log("address", addresses);

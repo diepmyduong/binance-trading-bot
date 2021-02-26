@@ -82,6 +82,11 @@ export enum SettingKey {
   DELIVERY_ORDER_SHIP_FEE = "DELIVERY_ORDER_SHIP_FEE",
   DELIVERY_ENABLED_AUTO_APPROVE_ORDER = "DELIVERY_ENABLED_AUTO_APPROVE_ORDER",
   VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE = "VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE",
+  DELIVERY_STATUS_CUSTOMER_ALERT = "DELIVERY_STATUS_CUSTOMER_ALERT",
+  DELIVERY_COMPLETED_MSG_FOR_CUSTOMER = "DELIVERY_COMPLETED_MSG_FOR_CUSTOMER",
+  DELIVERY_FAILURE_MSG_FOR_CUSTOMER = "DELIVERY_FAILURE_MSG_FOR_CUSTOMER",
+  DELIVERY_PENDING_FOR_CUSTOMER = "DELIVERY_PENDING_FOR_CUSTOMER",
+
 }
 export const SETTING_DATA = [
   {
@@ -258,7 +263,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ với chủ shop để đượ
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobifone.vn của mobifone để được hỗ trợ chi tiết.`,
+Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -275,7 +280,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobi
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobifone.vn của mobifone để được hỗ trợ chi tiết.`,
+Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -292,7 +297,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobi
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobifone.vn của mobifone để được hỗ trợ chi tiết.`,
+Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -309,7 +314,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobi
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobifone.vn của mobifone để được hỗ trợ chi tiết.`,
+Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -326,7 +331,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobi
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobifone.vn của mobifone để được hỗ trợ chi tiết.`,
+Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -368,7 +373,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobi
 Quý khách đăng ký SMS - mã số {{code}} thành công.
 {{myPoint ? \`Điểm tích lũy quý khách nhận được là: \${$money(point)} điểm, tổng điểm hiện tại là \${$money(myPoint)} điểm.\`: \`\` }}
 Cảm ơn quý khách đã sử dụng dịch vụ.
-Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobifone.vn của mobifone để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -416,7 +421,7 @@ Hoa hồng bạn nhận được là: {{$money(commission)}} đồng, tổng hoa
         value: `[Thông báo tự động cho khách hàng]
 Quý khách đăng ký SMS - mã số {{code}} bị từ chối do không hợp lệ.
 Cảm ơn quý khách đã sử dụng dịch vụ.
-Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobifone.vn của mobifone để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -429,7 +434,7 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 ha
 Quý khách đăng ký dịch vụ - mã số {{code}} thành công.
 {{point ? \`Điểm tích lũy quý khách nhận được là: \${$money(point)} điểm, tổng điểm hiện tại là \${$money(myPoint)} điểm.\`: \`\` }}
 Cảm ơn quý khách đã sử dụng dịch vụ.
-Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobifone.vn của mobifone để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -479,7 +484,7 @@ Hoa hồng bạn nhận được là: {{$money(commission)}} đồng, tổng hoa
         value: `[Thông báo tự động cho khách hàng]
 Quý khách đăng ký dịch vụ - mã số {{code}} bị từ chối do không hợp lệ.
 Cảm ơn quý khách đã sử dụng dịch vụ.
-Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobifone.vn của mobifone để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -528,7 +533,7 @@ Quý khách {{tenKhachHang}} đã trúng thưởng [{{tenQua}} - {{maQua}}] sau 
 Quý khách đã may mắn trúng thưởng [{{diem}} điểm] - mã quà [{{maQua}}] sau khi quay vòng quay {{maVongQuay}}. 
 Điểm tích lũy hiện tại của quý khách là {{tongDiem}} điểm.
 Cảm ơn quý khách đã tham gia chương trình.
-Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobifone.vn của mobifone để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -542,7 +547,7 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 ha
 Quý khách đã may mắn trúng giải thưởng [{{tenQua}} - MS:{{maQua}}] sau khi quay vòng quay {{maVongQuay}}.
 Chi tiết - {{chiTiet}} 
 Cảm ơn quý khách đã tham gia chương trình.
-Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobifone.vn của mobifone để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -556,7 +561,7 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 ha
 Quý khách đã may mắn trúng giải thưởng [{{tenQua}}] sau khi quay vòng quay {{maVongQuay}}.
 Mã voucher - {{chiTiet}}
 Cảm ơn quý khách đã tham gia chương trình.
-Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobifone.vn của mobifone để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -568,7 +573,7 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 ha
         value: `[Thông báo tự động cho khách hàng]
 Cảm ơn quý khách đã tham gia vòng quay {{maVongQuay}}.
 Chúc quý khách may mắn lần sau.
-Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 hay mobifone.vn của mobifone để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -741,6 +746,67 @@ Link đăng ký:
         ).join("|")}`,
         key: SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE,
         value: ServiceCode.BK,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      // DELIVERY_STATUS_CUSTOMER_ALERT = "DELIVERY_STATUS_CUSTOMER_ALERT",
+      // DELIVERY_COMPLETED_MSG_FOR_CUSTOMER = "DELIVERY_COMPLETED_MSG_FOR_CUSTOMER",
+      // DELIVERY_FAILURE_MSG_FOR_CUSTOMER = "DELIVERY_FAILURE_MSG_FOR_CUSTOMER",
+      // DELIVERY_PENDING_FOR_CUSTOMER = "DELIVERY_PENDING_FOR_CUSTOMER",
+      {
+        type: SettingType.boolean,
+        name: `Thông báo tình trạng vận đơn cho khách hàng`,
+        key: SettingKey.DELIVERY_STATUS_CUSTOMER_ALERT,
+        value: ServiceCode.BK,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.richText,
+        name: "Thông báo cho khách hàng khi đơn hàng đang giao",
+        key: SettingKey.DELIVERY_PENDING_FOR_CUSTOMER,
+        value: `[Thông báo tự động dành cho khách hàng]
+Đơn hàng {{order.code}} đang được giao. Thông tin đơn hàng:
++ Danh sách sản phẩm: 
+{{orderItems.map(i=>\`🛒\${i.productName} x \${i.qty}: \${$money(i.amount)}đ\`).join('\\n')}}
++ Tổng hóa đơn: {{$money(order.amount)}}đ
++ Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
++ Thông tin shop bán hàng: {{seller.shopName}}
+Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.richText,
+        name: "Thông báo cho khách hàng khi vận đơn thất bại",
+        key: SettingKey.DELIVERY_FAILURE_MSG_FOR_CUSTOMER,
+        value: `[Thông báo tự động dành cho khách hàng]
+Đơn hàng {{order.code}} đã giao thất bại. Thông tin đơn hàng:
++ Danh sách sản phẩm: 
+{{orderItems.map(i=>\`🛒\${i.productName} x \${i.qty}: \${$money(i.amount)}đ\`).join('\\n')}}
++ Tổng hóa đơn: {{$money(order.amount)}}đ
++ Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
++ Thông tin shop bán hàng: {{seller.shopName}}
+Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.richText,
+        name: "Thông báo cho khách hàng khi vận đơn thành công",
+        key: SettingKey.DELIVERY_COMPLETED_MSG_FOR_CUSTOMER,
+        value: `[Thông báo tự động dành cho khách hàng]
+Đơn hàng {{order.code}} đã được giao thành công. Thông tin đơn hàng:
++ Danh sách sản phẩm: 
+{{orderItems.map(i=>\`🛒\${i.productName} x \${i.qty}: \${$money(i.amount)}đ\`).join('\\n')}}
++ Tổng hóa đơn: {{$money(order.amount)}}đ
++ Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
++ Thông tin shop bán hàng: {{seller.shopName}}
+Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,

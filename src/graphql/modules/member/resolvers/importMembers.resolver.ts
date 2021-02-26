@@ -544,11 +544,11 @@ export default { Mutation };
 
 // ]
 
-// const testFn = async() => {
 
+// const testFn = async () => {
 //   const members = await MemberModel.find();
-//   const ids = members.map(m=>m.code);
-
+//   const ids = members.map((m) => m.code);
+//   console.log('vao day test');
 //   const data = [
 //     "721344",
 //     "721400",
@@ -764,8 +764,19 @@ export default { Mutation };
 //   ];
 
 //   for (const item of data) {
-//     cons
+//     if (!ids.includes(item)) {
+//       console.log("-------------------->item", item);
+//     }
 //   }
-
-  
 // };
+
+// // syns data tại đây
+// (async () => {
+//   console.log(
+//     "----------------------------- Start sync here -----------------------------"
+//   );
+//   await testFn();
+//   console.log(
+//     "----------------------------- End sync here -----------------------------"
+//   );
+// })();

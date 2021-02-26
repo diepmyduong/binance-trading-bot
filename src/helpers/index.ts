@@ -7,3 +7,4 @@ export * from "./validateJSON.helper";
 export * from "./firebase.helper";
 export * from "./keycode.helper";
 export * from "./vietnamPost/vietnamPost.helper";
+export * from "./vietnamPost/vietnamPostDeliveryStatus";

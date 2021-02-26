@@ -189,3 +189,30 @@ type webhookResponseData = {
   AdditionalDatas: string;
   SoLanIn: string;
 };
+
+// const data = {
+//   serviceName: "BK",
+//   codAmountEvaluation: 72552000,
+//   deliveryDateEvaluation: "2021-02-28T08:00:15.8837836+07:00",
+//   heightEvaluation: 100,
+//   isReceiverPayFreight: true,
+//   lengthEvaluation: 100,
+//   weightEvaluation: 450,
+//   widthEvaluation: 100,
+//   packageContent:
+//     "[iPhone 12 Pro 128GB - SL:3] [Hộp Khẩu Trang 3D Mask Unicharm - SL:1]",
+//   isPackageViewable: false,
+//   pickupType: 1,
+//   senderFullname: "Shop di động",
+//   senderTel: "02838221677",
+//   senderAddress: "Sô´2, Đường Công Xã Paris, Phường Bến Nghé, Quận 1",
+//   senderWardId: "71000",
+//   senderProvinceId: "70",
+//   senderDistrictId: "7100",
+//   receiverFullname: "Lê Thanh Vương",
+//   receiverAddress: "81 Cô Giang Q1 Tp Hồ Chí Minh",
+//   receiverTel: "0708890280",
+//   receiverProvinceId: "82",
+//   receiverDistrictId: "8231",
+//   receiverWardId: "82326",
+// };

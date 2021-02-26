@@ -25,6 +25,7 @@ const schema = gql`
 
     updateMemberAddressDelivery(id: ID!, addressDeliveryIds: [ID]): Member
     updateMemberAddressStorehouse(id: ID!, addressStorehouseIds: [ID], mainAddressStorehouseId:ID): Member
+    importMembers(file: Upload!): String
     # Add Mutation
   }
 

@@ -24,6 +24,7 @@ const Mutation = {
       data.buyerId = buyerId;
       data.sellerId = sellerId;
     }
+    console.log('data',data);
 
     try {
       const ordersData = await OrderHelper.orderProducts(data);
@@ -31,10 +32,14 @@ const Mutation = {
       for (let orderData of ordersData) {
         const orderHelper = await OrderHelper.fromRaw(orderData);
         await orderHelper.generateItemsFromRaw(orderData.products);
+        
+        console.log("result generateItemsFromRaw", orderHelper.order);
         // Calculate Shipfee
         await orderHelper.calculateShipfee();
+        console.log("result calculateShipfee", orderHelper.order);
         // Calculate Amount
         orderHelper.calculateAmount();
+        console.log("result calculateAmount", orderHelper.order);
         orders.push(orderHelper.order);
       }
       

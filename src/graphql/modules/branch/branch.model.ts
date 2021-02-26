@@ -4,11 +4,13 @@ import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 const Schema = mongoose.Schema;
 
 export type IBranch = BaseDocument & {
+  code: string; // Code chi nhánh
   name?: string; // Tên chi nhánh
 };
 
 const branchSchema = new Schema(
   {
+    code: { type: String },
     name: { type: String, required: true },
   },
   { timestamps: true }

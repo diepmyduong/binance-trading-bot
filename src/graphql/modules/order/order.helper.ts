@@ -111,13 +111,13 @@ export class OrderHelper {
     };
 
     // console.log('allProducts',allProducts);
+    // console.log('sellerId',sellerId);
 
     const validDirectShop = (p: IProduct) => {
       // console.log('p.memberId',p.memberId);
       // console.log('sellerId',sellerId);
       return p.memberId == sellerId && p.isCrossSale === false;
     };
-
     // lấy ra danh sách sản phẩm của shop đó bán + sản phẩm chính (hảng bưu điện chuyển về cho bưu cục quản trị)
     const directShoppingProducts: any = allProducts
       .filter((p) => validDirectShop(p))
@@ -419,6 +419,7 @@ export class OrderHelper {
             productHeight,
           });
         }
+
 
         servicePostList = servicePostList.sort(
           (a, b) => a.TongCuocBaoGomDVCT - b.TongCuocBaoGomDVCT

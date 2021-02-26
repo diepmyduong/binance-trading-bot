@@ -14,9 +14,10 @@ import { ROLES } from "../../constants/role.const";
 import { Context } from "../../graphql/context";
 import { auth } from "../../middleware/auth";
 import { GetVietnamPostDeliveryStatusText } from "../../helpers/vietnamPost/vietnamPostDeliveryStatus";
-import moment from 'moment';
+import moment from "moment";
+import { onDelivering } from "../../events/onDelivering.event";
 
-const DEFAULT_WEBHOOK_ORDER_ID = "00000000-0000-0000-0000-000000000000"
+const DEFAULT_WEBHOOK_ORDER_ID = "00000000-0000-0000-0000-000000000000";
 class DeliveryRoute extends BaseRoute {
   constructor() {
     super();
@@ -40,27 +41,31 @@ class DeliveryRoute extends BaseRoute {
     //         throw ErrorHelper.badToken();
     const data: webhookResponseData = JSON.parse(Data);
 
-    if(data.Id === DEFAULT_WEBHOOK_ORDER_ID){
+    if (data.Id === DEFAULT_WEBHOOK_ORDER_ID) {
       return res.sendStatus(200);
     }
 
-    const order = await OrderModel.findOne({code:data.OrderCode});
+    const order = await OrderModel.findOne({ code: data.OrderCode });
     if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
 
     // console.log('data',data);
     // console.log('order',order);
-    
+
     const deliveryLog = await DeliveryLogModel.create({
       orderId: order._id,
       memberId: order.sellerId,
       customerId: order.buyerId,
       orderNumber: data.ItemCode,
-      deliveryCode : data.ItemCode, 
+      deliveryCode: data.ItemCode,
       deliveryId: data.Id,
       shipMethod: ShipMethod.VNPOST,
       status: data.OrderStatusId.toString(),
-      statusName: GetVietnamPostDeliveryStatusText(data.OrderStatusId.toString()),
-      statusDetail: GetVietnamPostDeliveryStatusText(data.OrderStatusId.toString()),
+      statusName: GetVietnamPostDeliveryStatusText(
+        data.OrderStatusId.toString()
+      ),
+      statusDetail: GetVietnamPostDeliveryStatusText(
+        data.OrderStatusId.toString()
+      ),
       statusDate: moment(data.LastUpdateTime),
       note: data.DeliveryNote,
       moneyCollection: parseFloat(data.CodAmountEvaluation),
@@ -75,7 +80,8 @@ class DeliveryRoute extends BaseRoute {
     order.deliveryInfo.status = deliveryLog.status;
     order.deliveryInfo.statusText = deliveryLog.statusName;
 
-    await order.save();
+    const createdOrder = await order.save();
+    onDelivering.next(createdOrder);
     res.sendStatus(200);
   }
 }

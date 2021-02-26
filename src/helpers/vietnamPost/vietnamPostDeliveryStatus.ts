@@ -40,11 +40,20 @@ export function GetVietnamPostDeliveryStatusText(status: string) {
   }
 }
 
+export enum DeliveryStatus {
+  DELIVERING = "DELIVERING", // Đang vận chuyển
+  COMPLETED = "COMPLETED", // Đã duyệt
+  FAILURE = "FAILURE"
+}
+
+
 export function GetOrderStatusByPostDeliveryStatus(status: string) {
   switch (true) {
-    case ["120"].includes(status):
-      return OrderStatus.COMPLETED;
-    case ["170"].includes(status): // phát hoàn cho người gửi thành công
-      return OrderStatus.RETURNED;
+    case ["20","70"].includes(status):
+      return DeliveryStatus.DELIVERING;
+    case ["100","120"].includes(status):
+      return DeliveryStatus.COMPLETED;
+    case ["91"].includes(status): // phát hoàn cho người gửi thành công
+      return DeliveryStatus.FAILURE;
   }
 }

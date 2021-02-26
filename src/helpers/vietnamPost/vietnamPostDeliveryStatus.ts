@@ -1,22 +1,27 @@
-import { OrderStatus } from "../../graphql/modules/order/order.model";
-
 export const VietnamPostDeliveryStatusDetail = {
   10: "Đơn hàng đã xóa",
   20: "Gửi sang hệ thống MyVNPOST thành công",
   60: "Đơn hàng đã hủy",
-  61: "Báo hủy đơn hàng",
-  62: "Đã nhận báo hủy",
   70: "Bưu cục đã nhận đơn hàng và nhập vào hệ thống chuyển phát của VNPost",
+
+  // giao hang ko dc
+  // 1 ba
   91: "Đã đi phát hàng cho người nhận nhưng không thành công",
+  
   100: "Hàng đã phát thành công cho người nhận",
   110: "Bưu tá đã nhận tiền COD của người nhận và nhập vào hệ thống Paypost/Chờ trả tiền",
   120: "Tiền COD đã trả cho người gửi",
+  //
+  61: "Báo hủy đơn hàng",
+  62: "Đã nhận báo hủy",
+
+  // chua co func
   161: "Phát hoàn cho người gửi thất bại",
   170: "Phát hoàn cho người gửi thành công",
 };
 
 export function GetVietnamPostDeliveryStatusText(status: string) {
-  switch (true) {
+  switch (true) { 
     case [""].includes(status):
       return "Chưa duyệt";
     case ["20"].includes(status):
@@ -46,6 +51,8 @@ export enum DeliveryStatus {
   FAILURE = "FAILURE"
 }
 
+// setting tu dong duyet
+// setting 
 
 export function GetOrderStatusByPostDeliveryStatus(status: string) {
   switch (true) {

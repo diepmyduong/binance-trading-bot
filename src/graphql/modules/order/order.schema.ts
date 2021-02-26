@@ -144,7 +144,8 @@ const schema = gql`
     paymentMethodText: String
     shipMethodText: String
     statusText: String
-
+    "Thông tin vận đơn"
+    deliveryInfo: DeliveryInfo
   }
 
   type OrderPageData {

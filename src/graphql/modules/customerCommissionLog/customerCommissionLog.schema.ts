@@ -12,8 +12,6 @@ const schema = gql`
     createdAt: DateTime
     updatedAt: DateTime
 
-    "Mã thành viên"
-    memberId: ID
     "Mã khách hàng"
     customerId: ID
     "Giá trị"

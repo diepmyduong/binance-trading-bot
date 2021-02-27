@@ -61,7 +61,7 @@ onDelivering.subscribe(async (order) => {
       );
       console.log('status',status);
       if (status === DeliveryStatus.DELIVERING) {
-        SettingHelper.load(SettingKey.DELIVERY_PENDING_FOR_CUSTOMER).then(
+        SettingHelper.load(SettingKey.DELIVERY_PENDING_MSG_FOR_CUSTOMER).then(
           (msg) => {
             onSendChatBotText.next({
               apiKey: seller.chatbotKey,
@@ -85,7 +85,7 @@ onDelivering.subscribe(async (order) => {
         );
       }
       if (status === DeliveryStatus.COMPLETED) {
-        SettingHelper.load(SettingKey.DELIVERY_FAILURE_MSG_FOR_CUSTOMER).then(
+        SettingHelper.load(SettingKey.DELIVERY_COMPLETED_MSG_FOR_CUSTOMER).then(
           (msg) => {
             onSendChatBotText.next({
               apiKey: seller.chatbotKey,
@@ -106,7 +106,7 @@ onDelivering.subscribe(async (order) => {
 
   // console.log("onDelivering order", order);
   const alert = await SettingHelper.load(
-    SettingKey.DELIVERY_STATUS_CUSTOMER_ALERT
+    SettingKey.DELIVERY_STATUS_MEMBER_ALERT
   );
   //   console.log("order", order);
   if (alert) {
@@ -129,14 +129,37 @@ onDelivering.subscribe(async (order) => {
       const status = GetOrderStatusByPostDeliveryStatus(
         order.deliveryInfo.status
       );
-      if (status === DeliveryStatus.COMPLETED) {
-        
 
-        SettingHelper.load(SettingKey.DELIVERY_FAILURE_MSG_FOR_CUSTOMER).then(
+      if (status === DeliveryStatus.DELIVERING) {
+        SettingHelper.load(SettingKey.DELIVERY_PENDING_MSG_FOR_MEMBER).then(
           (msg) => {
             onSendChatBotText.next({
               apiKey: seller.chatbotKey,
-              psids: [pageAccount.psid],
+              psids: seller.psids,
+              message: msg,
+              context: { seller, orderItems, order },
+            });
+          }
+        );
+      }
+      if (status === DeliveryStatus.FAILURE) {
+        SettingHelper.load(SettingKey.DELIVERY_FAILURE_MSG_FOR_MEMBER).then(
+          (msg) => {
+            onSendChatBotText.next({
+              apiKey: seller.chatbotKey,
+              psids: seller.psids,
+              message: msg,
+              context: { seller, orderItems, order },
+            });
+          }
+        );
+      }
+      if (status === DeliveryStatus.COMPLETED) {
+        SettingHelper.load(SettingKey.DELIVERY_COMPLETED_MSG_FOR_MEMBER).then(
+          (msg) => {
+            onSendChatBotText.next({
+              apiKey: seller.chatbotKey,
+              psids: seller.psids,
               message: msg,
               context: { seller, orderItems, order },
             });

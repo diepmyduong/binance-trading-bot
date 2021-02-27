@@ -46,7 +46,6 @@ const Mutation = {
       SenderDistrictId: deliveryInfo.senderDistrictId, // mã quận người gửi *
 
       // Kiểu địa chỉ người nhận: 1 Nhà riêng, 2: Cơ quan Nếu không có thông tin thì để null
-
       ReceiverFullname: deliveryInfo.receiverFullname, // tên người nhận *
       ReceiverAddress: deliveryInfo.receiverAddress, // địa chỉ nhận *
       ReceiverTel: deliveryInfo.receiverTel, // phone người nhận *

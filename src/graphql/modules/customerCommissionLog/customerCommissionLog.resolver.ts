@@ -10,6 +10,9 @@ import {
   CustomerCommissionLogType,
 } from "./customerCommissionLog.model";
 import { customerCommissionLogService } from "./customerCommissionLog.service";
+import { MemberLoader } from "../member/member.model";
+import { set } from "lodash";
+import { CustomerLoader } from "../customer/customer.model";
 
 const Query = {
   getAllCustomerCommissionLog: async (
@@ -18,6 +21,11 @@ const Query = {
     context: Context
   ) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+
+    if(context.isMember){
+      set(args, "q.filter.memberId", context.id);
+    }
+
     return customerCommissionLogService.fetch(args.q);
   },
 };
@@ -26,6 +34,8 @@ const CustomerCommissionLog = {
   order: GraphQLHelper.loadById(OrderLoader, "orderId"),
   regisSMS: GraphQLHelper.loadById(RegisSMSLoader, "regisSMSId"),
   regisService: GraphQLHelper.loadById(RegisServiceLoader, "regisServiceId"),
+  member: GraphQLHelper.loadById(MemberLoader, "memberId"),
+  customer: GraphQLHelper.loadById(CustomerLoader, "customerId"),
 
   note: async (root: ICustomerCommissionLog, args: any, context: Context) => {
     switch (root.type) {

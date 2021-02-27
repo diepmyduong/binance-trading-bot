@@ -597,8 +597,8 @@ export class OrderHelper {
     return this;
   }
 
-  async addCampaignBulk(campaignCode: any) {
-    const campaign = await CampaignModel.findOne({ code: campaignCode });
+  async addCampaignBulk() {
+    const campaign = await CampaignModel.findOne({ code: this.order.campaignCode });
     const campaignSocialResultBulk: UnorderedBulkOperation = CampaignSocialResultModel.collection.initializeUnorderedBulkOp();
     if (campaign) {
       const campaignSocialResults = campaign
@@ -628,9 +628,9 @@ export class OrderHelper {
     return campaignSocialResultBulk;
   }
 
-  async updateOrderedQtyBulk(items: any) {
+  async updateOrderedQtyBulk() {
     const productBulk = ProductModel.collection.initializeUnorderedBulkOp();
-    items.map((item: IOrderItem) => {
+    this.order.items.map((item: IOrderItem) => {
       if (item.isCrossSale) {
         const { productId } = item;
         productBulk.find({ productId }).updateOne({

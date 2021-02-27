@@ -74,6 +74,7 @@ export type IOrder = BaseDocument & {
   addressDeliveryId: string; // Mã điểm nhận
   isUrbanDelivery: boolean;
   campaignCode: string;
+  isCollaborator: boolean;
 };
 
 const orderSchema = new Schema(
@@ -136,6 +137,7 @@ const orderSchema = new Schema(
     },
     addressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery" },
     isUrbanDelivery: { type: Boolean, default: false },
+    isCollaborator: { type: Boolean },
   },
   { timestamps: true }
 );

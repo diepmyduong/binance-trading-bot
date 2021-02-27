@@ -85,6 +85,8 @@ const Order = {
     switch (root.status) {
       case OrderStatus.PENDING:
         return `Chờ xử lý`;
+      case OrderStatus.PROCESSING:
+        return `Đang xử lý`;
       case OrderStatus.DELIVERING:
         return `Đang giao hàng`;
       case OrderStatus.COMPLETED:

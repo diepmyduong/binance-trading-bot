@@ -359,8 +359,6 @@ export class OrderHelper {
         if (storehouses.length === 0)
           throw ErrorHelper.somethingWentWrong("Chưa cấu hình chi nhánh kho");
 
-        // console.log('member.addressDeliveryIds',member.addressDeliveryIds);
-
         if (
           member.addressDeliveryIds.findIndex(
             (id) => id.toString() == this.order.addressDeliveryId.toString()
@@ -422,7 +420,6 @@ export class OrderHelper {
           };
 
           // console.log("data", data);
-
           let service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
             data
           );
@@ -445,8 +442,6 @@ export class OrderHelper {
 
         const cheapestPostService = servicePostList[0];
         // console.log('cheapestPostService',cheapestPostService);
-
-        this.order.realShipfee = cheapestPostService.TongCuocBaoGomDVCT;
 
         // đơn này ko thu tiền ship
         this.order.addressStorehouseId = cheapestPostService.storehouse._id;
@@ -552,38 +547,39 @@ export class OrderHelper {
           });
         }
         // console.log("serviceList", serviceList);
-
         serviceList = serviceList.sort(
           (a, b) => a.TongCuocBaoGomDVCT - b.TongCuocBaoGomDVCT
         );
-
         const cheapestService = serviceList[0];
+        const cheapestShipFee = cheapestService.TongCuocBaoGomDVCT;
         // console.log("cheapestService", cheapestService);
-        // Đơn hàng nội thành - phí ship cố định
-        if (urbanStores.length > 0) {
-          this.order.isUrbanDelivery = true;
-          this.order.shipfee =
-            this.order.paymentMethod == PaymentMethod.COD
-              ? await SettingHelper.load(
-                  SettingKey.DELIVERY_VNPOST_INNER_SHIP_FEE
-                )
-              : 0;
-          this.order.realShipfee =
-            this.order.paymentMethod == PaymentMethod.COD
-              ? cheapestService.TongCuocBaoGomDVCT
-              : 0;
-        } else {
-          this.order.isUrbanDelivery = false;
-          this.order.shipfee =
-            this.order.paymentMethod == PaymentMethod.COD
-              ? cheapestService.TongCuocBaoGomDVCT
-              : 0;
+
+        // lấy ra setting đồng giá
+        const dongGiaEnabled = await SettingHelper.load(
+          SettingKey.DELIVERY_ENABLED_DONG_GIA
+        );
+
+        const dongGiaShipFee = await SettingHelper.load(
+          SettingKey.DELIVERY_VNPOST_INNER_SHIP_FEE
+        );
+        // co thu tien hang ko ?
+        const cod = this.order.paymentMethod == PaymentMethod.COD;
+        // console.log("dongGiaEnabled",dongGiaEnabled);
+        if (dongGiaEnabled) {
+          // Đơn hàng nội thành - phí ship cố định
+          if (urbanStores.length > 0) {
+            this.order.isUrbanDelivery = true;
+            this.order.shipfee = cod ? dongGiaShipFee : 0;
+          } else {
+            this.order.isUrbanDelivery = false;
+            this.order.shipfee = cod ? cheapestShipFee : 0;
+          }
+        }
+         else {
+          this.order.shipfee = cod ? cheapestShipFee : 0;
         }
 
         this.order.addressStorehouseId = cheapestService.storehouse._id;
-
-        this.order.isUrbanDelivery = false;
-
         deliveryInfo = {
           serviceName: serviceCode,
           codAmountEvaluation: cheapestService.codAmountEvaluation,
@@ -660,7 +656,7 @@ export class OrderHelper {
   }
 
   async updateOrderedQtyBulk() {
-    console.log("updateOrderedQtyBulk");
+    // console.log("updateOrderedQtyBulk");
     const productBulk = ProductModel.collection.initializeUnorderedBulkOp();
     this.order.items.map((item: IOrderItem) => {
       const { productId } = item;

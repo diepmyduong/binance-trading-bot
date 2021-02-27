@@ -152,6 +152,8 @@ const schema = gql`
     collaborator: Collaborator
     "Phí ship thực tế"
     realShipfee: Float
+    "Là nội thành"
+    isUrbanDelivery: Boolean
   }
 
   type OrderPageData {

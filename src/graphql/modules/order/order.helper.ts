@@ -444,7 +444,7 @@ export class OrderHelper {
         );
 
         const cheapestPostService = servicePostList[0];
-        console.log('cheapestPostService',cheapestPostService);
+        // console.log('cheapestPostService',cheapestPostService);
 
         this.order.realShipfee = cheapestPostService.TongCuocBaoGomDVCT;
 
@@ -562,10 +562,16 @@ export class OrderHelper {
         // Đơn hàng nội thành - phí ship cố định
         if (urbanStores.length > 0) {
           this.order.isUrbanDelivery = true;
-          this.order.shipfee = await SettingHelper.load(
-            SettingKey.DELIVERY_VNPOST_INNER_SHIP_FEE
-          );
-          this.order.realShipfee = cheapestPostService.TongCuocBaoGomDVCT;
+          this.order.shipfee =
+            this.order.paymentMethod == PaymentMethod.COD
+              ? await SettingHelper.load(
+                  SettingKey.DELIVERY_VNPOST_INNER_SHIP_FEE
+                )
+              : 0;
+          this.order.realShipfee =
+            this.order.paymentMethod == PaymentMethod.COD
+              ? cheapestService.TongCuocBaoGomDVCT
+              : 0;
         } else {
           this.order.isUrbanDelivery = false;
           this.order.shipfee =

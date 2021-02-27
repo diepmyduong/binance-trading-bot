@@ -5,7 +5,6 @@ export const VietnamPostDeliveryStatusDetail = {
   70: "Bưu cục đã nhận đơn hàng và nhập vào hệ thống chuyển phát của VNPost",
 
   // giao hang ko dc
-  // 1 ba
   91: "Đã đi phát hàng cho người nhận nhưng không thành công",
   
   100: "Hàng đã phát thành công cho người nhận",

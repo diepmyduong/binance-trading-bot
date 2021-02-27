@@ -32,6 +32,7 @@ const schema = gql`
     order: Order
     regisSMS: RegisSMS
     regisService: RegisService
+    
   }
 
   type CustomerCommissionLogPageData {

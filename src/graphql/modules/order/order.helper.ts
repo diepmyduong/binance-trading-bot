@@ -25,6 +25,9 @@ import {
 } from "../campaignSocialResult/campaignSocialResult.model";
 import { UnorderedBulkOperation } from "mongodb";
 import { AddressDeliveryModel } from "../addressDelivery/addressDelivery.model";
+import { CollaboratorModel } from "../collaborator/collaborator.model";
+import memberGetMeResolver from "../member/resolvers/memberGetMe.resolver";
+import { CustomerModel } from "../customer/customer.model";
 
 export class OrderHelper {
   constructor(public order: IOrder) {}
@@ -95,6 +98,7 @@ export class OrderHelper {
       throw ErrorHelper.requestDataInvalid("Danh sách sản phẩm");
 
     const itemIDs = items.map((i: any) => i.productId);
+
     const allProducts = await ProductModel.find({
       _id: { $in: itemIDs },
       type: ProductType.RETAIL,
@@ -171,6 +175,7 @@ export class OrderHelper {
         productId: { $in: ids },
         sellerId,
       });
+
       // console.log("crossSales", crossSales);
       // kiem tra mat hang nay co trong dang ky crossale ko ?
       if (crossSales.length !== crossSaleProducts.length)
@@ -187,6 +192,8 @@ export class OrderHelper {
             fromMemberId: sellerId,
           });
         });
+
+      // them danh sach order - cong tac vien mua don hang ban cheo
     }
 
     return orders;
@@ -194,6 +201,16 @@ export class OrderHelper {
 
   static async fromRaw(data: any) {
     const order = new OrderModel(data);
+    
+    const customer = await CustomerModel.findById(order.buyerId);
+    const collaborator = await CollaboratorModel.findOne({
+      phone: customer.phone,
+    });
+
+    if(collaborator){
+      order.isCollaborator = true;
+    }
+
     const helper = new OrderHelper(order);
     switch (order.shipMethod) {
       case ShipMethod.NONE:
@@ -215,7 +232,6 @@ export class OrderHelper {
         ]);
         break;
     }
-
     return helper;
   }
 
@@ -420,7 +436,6 @@ export class OrderHelper {
           });
         }
 
-
         servicePostList = servicePostList.sort(
           (a, b) => a.TongCuocBaoGomDVCT - b.TongCuocBaoGomDVCT
         );
@@ -598,7 +613,9 @@ export class OrderHelper {
   }
 
   async addCampaignBulk() {
-    const campaign = await CampaignModel.findOne({ code: this.order.campaignCode });
+    const campaign = await CampaignModel.findOne({
+      code: this.order.campaignCode,
+    });
     const campaignSocialResultBulk: UnorderedBulkOperation = CampaignSocialResultModel.collection.initializeUnorderedBulkOp();
     if (campaign) {
       const campaignSocialResults = campaign

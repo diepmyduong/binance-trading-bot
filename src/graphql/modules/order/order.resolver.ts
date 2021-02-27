@@ -32,7 +32,6 @@ const Query = {
     if (context.isCustomer()) {
       set(args, "q.filter.buyerId", context.id);
     }
-
     //ne
     return orderService.fetch(args.q);
   },
@@ -51,7 +50,7 @@ const Order = {
   fromMember: GraphQLHelper.loadById(MemberLoader, "fromMemberId"),
   updatedByUser: GraphQLHelper.loadById(UserLoader, "updatedByUserId"),
   buyer: GraphQLHelper.loadById(CustomerLoader, "buyerId"),
-  
+
   paymentMethodText: async (root: IOrder, args: any, context: Context) => {
     switch (root.paymentMethod) {
       case PaymentMethod.COD:

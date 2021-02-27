@@ -37,7 +37,7 @@ export const onOrderedProduct = new Subject<IOrder>();
 // duyệt đơn thành công
 // gửi cho chủ cửa hàng 
 onOrderedProduct.subscribe(async (order: IOrder) => {
-    const { buyerId, sellerId, itemIds, isPrimary, code, buyerName, fromMemberId } = order;
+    const { buyerId, sellerId, itemIds, isPrimary, code, buyerName, fromMemberId ,  } = order;
     const [seller, customer, orderItems] = await Promise.all([
         MemberLoader.load(sellerId),
         CustomerLoader.load(buyerId),
@@ -57,23 +57,31 @@ onOrderedProduct.subscribe(async (order: IOrder) => {
         });
     }
 
+    const postOrderEnabled = await SettingHelper.load(
+        SettingKey.POST_CREATE_ORDER_ALERT_ENABLED
+      );
+
+    // console.log('postOrderEnabled',postOrderEnabled);
 
     if (isPrimary) {
-        const [apiKey, msg, users, orderItems] = await Promise.all([
-            SettingHelper.load(SettingKey.CHATBOT_API_KEY),
-            SettingHelper.load(SettingKey.ORDER_PENDING_MSG_FOR_MOBIFONE),
-            UserModel.find({ psid: { $exists: true } }),
-            OrderItemLoader.loadMany(order.itemIds),
-        ]);
-
-        onSendChatBotText.next({
-            apiKey: apiKey,
-            psids: users.map((u) => u.psid),
-            message: msg,
-            context: { order, orderItems },
-        });
+        if(postOrderEnabled){
+            const [apiKey, msg, users, orderItems] = await Promise.all([
+                SettingHelper.load(SettingKey.CHATBOT_API_KEY),
+                SettingHelper.load(SettingKey.ORDER_PENDING_MSG_FOR_MOBIFONE),
+                UserModel.find({ psid: { $exists: true } }),
+                OrderItemLoader.loadMany(order.itemIds),
+            ]);
+    
+            onSendChatBotText.next({
+                apiKey: apiKey,
+                psids: users.map((u) => u.psid),
+                message: msg,
+                context: { order, orderItems },
+            });
+        }
+       
     } else {
-        if (fromMemberId === sellerId) {
+        if (fromMemberId.toString() === sellerId.toString()) {
             const [seller, orderItems] = await Promise.all([
                 MemberLoader.load(sellerId),
                 OrderItemLoader.loadMany(itemIds),

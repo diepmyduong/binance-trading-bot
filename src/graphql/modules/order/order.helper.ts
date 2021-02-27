@@ -208,7 +208,7 @@ export class OrderHelper {
     });
 
     if(collaborator){
-      order.isCollaborator = true;
+      order.collaboratorId = collaborator._id;
     }
 
     const helper = new OrderHelper(order);

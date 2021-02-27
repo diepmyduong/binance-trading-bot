@@ -146,8 +146,10 @@ const schema = gql`
     statusText: String
     "Thông tin vận đơn"
     deliveryInfo: DeliveryInfo
-    "Là đơn cộng tác viên"
-    isCollaborator: Boolean
+    "Mã Cộng tác viên"
+    collaboratorId: ID
+    "Cộng tác viên"
+    collaborator: Collaborator
   }
 
   type OrderPageData {

@@ -300,7 +300,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của B�
         type: SettingType.richText,
         name: "Thông báo cho chủ shop bán chéo khi đặt hàng thành công",
         key: SettingKey.ORDER_PENDING_MSG_FOR_CROSSALE_SHOPPER,
-        value: `[Thông báo tự động dành cho Mobifone]
+        value: `[Thông báo tự động dành cho chủ shop bán chéo]
 Đơn hàng {{order.code}} đặt thành công. Thông tin đơn hàng:
 + Danh sách sản phẩm: 
 {{orderItems.map(i=>\`🛒\${i.productName} x \${i.qty}: \${$money(i.amount)}đ\`).join('\\n')}}

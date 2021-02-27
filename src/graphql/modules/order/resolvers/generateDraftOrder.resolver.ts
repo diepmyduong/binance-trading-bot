@@ -52,7 +52,6 @@ const Mutation = {
         if (order) {
           allOrder.itemCount = allOrder.itemCount + order.itemCount;
           allOrder.shipfee = allOrder.shipfee + order.shipfee;
-          allOrder.realShipfee = allOrder.realShipfee + order.realShipfee ? order.realShipfee : 0;
           allOrder.amount = allOrder.amount + order.amount;
           allOrder.subtotal = allOrder.subtotal + order.subtotal;
         }

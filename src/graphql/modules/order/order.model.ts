@@ -7,6 +7,7 @@ const Schema = mongoose.Schema;
 
 export enum OrderStatus {
   PENDING = "PENDING", // Chờ xử lý
+  PROCESSING = "PROCESSING", // Đang xử lý
   DELIVERING = "DELIVERING", // Đang vận chuyển
   COMPLETED = "COMPLETED", // Đã duyệt
   CANCELED = "CANCELED", // Đã huỷ
@@ -75,7 +76,6 @@ export type IOrder = BaseDocument & {
   isUrbanDelivery: boolean;
   campaignCode: string;
   collaboratorId: string;
-  realShipfee: number; //phí ship thực tế
 };
 
 const orderSchema = new Schema(
@@ -118,7 +118,6 @@ const orderSchema = new Schema(
     itemHeight: { type: Number, default: 0 }, // chiều cao
 
     shipfee: { type: Number, default: 0, min: 0 },
-    realShipfee: { type: Number, default: 0, min: 0 }, //phí ship thực tế
     deliveryInfo: { type: DeliveryInfoSchema },
     shipMethod: {
       type: String,

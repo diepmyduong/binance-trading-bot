@@ -1,7 +1,10 @@
+import { OrderStatus } from "../../graphql/modules/order/order.model"
+
 export const VietnamPostDeliveryStatusDetail = {
   10: "Đơn hàng đã xóa",
   20: "Gửi sang hệ thống MyVNPOST thành công",
   60: "Đơn hàng đã hủy",
+
   70: "Bưu cục đã nhận đơn hàng và nhập vào hệ thống chuyển phát của VNPost",
 
   // giao hang ko dc
@@ -61,5 +64,25 @@ export function GetOrderStatusByPostDeliveryStatus(status: string) {
       return DeliveryStatus.COMPLETED;
     case ["91"].includes(status): // phát hoàn cho người gửi thành công
       return DeliveryStatus.FAILURE;
+    default:
+      return null;
+  }
+}
+
+// setting tu dong duyet
+// setting 
+
+export function GetOrderStatus(status: string , cod: boolean) {
+  switch (true) {
+    case ["20","70"].includes(status):
+      return OrderStatus.DELIVERING;
+    case ["120"].includes(status): // giao hàng thành công + có COD
+      return OrderStatus.COMPLETED;
+    case ["100"].includes(status) && cod === false: // giao hang thanh cong khong co cod
+      return OrderStatus.COMPLETED; 
+    case ["170"].includes(status): // phát hoàn cho người gửi thành công
+      return OrderStatus.RETURNED;
+    default:
+      return null;
   }
 }

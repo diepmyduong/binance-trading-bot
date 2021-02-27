@@ -20,11 +20,12 @@ import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { UserModel } from "../graphql/modules/user/user.model";
 import { ErrorHelper } from "../helpers/error.helper";
 import { onSendChatBotText } from "./onSendToChatbot.event";
-import { IOrder, OrderStatus } from "../graphql/modules/order/order.model";
+import { IOrder, OrderModel, OrderStatus, PaymentMethod } from "../graphql/modules/order/order.model";
 import {
   VietnamPostHelper,
-  GetOrderStatusByPostDeliveryStatus,
+  GetOrderStatus,
   DeliveryStatus,
+  GetOrderStatusByPostDeliveryStatus,
 } from "../helpers";
 
 export const onDelivering = new Subject<IOrder>();
@@ -32,7 +33,7 @@ export const onDelivering = new Subject<IOrder>();
 
 // gửi thông báo cho khách hàng 3 tình trạng đơn hàng - đang giao - giao thành công - giao thất bại
 onDelivering.subscribe(async (order) => {
-  const { buyerId, fromMemberId, itemIds } = order;
+  const { buyerId, fromMemberId, itemIds , deliveryInfo} = order;
 
   // console.log("onDelivering order", order);
   const alert = await SettingHelper.load(
@@ -57,9 +58,9 @@ onDelivering.subscribe(async (order) => {
     if (pageAccount) {
       // Đơn hàng của Mobifone
       const status = GetOrderStatusByPostDeliveryStatus(
-        order.deliveryInfo.status
+        deliveryInfo.status
       );
-      console.log('status',status);
+      console.log("status", status);
       if (status === DeliveryStatus.DELIVERING) {
         SettingHelper.load(SettingKey.DELIVERY_PENDING_MSG_FOR_CUSTOMER).then(
           (msg) => {
@@ -100,8 +101,7 @@ onDelivering.subscribe(async (order) => {
   }
 });
 
-
-// gửi thông tin cho chủ shop 3 trạng thái đơn hàng 
+// gửi thông tin cho chủ shop 3 trạng thái đơn hàng
 onDelivering.subscribe(async (order) => {
   const { buyerId, fromMemberId, itemIds } = order;
 
@@ -166,6 +166,30 @@ onDelivering.subscribe(async (order) => {
             });
           }
         );
+      }
+    }
+  }
+});
+
+// chuyen trang thai PROCESSING san DELIVERING
+onDelivering.subscribe(async (order) => {
+  const { deliveryInfo,paymentMethod } = order;
+  const cod  = paymentMethod === PaymentMethod.COD
+  if (deliveryInfo) {
+    const status = GetOrderStatus(deliveryInfo.status ,cod);
+    if(status){
+      if ([OrderStatus.DELIVERING, OrderStatus.RETURNED].includes(status)) {
+        OrderModel.findByIdAndUpdate(order.id, {$set:{
+          status
+        }});
+      }
+      if(status === OrderStatus.COMPLETED){
+        const autoApproveOrder =  await SettingHelper.load(SettingKey.DELIVERY_ENABLED_AUTO_APPROVE_ORDER);
+        if(autoApproveOrder){
+          OrderModel.findByIdAndUpdate(order.id, {$set:{
+            status
+          }});
+        }
       }
     }
   }

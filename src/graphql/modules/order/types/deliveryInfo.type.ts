@@ -50,8 +50,8 @@ export type DeliveryInfo = {
   customerCode: string; // mã khách hàng
   vendorId: string; // 1; // mã nhà cung cấp
 
-  itemCode: string,
-  orderId: string,
+  itemCode: string;
+  orderId: string;
   // kết quả delivery
   createTime: string; // thời gian tạo đơn
   lastUpdateTime: string; // thời gian cập nhật lần cuối
@@ -61,6 +61,8 @@ export type DeliveryInfo = {
   deliveryTimes: number; // Số lần báo phát
   status: string;
   statusText: string;
+
+  partnerFee: number; // Phí giao hàng trả cho đối tác
 };
 
 export const DeliveryInfoSchema = new Schema({
@@ -108,7 +110,6 @@ export const DeliveryInfoSchema = new Schema({
   }, //1;
 
   orderAmountEvaluation: { type: Schema.Types.Number }, // giá trị đơn hàng tạm tính
-
   isReceiverPayFreight: { type: Schema.Types.Boolean }, // Cộng thêm cước vào tiền thu hộ
   customerNote: { type: Schema.Types.String }, // yêu cầu khác
   useBaoPhat: { type: Schema.Types.Boolean },
@@ -119,10 +120,9 @@ export const DeliveryInfoSchema = new Schema({
   vendorId: { type: Schema.Types.String }, // 1; // mã nhà cung cấp
 
   // kết quả delivery
-
   itemCode: { type: Schema.Types.String },
   orderId: { type: Schema.Types.String },
-  
+
   createTime: { type: Schema.Types.String }, // thời gian tạo đơn
   lastUpdateTime: { type: Schema.Types.String }, // thời gian cập nhật lần cuối
   deliveryDateEvaluation: { type: Schema.Types.String }, // ngày dự kiến giao hàng
@@ -131,4 +131,6 @@ export const DeliveryInfoSchema = new Schema({
   deliveryTimes: { type: Schema.Types.Number }, // Số lần báo phát
   status: { type: Schema.Types.String }, // Mã tình trạng
   statusText: { type: Schema.Types.String },
+
+  partnerFee: { type: Schema.Types.Number }, // phí phải trả cho vnpost
 });

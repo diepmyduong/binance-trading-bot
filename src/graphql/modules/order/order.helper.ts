@@ -203,8 +203,10 @@ export class OrderHelper {
     const order = new OrderModel(data);
     
     const customer = await CustomerModel.findById(order.buyerId);
+    
     const collaborator = await CollaboratorModel.findOne({
       phone: customer.phone,
+      memberId: data.sellerId
     });
 
     if(collaborator){

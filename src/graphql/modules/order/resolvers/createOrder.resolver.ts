@@ -45,8 +45,8 @@ const Mutation = {
       await Promise.all([
         orderHelper.order.save(),
         OrderItemModel.insertMany(orderHelper.order.items),
-        orderHelper.updateOrderedQtyBulk(),
-        // (await campaignBulk).execute(),
+        (await orderHelper.updateOrderedQtyBulk()).execute(),
+        // (await orderHelper.addCampaignBulk()).execute(),
       ]).then(([order]) => {
         orders.push(order);
       });

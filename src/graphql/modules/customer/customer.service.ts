@@ -30,6 +30,26 @@ class CustomerService extends CrudService<typeof CustomerModel> {
       }
     );
   }
+  increaseCommissions({ customerId, currentCommission, commission }: any) {
+    // tự cộng dồn hoa hồng
+    let updateField: any = {
+      $set: {
+        commission,
+      },
+    };
+
+    // nếu hoa hồng trong member null => set vào
+    if (currentCommission) {
+      updateField = {
+        $inc: { commission },
+      };
+    }
+
+    // cập nhật số dư hoa hồng trong member
+    return CustomerModel.findOneAndUpdate({ _id: customerId }, updateField, {
+      new: true,
+    });
+  }
 }
 
 const customerService = new CustomerService();

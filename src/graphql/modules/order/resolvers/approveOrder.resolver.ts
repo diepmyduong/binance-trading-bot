@@ -50,11 +50,11 @@ const approveOrder = async (root: any, args: any, context: Context) => {
   }
 
   order.status = OrderStatus.COMPLETED;
+  
   return await Promise.all([order.save(), productBulk.execute()]).then(
-    async (res) => {
-      const result = res[0];
-      onApprovedOrder.next(result);
-      return result;
+    async ([order]) => {
+      onApprovedOrder.next(order);
+      return order;
     }
   );
 };

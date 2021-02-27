@@ -203,8 +203,10 @@ export class OrderHelper {
     const order = new OrderModel(data);
     
     const customer = await CustomerModel.findById(order.buyerId);
+    
     const collaborator = await CollaboratorModel.findOne({
       phone: customer.phone,
+      memberId: data.sellerId
     });
 
     if(collaborator){
@@ -642,20 +644,22 @@ export class OrderHelper {
         return item;
       });
     }
+    
     return campaignSocialResultBulk;
   }
 
   async updateOrderedQtyBulk() {
+    console.log('updateOrderedQtyBulk');
     const productBulk = ProductModel.collection.initializeUnorderedBulkOp();
     this.order.items.map((item: IOrderItem) => {
+      const { productId } = item;
+      productBulk.find({ productId }).updateOne({
+        $inc: { crossSaleOrdered: item.qty },
+      });
       if (item.isCrossSale) {
-        const { productId } = item;
-        productBulk.find({ productId }).updateOne({
-          $inc: { crossSaleOrdered: item.qty },
-        });
+       
       }
     });
-    // console.log("items", items);
-    productBulk.execute();
+    return productBulk;
   }
 }

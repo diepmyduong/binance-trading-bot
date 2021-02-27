@@ -1,4 +1,5 @@
 import { Subject } from "rxjs";
+import { CustomerCommissionLogType } from "../graphql/modules/customerCommissionLog/customerCommissionLog.model";
 
 import { SettingKey } from "../configs/settingData";
 import { CommissionLogType } from "../graphql/modules/commissionLog/commissionLog.model";
@@ -22,6 +23,7 @@ import { UserModel } from "../graphql/modules/user/user.model";
 import { ErrorHelper } from "../helpers/error.helper";
 import {
   payCommission,
+  payCustomerCommission,
   payCustomerPoint,
   payMobifoneCommission,
   paySellerPoint,
@@ -71,15 +73,28 @@ onApprovedOrder.subscribe(async (order) => {
 });
 
 // duyệt đơn thành công
-// tính điểm thưởng cho khách hàng
+// tính điểm thưởng cho khách hàng + hoa hồng cộng tác viên
 // gửi cho khách hàng
 onApprovedOrder.subscribe(async (order) => {
-  const { buyerId, fromMemberId, itemIds, buyerBonusPoint } = order;
+  const { buyerId, fromMemberId, itemIds, buyerBonusPoint , commission2} = order;
   const [seller, customer, orderItems] = await Promise.all([
     MemberLoader.load(fromMemberId),
     CustomerLoader.load(buyerId),
     OrderItemLoader.loadMany(itemIds),
   ]);
+
+  // tính hoa hồng cho khách hàng
+  if(order.collaboratorId){
+    const [commissionLoging, customerUpdating] = await payCustomerCommission({
+      memberId: seller.id,
+      customerId: buyerId,
+      type: CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER,
+      currentCommission: customer.commission,
+      commission: commission2,
+      id: order._id,
+    });
+
+  }
 
   let cumulativePointCustomer: ICustomer = null;
   // Điểm thưởng cho khách hàng
@@ -108,6 +123,8 @@ onApprovedOrder.subscribe(async (order) => {
             seller,
             orderItems,
             order,
+            commission: order.collaboratorId ? commission2 : null,
+            myCommission: order.collaboratorId ? customer.commission : null,
             point: buyerBonusPoint,
             myPoint: buyerBonusPoint
               ? cumulativePointCustomer.cumulativePoint

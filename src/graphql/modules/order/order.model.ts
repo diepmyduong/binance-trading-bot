@@ -73,6 +73,7 @@ export type IOrder = BaseDocument & {
   addressStorehouseId?: string; // Mã kho
   addressDeliveryId: string; // Mã điểm nhận
   isUrbanDelivery: boolean;
+  campaignCode: string;
 };
 
 const orderSchema = new Schema(

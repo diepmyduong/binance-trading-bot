@@ -5,7 +5,7 @@ import { ShipMethod } from "../order.model";
 
 const Query = {
   getAllShipService: async (root: any, args: any, context: Context) => {
-    context.auth(ROLES.ADMIN_EDITOR);
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER);
 
     const { shipMethod } = args;
 

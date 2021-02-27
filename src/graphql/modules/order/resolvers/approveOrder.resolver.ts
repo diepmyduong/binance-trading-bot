@@ -19,7 +19,7 @@ const approveOrder = async (root: any, args: any, context: Context) => {
 
   let params: any = {
     _id: id,
-    // status: {$in:[OrderStatus.PENDING , OrderStatus.DELIVERING ]},
+    status: {$in:[OrderStatus.PENDING , OrderStatus.DELIVERING ]},
   };
 
   if (context.isMember()) {
@@ -30,11 +30,11 @@ const approveOrder = async (root: any, args: any, context: Context) => {
 
   if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
 
-  // if(order.shipMethod === ShipMethod.VNPOST){
-  //   if(order.status === OrderStatus.PENDING){
-  //     throw ErrorHelper.somethingWentWrong("Không thể duyệt đơn hàng VN-POST do chưa tạo vận đơn.");
-  //   }
-  // }
+  if(order.shipMethod === ShipMethod.VNPOST){
+    if(order.status === OrderStatus.PENDING){
+      throw ErrorHelper.somethingWentWrong("Không thể duyệt đơn hàng VN-POST do chưa tạo vận đơn.");
+    }
+  }
   // Tạo bulk product và customer
   const productBulk = ProductModel.collection.initializeUnorderedBulkOp();
   for (const o of order.itemIds) {

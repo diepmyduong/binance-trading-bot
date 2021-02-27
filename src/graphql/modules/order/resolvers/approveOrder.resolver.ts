@@ -30,9 +30,9 @@ const approveOrder = async (root: any, args: any, context: Context) => {
 
   if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
 
-  if(order.shipMethod === ShipMethod.VNPOST || order.shipMethod === ShipMethod.POST){
+  if(order.shipMethod === ShipMethod.VNPOST){
     if(order.status === OrderStatus.PENDING){
-      throw ErrorHelper.somethingWentWrong("Không thể duyệt đơn hàng này do chưa tạo vận đơn.");
+      throw ErrorHelper.somethingWentWrong("Không thể duyệt đơn hàng VN-POST do chưa tạo vận đơn.");
     }
   }
   // Tạo bulk product và customer

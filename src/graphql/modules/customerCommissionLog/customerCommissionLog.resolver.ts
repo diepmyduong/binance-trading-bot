@@ -17,7 +17,7 @@ const Query = {
     args: any,
     context: Context
   ) => {
-    AuthHelper.acceptRoles(context, [ROLES.ADMIN, ROLES.EDITOR]);
+    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     return customerCommissionLogService.fetch(args.q);
   },
 };

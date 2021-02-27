@@ -4,12 +4,9 @@ import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 const Schema = mongoose.Schema;
 
 export enum CustomerCommissionLogType {
-  RECEIVE_FROM_ORDER = "RECEIVE_FROM_ORDER", // Nhận từ đơn hàng
-  RECEIVE_FROM_RESIS_SERVICE = "RECEIVE_FROM_RESIS_SERVICE", // Nhận từ DỊCH VỤ 
-  RECEIVE_FROM_REGIS_SMS = "RECEIVE_FROM_REGIS_SMS", // Nhận từ SMS
-  RECEIVE_FROM_INVITE = "RECEIVE_FROM_INVITE", // Nhận từ mời thành viên
-  RECEIVE_FROM_LUCKY_WHEEL_MOBIFONE = "RECEIVE_FROM_LUCKY_WHEEL_MOBIFONE", // Nhận từ vòng quay may mắn mobifone
-  RECEIVE_FROM_LUCKY_WHEEL_SHOPPER = "RECEIVE_FROM_LUCKY_WHEEL_SHOPPER", // Nhận từ vòng quay may mắn chủ shop
+  RECEIVE_COMMISSION_2_FROM_ORDER = "RECEIVE_COMMISSION_2_FROM_ORDER", // Hoa hồng nhận từ đơn hàng dành cho cộng tác viên
+  RECEIVE_COMMISSION_2_FROM_REGI_SERVICE = "RECEIVE_COMMISSION_2_FROM_REGI_SERVICE", // hoa hồng nhận từ dịch vụ dành cho cộng tác viên
+  RECEIVE_COMMISSION_2_FROM_SMS = "RECEIVE_COMMISSION_2_FROM_SMS"
 }
 
 export type ICustomerCommissionLog = BaseDocument & {

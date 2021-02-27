@@ -67,7 +67,7 @@ const schema = gql`
     "Điểm tích lũy"
     cumulativePoint: Float
     "Hoa hồng cộng tác viên"
-    commissionPoint: Float
+    commission: Float
     "Danh sách account facebook của người dùng"
     pageAccounts: [CustomerPageAccount]
     "Là cộng tác viên"

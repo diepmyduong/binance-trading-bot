@@ -39,13 +39,11 @@ const CustomerCommissionLog = {
 
   note: async (root: ICustomerCommissionLog, args: any, context: Context) => {
     switch (root.type) {
-      case CustomerCommissionLogType.RECEIVE_FROM_ORDER:
+      case CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER:
         return "Nhận từ đơn hàng";
-      case CustomerCommissionLogType.RECEIVE_FROM_INVITE:
-        return "Nhận từ mời thành viên";
-      case CustomerCommissionLogType.RECEIVE_FROM_RESIS_SERVICE:
+      case CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_REGI_SERVICE:
         return "Nhận từ đăng ký dịch vụ";
-      case CustomerCommissionLogType.RECEIVE_FROM_REGIS_SMS:
+      case CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_SMS:
         return "Nhận từ đăng ký SMS";
       default:
         return "";

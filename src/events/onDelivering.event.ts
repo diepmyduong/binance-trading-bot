@@ -101,6 +101,7 @@ onDelivering.subscribe(async (order) => {
 });
 
 
+// gửi thông tin cho chủ shop 3 trạng thái đơn hàng 
 onDelivering.subscribe(async (order) => {
   const { buyerId, fromMemberId, itemIds } = order;
 

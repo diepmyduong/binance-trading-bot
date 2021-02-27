@@ -10,14 +10,18 @@ const Mutation = {
     AuthHelper.acceptRoles(context, [ROLES.CUSTOMER]);
     const { campaignCode, sellerId, id: buyerId } = context;
     const data = args.data;
-    
+
     if (context.isCustomer()) {
       data.buyerId = buyerId;
       data.sellerId = sellerId;
     }
 
+    if (campaignCode) {
+      data.campaignCode = campaignCode;
+    }
+
     const ordersData = await OrderHelper.orderProducts(data);
-    
+
     // console.log('log loi tai day 1', ordersData);
 
     const orders: any[] = [];
@@ -37,11 +41,11 @@ const Mutation = {
       // console.log('log loi tai day 4',orderHelper.order.code);
 
       // const campaignBulk = orderHelper.addCampaignBulk(campaignCode);
-      
+
       await Promise.all([
         orderHelper.order.save(),
         OrderItemModel.insertMany(orderHelper.order.items),
-        // OrderHelper.updateOrderedQtyBulk(orderHelper.order.items),
+        orderHelper.updateOrderedQtyBulk(),
         // (await campaignBulk).execute(),
       ]).then(([order]) => {
         orders.push(order);

@@ -28,7 +28,7 @@ const Mutation = {
     }
     
     const existedAddresses = await AddressStorehouseModel.find({
-      _id: { $in: addressStorehouseIds }, activated : true
+      _id: { $in: addressStorehouseIds }
     });
 
     if ( Object.keys(existedAddresses).length  === 0) {
@@ -38,7 +38,7 @@ const Mutation = {
     const validAddesses =
       Object.keys(existedAddresses).length === storehouseLength;
     if (!validAddesses) {
-      throw ErrorHelper.mgQueryFailed("Có 1 hoặc nhiều kho không còn hiệu lực.");
+      throw ErrorHelper.mgQueryFailed("Số lượng kho không đúng");
     }
 
 

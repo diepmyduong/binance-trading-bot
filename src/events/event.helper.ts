@@ -7,6 +7,7 @@ import { cumulativePointLogService } from "../graphql/modules/cumulativePointLog
 import { ErrorHelper } from "../helpers/error.helper";
 import { CustomerModel } from "../graphql/modules/customer/customer.model";
 import { customerService } from "../graphql/modules/customer/customer.service";
+import { customerCommissionLogService } from "../graphql/modules/customerCommissionLog/customerCommissionLog.service";
 
 export const payMobifoneCommission = async ({ type, commission, id }: any) => {
   // làm cùng lúc log và cập nhật số dư
@@ -39,6 +40,32 @@ export const payCommission = async ({
 
   // làm cùng lúc log và cập nhật số dư
   return await Promise.all([commissionLoging, memberUpdating]);
+};
+
+export const payCustomerCommission = async ({
+  customerId,
+  memberId,
+  currentCommission,
+  type,
+  commission,
+  id,
+}: any) => {
+  const commissionLoging = customerCommissionLogService.payOneCommission({
+    customerId,
+    memberId,
+    type,
+    commission,
+    id,
+  });
+
+  const customerUpdating = customerService.increaseCommissions({
+    customerId,
+    commission,
+    currentCommission,
+  });
+
+  // làm cùng lúc log và cập nhật số dư
+  return await Promise.all([commissionLoging, customerUpdating]);
 };
 
 export const payCustomerPoint = async ({

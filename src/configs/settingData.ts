@@ -50,7 +50,6 @@ export enum SettingKey {
   //////////////////////////////////////////////////////////////////////////
 
   ORDER_COMPLETED_MSG_FOR_SHOPPER = "ORDER_COMPLETED_MSG_FOR_SHOPPER",
-
   ORDER_COMPLETED_MSG_FOR_CROSSALE_SHOPPER = "ORDER_COMPLETED_MSG_FOR_CROSSALE_SHOPPER",
   ORDER_COMPLETED_MSG_FOR_CUSTOMER = "ORDER_COMPLETED_MSG_FOR_CUSTOMER",
   ORDER_COMPLETED_MSG_FOR_MOBIPHONE = "ORDER_COMPLETED_MSG_FOR_MOBIPHONE",
@@ -88,7 +87,6 @@ export enum SettingKey {
   DELIVERY_COMPLETED_MSG_FOR_CUSTOMER = "DELIVERY_COMPLETED_MSG_FOR_CUSTOMER",
   DELIVERY_FAILURE_MSG_FOR_CUSTOMER = "DELIVERY_FAILURE_MSG_FOR_CUSTOMER",
   DELIVERY_PENDING_MSG_FOR_CUSTOMER = "DELIVERY_PENDING_MSG_FOR_CUSTOMER",
-
 
   DELIVERY_COMPLETED_MSG_FOR_MEMBER = "DELIVERY_COMPLETED_MSG_FOR_MEMBER",
   DELIVERY_FAILURE_MSG_FOR_MEMBER = "DELIVERY_FAILURE_MSG_FOR_MEMBER",
@@ -167,6 +165,7 @@ Hoa hồng bạn nhận được là: {{$money(commission)}} đồng, tổng hoa
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
+{{commission ? \`Hoa hồng tích lũy quý khách nhận được là: \${$money(commission)} đồng, tổng điểm hiện tại là \${$money(Mycommission)} đồng.\`: \`\` }}
 {{point ? \`Điểm tích lũy quý khách nhận được là: \${$money(point)} điểm, tổng điểm hiện tại là \${$money(myPoint)} điểm.\`: \`\` }}
 Nếu quý khách có thắc mắc vui lòng liên hệ với chủ shop để được hỗ trợ chi tiết.`,
         isActive: true,
@@ -759,7 +758,7 @@ Link đăng ký:
       // DELIVERY_STATUS_CUSTOMER_ALERT = "DELIVERY_STATUS_CUSTOMER_ALERT",
       // DELIVERY_COMPLETED_MSG_FOR_CUSTOMER = "DELIVERY_COMPLETED_MSG_FOR_CUSTOMER",
       // DELIVERY_FAILURE_MSG_FOR_CUSTOMER = "DELIVERY_FAILURE_MSG_FOR_CUSTOMER",
-      // DELIVERY_PENDING_FOR_CUSTOMER = "DELIVERY_PENDING_FOR_CUSTOMER",
+      // DELIVERY_PENDING_MSG_FOR_CUSTOMER = "DELIVERY_PENDING_MSG_FOR_CUSTOMER",
       {
         type: SettingType.boolean,
         name: `Thông báo tình trạng vận đơn cho khách hàng`,

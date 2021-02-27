@@ -9,6 +9,7 @@ import { OrderItemLoader } from "../orderItem/orderItem.model";
 import { UserLoader } from "../user/user.model";
 import { orderService } from "./order.service";
 import { IOrder, OrderStatus, PaymentMethod, ShipMethod, ShipMethods } from "./order.model";
+import { CollaboratorLoader } from "../collaborator/collaborator.model";
 
 const Query = {
   // neu la admin
@@ -50,6 +51,7 @@ const Order = {
   fromMember: GraphQLHelper.loadById(MemberLoader, "fromMemberId"),
   updatedByUser: GraphQLHelper.loadById(UserLoader, "updatedByUserId"),
   buyer: GraphQLHelper.loadById(CustomerLoader, "buyerId"),
+  collaborator : GraphQLHelper.loadById(CollaboratorLoader, "collaboratorId"),
 
   paymentMethodText: async (root: IOrder, args: any, context: Context) => {
     switch (root.paymentMethod) {

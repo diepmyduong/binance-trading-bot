@@ -42,6 +42,11 @@ const Customer = {
     const members = await MemberModel.find({ _id: { $in: memberIds } });
     return members;
   },
+  
+  collaborator: async (root: ICustomer, args: any, context: Context) => {
+    const collaborator = await CollaboratorModel.findOne({ phone: root.phone , memberId: context.id });
+    return collaborator;
+  },
 };
 
 const CustomerPageAccount = {

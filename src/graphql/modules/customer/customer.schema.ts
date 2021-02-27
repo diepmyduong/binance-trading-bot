@@ -74,6 +74,8 @@ const schema = gql`
     isCollaborator: Boolean
     "Danh sách shop đang cộng tác "
     collaboratorShops: [Member]
+    "Cộng tác viên"
+    collaborator: Collaborator
   }
 
   type CustomerPageAccount {

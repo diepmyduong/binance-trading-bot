@@ -87,12 +87,12 @@ export enum SettingKey {
 
   DELIVERY_COMPLETED_MSG_FOR_CUSTOMER = "DELIVERY_COMPLETED_MSG_FOR_CUSTOMER",
   DELIVERY_FAILURE_MSG_FOR_CUSTOMER = "DELIVERY_FAILURE_MSG_FOR_CUSTOMER",
-  DELIVERY_PENDING_FOR_CUSTOMER = "DELIVERY_PENDING_FOR_CUSTOMER",
+  DELIVERY_PENDING_MSG_FOR_CUSTOMER = "DELIVERY_PENDING_MSG_FOR_CUSTOMER",
 
 
   DELIVERY_COMPLETED_MSG_FOR_MEMBER = "DELIVERY_COMPLETED_MSG_FOR_MEMBER",
   DELIVERY_FAILURE_MSG_FOR_MEMBER = "DELIVERY_FAILURE_MSG_FOR_MEMBER",
-  DELIVERY_PENDING_FOR_MEMBER = "DELIVERY_PENDING_FOR_MEMBER",
+  DELIVERY_PENDING_MSG_FOR_MEMBER = "DELIVERY_PENDING_MSG_FOR_MEMBER",
 }
 export const SETTING_DATA = [
   {
@@ -781,7 +781,7 @@ Link đăng ký:
       {
         type: SettingType.richText,
         name: "Thông báo cho khách hàng khi đơn hàng đang giao",
-        key: SettingKey.DELIVERY_PENDING_FOR_CUSTOMER,
+        key: SettingKey.DELIVERY_PENDING_MSG_FOR_CUSTOMER,
         value: `[Thông báo tự động dành cho khách hàng]
 Đơn hàng {{order.code}} đang được giao. Thông tin đơn hàng:
 + Danh sách sản phẩm: 
@@ -815,6 +815,60 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của B�
         name: "Thông báo cho khách hàng khi vận đơn thành công",
         key: SettingKey.DELIVERY_COMPLETED_MSG_FOR_CUSTOMER,
         value: `[Thông báo tự động dành cho khách hàng]
+Đơn hàng {{order.code}} đã được giao thành công. Thông tin đơn hàng:
++ Danh sách sản phẩm: 
+{{orderItems.map(i=>\`🛒\${i.productName} x \${i.qty}: \${$money(i.amount)}đ\`).join('\\n')}}
++ Tổng hóa đơn: {{$money(order.amount)}}đ
++ Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
++ Thông tin shop bán hàng: {{seller.shopName}}
+Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+
+      ///
+      // DELIVERY_COMPLETED_MSG_FOR_MEMBER = "DELIVERY_COMPLETED_MSG_FOR_MEMBER",
+      // DELIVERY_FAILURE_MSG_FOR_MEMBER = "DELIVERY_FAILURE_MSG_FOR_MEMBER",
+      // DELIVERY_PENDING_FOR_MEMBER = "DELIVERY_PENDING_FOR_MEMBER",
+
+      {
+        type: SettingType.richText,
+        name: "Thông báo cho bưu cục khi đơn hàng đang giao",
+        key: SettingKey.DELIVERY_PENDING_MSG_FOR_MEMBER,
+        value: `[Thông báo tự động dành cho bưu cục]
+Đơn hàng {{order.code}} đang được giao. Thông tin đơn hàng:
++ Danh sách sản phẩm: 
+{{orderItems.map(i=>\`🛒\${i.productName} x \${i.qty}: \${$money(i.amount)}đ\`).join('\\n')}}
++ Tổng hóa đơn: {{$money(order.amount)}}đ
++ Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
++ Thông tin shop bán hàng: {{seller.shopName}}
+Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.richText,
+        name: "Thông báo cho bưu cục khi vận đơn thất bại",
+        key: SettingKey.DELIVERY_FAILURE_MSG_FOR_MEMBER,
+        value: `[Thông báo tự động dành cho bưu cục]
+Đơn hàng {{order.code}} đã giao thất bại. Thông tin đơn hàng:
++ Danh sách sản phẩm: 
+{{orderItems.map(i=>\`🛒\${i.productName} x \${i.qty}: \${$money(i.amount)}đ\`).join('\\n')}}
++ Tổng hóa đơn: {{$money(order.amount)}}đ
++ Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
++ Thông tin shop bán hàng: {{seller.shopName}}
+Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.richText,
+        name: "Thông báo cho bưu cục khi vận đơn thành công",
+        key: SettingKey.DELIVERY_COMPLETED_MSG_FOR_MEMBER,
+        value: `[Thông báo tự động dành cho bưu cục]
 Đơn hàng {{order.code}} đã được giao thành công. Thông tin đơn hàng:
 + Danh sách sản phẩm: 
 {{orderItems.map(i=>\`🛒\${i.productName} x \${i.qty}: \${$money(i.amount)}đ\`).join('\\n')}}

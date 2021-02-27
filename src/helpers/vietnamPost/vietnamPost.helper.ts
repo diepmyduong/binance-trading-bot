@@ -31,6 +31,7 @@ export const DeliveryServices = [
 export enum AddressType {
   NHA_RIENG = 1,
   CO_QUAN = 2,
+  KHONG_CO = null
 }
 
 export const AddressTypes = [

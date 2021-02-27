@@ -13,7 +13,8 @@ export enum CustomerCommissionLogType {
 }
 
 export type ICustomerCommissionLog = BaseDocument & {
-  customerId?: string; // Mã thành viên
+  customerId?: string; // Mã khách hàng
+  memberId?: string;  // mã shop
   value?: number; // Giá trị
   type?: CustomerCommissionLogType; // Loại sự kiện
   orderId: string; // Mã đơn hàng
@@ -24,6 +25,7 @@ export type ICustomerCommissionLog = BaseDocument & {
 const customerCommissionLogSchema = new Schema(
   {
     customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
+    memberId: { type: Schema.Types.ObjectId, ref: "Member" },
     value: { type: Number, required: true },
     type: { type: String },
     orderId: { type: Schema.Types.ObjectId, ref: "Order" },

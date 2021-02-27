@@ -34,8 +34,6 @@ const schema = gql`
     name: String
     "Số điện thoại" 
     phone: String
-    "Tên khách hàng"
-    customerId: ID
     "Chủ shop"
     memberId: ID
 

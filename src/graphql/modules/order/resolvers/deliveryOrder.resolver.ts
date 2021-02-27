@@ -27,13 +27,13 @@ const Mutation = {
     if (!buyer) throw ErrorHelper.mgRecoredNotFound("khách hàng");
 
     // Kiểm tra tình trạng đơn hàng
-    if (order.status != OrderStatus.PENDING)
+    if (order.status !== OrderStatus.PENDING)
       throw ErrorHelper.cannotEditOrder();
 
     if (order.shipMethod === ShipMethod.NONE)
       throw ErrorHelper.cannotMatchShipMethod();
     // Chuyển trạng thái đơn hàng
-    order.status = OrderStatus.DELIVERING;
+    order.status = OrderStatus.PROCESSING;
 
     // bat address tai day
 
@@ -99,8 +99,7 @@ const Mutation = {
 
     // cập nhật lại cước thực tế khi qua vận đơn
     // neu đơn vnpost thay doi dia chi ra ngoai tinh
-    // order.shipfee  = bill
-    // order.realShipfee = bill.shi
+    order.deliveryInfo.partnerFee = bill.TotalFreightIncludeVatEvaluation;
     return await order.save();
   },
 };

@@ -6,6 +6,7 @@ export enum SettingGroupSlug {
   THONG_BAO_CHATBOT = "THONG_BAO_CHATBOT",
   KICH_BAN_BAT_DAU = "KICH_BAN_BAT_DAU",
   CAU_HINH_VAN_CHUYEN = "CAU_HINH_VAN_CHUYEN",
+  CAU_HINH_THONG_BAO_TONG_CUC = "CAU_HINH_THONG_BAO_TONG_CUC",
 }
 export enum SettingKey {
   // CAU_HINH_CHUNG
@@ -91,7 +92,11 @@ export enum SettingKey {
   DELIVERY_COMPLETED_MSG_FOR_MEMBER = "DELIVERY_COMPLETED_MSG_FOR_MEMBER",
   DELIVERY_FAILURE_MSG_FOR_MEMBER = "DELIVERY_FAILURE_MSG_FOR_MEMBER",
   DELIVERY_PENDING_MSG_FOR_MEMBER = "DELIVERY_PENDING_MSG_FOR_MEMBER",
-}
+
+  DELIVERY_ENABLED_DONG_GIA = "DELIVERY_ENABLED_DONG_GIA",
+
+  POST_CREATE_ORDER_ALERT_ENABLED = "POST_CREATE_ORDER_ALERT_ENABLED",
+ }
 export const SETTING_DATA = [
   {
     slug: SettingGroupSlug.CAU_HINH_CHUNG,
@@ -745,6 +750,15 @@ Link đăng ký:
         readOnly: false,
       },
       {
+        type: SettingType.boolean,
+        name: "Bật đồng giá phí vận chuyển nội thành",
+        key: SettingKey.DELIVERY_ENABLED_DONG_GIA,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
         type: SettingType.string,
         name: `Dịch vụ chuyển phát mặc định ${DeliveryServices.map(
           (s) => s.code + "-" + s.name
@@ -875,6 +889,24 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của B�
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
 Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+    ],
+  },
+  //////////
+  {
+    slug: SettingGroupSlug.CAU_HINH_THONG_BAO_TONG_CUC,
+    name: "Cấu hình thông báo tổng cục",
+    desc: "Cấu hình thông báo tổng cục",
+    readOnly: true,
+    settings: [
+      {
+        type: SettingType.boolean,
+        name: "Bật tắt thông báo đặt đơn hàng",
+        key: SettingKey.POST_CREATE_ORDER_ALERT_ENABLED,
+        value: true,
         isActive: true,
         isPrivate: true,
         readOnly: false,

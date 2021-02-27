@@ -76,7 +76,13 @@ onApprovedOrder.subscribe(async (order) => {
 // tính điểm thưởng cho khách hàng + hoa hồng cộng tác viên
 // gửi cho khách hàng
 onApprovedOrder.subscribe(async (order) => {
-  const { buyerId, fromMemberId, itemIds, buyerBonusPoint , commission2} = order;
+  const {
+    buyerId,
+    fromMemberId,
+    itemIds,
+    buyerBonusPoint,
+    commission2,
+  } = order;
   const [seller, customer, orderItems] = await Promise.all([
     MemberLoader.load(fromMemberId),
     CustomerLoader.load(buyerId),
@@ -84,7 +90,7 @@ onApprovedOrder.subscribe(async (order) => {
   ]);
 
   // tính hoa hồng cho khách hàng
-  if(order.collaboratorId){
+  if (order.collaboratorId) {
     const [commissionLoging, customerUpdating] = await payCustomerCommission({
       memberId: seller.id,
       customerId: buyerId,
@@ -93,7 +99,6 @@ onApprovedOrder.subscribe(async (order) => {
       commission: commission2,
       id: order._id,
     });
-
   }
 
   let cumulativePointCustomer: ICustomer = null;
@@ -142,40 +147,45 @@ onApprovedOrder.subscribe(async (order) => {
 onApprovedOrder.subscribe(async (order) => {
   const { buyerId, fromMemberId, itemIds, commission0 } = order;
   //   console.log("order", order);
-  if (order.isPrimary) {
-    const [seller, customer, orderItems, users, apiKey] = await Promise.all([
-      MemberLoader.load(fromMemberId),
-      CustomerLoader.load(buyerId),
-      OrderItemLoader.loadMany(itemIds),
-      UserModel.find({ psid: { $exists: true } }),
-      SettingHelper.load(SettingKey.CHATBOT_API_KEY),
-    ]);
+  const postOrderEnabled = SettingHelper.load(
+    SettingKey.POST_CREATE_ORDER_ALERT_ENABLED
+  );
+  if (postOrderEnabled) {
+    if (order.isPrimary) {
+      const [seller, customer, orderItems, users, apiKey] = await Promise.all([
+        MemberLoader.load(fromMemberId),
+        CustomerLoader.load(buyerId),
+        OrderItemLoader.loadMany(itemIds),
+        UserModel.find({ psid: { $exists: true } }),
+        SettingHelper.load(SettingKey.CHATBOT_API_KEY),
+      ]);
 
-    // hoa hồng mobiphone
-    if (commission0 > 0) {
-      const commission = await payMobifoneCommission({
-        type: RECEIVE_COMMISSION_0_FROM_ORDER,
-        commission: commission0,
-        id: order._id,
-      });
-    }
+      // hoa hồng mobiphone
+      if (commission0 > 0) {
+        const commission = await payMobifoneCommission({
+          type: RECEIVE_COMMISSION_0_FROM_ORDER,
+          commission: commission0,
+          id: order._id,
+        });
+      }
 
-    // đơn hàng mobi
-    const pageAccount = customer.pageAccounts.find(
-      (p) => p.pageId == seller.fanpageId
-    );
-    if (pageAccount) {
-      // Đơn hàng của Mobifone
-      SettingHelper.load(SettingKey.ORDER_COMPLETED_MSG_FOR_MOBIPHONE).then(
-        (msg) => {
-          onSendChatBotText.next({
-            apiKey: apiKey,
-            psids: users.map((u) => u.psid),
-            message: msg,
-            context: { seller, orderItems, order, commission: commission0 },
-          });
-        }
+      // đơn hàng mobi
+      const pageAccount = customer.pageAccounts.find(
+        (p) => p.pageId == seller.fanpageId
       );
+      if (pageAccount) {
+        // Đơn hàng của Mobifone
+        SettingHelper.load(SettingKey.ORDER_COMPLETED_MSG_FOR_MOBIPHONE).then(
+          (msg) => {
+            onSendChatBotText.next({
+              apiKey: apiKey,
+              psids: users.map((u) => u.psid),
+              message: msg,
+              context: { seller, orderItems, order, commission: commission0 },
+            });
+          }
+        );
+      }
     }
   }
 });

@@ -101,6 +101,8 @@ export default gql`
     status: String
     "Tình trạng"
     statusText: String
+    "Phí giao hàng trả cho đối tác"
+    partnerFee: Float
   }
 
   input DeliveryInfoInput {

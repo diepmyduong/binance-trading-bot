@@ -83,10 +83,16 @@ export enum SettingKey {
   DELIVERY_ENABLED_AUTO_APPROVE_ORDER = "DELIVERY_ENABLED_AUTO_APPROVE_ORDER",
   VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE = "VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE",
   DELIVERY_STATUS_CUSTOMER_ALERT = "DELIVERY_STATUS_CUSTOMER_ALERT",
+  DELIVERY_STATUS_MEMBER_ALERT = "DELIVERY_STATUS_MEMBER_ALERT",
+
   DELIVERY_COMPLETED_MSG_FOR_CUSTOMER = "DELIVERY_COMPLETED_MSG_FOR_CUSTOMER",
   DELIVERY_FAILURE_MSG_FOR_CUSTOMER = "DELIVERY_FAILURE_MSG_FOR_CUSTOMER",
   DELIVERY_PENDING_FOR_CUSTOMER = "DELIVERY_PENDING_FOR_CUSTOMER",
 
+
+  DELIVERY_COMPLETED_MSG_FOR_MEMBER = "DELIVERY_COMPLETED_MSG_FOR_MEMBER",
+  DELIVERY_FAILURE_MSG_FOR_MEMBER = "DELIVERY_FAILURE_MSG_FOR_MEMBER",
+  DELIVERY_PENDING_FOR_MEMBER = "DELIVERY_PENDING_FOR_MEMBER",
 }
 export const SETTING_DATA = [
   {
@@ -758,7 +764,16 @@ Link đăng ký:
         type: SettingType.boolean,
         name: `Thông báo tình trạng vận đơn cho khách hàng`,
         key: SettingKey.DELIVERY_STATUS_CUSTOMER_ALERT,
-        value: ServiceCode.BK,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.boolean,
+        name: `Thông báo tình trạng vận đơn cho chủ shop`,
+        key: SettingKey.DELIVERY_STATUS_MEMBER_ALERT,
+        value: true,
         isActive: true,
         isPrivate: true,
         readOnly: false,

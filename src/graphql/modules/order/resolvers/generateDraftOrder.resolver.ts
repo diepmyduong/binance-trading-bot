@@ -24,7 +24,7 @@ const Mutation = {
       data.buyerId = buyerId;
       data.sellerId = sellerId;
     }
-    console.log('data',data);
+    // console.log('data',data);
 
     try {
       const ordersData = await OrderHelper.orderProducts(data);
@@ -33,13 +33,13 @@ const Mutation = {
         const orderHelper = await OrderHelper.fromRaw(orderData);
         await orderHelper.generateItemsFromRaw(orderData.products);
         
-        console.log("result generateItemsFromRaw", orderHelper.order);
+        // console.log("result generateItemsFromRaw", orderHelper.order);
         // Calculate Shipfee
         await orderHelper.calculateShipfee();
-        console.log("result calculateShipfee", orderHelper.order);
+        // console.log("result calculateShipfee", orderHelper.order);
         // Calculate Amount
         orderHelper.calculateAmount();
-        console.log("result calculateAmount", orderHelper.order);
+        // console.log("result calculateAmount", orderHelper.order);
         orders.push(orderHelper.order);
       }
       
@@ -52,6 +52,7 @@ const Mutation = {
         if (order) {
           allOrder.itemCount = allOrder.itemCount + order.itemCount;
           allOrder.shipfee = allOrder.shipfee + order.shipfee;
+          allOrder.realShipfee = allOrder.realShipfee + order.realShipfee ? order.realShipfee : 0;
           allOrder.amount = allOrder.amount + order.amount;
           allOrder.subtotal = allOrder.subtotal + order.subtotal;
         }

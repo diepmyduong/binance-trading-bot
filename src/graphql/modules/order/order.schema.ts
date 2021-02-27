@@ -150,6 +150,8 @@ const schema = gql`
     collaboratorId: ID
     "Cộng tác viên"
     collaborator: Collaborator
+    "Phí ship thực tế"
+    realShipfee: Float
   }
 
   type OrderPageData {

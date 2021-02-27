@@ -96,6 +96,11 @@ const Mutation = {
     order.deliveryInfo.createTime = bill.CreateTime; // thời gian tạo đơn
     order.deliveryInfo.lastUpdateTime = bill.LastUpdateTime; // thời gian cập nhật lần cuối
     order.deliveryInfo.deliveryDateEvaluation = bill.DeliveryDateEvaluation; // ngày dự kiến giao hàng
+
+    // cập nhật lại cước thực tế khi qua vận đơn
+    // neu đơn vnpost thay doi dia chi ra ngoai tinh
+    // order.shipfee  = bill
+    // order.realShipfee = bill.shi
     return await order.save();
   },
 };

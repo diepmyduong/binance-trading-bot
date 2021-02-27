@@ -201,15 +201,15 @@ export class OrderHelper {
 
   static async fromRaw(data: any) {
     const order = new OrderModel(data);
-    
+
     const customer = await CustomerModel.findById(order.buyerId);
-    
+
     const collaborator = await CollaboratorModel.findOne({
       phone: customer.phone,
-      memberId: data.sellerId
+      memberId: data.sellerId,
     });
 
-    if(collaborator){
+    if (collaborator) {
       order.collaboratorId = collaborator._id;
     }
 
@@ -332,6 +332,7 @@ export class OrderHelper {
   }
 
   async calculateShipfee() {
+    // console.log('calculateShipfee----calculateShipfee')
     this.order.shipfee = 0;
     const deliveryServices = DeliveryServices;
     const serviceCode = await SettingHelper.load(
@@ -443,6 +444,9 @@ export class OrderHelper {
         );
 
         const cheapestPostService = servicePostList[0];
+        console.log('cheapestPostService',cheapestPostService);
+
+        this.order.realShipfee = cheapestPostService.TongCuocBaoGomDVCT;
 
         // đơn này ko thu tiền ship
         this.order.addressStorehouseId = cheapestPostService.storehouse._id;
@@ -561,6 +565,7 @@ export class OrderHelper {
           this.order.shipfee = await SettingHelper.load(
             SettingKey.DELIVERY_VNPOST_INNER_SHIP_FEE
           );
+          this.order.realShipfee = cheapestPostService.TongCuocBaoGomDVCT;
         } else {
           this.order.isUrbanDelivery = false;
           this.order.shipfee =
@@ -644,12 +649,12 @@ export class OrderHelper {
         return item;
       });
     }
-    
+
     return campaignSocialResultBulk;
   }
 
   async updateOrderedQtyBulk() {
-    console.log('updateOrderedQtyBulk');
+    console.log("updateOrderedQtyBulk");
     const productBulk = ProductModel.collection.initializeUnorderedBulkOp();
     this.order.items.map((item: IOrderItem) => {
       const { productId } = item;
@@ -657,7 +662,6 @@ export class OrderHelper {
         $inc: { crossSaleOrdered: item.qty },
       });
       if (item.isCrossSale) {
-       
       }
     });
     return productBulk;

@@ -24,7 +24,7 @@ export const VietnamPostDeliveryStatusDetail = {
 
 export function GetVietnamPostDeliveryStatusText(status: string) {
   switch (true) { 
-    case [""].includes(status):
+    case ["-1"].includes(status):
       return "Chưa duyệt";
     case ["20"].includes(status):
       return "Đã duyệt";

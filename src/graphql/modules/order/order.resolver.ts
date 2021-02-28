@@ -84,8 +84,6 @@ const Order = {
   statusText: async (root: IOrder, args: any, context: Context) => {
     switch (root.status) {
       case OrderStatus.PENDING:
-        return `Chờ xử lý`;
-      case OrderStatus.PROCESSING:
         return `Đang xử lý`;
       case OrderStatus.DELIVERING:
         return `Đang giao hàng`;

@@ -15,6 +15,7 @@ const schema = gql`
     cloneToCrosssale(id: ID!, data: CloneProductinput!): Product
     deleteOneProduct(id: ID!): Product
     deleteManyProduct(ids: [ID]): Int
+    importProducts(file: Upload!): String
   }
 
   input CloneProductinput {

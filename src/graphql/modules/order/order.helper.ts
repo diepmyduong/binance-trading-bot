@@ -114,13 +114,13 @@ export class OrderHelper {
       return product;
     };
 
-    // console.log('allProducts',allProducts);
+    console.log('allProducts',allProducts);
     // console.log('sellerId',sellerId);
 
     const validDirectShop = (p: IProduct) => {
       // console.log('p.memberId',p.memberId);
       // console.log('sellerId',sellerId);
-      return p.memberId == sellerId && p.isCrossSale === false;
+      return p.memberId == sellerId && p.isCrossSale === false || p.isPrimary;
     };
     // lấy ra danh sách sản phẩm của shop đó bán + sản phẩm chính (hảng bưu điện chuyển về cho bưu cục quản trị)
     const directShoppingProducts: any = allProducts

@@ -41,17 +41,18 @@ const Mutation = {
     }
 
     if (context.isMember) {
-      if (order.status.toString() !== OrderStatus.PENDING 
-        && order.status.toString() !== OrderStatus.DELIVERING 
-        && order.status.toString() !== OrderStatus.RETURNED
-        ) {
+      if (
+        order.status.toString() !== OrderStatus.PENDING &&
+        order.status.toString() !== OrderStatus.DELIVERING &&
+        order.status.toString() !== OrderStatus.RETURNED
+      ) {
         throw ErrorHelper.somethingWentWrong(
           "Đơn hàng này đã hủy hoặc đã hoàn tất."
         );
       }
     }
 
-    if(order.status === OrderStatus.DELIVERING || order.status === OrderStatus.PROCESSING){
+    if (order.status === OrderStatus.DELIVERING) {
       await VietnamPostHelper.cancelOrder(order.deliveryInfo.orderId);
     }
 
@@ -65,8 +66,8 @@ const Mutation = {
         { $set: { status: OrderStatus.CANCELED } },
         { new: true }
       );
-      await ProductModel.findByIdAndUpdate(
-        item.productId,
+      await ProductModel.findOneAndUpdate(
+        { _id: item.productId, isCrossSale: true },
         {
           $inc: { crossSaleOrdered: -item.qty },
         },

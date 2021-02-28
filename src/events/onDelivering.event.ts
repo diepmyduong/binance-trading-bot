@@ -171,14 +171,14 @@ onDelivering.subscribe(async (order) => {
   }
 });
 
-// chuyen trang thai PROCESSING san DELIVERING
+// chuyen trang thai COMPLETE hoac RETURNED
 onDelivering.subscribe(async (order) => {
   const { deliveryInfo,paymentMethod } = order;
   const cod  = paymentMethod === PaymentMethod.COD
   if (deliveryInfo) {
     const status = GetOrderStatus(deliveryInfo.status ,cod);
     if(status){
-      if ([OrderStatus.DELIVERING, OrderStatus.RETURNED].includes(status)) {
+      if ([OrderStatus.RETURNED].includes(status)) {
         OrderModel.findByIdAndUpdate(order.id, {$set:{
           status
         }});

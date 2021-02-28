@@ -9,7 +9,7 @@ import {
 import { MemberModel } from "../../member/member.model";
 import { CustomerModel } from "../../customer/customer.model";
 import { DeliveryInfo } from "../types/deliveryInfo.type";
-import { GetOrderStatusByPostDeliveryStatus } from "../../../../helpers/vietnamPost/vietnamPostDeliveryStatus";
+import { GetVietnamPostDeliveryStatusText } from "../../../../helpers/vietnamPost/vietnamPostDeliveryStatus";
 
 const Mutation = {
   deliveryOrder: async (root: any, args: any, context: Context) => {
@@ -98,7 +98,7 @@ const Mutation = {
     order.deliveryInfo.lastUpdateTime = bill.LastUpdateTime; // thời gian cập nhật lần cuối
     order.deliveryInfo.deliveryDateEvaluation = bill.DeliveryDateEvaluation; // ngày dự kiến giao hàng
     order.deliveryInfo.status = bill.OrderStatusId.toString();
-    order.deliveryInfo.statusText = GetOrderStatusByPostDeliveryStatus(bill.OrderStatusId.toString());
+    order.deliveryInfo.statusText = GetVietnamPostDeliveryStatusText(bill.OrderStatusId.toString());
 
     // cập nhật lại cước thực tế khi qua vận đơn
     // neu đơn vnpost thay doi dia chi ra ngoai tinh

@@ -114,13 +114,13 @@ export class OrderHelper {
       return product;
     };
 
-    console.log('allProducts',allProducts);
+    console.log("allProducts", allProducts);
     // console.log('sellerId',sellerId);
 
     const validDirectShop = (p: IProduct) => {
       // console.log('p.memberId',p.memberId);
       // console.log('sellerId',sellerId);
-      return p.memberId == sellerId && p.isCrossSale === false || p.isPrimary;
+      return (p.memberId == sellerId && p.isCrossSale === false) || p.isPrimary;
     };
     // lấy ra danh sách sản phẩm của shop đó bán + sản phẩm chính (hảng bưu điện chuyển về cho bưu cục quản trị)
     const directShoppingProducts: any = allProducts
@@ -305,9 +305,9 @@ export class OrderHelper {
       this.order.subtotal += item.amount;
       this.order.itemCount += item.qty;
       this.order.itemWeight += item.productWeight * item.qty;
-      this.order.commission0 += item.commission0;
-      this.order.commission1 += item.commission1;
-      this.order.commission2 += item.commission2;
+      this.order.commission0 += item.commission0 * item.qty;
+      this.order.commission1 += item.commission1 * item.qty;
+      this.order.commission2 += item.commission2 * item.qty;
 
       this.order.sellerBonusPoint += item.sellerBonusPoint;
       this.order.buyerBonusPoint += item.buyerBonusPoint;
@@ -315,6 +315,8 @@ export class OrderHelper {
       this.order.itemIds.push(item._id);
     }
 
+    // lay kich thuoc lon nhat
+    
     this.order.itemHeight = Math.max.apply(
       null,
       products.map(({ height }: any) => height)
@@ -574,8 +576,7 @@ export class OrderHelper {
             this.order.isUrbanDelivery = false;
             this.order.shipfee = cod ? cheapestShipFee : 0;
           }
-        }
-         else {
+        } else {
           this.order.shipfee = cod ? cheapestShipFee : 0;
         }
 
@@ -585,7 +586,7 @@ export class OrderHelper {
           codAmountEvaluation: cheapestService.codAmountEvaluation,
           deliveryDateEvaluation: cheapestService.ThoiGianPhatDuKien,
           heightEvaluation: cheapestService.productHeight,
-          isReceiverPayFreight: PaymentMethod.COD ? true : false,
+          isReceiverPayFreight: false,
           lengthEvaluation: cheapestService.productLength,
           weightEvaluation: cheapestService.productWeight,
           widthEvaluation: cheapestService.productWidth,

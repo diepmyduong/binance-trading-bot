@@ -5,7 +5,6 @@ import {
   ICalculateAllShipFeeRespone,
   ServiceCode,
   VietnamPostHelper,
-  DeliveryServices,
   PickupType,
 } from "../../../helpers";
 import { AddressModel } from "../address/address.model";
@@ -26,7 +25,6 @@ import {
 import { UnorderedBulkOperation } from "mongodb";
 import { AddressDeliveryModel } from "../addressDelivery/addressDelivery.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
-import memberGetMeResolver from "../member/resolvers/memberGetMe.resolver";
 import { CustomerModel } from "../customer/customer.model";
 
 export class OrderHelper {
@@ -114,13 +112,14 @@ export class OrderHelper {
       return product;
     };
 
-    console.log("allProducts", allProducts);
+    // console.log("allProducts", allProducts);
     // console.log('sellerId',sellerId);
 
     const validDirectShop = (p: IProduct) => {
       // console.log('p.memberId',p.memberId);
       // console.log('sellerId',sellerId);
-      return (p.memberId == sellerId && p.isCrossSale === false) || p.isPrimary;
+      const shopConditions = p.memberId == sellerId && p.isCrossSale === false;
+      return shopConditions || p.isPrimary;
     };
     // lấy ra danh sách sản phẩm của shop đó bán + sản phẩm chính (hảng bưu điện chuyển về cho bưu cục quản trị)
     const directShoppingProducts: any = allProducts
@@ -336,7 +335,6 @@ export class OrderHelper {
   async calculateShipfee() {
     // console.log('calculateShipfee----calculateShipfee')
     this.order.shipfee = 0;
-    const deliveryServices = DeliveryServices;
     const serviceCode = await SettingHelper.load(
       SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
     );

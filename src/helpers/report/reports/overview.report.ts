@@ -53,6 +53,17 @@ class OverviewReport extends Report<any> {
       agencyTitle,
       customerEnabled,
       customerTitle,
+
+      productMobiEnabled,
+      productMobiTitle,
+      productCrosssaleEnabled,
+      productCrosssaleTitle,
+      productRetailEnabled,
+      productRetailTitle,
+      productSMSEnabled,
+      productSMSTitle,
+      productServiceEnabled,
+      productServiceTitle,
     ] = await Promise.all([
       SettingHelper.load(SettingKey.OVERVIEW_SHOP_COUNT_ENABLED),
       SettingHelper.load(SettingKey.OVERVIEW_SHOP_COUNT_TITLE),
@@ -64,39 +75,54 @@ class OverviewReport extends Report<any> {
       SettingHelper.load(SettingKey.OVERVIEW_AGENCY_COUNT_TITLE),
       SettingHelper.load(SettingKey.OVERVIEW_CUSTOMER_COUNT_ENABLED),
       SettingHelper.load(SettingKey.OVERVIEW_CUSTOMER_COUNT_TITLE),
+
+      SettingHelper.load(SettingKey.OVERVIEW_PRODUCT_COUNT_MOBIFONE_ENABLED),
+      SettingHelper.load(SettingKey.OVERVIEW_PRODUCT_COUNT_MOBIFONE_TITLE),
+      SettingHelper.load(SettingKey.OVERVIEW_PRODUCT_COUNT_CROSSSALE_ENABLED),
+      SettingHelper.load(SettingKey.OVERVIEW_PRODUCT_COUNT_CROSSSALE_TITLE),
+      SettingHelper.load(SettingKey.OVERVIEW_PRODUCT_COUNT_RETAIL_ENABLED),
+      SettingHelper.load(SettingKey.OVERVIEW_PRODUCT_COUNT_RETAIL_TITLE),
+      SettingHelper.load(SettingKey.OVERVIEW_PRODUCT_COUNT_SMS_ENABLED),
+      SettingHelper.load(SettingKey.OVERVIEW_PRODUCT_COUNT_SMS_TITLE),
+      SettingHelper.load(SettingKey.OVERVIEW_PRODUCT_COUNT_SERVICE_ENABLED),
+      SettingHelper.load(SettingKey.OVERVIEW_PRODUCT_COUNT_SERVICE_TITLE),
     ]);
 
-    shopEnabled && charts.push(
-      new WidgetChart({
-        title: shopTitle,
-        unit: "",
-        data: get(memberStats, "total", 0),
-      })
-    );
+    shopEnabled &&
+      charts.push(
+        new WidgetChart({
+          title: shopTitle,
+          unit: "",
+          data: get(memberStats, "total", 0),
+        })
+      );
 
-    branchEnabled && charts.push(
-      new WidgetChart({
-        title: branchTitle,
-        unit: "",
-        data: get(memberStats, "branch", 0),
-      })
-    );
-    
-    salerEnabled && charts.push(
-      new WidgetChart({
-        title: salerTitle,
-        unit: "",
-        data: get(memberStats, "sale", 0),
-      })
-    );
+    branchEnabled &&
+      charts.push(
+        new WidgetChart({
+          title: branchTitle,
+          unit: "",
+          data: get(memberStats, "branch", 0),
+        })
+      );
 
-    agencyEnabled && charts.push(
-      new WidgetChart({
-        title: agencyTitle,
-        unit: "",
-        data: get(memberStats, "agency", 0),
-      })
-    );
+    salerEnabled &&
+      charts.push(
+        new WidgetChart({
+          title: salerTitle,
+          unit: "",
+          data: get(memberStats, "sale", 0),
+        })
+      );
+
+    agencyEnabled &&
+      charts.push(
+        new WidgetChart({
+          title: agencyTitle,
+          unit: "",
+          data: get(memberStats, "agency", 0),
+        })
+      );
 
     const customerStats = await CustomerModel.aggregate([
       {
@@ -106,15 +132,16 @@ class OverviewReport extends Report<any> {
         },
       },
     ]).then((res) => get(res, "0", {}));
-    
-    customerEnabled && charts.push(
-      new WidgetChart({
-        title: customerTitle,
-        unit: "",
-        data: get(customerStats, "total", 0),
-      })
-    );
-    
+
+    customerEnabled &&
+      charts.push(
+        new WidgetChart({
+          title: customerTitle,
+          unit: "",
+          data: get(customerStats, "total", 0),
+        })
+      );
+
     const productStats = await ProductModel.aggregate([
       {
         $group: {
@@ -132,17 +159,25 @@ class OverviewReport extends Report<any> {
         },
       },
     ]).then((res) => get(res, "0", {}));
+
+    const colValues: any = [];
+    
+    productMobiEnabled &&
+      colValues.push([productMobiTitle, get(productStats, "isPrimary", 0)]);
+    productCrosssaleEnabled &&
+      colValues.push([productCrosssaleTitle, get(productStats, "isCross", 0)]);
+    productRetailEnabled &&
+      colValues.push([productRetailTitle, get(productStats, "retail", 0)]);
+    productSMSEnabled &&
+      colValues.push([productSMSTitle, get(productStats, "sms", 0)]);
+    productServiceEnabled &&
+      colValues.push([productServiceTitle, get(productStats, "service", 0)]);
+
     charts.push(
       new TableChart({
         title: "Sản phẩm",
         colLabels: ["Loại", "Số lượng"],
-        colValues: [
-          ["Mobifone", get(productStats, "isPrimary", 0)],
-          ["Bán chéo", get(productStats, "isCross", 0)],
-          ["Bán lẻ", get(productStats, "retail", 0)],
-          ["SMS", get(productStats, "sms", 0)],
-          ["Dịch vụ khác", get(productStats, "service", 0)],
-        ],
+        colValues,
         total: 10,
         offset: 1,
         limit: 20,

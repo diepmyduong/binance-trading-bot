@@ -9,7 +9,7 @@ import { OrderModel, OrderStatus } from "../order.model";
 
 const Mutation = {
   cancelOrder: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
     const { id } = args;
     const params: any = {
       _id: id,
@@ -40,7 +40,7 @@ const Mutation = {
       }
     }
 
-    if (context.isMember) {
+    if (context.isMember()) {
       if (
         order.status.toString() !== OrderStatus.PENDING &&
         order.status.toString() !== OrderStatus.DELIVERING &&

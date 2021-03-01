@@ -7,6 +7,7 @@ export enum SettingGroupSlug {
   KICH_BAN_BAT_DAU = "KICH_BAN_BAT_DAU",
   CAU_HINH_VAN_CHUYEN = "CAU_HINH_VAN_CHUYEN",
   CAU_HINH_THONG_BAO_TONG_CUC = "CAU_HINH_THONG_BAO_TONG_CUC",
+  CAU_HINH_DASHBOARD = "CAU_HINH_DASHBOARD"
 }
 export enum SettingKey {
   // CAU_HINH_CHUNG
@@ -92,11 +93,21 @@ export enum SettingKey {
   DELIVERY_COMPLETED_MSG_FOR_MEMBER = "DELIVERY_COMPLETED_MSG_FOR_MEMBER",
   DELIVERY_FAILURE_MSG_FOR_MEMBER = "DELIVERY_FAILURE_MSG_FOR_MEMBER",
   DELIVERY_PENDING_MSG_FOR_MEMBER = "DELIVERY_PENDING_MSG_FOR_MEMBER",
-
   DELIVERY_ENABLED_DONG_GIA = "DELIVERY_ENABLED_DONG_GIA",
-
   POST_CREATE_ORDER_ALERT_ENABLED = "POST_CREATE_ORDER_ALERT_ENABLED",
- }
+
+  OVERVIEW_SHOP_COUNT_ENABLED = "OVERVIEW_SHOP_COUNT_ENABLED",
+  OVERVIEW_SHOP_COUNT_TITLE = "OVERVIEW_SHOP_COUNT_TITLE",
+  OVERVIEW_BRANCH_COUNT_ENABLED = "OVERVIEW_BRANCH_COUNT_ENABLED",
+  OVERVIEW_BRANCH_COUNT_TITLE = "OVERVIEW_BRANCH_COUNT_TITLE",
+  OVERVIEW_SALER_COUNT_ENABLED = "OVERVIEW_SALER_COUNT_ENABLED",
+  OVERVIEW_SALER_COUNT_TITLE = "OVERVIEW_SALER_COUNT_TITLE",
+  OVERVIEW_AGENCY_COUNT_ENABLED = "OVERVIEW_AGENCY_COUNT_ENABLED",
+  OVERVIEW_AGENCY_COUNT_TITLE = "OVERVIEW_AGENCY_COUNT_TITLE",
+  OVERVIEW_CUSTOMER_COUNT_ENABLED = "OVERVIEW_CUSTOMER_COUNT_ENABLED",
+  OVERVIEW_CUSTOMER_COUNT_TITLE = "OVERVIEW_CUSTOMER_COUNT_TITLE",
+}
+
 export const SETTING_DATA = [
   {
     slug: SettingGroupSlug.CAU_HINH_CHUNG,
@@ -913,4 +924,103 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của B�
       },
     ],
   },
+  ///
+  {
+    slug: SettingGroupSlug.CAU_HINH_DASHBOARD,
+    name: "Cấu hình Dashboard",
+    desc: "Cấu hình Dashboard tổng cục và bưu cục",
+    readOnly: true,
+    settings: [
+      {
+        type: SettingType.boolean,
+        name: "THỐNG KÊ TỔNG QUAN HỆ THỐNG - Chủ shop - Bật tắt",
+        key: SettingKey.OVERVIEW_SHOP_COUNT_ENABLED,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "THỐNG KÊ TỔNG QUAN HỆ THỐNG - Chủ shop - Hiển thị",
+        key: SettingKey.OVERVIEW_SHOP_COUNT_TITLE,
+        value: "CHỦ SHOP",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.boolean,
+        name: "THỐNG KÊ TỔNG QUAN HỆ THỐNG - Chi nhánh - Bật tắt",
+        key: SettingKey.OVERVIEW_BRANCH_COUNT_ENABLED,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "THỐNG KÊ TỔNG QUAN HỆ THỐNG - Chi nhánh - Hiển thị",
+        key: SettingKey.OVERVIEW_BRANCH_COUNT_TITLE,
+        value: "CHI NHÁNH",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.boolean,
+        name: "THỐNG KÊ TỔNG QUAN HỆ THỐNG - Sale - Bật tắt",
+        key: SettingKey.OVERVIEW_SALER_COUNT_ENABLED,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "THỐNG KÊ TỔNG QUAN HỆ THỐNG - Sale - Hiển thị",
+        key: SettingKey.OVERVIEW_SALER_COUNT_TITLE,
+        value: "SALE",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.boolean,
+        name: "THỐNG KÊ TỔNG QUAN HỆ THỐNG - Đại lý - Bật tắt",
+        key: SettingKey.OVERVIEW_AGENCY_COUNT_ENABLED,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "THỐNG KÊ TỔNG QUAN HỆ THỐNG - Đại lý - Hiển thị",
+        key: SettingKey.OVERVIEW_AGENCY_COUNT_TITLE,
+        value: "ĐẠI LÝ",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.boolean,
+        name: "THỐNG KÊ TỔNG QUAN HỆ THỐNG - Khách hàng - Bật tắt",
+        key: SettingKey.OVERVIEW_CUSTOMER_COUNT_ENABLED,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "THỐNG KÊ TỔNG QUAN HỆ THỐNG - Khách hàng - Hiển thị",
+        key: SettingKey.OVERVIEW_CUSTOMER_COUNT_TITLE,
+        value: "ĐẠI LÝ",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+    ],
+  }
 ];

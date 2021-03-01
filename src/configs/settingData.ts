@@ -196,7 +196,7 @@ Hoa hồng bạn nhận được là: {{$money(commission)}} đồng, tổng hoa
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-{{commission ? \`Hoa hồng tích lũy quý khách nhận được là: \${$money(commission)} đồng, tổng điểm hiện tại là \${$money(Mycommission)} đồng.\`: \`\` }}
+{{commission ? \`Hoa hồng tích lũy quý khách nhận được là: \${$money(commission)} đồng, tổng điểm hiện tại là \${$money(myCommission)} đồng.\`: \`\` }}
 {{point ? \`Điểm tích lũy quý khách nhận được là: \${$money(point)} điểm, tổng điểm hiện tại là \${$money(myPoint)} điểm.\`: \`\` }}
 Nếu quý khách có thắc mắc vui lòng liên hệ với chủ shop để được hỗ trợ chi tiết.`,
         isActive: true,
@@ -215,7 +215,7 @@ Nếu quý khách có thắc mắc vui lòng liên hệ với chủ shop để �
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ với chủ shop để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ với chủ shop để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -233,7 +233,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ với chủ shop để đượ
 + Thông tin shop bán hàng: {{seller.shopName}}
 {{commission ? \`Shop đã được tích \${$money(commission)} đồng, tổng tiền hoa hồng hiện tại là \${$money(myCommission)} đồng.\`: \`\`  }}
 {{point ? \`Điểm tích lũy shop nhận được là: \${$money(point)} điểm, tổng điểm hiện tại là \${$money(myPoint)} điểm.\`: \`\` }}
-Nếu bạn có thắc mắc vui lòng liên hệ với chủ shop để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ với chủ shop để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -281,7 +281,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ với chủ shop để đượ
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ với chủ shop để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ với chủ shop để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -299,24 +299,25 @@ Nếu bạn có thắc mắc vui lòng liên hệ với chủ shop để đượ
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
       },
-      // ORDER_PENDING_MSG_FOR_CUSTOMER = "ORDER_PENDING_MSG_FOR_CUSTOMER",
       {
         type: SettingType.richText,
         name: "Thông báo cho khách hàng khi đặt hàng thành công",
         key: SettingKey.ORDER_PENDING_MSG_FOR_CUSTOMER,
-        value: `[Thông báo tự động]
+        value: `[Thông báo tự động đến khách hàng]
 Đơn hàng {{order.code}} đặt thành công. Thông tin đơn hàng:
 + Danh sách sản phẩm: 
 {{orderItems.map(i=>\`🛒\${i.productName} x \${i.qty}: \${$money(i.amount)}đ\`).join('\\n')}}
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
-+ Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
++ Thông tin bưu cục: {{seller.shopName}} - Số điện thoại:{{seller.phone}}
++ {{order.shipMethod === 'POST' ? \`Địa chỉ nhận hàng: \${order.deliveryInfo.receiverAddress} - Số điện thoại : \${order.deliveryInfo.receiverTel} \`: "" }}
++ {{order.shipMethod === 'NONE' ? \`Bưu cục sẽ liên hệ quý khách hàng trong thời gian sớm nhất.\` : "" }}
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -333,7 +334,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của B�
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -350,7 +351,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của B�
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -367,7 +368,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của B�
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -828,7 +829,7 @@ Link đăng ký:
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -844,7 +845,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của B�
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -860,7 +861,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của B�
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -882,7 +883,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của B�
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -898,7 +899,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của B�
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -914,7 +915,7 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của B�
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
 + Thông tin shop bán hàng: {{seller.shopName}}
-Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
+Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,

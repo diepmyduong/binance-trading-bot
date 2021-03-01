@@ -7,7 +7,7 @@ export enum SettingGroupSlug {
   KICH_BAN_BAT_DAU = "KICH_BAN_BAT_DAU",
   CAU_HINH_VAN_CHUYEN = "CAU_HINH_VAN_CHUYEN",
   CAU_HINH_THONG_BAO_TONG_CUC = "CAU_HINH_THONG_BAO_TONG_CUC",
-  CAU_HINH_DASHBOARD = "CAU_HINH_DASHBOARD"
+  CAU_HINH_DASHBOARD = "CAU_HINH_DASHBOARD",
 }
 export enum SettingKey {
   // CAU_HINH_CHUNG
@@ -106,6 +106,21 @@ export enum SettingKey {
   OVERVIEW_AGENCY_COUNT_TITLE = "OVERVIEW_AGENCY_COUNT_TITLE",
   OVERVIEW_CUSTOMER_COUNT_ENABLED = "OVERVIEW_CUSTOMER_COUNT_ENABLED",
   OVERVIEW_CUSTOMER_COUNT_TITLE = "OVERVIEW_CUSTOMER_COUNT_TITLE",
+
+  OVERVIEW_PRODUCT_COUNT_MOBIFONE_ENABLED = "OVERVIEW_PRODUCT_COUNT_MOBIFONE_ENABLED",
+  OVERVIEW_PRODUCT_COUNT_MOBIFONE_TITLE = "OVERVIEW_PRODUCT_COUNT_MOBIFONE_TITLE",
+
+  OVERVIEW_PRODUCT_COUNT_CROSSSALE_ENABLED = "OVERVIEW_PRODUCT_COUNT_CROSSSALE_ENABLED",
+  OVERVIEW_PRODUCT_COUNT_CROSSSALE_TITLE = "OVERVIEW_PRODUCT_COUNT_CROSSSALE_TITLE",
+
+  OVERVIEW_PRODUCT_COUNT_RETAIL_ENABLED = "OVERVIEW_PRODUCT_COUNT_RETAIL_ENABLED",
+  OVERVIEW_PRODUCT_COUNT_RETAIL_TITLE = "OVERVIEW_PRODUCT_COUNT_RETAIL_TITLE",
+
+  OVERVIEW_PRODUCT_COUNT_SMS_ENABLED = "OVERVIEW_PRODUCT_COUNT_SMS_ENABLED",
+  OVERVIEW_PRODUCT_COUNT_SMS_TITLE = "OVERVIEW_PRODUCT_COUNT_SMS_TITLE",
+
+  OVERVIEW_PRODUCT_COUNT_SERVICE_ENABLED = "OVERVIEW_PRODUCT_COUNT_SERVICE_ENABLED",
+  OVERVIEW_PRODUCT_COUNT_SERVICE_TITLE = "OVERVIEW_PRODUCT_COUNT_SERVICE_TITLE",
 }
 
 export const SETTING_DATA = [
@@ -1021,6 +1036,100 @@ Nếu bạn có thắc mắc vui lòng liên hệ vào số hotline 999 của B�
         isPrivate: true,
         readOnly: false,
       },
+
+      {
+        type: SettingType.boolean,
+        name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - Bưu điện - Bật tắt",
+        key: SettingKey.OVERVIEW_PRODUCT_COUNT_MOBIFONE_ENABLED,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - Sản phẩm chính - Hiển thị",
+        key: SettingKey.OVERVIEW_PRODUCT_COUNT_MOBIFONE_TITLE,
+        value: "Sản phẩm chính",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+
+      {
+        type: SettingType.boolean,
+        name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - Bán chéo - Bật tắt",
+        key: SettingKey.OVERVIEW_PRODUCT_COUNT_CROSSSALE_ENABLED,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - Bán chéo - Hiển thị",
+        key: SettingKey.OVERVIEW_PRODUCT_COUNT_CROSSSALE_TITLE,
+        value: "Bán chéo",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+
+      {
+        type: SettingType.boolean,
+        name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - Bán lẻ - Bật tắt",
+        key: SettingKey.OVERVIEW_PRODUCT_COUNT_RETAIL_ENABLED,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - Bán lẻ - Hiển thị",
+        key: SettingKey.OVERVIEW_PRODUCT_COUNT_RETAIL_TITLE,
+        value: "Bán lẻ",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+
+      {
+        type: SettingType.boolean,
+        name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - SMS - Bật tắt",
+        key: SettingKey.OVERVIEW_PRODUCT_COUNT_SMS_ENABLED,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - SMS - Hiển thị",
+        key: SettingKey.OVERVIEW_PRODUCT_COUNT_SMS_TITLE,
+        value: "SMS",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+        {
+          type: SettingType.boolean,
+          name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - Dịch vụ - Bật tắt",
+          key: SettingKey.OVERVIEW_PRODUCT_COUNT_SERVICE_ENABLED,
+          value: true,
+          isActive: true,
+          isPrivate: true,
+          readOnly: false,
+        },
+        {
+          type: SettingType.string,
+          name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - Dịch vụ - Hiển thị",
+          key: SettingKey.OVERVIEW_PRODUCT_COUNT_SERVICE_TITLE,
+          value: "Dịch vụ khác",
+          isActive: true,
+          isPrivate: true,
+          readOnly: false,
+        },
     ],
-  }
+  },
 ];

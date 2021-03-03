@@ -1,5 +1,4 @@
 import { gql } from "apollo-server-express";
-import {  ShipMethods } from "../order/order.model";
 
 const schema = gql`
   extend type Query {

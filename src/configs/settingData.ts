@@ -96,6 +96,15 @@ export enum SettingKey {
   DELIVERY_ENABLED_DONG_GIA = "DELIVERY_ENABLED_DONG_GIA",
   POST_CREATE_ORDER_ALERT_ENABLED = "POST_CREATE_ORDER_ALERT_ENABLED",
 
+
+  // { label: "Tự liên hệ", value: ShipMethod.NONE },
+  // { label: "Nhận hàng tại chi nhánh", value: ShipMethod.POST },
+  // { label: "Giao hàng VNPost", value: ShipMethod.VNPOST },
+  DELIVERY_NONE_LABEL = "DELIVERY_NONE_LABEL",
+  DELIVERY_POST_LABEL = "DELIVERY_POST_LABEL",
+  DELIVERY_VNPOST_LABEL = "DELIVERY_VNPOST_LABEL",
+  ///
+
   OVERVIEW_SHOP_COUNT_ENABLED = "OVERVIEW_SHOP_COUNT_ENABLED",
   OVERVIEW_SHOP_COUNT_TITLE = "OVERVIEW_SHOP_COUNT_TITLE",
   OVERVIEW_BRANCH_COUNT_ENABLED = "OVERVIEW_BRANCH_COUNT_ENABLED",
@@ -121,6 +130,8 @@ export enum SettingKey {
 
   OVERVIEW_PRODUCT_COUNT_SERVICE_ENABLED = "OVERVIEW_PRODUCT_COUNT_SERVICE_ENABLED",
   OVERVIEW_PRODUCT_COUNT_SERVICE_TITLE = "OVERVIEW_PRODUCT_COUNT_SERVICE_TITLE",
+
+
 }
 
 export const SETTING_DATA = [
@@ -920,9 +931,53 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
         isPrivate: true,
         readOnly: false,
       },
+      {
+        type: SettingType.richText,
+        name: "Nhãn tự liên hệ",
+        key: SettingKey.DELIVERY_NONE_LABEL,
+        value: `Tự liên hệ`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.richText,
+        name: "Nhãn nhận hàng tại bưu cục",
+        key: SettingKey.DELIVERY_POST_LABEL,
+        value: `Nhận hàng tại bưu cục`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.richText,
+        name: "Nhãn giao hàng tại địa chỉ",
+        key: SettingKey.DELIVERY_VNPOST_LABEL,
+        value: `Giao hàng tại địa chỉ`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
     ],
   },
   //////////
+  {
+    slug: SettingGroupSlug.CAU_HINH_THONG_BAO_TONG_CUC,
+    name: "Cấu hình thông báo tổng cục",
+    desc: "Cấu hình thông báo tổng cục",
+    readOnly: true,
+    settings: [
+      {
+        type: SettingType.boolean,
+        name: "Bật tắt thông báo đặt đơn hàng",
+        key: SettingKey.POST_CREATE_ORDER_ALERT_ENABLED,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+    ],
+  },
   {
     slug: SettingGroupSlug.CAU_HINH_THONG_BAO_TONG_CUC,
     name: "Cấu hình thông báo tổng cục",

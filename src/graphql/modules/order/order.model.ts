@@ -3,6 +3,8 @@ import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 import { DeliveryInfo, DeliveryInfoSchema } from "./types/deliveryInfo.type";
 import { IOrderItem } from "../orderItem/orderItem.model";
+import { SettingHelper } from "../setting/setting.helper";
+import { SettingKey } from "../../../configs/settingData";
 const Schema = mongoose.Schema;
 
 export enum OrderStatus {
@@ -32,6 +34,23 @@ export const ShipMethods = [
   { label: "Nhận hàng tại chi nhánh", value: ShipMethod.POST },
   { label: "Giao hàng VNPost", value: ShipMethod.VNPOST },
 ];
+
+
+export const getShipMethods = async() =>{
+
+  const [noneLabel,postLabel , vnpostLabel] = await Promise.all([
+    SettingHelper.load(SettingKey.DELIVERY_NONE_LABEL),
+    SettingHelper.load(SettingKey.DELIVERY_POST_LABEL),
+    SettingHelper.load(SettingKey.DELIVERY_VNPOST_LABEL)
+  ]);
+
+  return [
+    { label: noneLabel, value: ShipMethod.NONE },
+    { label: postLabel, value: ShipMethod.POST },
+    { label: vnpostLabel, value: ShipMethod.VNPOST },
+  ]
+};
+
 
 export type IOrder = BaseDocument & {
   code?: string; // Mã đơn hàng

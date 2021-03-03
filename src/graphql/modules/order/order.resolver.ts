@@ -8,7 +8,7 @@ import { MemberLoader } from "../member/member.model";
 import { OrderItemLoader } from "../orderItem/orderItem.model";
 import { UserLoader } from "../user/user.model";
 import { orderService } from "./order.service";
-import { IOrder, OrderStatus, PaymentMethod, ShipMethod, ShipMethods } from "./order.model";
+import { getShipMethods, IOrder, OrderStatus, PaymentMethod } from "./order.model";
 import { CollaboratorLoader } from "../collaborator/collaborator.model";
 
 const Query = {
@@ -78,7 +78,8 @@ const Order = {
   // },
   
   shipMethodText: async (root: IOrder, args: any, context: Context) => {
-    const shipMethod = ShipMethods.find(ship => ship.value === root.shipMethod);
+    const shipMethods = await getShipMethods();
+    const shipMethod = shipMethods.find(ship => ship.value === root.shipMethod);
     return shipMethod ? shipMethod.label : "Không có phương thức này";
   },
   statusText: async (root: IOrder, args: any, context: Context) => {

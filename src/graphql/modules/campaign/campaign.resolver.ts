@@ -10,9 +10,8 @@ import {
   CampaignSocialResultModel,
   ICampaignSocialResult,
 } from "../campaignSocialResult/campaignSocialResult.model";
-import { LuckyWheelGiftModel } from "../luckyWheelGift/luckyWheelGift.model";
-import { IMember, MemberLoader, MemberModel } from "../member/member.model";
-import { ProductLoader, ProductModel, ProductType } from "../product/product.model";
+import { MemberLoader, MemberModel } from "../member/member.model";
+import { ProductLoader, ProductModel } from "../product/product.model";
 import { SettingHelper } from "../setting/setting.helper";
 import { CampaignHelper } from "./campaign.helper";
 import { CampaignModel, ICampaign } from "./campaign.model";
@@ -38,12 +37,21 @@ const Mutation = {
 
     data.code = data.code || (await CampaignHelper.generateCode());
 
-    const { startDate, endDate, branchId, provinceId, productId, memberType } = data;
+    const {
+      startDate,
+      endDate,
+      branchId,
+      provinceId,
+      productId,
+      memberType,
+    } = data;
 
     const diff = CampaignHelper.diffDate(startDate, endDate);
 
     if (diff <= 0)
-      throw ErrorHelper.requestDataInvalid(". Ngày bắt đầu và ngày kết thúc không đúng.");
+      throw ErrorHelper.requestDataInvalid(
+        ". Ngày bắt đầu và ngày kết thúc không đúng."
+      );
 
     const memberFilterParams: any[] = [];
 
@@ -98,7 +106,9 @@ const Mutation = {
       }
     }
 
-    campaign.campainSocialResultIds = campaignSocialResults.map((res) => res._id);
+    campaign.campainSocialResultIds = campaignSocialResults.map(
+      (res) => res._id
+    );
     campaign.memberIds = campaignSocialResults.map((res) => res.memberId);
 
     return await Promise.all([

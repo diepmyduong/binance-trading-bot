@@ -20,15 +20,10 @@ class CampaignService extends CrudService<typeof CampaignModel> {
 
   getCampaignByCodeAndProduct = async (campaignCode: any, productId: any, sellerId: any) => {
     const campaign = await CampaignModel.findOne({ code: campaignCode, productId });
-
-
-
     if (campaign) {
       if (campaign.memberIds.findIndex(id => id.toString() === sellerId) === -1)
         return null;
-
-
-      console.log('========> campaign', campaign);
+      // console.log('========> campaign', campaign);
       return campaign;
     }
     return null;

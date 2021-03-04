@@ -13,6 +13,7 @@ import { customerCommissionLogService } from "./customerCommissionLog.service";
 import { MemberLoader } from "../member/member.model";
 import { set } from "lodash";
 import { CustomerLoader } from "../customer/customer.model";
+import { CustomerHelper } from "../customer/customer.helper";
 
 const Query = {
   getAllCustomerCommissionLog: async (
@@ -20,12 +21,10 @@ const Query = {
     args: any,
     context: Context
   ) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-
-    if(context.isMember){
-      set(args, "q.filter.memberId", context.id);
+    const customerHelper = await CustomerHelper.fromContext(context);
+    if (customerHelper) {
+      set(args, "q.filter.customerId", customerHelper.customer._id);
     }
-
     return customerCommissionLogService.fetch(args.q);
   },
 };

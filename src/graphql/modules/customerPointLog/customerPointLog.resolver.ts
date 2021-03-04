@@ -5,7 +5,7 @@ import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
 import { CustomerHelper } from "../customer/customer.helper";
 import { LuckyWheelResultLoader } from "../luckyWheelResult/luckyWheelResult.model";
-import { MemberHelper } from "../member/member.helper";
+// import { MemberHelper } from "../member/member.helper";
 import { OrderLoader } from "../order/order.model";
 import { RegisServiceLoader } from "../regisService/regisService.model";
 import { RegisSMSLoader } from "../regisSMS/regisSMS.model";

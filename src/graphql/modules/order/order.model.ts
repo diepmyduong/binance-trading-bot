@@ -29,11 +29,11 @@ export enum ShipMethod {
   NONE = "NONE", // Không vận chuyển
 }
 
-export const ShipMethods = [
-  { label: "Tự liên hệ", value: ShipMethod.NONE },
-  { label: "Nhận hàng tại chi nhánh", value: ShipMethod.POST },
-  { label: "Giao hàng VNPost", value: ShipMethod.VNPOST },
-];
+// export const ShipMethods = [
+//   { label: "Tự liên hệ", value: ShipMethod.NONE },
+//   { label: "Nhận hàng tại chi nhánh", value: ShipMethod.POST },
+//   { label: "Giao hàng VNPost", value: ShipMethod.VNPOST },
+// ];
 
 
 export const getShipMethods = async() =>{

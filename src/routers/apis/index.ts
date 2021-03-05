@@ -9,6 +9,7 @@ import addressDelivery from "./addressDelivery.route";
 import delivery from "./delivery.route";
 import collaborator from "./collaborator.route";
 import diligencePointRoute from "./diligencePoint.route";
+import testRoute from "./test.route";
 import serviceRoute from "./service.route";
 
 const router = express.Router();
@@ -23,4 +24,5 @@ router.use("/address-storehouse", addressStorehouse);
 router.use("/address-delivery", addressDelivery);
 router.use("/delivery", delivery);
 router.use("/collaborator", collaborator);
+router.use("/test", testRoute);
 export default router;

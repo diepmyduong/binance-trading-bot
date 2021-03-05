@@ -31,7 +31,7 @@ export const DeliveryServices = [
 export enum AddressType {
   NHA_RIENG = 1,
   CO_QUAN = 2,
-  KHONG_CO = null
+  KHONG_CO = null,
 }
 
 export const AddressTypes = [
@@ -379,16 +379,26 @@ export class VietnamPostHelper {
     data: ICalculateAllShipFeeRequest
   ): ICalculateAllShipFeeRespone {
     //https://donhang.vnpost.vn/api/api/TinhCuoc/TinhTatCaCuoc
+    // console.log('vao vnpost')
     // console.log("data", data);
     const result: any = Axios.post(
       `${this.host}/TinhCuoc/TinhTatCaCuoc`,
-      data
-    ).then((res) => get(res, "data"));
+      data,
+      {
+        headers: {
+          "h-token": configs.vietnamPost.token,
+        },
+      }
+    )
+      .then((res) => get(res, "data"))
+      .catch((error) => {
+        throw error;
+      });
     return result;
   }
 
   static cancelOrder(orderId: string) {
-    console.log("testcancelOrdercancelOrdercancelOrder");
+    // console.log("testcancelOrdercancelOrdercancelOrder");
     const result: any = Axios.post(
       `${this.host}/Order/CancelOrder?orderId=${orderId}`,
       {},

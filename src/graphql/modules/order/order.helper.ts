@@ -383,6 +383,10 @@ export class OrderHelper {
 
       case ShipMethod.VNPOST:
         // console.log('Vao VNPOST');
+
+        const dongGiaEnable: boolean = await SettingHelper.load(SettingKey.DELIVERY_ENABLED_DONG_GIA);
+        const dongGiaServiceCode = ServiceCode.DONG_GIA;
+
         // kiem tra đơn hàng trong nội thành ?
         const defaultServiceCode = await SettingHelper.load(
           SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
@@ -432,10 +436,11 @@ export class OrderHelper {
             ThuCuocNguoiNhan: this.order.paymentMethod == PaymentMethod.COD,
             LstDichVuCongThem,
           };
-          if (urbanStores.length > 0) {
+          // noi thanh 
+          if (urbanStores.length > 0 && dongGiaEnable) {
             this.order.isUrbanDelivery = true;
-            data.MaDichVu = "DONG_GIA";
-            serviceCode = "DONG_GIA";
+            data.MaDichVu = dongGiaServiceCode;
+            serviceCode = dongGiaServiceCode;
           } else {
             this.order.isUrbanDelivery = false;
             data.MaDichVu = defaultServiceCode;

@@ -51,6 +51,7 @@ export type IMember = BaseDocument & {
   // delivery
   addressStorehouseIds: string[]; // danh sách id kho
   addressDeliveryIds: string[]; // danh sách id điểm nhận
+  mainAddressStorehouseId: string;
 };
 
 const memberSchema = new Schema(

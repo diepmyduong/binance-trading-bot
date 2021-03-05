@@ -24,7 +24,7 @@ const addressSchema = new Schema(
   { timestamps: true, collation: { locale: "vi" } }
 );
 
-// addressSchema.index({ name: "text" }, { weights: { name: 2 } });
+addressSchema.index({ province: "text" , district: "text", ward: "text" }, { weights: { province: 2, district:2, ward:2 } });
 
 export const AddressHook = new ModelHook<IAddress>(addressSchema);
 export const AddressModel: mongoose.Model<IAddress> = MainConnection.model(

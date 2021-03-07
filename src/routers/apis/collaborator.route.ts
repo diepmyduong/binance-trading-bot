@@ -19,7 +19,9 @@ import {
   ICollaboratorImportingLog,
 } from "../../graphql/modules/collaboratorImportingLog/collaboratorImportingLog.model";
 import { CustomerModel } from "../../graphql/modules/customer/customer.model";
-import { Gender } from "../../graphql/modules/member/member.model";
+import { Gender, MemberModel } from "../../graphql/modules/member/member.model";
+import { CustomerCommissionLogModel } from "../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
+import { ObjectId } from "mongodb";
 
 const STT = "STT";
 const NAME = "Tên";
@@ -47,6 +49,11 @@ class CollaboratorRoute extends BaseRoute {
       this.route(this.exportResultsToExcel)
     );
     this.router.get("/export", [auth], this.route(this.exportToExcel));
+    this.router.get(
+      "/exportCollaboratorsReport",
+      [auth],
+      this.route(this.exportCollaboratorsReport)
+    );
   }
 
   async exportResultsToExcel(req: Request, res: Response) {
@@ -100,18 +107,134 @@ class CollaboratorRoute extends BaseRoute {
 
     const workbook = new Excel.Workbook();
     const sheet = workbook.addWorksheet(SHEET_NAME);
-    const excelHeaders = [STT, NAME, PHONE ,IS_COLLABORATOR,ADDRESS,GENDER ];
+    const excelHeaders = [STT, NAME, PHONE, IS_COLLABORATOR, ADDRESS, GENDER];
     sheet.addRow(excelHeaders);
 
     data.forEach((d: ICollaborator, i) => {
-      const customer = customers.find(c=> c.phone === d.phone);
+      const customer = customers.find((c) => c.phone === d.phone);
       const dataRow = [
-        i + 1, 
-        d.name, 
-        d.phone, 
-        customer ? "√" : "", 
-        customer ? customer.address : "", 
-        customer ? customer.gender === Gender.MALE ? "Nam"  : "Nữ" : ""
+        i + 1,
+        d.name,
+        d.phone,
+        customer ? "√" : "",
+        customer ? customer.address : "",
+        customer ? (customer.gender === Gender.MALE ? "Nam" : "Nữ") : "",
+      ];
+      sheet.addRow(dataRow);
+    });
+
+    return UtilsHelper.responseExcel(res, workbook, RESULT_FILE_NAME);
+  }
+
+  async exportCollaboratorsReport(req: Request, res: Response) {
+    const context = (req as any).context as Context;
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER);
+
+    let fromDate: string = req.query.fromDate
+      ? req.query.fromDate.toString()
+      : null;
+    let toDate: string = req.query.toDate ? req.query.toDate.toString() : null;
+    const memberId: string = req.query.memberId
+      ? req.query.memberId.toString()
+      : null;
+
+    let data: any = [];
+
+    let $gte = null,
+      $lte = null;
+
+    const $match: any = {};
+
+    if (fromDate && toDate) {
+      fromDate = fromDate + "T00:00:00+07:00";
+      toDate = toDate + "T24:00:00+07:00";
+      $gte = new Date(fromDate);
+      $lte = new Date(toDate);
+      $match.createdAt = { $gte, $lte };
+    }
+
+    if (memberId) {
+      $match.memberId = new ObjectId(memberId);
+    }
+
+    //customerId:ObjectId("603b6ea20c5de11eaca05606"),
+
+    // console.log("$match", $match);
+
+    let result = await CustomerCommissionLogModel.aggregate([
+      {
+        $project: {
+          _id: 1,
+          customerId: 1,
+          memberId: 1,
+          type: 1,
+          value: 1,
+          orderId: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+      {
+        $match,
+      },
+      {
+        $group: {
+          _id: "$customerId",
+          memberIds: { $push: "$memberId" },
+          customerIds: { $push: "$customerId" },
+          total: {
+            $sum: "$value",
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          memberIds: 1,
+          customerId: { $arrayElemAt: ["$customerIds", 0] },
+          total: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: "customers",
+          localField: "customerId",
+          foreignField: "_id",
+          as: "customer",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          customerId: 1,
+          customer: { $arrayElemAt: ["$customer", 0] },
+          memberIds: 1,
+          total: 1,
+        },
+      },
+    ]);
+
+    const members = await MemberModel.find({});
+
+    data = [...data, ...result];
+
+    const workbook = new Excel.Workbook();
+    const sheet = workbook.addWorksheet(SHEET_NAME);
+    const excelHeaders = [STT, NAME, PHONE, "Bưu cục", "Hoa hồng"];
+    sheet.addRow(excelHeaders);
+
+    data.forEach((d: any, i: number) => {
+      const dataRow = [
+        i + 1,
+        d.customer.name,
+        d.customer.phone,
+        members
+          .filter((m) =>
+            d.memberIds.map((id: any) => id.toString()).includes(m.id)
+          )
+          .map((m) => m.shopName)
+          .join("\n"),
+        d.total,
       ];
       sheet.addRow(dataRow);
     });

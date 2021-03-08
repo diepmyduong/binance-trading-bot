@@ -13,8 +13,7 @@ const getOverviewCollaboratorReport = async (
   args: any,
   context: Context
 ) => {
-  // AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR);
-
+  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR);
   const queryInput = args.q;
   let { fromDate, toDate, memberId } = queryInput.filter;
 

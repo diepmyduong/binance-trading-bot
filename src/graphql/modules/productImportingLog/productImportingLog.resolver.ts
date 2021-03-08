@@ -16,16 +16,6 @@ const Query = {
 };
 
 const Mutation = {
-  createProductImportingLog: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, [ROLES.ADMIN]);
-    const { data } = args;
-    return await productImportingLogService.create(data);
-  },
-  updateProductImportingLog: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, [ROLES.ADMIN]);
-    const { id, data } = args;
-    return await productImportingLogService.updateOne(id, data);
-  },
   deleteOneProductImportingLog: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.ADMIN]);
     const { id } = args;

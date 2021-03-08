@@ -8,8 +8,6 @@ const schema = gql`
   }
 
   extend type Mutation {
-    createRegisSMSImportingLog(data: CreateRegisSMSImportingLogInput!): RegisSMSImportingLog
-    updateRegisSMSImportingLog(id: ID!, data: UpdateRegisSMSImportingLogInput!): RegisSMSImportingLog
     deleteOneRegisSMSImportingLog(id: ID!): RegisSMSImportingLog
     # Add Mutation
   }

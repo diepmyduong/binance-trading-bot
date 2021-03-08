@@ -16,16 +16,6 @@ const Query = {
 };
 
 const Mutation = {
-  createRegisSMSImportingLog: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, [ROLES.ADMIN]);
-    const { data } = args;
-    return await regisSMSImportingLogService.create(data);
-  },
-  updateRegisSMSImportingLog: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, [ROLES.ADMIN]);
-    const { id, data } = args;
-    return await regisSMSImportingLogService.updateOne(id, data);
-  },
   deleteOneRegisSMSImportingLog: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.ADMIN]);
     const { id } = args;

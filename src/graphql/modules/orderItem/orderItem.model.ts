@@ -19,6 +19,7 @@ export type IOrderItem = BaseDocument & {
   commission0: number; //  Hoa hồng Mobifone
   commission1: number; //  Hoa hồng điểm bán
   commission2: number; //  Hoa hồng giới thiệu
+  commission3: number; // Hoa hồng kho
   sellerBonusPoint: number; //  Điểm thường người bán
   buyerBonusPoint: number; //  Điểm thưởng người mua
   campaignId: string; // mã chiến dịch
@@ -47,6 +48,7 @@ const orderItemSchema = new Schema(
     commission0: { type: Number, default: 0, min: 0 },
     commission1: { type: Number, default: 0, min: 0 },
     commission2: { type: Number, default: 0, min: 0 },
+    commission3: { type: Number, default: 0, min: 0 },
     sellerBonusPoint: { type: Number, default: 0, min: 0 },
     buyerBonusPoint: { type: Number, default: 0, min: 0 },
     amount: { type: Number, required: 0, default: 0 },

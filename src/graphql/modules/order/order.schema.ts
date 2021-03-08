@@ -67,6 +67,7 @@ const schema = gql`
     shipMethod: String!
     paymentMethod: String!
     addressDeliveryId: ID
+    note: String
   }
 
   input CreateOrderInput {
@@ -80,6 +81,7 @@ const schema = gql`
     shipMethod: String!
     paymentMethod: String!
     addressDeliveryId: ID
+    note: String
   }
   
   input OrderItemInput {
@@ -151,6 +153,8 @@ const schema = gql`
     "Điểm thưởng người mua"
     buyerBonusPoint: Float
     "Địa điểm nhận hàng"
+    addressStorehouseId: ID
+    "Địa điểm nhận hàng"
     addressDeliveryId: ID
 
     items: [OrderItem]
@@ -168,8 +172,6 @@ const schema = gql`
     collaboratorId: ID
     "Cộng tác viên"
     collaborator: Collaborator
-    "Phí ship thực tế"
-    realShipfee: Float
     "Là nội thành"
     isUrbanDelivery: Boolean
   }

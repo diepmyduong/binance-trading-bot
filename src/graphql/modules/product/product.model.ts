@@ -22,6 +22,7 @@ export type IProduct = BaseDocument & {
   commission0: number; // Hoa hồng Mobifone
   commission1: number; // Hoa hồng điểm bán
   commission2: number; // Hoa hồng giới thiệu
+  commission3: number; // Hoa hồng kho
   baseCommission: number; // Hoa hồng CHO ĐIỂM BÁN
   enabledMemberBonus: boolean; // Thưởng cho điểm bán
   enabledCustomerBonus: boolean; // Thưởng cho khách hàng
@@ -62,6 +63,7 @@ const productSchema = new Schema(
     commission0: { type: Number, default: 0 }, // Hoa hồng cho Mobifone
     commission1: { type: Number, default: 0 }, // Hoa hồng cho điểm bán
     commission2: { type: Number, default: 0 }, // Hoa hồng cho giới thiệu
+    commission3: { type: Number, default: 0 }, // Hoa hồng cho kho
     baseCommission: { type: Number, default: 0, min: 0 },
     enabledMemberBonus: { type: Boolean, default: false },
     enabledCustomerBonus: { type: Boolean, default: false },

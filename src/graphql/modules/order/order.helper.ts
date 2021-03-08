@@ -91,6 +91,8 @@ export class OrderHelper {
   static orderProducts = async (data: any) => {
     const { items, sellerId } = data;
 
+    console.log('data',data);
+
     // kiểm tra danh sách
     const itemsLength = Object.keys(items).length;
     if (itemsLength === 0)
@@ -161,6 +163,7 @@ export class OrderHelper {
     if (directShoppingProducts.length > 0) {
       orders.push({
         ...data,
+        // isPrimary:true, // tat ca don hang deu thuoc buu cuc
         products: directShoppingProducts,
         fromMemberId: sellerId,
       });
@@ -308,6 +311,7 @@ export class OrderHelper {
       this.order.commission0 += item.commission0 * item.qty;
       this.order.commission1 += item.commission1 * item.qty;
       this.order.commission2 += item.commission2 * item.qty;
+      this.order.commission3 += item.commission3 * item.qty;
 
       this.order.sellerBonusPoint += item.sellerBonusPoint;
       this.order.buyerBonusPoint += item.buyerBonusPoint;

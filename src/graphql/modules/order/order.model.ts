@@ -35,22 +35,19 @@ export enum ShipMethod {
 //   { label: "Giao hàng VNPost", value: ShipMethod.VNPOST },
 // ];
 
-
-export const getShipMethods = async() =>{
-
-  const [noneLabel,postLabel , vnpostLabel] = await Promise.all([
+export const getShipMethods = async () => {
+  const [noneLabel, postLabel, vnpostLabel] = await Promise.all([
     SettingHelper.load(SettingKey.DELIVERY_NONE_LABEL),
     SettingHelper.load(SettingKey.DELIVERY_POST_LABEL),
-    SettingHelper.load(SettingKey.DELIVERY_VNPOST_LABEL)
+    SettingHelper.load(SettingKey.DELIVERY_VNPOST_LABEL),
   ]);
 
   return [
     { label: noneLabel, value: ShipMethod.NONE },
     { label: postLabel, value: ShipMethod.POST },
     { label: vnpostLabel, value: ShipMethod.VNPOST },
-  ]
+  ];
 };
-
 
 export type IOrder = BaseDocument & {
   code?: string; // Mã đơn hàng
@@ -66,6 +63,7 @@ export type IOrder = BaseDocument & {
   commission0?: number; // Hoa hồng Mobifone
   commission1?: number; // Hoa hồng điểm bán
   commission2?: number; // Hoa hồng giới thiệu
+  commission3?: number; // Hoa hồng giới thiệu
   buyerId?: string; // Khách hàng mua
   buyerName?: string; // Tên khách hàng
   buyerPhone?: string; // Điện thoại khách hàng
@@ -94,6 +92,7 @@ export type IOrder = BaseDocument & {
   isUrbanDelivery: boolean;
   campaignCode: string;
   collaboratorId: string;
+  note: string;
 };
 
 const orderSchema = new Schema(
@@ -117,6 +116,7 @@ const orderSchema = new Schema(
     commission0: { type: Number, default: 0, min: 0 },
     commission1: { type: Number, default: 0, min: 0 },
     commission2: { type: Number, default: 0, min: 0 },
+    commission3: { type: Number, default: 0, min: 0 },
     buyerId: { type: Schema.Types.ObjectId, ref: "Customer" },
     buyerName: { type: String, required: true },
     buyerPhone: { type: String, required: true },
@@ -157,6 +157,7 @@ const orderSchema = new Schema(
     addressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery" },
     isUrbanDelivery: { type: Boolean, default: false },
     collaboratorId: { type: Schema.Types.ObjectId, ref: "Collaborator" },
+    note: { type: Schema.Types.String },
   },
   { timestamps: true }
 );

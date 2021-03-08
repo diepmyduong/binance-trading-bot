@@ -8,8 +8,6 @@ const schema = gql`
   }
 
   extend type Mutation {
-    createProductImportingLog(data: CreateProductImportingLogInput!): ProductImportingLog
-    updateProductImportingLog(id: ID!, data: UpdateProductImportingLogInput!): ProductImportingLog
     deleteOneProductImportingLog(id: ID!): ProductImportingLog
     # Add Mutation
   }

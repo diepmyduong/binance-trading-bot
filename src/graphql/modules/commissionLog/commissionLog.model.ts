@@ -26,7 +26,7 @@ const commissionLogSchema = new Schema(
     memberId: { type: Schema.Types.ObjectId, ref: "Member", required: true },
     value: { type: Number, required: true },
     type: { type: String, enum: Object.values(CommissionLogType), required: true },
-    orderId: { type: Schema.Types.ObjectId, ref: "Member" },
+    orderId: { type: Schema.Types.ObjectId, ref: "Order" },
     regisSMSId: { type: Schema.Types.ObjectId, ref: "RegisSMS" },
     regisServiceId: { type: Schema.Types.ObjectId, ref: "RegisService" },
   },

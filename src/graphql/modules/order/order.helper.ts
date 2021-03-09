@@ -386,11 +386,7 @@ export class OrderHelper {
         break;
 
       case ShipMethod.VNPOST:
-        // console.log('Vao VNPOST');
-
-        const dongGiaEnable: boolean = await SettingHelper.load(SettingKey.DELIVERY_ENABLED_DONG_GIA);
-        const dongGiaServiceCode = ServiceCode.DONG_GIA;
-
+        
         // kiem tra đơn hàng trong nội thành ?
         const defaultServiceCode = await SettingHelper.load(
           SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
@@ -441,17 +437,10 @@ export class OrderHelper {
             LstDichVuCongThem,
           };
           // noi thanh 
-          if (urbanStores.length > 0 && dongGiaEnable) {
-            this.order.isUrbanDelivery = true;
-            data.MaDichVu = dongGiaServiceCode;
-            serviceCode = dongGiaServiceCode;
-          } else {
-            this.order.isUrbanDelivery = false;
-            data.MaDichVu = defaultServiceCode;
-            serviceCode = defaultServiceCode;
-          }
-
-          // console.log('data',data);
+          
+          this.order.isUrbanDelivery = urbanStores.length > 0;
+          data.MaDichVu = defaultServiceCode;
+          serviceCode = defaultServiceCode;
 
           const service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
             data

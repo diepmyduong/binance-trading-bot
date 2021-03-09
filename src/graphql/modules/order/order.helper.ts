@@ -386,7 +386,7 @@ export class OrderHelper {
         break;
 
       case ShipMethod.VNPOST:
-        
+
         // kiem tra đơn hàng trong nội thành ?
         const defaultServiceCode = await SettingHelper.load(
           SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
@@ -484,7 +484,7 @@ export class OrderHelper {
             .map((i) => `[${i.productName} - SL:${i.qty}]`)
             .join(" "),
           isPackageViewable: false,
-          pickupType: PickupType.PICK_UP,
+          pickupType: PickupType.DROP_OFF,
 
           senderFullname: member.shopName, // tên người gửi *
           senderTel: cheapestService.storehouse.phone, // Số điện thoại người gửi * (maxlength: 50)

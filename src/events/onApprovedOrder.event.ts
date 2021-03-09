@@ -326,3 +326,14 @@ onApprovedOrder.subscribe(async (order) => {
     commission.save();
   }
 });
+
+// xac nhan don hang 
+// thong bao den chu shop
+// thong bao den khach hang
+onApprovedOrder.subscribe(async (order) => {
+  const { shipMethod , addressDeliveryId } = order;
+  if(shipMethod === ShipMethod.POST){
+ 
+  }
+});
+

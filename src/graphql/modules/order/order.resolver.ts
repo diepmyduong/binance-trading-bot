@@ -8,7 +8,12 @@ import { MemberLoader } from "../member/member.model";
 import { OrderItemLoader } from "../orderItem/orderItem.model";
 import { UserLoader } from "../user/user.model";
 import { orderService } from "./order.service";
-import { getShipMethods, IOrder, OrderStatus, PaymentMethod } from "./order.model";
+import {
+  getShipMethods,
+  IOrder,
+  OrderStatus,
+  PaymentMethod,
+} from "./order.model";
 import { CollaboratorLoader } from "../collaborator/collaborator.model";
 
 const Query = {
@@ -51,7 +56,7 @@ const Order = {
   fromMember: GraphQLHelper.loadById(MemberLoader, "fromMemberId"),
   updatedByUser: GraphQLHelper.loadById(UserLoader, "updatedByUserId"),
   buyer: GraphQLHelper.loadById(CustomerLoader, "buyerId"),
-  collaborator : GraphQLHelper.loadById(CollaboratorLoader, "collaboratorId"),
+  collaborator: GraphQLHelper.loadById(CollaboratorLoader, "collaboratorId"),
 
   paymentMethodText: async (root: IOrder, args: any, context: Context) => {
     switch (root.paymentMethod) {
@@ -63,7 +68,7 @@ const Order = {
         return root.paymentMethod;
     }
   },
-  
+
   // paymentStatusText: async (root: IOrder, args: any, context: Context) => {
   //   switch (root.paymentStatus) {
   //     case PaymentStatus.PENDING:
@@ -76,16 +81,21 @@ const Order = {
   //       return root.paymentStatus;
   //   }
   // },
-  
+
   shipMethodText: async (root: IOrder, args: any, context: Context) => {
     const shipMethods = await getShipMethods();
-    const shipMethod = shipMethods.find(ship => ship.value === root.shipMethod);
+    const shipMethod = shipMethods.find(
+      (ship) => ship.value === root.shipMethod
+    );
     return shipMethod ? shipMethod.label : "Không có phương thức này";
   },
+  
   statusText: async (root: IOrder, args: any, context: Context) => {
     switch (root.status) {
       case OrderStatus.PENDING:
         return `Đang xử lý`;
+      case OrderStatus.CONFIRMED:
+        return `Đã xác nhận`;
       case OrderStatus.DELIVERING:
         return `Đang giao hàng`;
       case OrderStatus.COMPLETED:

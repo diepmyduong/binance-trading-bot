@@ -56,11 +56,10 @@ onDelivering.subscribe(async (order) => {
 
     // console.log('pageAccount',pageAccount);
     if (pageAccount) {
-      // Đơn hàng của Mobifone
       const status = GetOrderStatusByPostDeliveryStatus(
         deliveryInfo.status
       );
-      console.log("status", status);
+      // console.log("status", status);
       if (status === DeliveryStatus.DELIVERING) {
         SettingHelper.load(SettingKey.DELIVERY_PENDING_MSG_FOR_CUSTOMER).then(
           (msg) => {
@@ -174,22 +173,20 @@ onDelivering.subscribe(async (order) => {
 // chuyen trang thai COMPLETE hoac RETURNED
 onDelivering.subscribe(async (order) => {
   const { deliveryInfo,paymentMethod } = order;
-  const cod  = paymentMethod === PaymentMethod.COD
+
   if (deliveryInfo) {
-    const status = GetOrderStatus(deliveryInfo.status ,cod);
+    const status = GetOrderStatus(deliveryInfo.status);
+
     if(status){
       if ([OrderStatus.RETURNED].includes(status)) {
         OrderModel.findByIdAndUpdate(order.id, {$set:{
           status
         }});
-      }
+      };
       if(status === OrderStatus.COMPLETED){
-        const autoApproveOrder =  await SettingHelper.load(SettingKey.DELIVERY_ENABLED_AUTO_APPROVE_ORDER);
-        if(autoApproveOrder){
-          OrderModel.findByIdAndUpdate(order.id, {$set:{
-            status
-          }});
-        }
+        OrderModel.findByIdAndUpdate(order.id, {$set:{
+          status
+        }});
       }
     }
   }

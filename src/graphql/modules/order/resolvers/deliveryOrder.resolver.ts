@@ -10,6 +10,8 @@ import { MemberModel } from "../../member/member.model";
 import { CustomerModel } from "../../customer/customer.model";
 import { DeliveryInfo } from "../types/deliveryInfo.type";
 import { GetVietnamPostDeliveryStatusText } from "../../../../helpers/vietnamPost/vietnamPostDeliveryStatus";
+import { SettingKey } from "../../../../configs/settingData";
+import { SettingHelper } from "../../setting/setting.helper";
 
 const Mutation = {
   deliveryOrder: async (root: any, args: any, context: Context) => {
@@ -36,6 +38,12 @@ const Mutation = {
     // Chuyển trạng thái đơn hàng
     order.status = OrderStatus.DELIVERING;
 
+    // láy ra service method default
+
+    const defaultServiceCode = await SettingHelper.load(
+      SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
+    );
+
     // bat address tai day
 
     const data: ICreateDeliveryOrderRequest = {
@@ -55,7 +63,7 @@ const Mutation = {
       ReceiverWardId: deliveryInfo.receiverWardId, // mã phường người nhận *
 
       ReceiverAddressType: deliveryInfo.receiverAddressType, // null
-      ServiceName: deliveryInfo.serviceName, //"BK"; // tên dịch vụ *
+      ServiceName: defaultServiceCode, //"BK"; // tên dịch vụ *
 
       OrderCode: order.code, // mã đơn hàng
       PackageContent: deliveryInfo.packageContent, //"Món hàng A + Món hàng B"; // nội dung hàng

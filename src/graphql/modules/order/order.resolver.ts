@@ -15,6 +15,8 @@ import {
   PaymentMethod,
 } from "./order.model";
 import { CollaboratorLoader } from "../collaborator/collaborator.model";
+import { AddressDeliveryLoader } from "../addressDelivery/addressDelivery.model";
+import { AddressStorehouseLoader } from "../addressStorehouse/addressStorehouse.model";
 
 const Query = {
   // neu la admin
@@ -57,6 +59,9 @@ const Order = {
   updatedByUser: GraphQLHelper.loadById(UserLoader, "updatedByUserId"),
   buyer: GraphQLHelper.loadById(CustomerLoader, "buyerId"),
   collaborator: GraphQLHelper.loadById(CollaboratorLoader, "collaboratorId"),
+
+  addressStorehouse: GraphQLHelper.loadById(AddressStorehouseLoader, "addressStorehouseId"),
+  addressDelivery: GraphQLHelper.loadById(AddressDeliveryLoader, "addressDeliveryId"),
 
   paymentMethodText: async (root: IOrder, args: any, context: Context) => {
     switch (root.paymentMethod) {

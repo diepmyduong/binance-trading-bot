@@ -1,10 +1,11 @@
 import { ROLES } from "../../../../constants/role.const";
 import { Context } from "../../../context";
-import { OrderModel, OrderStatus, ShipMethod } from "../order.model";
+import { OrderModel, OrderStatus, ShipMethod , Pic} from "../order.model";
 import { ErrorHelper } from "../../../../helpers/error.helper";
 import {
   VietnamPostHelper,
   ICreateDeliveryOrderRequest,
+  PickupType
 } from "../../../../helpers/vietnamPost/vietnamPost.helper";
 import { MemberModel } from "../../member/member.model";
 import { CustomerModel } from "../../customer/customer.model";
@@ -84,7 +85,7 @@ const Mutation = {
 
       UseBaoPhat: deliveryInfo.useBaoPhat,
       UseHoaDon: deliveryInfo.useHoaDon,
-      PickupType: deliveryInfo.pickupType, //1;
+      PickupType: PickupType.DROP_OFF, //1;
     };
     const bill = await VietnamPostHelper.createDeliveryOrder(data);
 

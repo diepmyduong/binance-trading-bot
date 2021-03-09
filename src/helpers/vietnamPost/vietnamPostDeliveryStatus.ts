@@ -74,7 +74,9 @@ export function GetOrderStatusByPostDeliveryStatus(status: string) {
 
 export function GetOrderStatus(status: string) {
   switch (true) {
-    case ["20","70"].includes(status):
+    case ["20"].includes(status):
+      return OrderStatus.CONFIRMED;
+    case ["70"].includes(status):
       return OrderStatus.DELIVERING;
     case ["120"].includes(status): // giao hàng thành công + có COD
       return OrderStatus.COMPLETED;

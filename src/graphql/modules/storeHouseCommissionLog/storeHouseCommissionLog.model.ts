@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 
 export type IStoreHouseCommissionLog = BaseDocument & {
   memberId: string; // Mã thành viên
-  addressDeliveryId: string; // 
   value?: number; // Giá trị
   orderId: string; // Mã đơn hàng
 };
@@ -13,7 +12,6 @@ export type IStoreHouseCommissionLog = BaseDocument & {
 const storeHouseCommissionLogSchema = new Schema(
   {
     memberId: { type: Schema.Types.ObjectId, ref: "Member" },
-    addressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery", required:true },
     value: { type: Number, required: true },
     orderId: { type: Schema.Types.ObjectId, ref: "Order" },
   },

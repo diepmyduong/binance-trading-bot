@@ -112,6 +112,9 @@ const Mutation = {
     // cập nhật lại cước thực tế khi qua vận đơn
     // neu đơn vnpost thay doi dia chi ra ngoai tinh
     order.deliveryInfo.partnerFee = bill.TotalFreightIncludeVatEvaluation;
+
+    order.status = OrderStatus.CONFIRMED;
+    
     return await order.save();
   },
 };

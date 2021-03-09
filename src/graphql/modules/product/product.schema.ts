@@ -52,6 +52,7 @@ const schema = gql`
     commission0: Float
     commission1: Float
     commission2: Float
+    commission3: Float
     baseCommission: Float
     enabledMemberBonus: Boolean
     enabledCustomerBonus: Boolean
@@ -82,6 +83,7 @@ const schema = gql`
     commission0: Float
     commission1: Float
     commission2: Float
+    commission3: Float
     baseCommission: Float
     enabledMemberBonus: Boolean
     enabledCustomerBonus: Boolean

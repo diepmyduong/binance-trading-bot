@@ -95,6 +95,7 @@ const memberSchema = new Schema(
     chatbotStory: { type: ChatbotStorySchema },
     // delivery
     mainAddressStorehouseId:{ type: Schema.Types.ObjectId, ref: "AddressStorehouse" },
+    mainAddressDeliveryId:{ type: Schema.Types.ObjectId, ref: "AddressDelivery" }, //
     addressStorehouseIds: {
       type: [{ type: Schema.Types.ObjectId, ref: "AddressStorehouse" }],
     }, // danh sách id kho

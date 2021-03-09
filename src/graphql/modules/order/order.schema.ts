@@ -123,7 +123,7 @@ const schema = gql`
     status: String
     "Người cập nhật"
     updatedByUserId: ID 
-    "Hoa hồng Mobifone"
+    "Hoa hồng VNPOST"
     commission0: Float
     "Hoa hồng điểm bán"
     commission1: Float
@@ -179,6 +179,9 @@ const schema = gql`
     isUrbanDelivery: Boolean
     "Bưu cục được chuyển đơn"
     toMemberId: ID
+
+    addressStorehouse: AddressStorehouse
+    addressDelivery: AddressDelivery
   }
 
   type OrderPageData {

@@ -181,11 +181,13 @@ onDelivering.subscribe(async (order) => {
 
   console.log("status", status);
 
-  if (status) {
-    OrderModel.findByIdAndUpdate(order.id, {
+  await OrderModel.findByIdAndUpdate(
+    order.id,
+    {
       $set: {
         status,
       },
-    },{new:true});
-  }
+    },
+    { new: true }
+  );
 });

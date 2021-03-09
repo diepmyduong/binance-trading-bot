@@ -10,7 +10,7 @@ import { OrderModel, OrderStatus } from "../order.model";
 const Mutation = {
   cancelOrder: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
-    const { id } = args;
+    const { id, note } = args;
     const params: any = {
       _id: id,
     };
@@ -59,18 +59,11 @@ const Mutation = {
     // Thực hiện huỷ đơn
     order.status = OrderStatus.CANCELED;
     // Trừ orderQty
-    for (const o of order.itemIds) {
+    for (const orderId of order.itemIds) {
       // Duyệt số lượng sao đó trừ inventory
-      const item = await OrderItemModel.findByIdAndUpdate(
-        o,
-        { $set: { status: OrderStatus.CANCELED } },
-        { new: true }
-      );
-      await ProductModel.findOneAndUpdate(
-        { _id: item.productId, isCrossSale: true },
-        {
-          $inc: { crossSaleOrdered: -item.qty },
-        },
+      await OrderItemModel.findByIdAndUpdate(
+        orderId,
+        { $set: { status: OrderStatus.CANCELED, note } },
         { new: true }
       );
     }

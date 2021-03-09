@@ -26,7 +26,7 @@ const doBusiness = async () => {
     $or: [{ customerId: { $exists: false } }, { customerId: null }],
   }).limit(1000);
 
-  console.log('collaborators',collaborators);
+  // console.log('collaborators',collaborators);
 
   const collaboratorPhones = collaborators.map((col) => col.phone);
 

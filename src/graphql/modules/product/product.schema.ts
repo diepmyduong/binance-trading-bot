@@ -118,12 +118,14 @@ const schema = gql`
     intro: String
     "Hình ảnh đại diện"
     image: String
-    "Hoa hồng Mobifone"
+    "Hoa hồng VNPOST"
     commission0: Float
     "Hoa hồng điểm bán"
     commission1: Float
-    "Hoa hồng giới thiệu"
+    "Hoa hồng cộng tác viên"
     commission2: Float
+    "Hoa hồng kho"
+    commission3: Float
     "Hoa hồng CHO ĐIỂM BÁN"
     baseCommission: Float
     "Thưởng cho điểm bán"

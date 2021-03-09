@@ -19,7 +19,7 @@ const approveOrder = async (root: any, args: any, context: Context) => {
 
   let params: any = {
     _id: id,
-    status: {$in:[OrderStatus.PENDING , OrderStatus.DELIVERING ]},
+    // status: {$in:[OrderStatus.PENDING , OrderStatus.DELIVERING ]},
   };
 
   if (context.isMember()) {

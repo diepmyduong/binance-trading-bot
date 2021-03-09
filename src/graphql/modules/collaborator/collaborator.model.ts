@@ -9,6 +9,7 @@ export type ICollaborator = BaseDocument & {
   name?: string; // Tên cộng tác viên
   phone?: string; // Số điện thoại
   memberId: string; // Chủ shop
+  customerId: string; // khách hàng
 };
 
 const collaboratorSchema = new Schema(
@@ -17,6 +18,7 @@ const collaboratorSchema = new Schema(
     name: { type: String, required: true },
     phone: { type: String, required: true },
     memberId: { type: Schema.Types.ObjectId, ref: "Member" },
+    customerId : { type: Schema.Types.ObjectId, ref: "Customer" },
   },
   { timestamps: true }
 );

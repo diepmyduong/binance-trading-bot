@@ -20,7 +20,12 @@ import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { UserModel } from "../graphql/modules/user/user.model";
 import { ErrorHelper } from "../helpers/error.helper";
 import { onSendChatBotText } from "./onSendToChatbot.event";
-import { IOrder, OrderModel, OrderStatus, PaymentMethod } from "../graphql/modules/order/order.model";
+import {
+  IOrder,
+  OrderModel,
+  OrderStatus,
+  PaymentMethod,
+} from "../graphql/modules/order/order.model";
 import {
   VietnamPostHelper,
   GetOrderStatus,
@@ -33,7 +38,7 @@ export const onDelivering = new Subject<IOrder>();
 
 // gửi thông báo cho khách hàng 3 tình trạng đơn hàng - đang giao - giao thành công - giao thất bại
 onDelivering.subscribe(async (order) => {
-  const { buyerId, fromMemberId, itemIds , deliveryInfo} = order;
+  const { buyerId, fromMemberId, itemIds, deliveryInfo } = order;
 
   // console.log("onDelivering order", order);
   const alert = await SettingHelper.load(
@@ -56,9 +61,7 @@ onDelivering.subscribe(async (order) => {
 
     // console.log('pageAccount',pageAccount);
     if (pageAccount) {
-      const status = GetOrderStatusByPostDeliveryStatus(
-        deliveryInfo.status
-      );
+      const status = GetOrderStatusByPostDeliveryStatus(deliveryInfo.status);
       // console.log("status", status);
       if (status === DeliveryStatus.DELIVERING) {
         SettingHelper.load(SettingKey.DELIVERY_PENDING_MSG_FOR_CUSTOMER).then(
@@ -172,22 +175,17 @@ onDelivering.subscribe(async (order) => {
 
 // chuyen trang thai COMPLETE hoac RETURNED
 onDelivering.subscribe(async (order) => {
-  const { deliveryInfo,paymentMethod } = order;
+  const { deliveryInfo, paymentMethod } = order;
 
-  if (deliveryInfo) {
-    const status = GetOrderStatus(deliveryInfo.status);
+  const status = GetOrderStatus(deliveryInfo.status);
 
-    if(status){
-      if ([OrderStatus.RETURNED].includes(status)) {
-        OrderModel.findByIdAndUpdate(order.id, {$set:{
-          status
-        }});
-      };
-      if(status === OrderStatus.COMPLETED){
-        OrderModel.findByIdAndUpdate(order.id, {$set:{
-          status
-        }});
-      }
-    }
+  console.log("status", status);
+
+  if (status) {
+    OrderModel.findByIdAndUpdate(order.id, {
+      $set: {
+        status,
+      },
+    },{new:true});
   }
 });

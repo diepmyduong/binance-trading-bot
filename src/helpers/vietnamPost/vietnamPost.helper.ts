@@ -158,7 +158,7 @@ export type ICreateDeliveryOrderResponse = {
   Width: number; //0,
   Length: number; //0,
   Height: number; //0,
-  ValueAddedServiceList: string; // "[{\"IDDichVuCongThem\":3,\"CuocDVCT\":15000.0},{\"IDDichVuCongThem\":1,\"CuocDVCT\":16500.0}]",
+  ValueAddedServiceList: string; // "[{"IDDichVuCongThem":3,"CuocDVCT":15000.0},{"IDDichVuCongThem":1,"CuocDVCT":16500.0}]",
   AddedServiceList: string;
   Opt: string;
   AcceptancePoscode: string;
@@ -392,6 +392,7 @@ export class VietnamPostHelper {
     )
       .then((res) => get(res, "data"))
       .catch((error) => {
+        console.log('=======================>error',error);
         throw error;
       });
     return result;
@@ -691,3 +692,17 @@ export type memberProps = {
   MaQuanHuyen: string;
   MaPhuongXa: string;
 };
+
+// const test = {
+//   "MaDichVu": "DONG_GIA",
+//   "MaTinhNhan": "70",
+//   "MaQuanNhan": "7100",
+//   "Dai": 10,
+//   "Rong": 10,
+//   "Cao": 10,
+//   "KhoiLuong": 100,
+//   "ThuCuocNguoiNhan": true,
+//   // LstDichVuCongThem: [
+//   //   { DichVuCongThemId: 3, TrongLuongQuyDoi: 0, SoTienTinhCuoc: "285000" },
+//   // ],
+// };

@@ -12,10 +12,11 @@ const schema = gql`
 
   extend type Mutation {
     createOrder(data: CreateOrderInput!): [Order]
-    approveOrder(id: ID!): Order
+    approveOrder(id: ID!, note:String): Order
     cancelOrder(id: ID!): Order
     generateDraftOrder(data: CreateDraftOrderInput!): DraftOrderData
     deliveryOrder(orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order
+    confirmOrder(id: ID!): Order
     generateDraftDeliveryOrder(data: CreateDraftDeliveryOrderInput!): DraftDeliveryOrderData
   }
 

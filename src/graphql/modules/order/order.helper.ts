@@ -91,7 +91,7 @@ export class OrderHelper {
   static orderProducts = async (data: any) => {
     const { items, sellerId } = data;
 
-    console.log('data',data);
+    // console.log('data',data);
 
     // kiểm tra danh sách
     const itemsLength = Object.keys(items).length;

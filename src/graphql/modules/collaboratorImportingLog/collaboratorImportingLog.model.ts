@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 
 export type ICollaboratorImportingLog = BaseDocument & {
   no: string;
+  code: string;
   name: string;
   phone: string;
   line: Number;
@@ -15,6 +16,7 @@ export type ICollaboratorImportingLog = BaseDocument & {
 const collaboratorImportingLogSchema = new Schema(
   {
     no: { type: String },
+    code: {type: String},
     name: { type: String },
     phone: { type: String },
     line: { type: Number },

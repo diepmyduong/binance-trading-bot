@@ -72,13 +72,13 @@ export function GetOrderStatusByPostDeliveryStatus(status: string) {
 // setting tu dong duyet
 // setting 
 
-export function GetOrderStatus(status: string , cod: boolean) {
+export function GetOrderStatus(status: string) {
   switch (true) {
     case ["20","70"].includes(status):
       return OrderStatus.DELIVERING;
     case ["120"].includes(status): // giao hàng thành công + có COD
       return OrderStatus.COMPLETED;
-    case ["100"].includes(status) && cod === false: // giao hang thanh cong khong co cod
+    case ["100"].includes(status): // giao hang thanh cong khong co cod
       return OrderStatus.COMPLETED; 
     case ["170"].includes(status): // phát hoàn cho người gửi thành công
       return OrderStatus.RETURNED;

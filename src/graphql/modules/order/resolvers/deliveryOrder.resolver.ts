@@ -1,6 +1,6 @@
 import { ROLES } from "../../../../constants/role.const";
 import { Context } from "../../../context";
-import { OrderModel, OrderStatus, ShipMethod , Pic} from "../order.model";
+import { OrderModel, OrderStatus, ShipMethod} from "../order.model";
 import { ErrorHelper } from "../../../../helpers/error.helper";
 import {
   VietnamPostHelper,

@@ -4,6 +4,7 @@ import { OrderStatus, PaymentMethod, ShipMethod } from "./order.model";
 const schema = gql`
   extend type Query {
     getAllOrder(q: QueryGetListInput): OrderPageData
+    getTransferedOrders(q: QueryGetListInput): OrderPageData
     getOneOrder(id: ID!): Order
     getAllDeliveryMethod: [DeliveryMethod]
     getAllPaymentMethod: [PaymentMethod]
@@ -16,7 +17,8 @@ const schema = gql`
     cancelOrder(id: ID!): Order
     generateDraftOrder(data: CreateDraftOrderInput!): DraftOrderData
     deliveryOrder(orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order
-    confirmOrder(id: ID!): Order
+    confirmOrder(id: ID!,note: String): Order
+    transferOrder(id:ID!, memberId: ID!, note: String): Order
     generateDraftDeliveryOrder(data: CreateDraftDeliveryOrderInput!): DraftDeliveryOrderData
   }
 

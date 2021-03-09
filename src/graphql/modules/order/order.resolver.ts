@@ -48,6 +48,16 @@ const Query = {
     const { id } = args;
     return await orderService.findOne({ _id: id });
   },
+
+  getTransferedOrders: async (root: any, args: any, context: Context) => {
+    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+
+    if (context.isMember()) {
+      set(args, "q.filter.toMemberId", context.id);
+    }
+    
+    return orderService.fetch(args.q);
+  },
 };
 
 const Mutation = {};

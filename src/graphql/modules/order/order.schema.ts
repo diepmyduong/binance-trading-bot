@@ -129,6 +129,8 @@ const schema = gql`
     commission1: Float
     "Hoa hồng giới thiệu"
     commission2: Float
+    "Hoa hồng kho"
+    commission3: Float
     "Khách hàng mua"
     buyerId: ID 
     "Tên khách hàng"
@@ -175,6 +177,8 @@ const schema = gql`
     collaborator: Collaborator
     "Là nội thành"
     isUrbanDelivery: Boolean
+    "Bưu cục được chuyển đơn"
+    toMemberId: ID
   }
 
   type OrderPageData {

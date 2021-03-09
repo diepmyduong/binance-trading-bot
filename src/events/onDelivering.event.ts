@@ -179,15 +179,17 @@ onDelivering.subscribe(async (order) => {
 
   const status = GetOrderStatus(deliveryInfo.status);
 
-  console.log("status", status);
-
-  await OrderModel.findByIdAndUpdate(
-    order.id,
-    {
-      $set: {
-        status,
+  // console.log("status", status);
+  if(status){
+    await OrderModel.findByIdAndUpdate(
+      order.id,
+      {
+        $set: {
+          status,
+        },
       },
-    },
-    { new: true }
-  );
+      { new: true }
+    );
+  }
+  
 });

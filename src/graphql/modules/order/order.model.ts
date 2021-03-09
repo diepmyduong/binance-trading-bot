@@ -11,7 +11,7 @@ export enum OrderStatus {
   PENDING = "PENDING", // Chờ xử lý
   CONFIRMED = "CONFIRMED", // Đã xác nhận
   DELIVERING = "DELIVERING", // Đang vận chuyển
-  COMPLETED = "COMPLETED", // Đã duyệt
+  COMPLETED = "COMPLETED", // Đã thành công
   CANCELED = "CANCELED", // Đã huỷ
   RETURNED = "RETURNED", // Đã hoàn hàng
 }
@@ -94,6 +94,7 @@ export type IOrder = BaseDocument & {
   campaignCode: string;
   collaboratorId: string;
   note: string;
+  toMemberId: string; // Bưu cục được chuyển đơn
 };
 
 const orderSchema = new Schema(
@@ -159,6 +160,8 @@ const orderSchema = new Schema(
     isUrbanDelivery: { type: Boolean, default: false },
     collaboratorId: { type: Schema.Types.ObjectId, ref: "Collaborator" },
     note: { type: Schema.Types.String },
+    // chuyển đơn cho member khác xử lý
+    toMemberId : { type: Schema.Types.ObjectId, ref: "Member" },
   },
   { timestamps: true }
 );

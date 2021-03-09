@@ -32,17 +32,7 @@ import { onSendChatBotText } from "./onSendToChatbot.event";
 import { AddressDeliveryModel } from "../graphql/modules/addressDelivery/addressDelivery.model";
 import { StoreHouseCommissionLogModel } from "../graphql/modules/storeHouseCommissionLog/storeHouseCommissionLog.model";
 
-//set lại type chứ ko bị đụng truncate thằng dòng dưới
-const { RECEIVE_FROM_ORDER: CUSTOMER_TYPE } = CustomerPointLogType;
 
-const { RECEIVE_FROM_ORDER: SELLER_TYPE } = CumulativePointLogType;
-
-const { RECEIVE_COMMISSION_0_FROM_ORDER } = CommissionMobifoneLogType;
-
-const {
-  RECEIVE_COMMISSION_1_FROM_ORDER,
-  RECEIVE_COMMISSION_2_FROM_ORDER,
-} = CommissionLogType;
 export const onConfirmedOrder = new Subject<IOrder>();
 
 // xac nhan don hang 

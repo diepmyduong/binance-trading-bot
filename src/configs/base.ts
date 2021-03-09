@@ -53,7 +53,7 @@ export default {
     printToken: process.env.VIETTEL_PRINT_TOKEN,
   },
   vietnamPost: {
-    host: "https://donhang.vnpost.vn/api/api/",
+    host: "https://donhang.vnpost.vn/api/api",
     token: process.env.VIETNAM_POST_TOKEN,
   },
 };

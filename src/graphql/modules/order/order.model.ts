@@ -9,6 +9,7 @@ const Schema = mongoose.Schema;
 
 export enum OrderStatus {
   PENDING = "PENDING", // Chờ xử lý
+  CONFIRMED = "CONFIRMED", // Đã xác nhận
   DELIVERING = "DELIVERING", // Đang vận chuyển
   COMPLETED = "COMPLETED", // Đã duyệt
   CANCELED = "CANCELED", // Đã huỷ

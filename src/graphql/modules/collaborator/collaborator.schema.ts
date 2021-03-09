@@ -24,11 +24,13 @@ const schema = gql`
   }
 
   input CreateCollaboratorInput {
+    code: String!
     name: String!
     phone: String!
   }
 
   input UpdateCollaboratorInput {
+    code: String
     name: String
     phone: String
   }
@@ -38,7 +40,9 @@ const schema = gql`
     createdAt: DateTime
     updatedAt: DateTime
     
-    "Tên khách hàng"
+    "Mã Cộng tác viên"
+    code: String
+    "Tên cộng tác viên"
     name: String
     "Số điện thoại" 
     phone: String

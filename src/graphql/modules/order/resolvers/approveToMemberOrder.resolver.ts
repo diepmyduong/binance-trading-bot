@@ -3,44 +3,34 @@ import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper, ErrorHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { OrderModel, IOrder, OrderStatus, ShipMethod } from "../order.model";
-import { onApprovedOrder } from "../../../../events/onApprovedOrder.event";
-import { ProductModel } from "../../product/product.model";
+import { onConfirmedOrder } from "../../../../events/onConfirmedOrder.event";
 import { OrderItemModel } from "../../orderItem/orderItem.model";
 
-/*
-
-    CONFIRMED => COMPLETED => Ghi chú lại
-    
-    RULE
-    phải là CONFIRMED
-    toMember sẽ xác nhận.
-*/
-
-const approveOrder = async (root: any, args: any, context: Context) => {
+//[Backend] Cung cấp API duyệt lịch sử đăng ký dịch vụ SMS
+const approveToMemberOrder = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  const { id, note, status } = args;
+  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+  const { id, note , status} = args;
 
   if (!id) throw ErrorHelper.requestDataInvalid("mã đơn hàng");
 
   let params: any = {
     _id: id,
-    status: {
-      $in: [
-        OrderStatus.CONFIRMED, // ko duyet khi don da ok
-        OrderStatus.DELIVERING, // ko duyet khi don that bai
-      ],
-    },
+    $in: [
+      OrderStatus.CONFIRMED, // ko duyet khi don da ok
+      OrderStatus.DELIVERING, // ko duyet khi don that bai
+    ],
   };
 
   if (context.isMember()) {
-    params.sellerId = context.id;
+    params.toMemberId = context.id;
   }
 
   const order = await OrderModel.findOne(params);
 
   if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
 
-  // giao hàng vnpost
+  // nhận hàng tại bưu cục
   if (order.shipMethod === ShipMethod.VNPOST) {
     if (order.status === OrderStatus.CONFIRMED) {
       throw ErrorHelper.somethingWentWrong(
@@ -64,12 +54,12 @@ const approveOrder = async (root: any, args: any, context: Context) => {
   }
 
   return await order.save().then(async (order) => {
-    onApprovedOrder.next(order);
+    // onApprovedOrder.next(order);
     return order;
   });
 };
 
 const Mutation = {
-  approveOrder,
+  approveToMemberOrder,
 };
 export default { Mutation };

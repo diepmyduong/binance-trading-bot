@@ -114,7 +114,9 @@ const Order = {
       case OrderStatus.DELIVERING:
         return `Đang giao hàng`;
       case OrderStatus.COMPLETED:
-        return `Đã giao`;
+        return `Hoàn tất`;
+      case OrderStatus.FAILURE:
+        return `Thất bại`
       case OrderStatus.CANCELED:
         return `Đã huỷ`;
       case OrderStatus.RETURNED:

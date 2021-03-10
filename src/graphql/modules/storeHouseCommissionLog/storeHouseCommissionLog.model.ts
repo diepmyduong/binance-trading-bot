@@ -11,8 +11,8 @@ export type IStoreHouseCommissionLog = BaseDocument & {
 
 const storeHouseCommissionLogSchema = new Schema(
   {
-    memberId: { type: Schema.Types.ObjectId, ref: "Member" },
     value: { type: Number, required: true },
+    memberId: { type: Schema.Types.ObjectId, ref: "Member" },
     orderId: { type: Schema.Types.ObjectId, ref: "Order" },
   },
   { timestamps: true }

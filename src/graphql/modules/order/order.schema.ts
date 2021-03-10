@@ -14,12 +14,13 @@ const schema = gql`
   extend type Mutation {
     createOrder(data: CreateOrderInput!): [Order]
     approveOrder(id: ID!, note:String): Order
-    cancelOrder(id: ID!): Order
+    cancelOrder(id: ID!, note: String): Order
     generateDraftOrder(data: CreateDraftOrderInput!): DraftOrderData
     deliveryOrder(orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order
     confirmOrder(id: ID!,note: String): Order
     transferOrder(id:ID!, memberId: ID!, note: String): Order
     generateDraftDeliveryOrder(data: CreateDraftDeliveryOrderInput!): DraftDeliveryOrderData
+    
   }
 
   type PaymentMethod{
@@ -181,7 +182,8 @@ const schema = gql`
     isUrbanDelivery: Boolean
     "Bưu cục được chuyển đơn"
     toMemberId: ID
-
+    "Ghi chú chuyển đơn"
+    toMemberNote: String
     addressStorehouse: AddressStorehouse
     addressDelivery: AddressDelivery
   }

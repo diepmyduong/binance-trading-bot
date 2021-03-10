@@ -65,7 +65,7 @@ const transferOrder = async (root: any, args: any, context: Context) => {
   }
 
   order.status = OrderStatus.PENDING;
-  order.note = note;
+  order.toMemberNote = note;
 
   return await order.save().then(async (order) => {
     // onConfirmedOrder.next(order);

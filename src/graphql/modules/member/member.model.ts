@@ -10,6 +10,7 @@ export enum Gender {
   OTHER = "other",
 }
 export enum MemberType {
+  POST = "POST",
   BRANCH = "BRANCH",
   SALE = "SALE",
   AGENCY = "AGENCY",

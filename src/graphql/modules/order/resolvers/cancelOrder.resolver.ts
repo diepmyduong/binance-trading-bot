@@ -35,19 +35,15 @@ const Mutation = {
     if (context.isCustomer()) {
       if (order.status !== OrderStatus.PENDING) {
         throw ErrorHelper.somethingWentWrong(
-          "Đơn hàng này đang trong quá trình vận chuyển. Quý khách vui lòng liên hệ chủ cửa hàng để được hướng dẫn. Xin cảm ơn."
+          "Đơn hàng này không hủy được. Quý khách vui lòng liên hệ chủ cửa hàng để được hướng dẫn. Xin cảm ơn."
         );
       }
     }
 
     if (context.isMember()) {
-      if (
-        order.status.toString() !== OrderStatus.PENDING &&
-        order.status.toString() !== OrderStatus.DELIVERING &&
-        order.status.toString() !== OrderStatus.RETURNED
-      ) {
+      if (order.status !== OrderStatus.PENDING) {
         throw ErrorHelper.somethingWentWrong(
-          "Đơn hàng này đã hủy hoặc đã hoàn tất."
+          "Đơn hàng này không hủy được."
         );
       }
     }

@@ -14,6 +14,7 @@ export enum OrderStatus {
   COMPLETED = "COMPLETED", // Đã thành công
   CANCELED = "CANCELED", // Đã huỷ
   RETURNED = "RETURNED", // Đã hoàn hàng
+  FAILURE = "FAILURE" // Thất bại
 }
 
 export enum PaymentMethod {

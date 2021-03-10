@@ -94,6 +94,7 @@ export type IOrder = BaseDocument & {
   campaignCode: string;
   collaboratorId: string;
   note: string;
+  toMemberNote: string;
   toMemberId: string; // Bưu cục được chuyển đơn
 };
 
@@ -160,6 +161,7 @@ const orderSchema = new Schema(
     isUrbanDelivery: { type: Boolean, default: false },
     collaboratorId: { type: Schema.Types.ObjectId, ref: "Collaborator" },
     note: { type: Schema.Types.String },
+    toMemberNote: { type: Schema.Types.String },
     // chuyển đơn cho member khác xử lý
     toMemberId : { type: Schema.Types.ObjectId, ref: "Member" },
   },

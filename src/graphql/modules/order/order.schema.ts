@@ -3,8 +3,11 @@ import { OrderStatus, PaymentMethod, ShipMethod } from "./order.model";
 
 const schema = gql`
   extend type Query {
+    #order thường
     getAllOrder(q: QueryGetListInput): OrderPageData
+    #order chuyển
     getTransferedOrders(q: QueryGetListInput): OrderPageData
+
     getOneOrder(id: ID!): Order
     getAllDeliveryMethod: [DeliveryMethod]
     getAllPaymentMethod: [PaymentMethod]
@@ -13,13 +16,22 @@ const schema = gql`
 
   extend type Mutation {
     createOrder(data: CreateOrderInput!): [Order]
-    approveOrder(id: ID!, note:String): Order
-    cancelOrder(id: ID!, note: String): Order
     generateDraftOrder(data: CreateDraftOrderInput!): DraftOrderData
-    deliveryOrder(orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order
-    confirmOrder(id: ID!,note: String): Order
     transferOrder(id:ID!, memberId: ID!, note: String): Order
     generateDraftDeliveryOrder(data: CreateDraftDeliveryOrderInput!): DraftDeliveryOrderData
+
+    cancelOrder(id: ID!, note: String): Order
+
+    #VNPOST
+    deliveryOrder(orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order
+
+    #A => A
+    confirmOrder(id: ID!, note: String): Order
+    approveOrder(id: ID!, note: String , status: String): Order
+
+    #A => B
+    confirmToMemberOrder(id: ID!, note: String): Order
+    approveToMemberOrder(id: ID!, note: String, status: String): Order
     
   }
 
@@ -122,7 +134,7 @@ const schema = gql`
     sellerId: ID 
     "Chủ shop bán chéo"
     fromMemberId: ID
-    "Trạng thái ${Object.values(OrderStatus)}"
+    "Trạng thái ${Object.values(OrderStatus).join('|')}"
     status: String
     "Người cập nhật"
     updatedByUserId: ID 

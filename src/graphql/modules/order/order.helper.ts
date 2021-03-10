@@ -12,7 +12,10 @@ import { CounterModel } from "../counter/counter.model";
 import { IProduct, ProductModel, ProductType } from "../product/product.model";
 import { IOrder, OrderModel, PaymentMethod, ShipMethod } from "./order.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
-import { AddressStorehouseModel } from "../addressStorehouse/addressStorehouse.model";
+import {
+  AddressStorehouseModel,
+  IAddressStorehouse,
+} from "../addressStorehouse/addressStorehouse.model";
 import { MemberModel } from "../member/member.model";
 import { CrossSaleModel } from "../crossSale/crossSale.model";
 import { SettingHelper } from "../setting/setting.helper";
@@ -387,87 +390,24 @@ export class OrderHelper {
 
       case ShipMethod.VNPOST:
 
-        // kiem tra đơn hàng trong nội thành ?
-        const defaultServiceCode = await SettingHelper.load(
-          SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
-        );
-
         let serviceCode = null;
 
         const urbanStores = storehouses.filter(
           (store) => store.provinceId === this.order.buyerProvinceId
         );
 
-        let serviceList = [];
-        for (const storehouse of storehouses) {
-          let MaTinhGui = storehouse.provinceId,
-            MaQuanGui = storehouse.districtId,
-            MaTinhNhan = this.order.buyerProvinceId,
-            MaQuanNhan = this.order.buyerDistrictId;
+        this.order.isUrbanDelivery = urbanStores.length > 0;
 
-          const codAmountEvaluation =
-            this.order.paymentMethod == PaymentMethod.COD
-              ? this.order.subtotal
-              : 0;
-
-          const productWeight = this.order.itemWeight;
-          const productLength = this.order.itemLength;
-          const productWidth = this.order.itemWidth;
-          const productHeight = this.order.itemHeight;
-
-          const LstDichVuCongThem = [];
-
-          this.order.paymentMethod == PaymentMethod.COD &&
-            LstDichVuCongThem.push({
-              DichVuCongThemId: 3,
-              TrongLuongQuyDoi: 0,
-              SoTienTinhCuoc: this.order.subtotal.toString(),
-            });
-          const data: ICalculateAllShipFeeRequest = {
-            MaDichVu: ServiceCode.BK,
-            MaTinhGui,
-            MaQuanGui,
-            MaTinhNhan,
-            MaQuanNhan,
-            Dai: productLength,
-            Rong: productWidth,
-            Cao: productHeight,
-            KhoiLuong: productWeight,
-            ThuCuocNguoiNhan: this.order.paymentMethod == PaymentMethod.COD,
-            LstDichVuCongThem,
-          };
-          // noi thanh 
-          
-          this.order.isUrbanDelivery = urbanStores.length > 0;
-          data.MaDichVu = defaultServiceCode;
-          serviceCode = defaultServiceCode;
-
-          const service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
-            data
-          );
-
-          // console.log('--------------------> service',service);
-
-          serviceList.push({
-            ...service,
-            storehouse,
-            codAmountEvaluation,
-            productWeight,
-            productLength,
-            productWidth,
-            productHeight,
-          });
-        }
-        // console.log("serviceList", serviceList);
-        serviceList = serviceList.sort(
-          (a, b) => a.TongCuocBaoGomDVCT - b.TongCuocBaoGomDVCT
+        const cheapestService = await calculateServiceByGoogle(
+          mainAddressStorehouseId,
+          this
         );
-        const cheapestService = serviceList[0];
+
         const cheapestShipFee = cheapestService.TongCuocBaoGomDVCT;
         // co thu tien hang ko ?
-        const cod = this.order.paymentMethod == PaymentMethod.COD;
+        // const cod = this.order.paymentMethod == PaymentMethod.COD;
 
-        this.order.shipfee = cod ? cheapestShipFee : 0;
+        this.order.shipfee = cheapestShipFee;
 
         this.order.addressStorehouseId = cheapestService.storehouse._id;
 
@@ -561,3 +501,209 @@ export class OrderHelper {
     return productBulk;
   }
 }
+
+const calculateServiceByStorehouses = async (
+  storehouses: [IAddressStorehouse],
+  orderHelper: OrderHelper
+) => {
+  const defaultServiceCode = await SettingHelper.load(
+    SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
+  );
+
+  // filter storehouse co the giao nhan
+
+  const getAvailableStorehouses = storehouses.filter(
+    (store) => store.provinceId
+  );
+
+  let serviceList = [];
+  for (const storehouse of getAvailableStorehouses) {
+    let MaTinhGui = storehouse.provinceId,
+      MaQuanGui = storehouse.districtId,
+      MaTinhNhan = orderHelper.order.buyerProvinceId,
+      MaQuanNhan = orderHelper.order.buyerDistrictId;
+
+    const codAmountEvaluation =
+      orderHelper.order.paymentMethod == PaymentMethod.COD
+        ? orderHelper.order.subtotal
+        : 0;
+
+    const productWeight = orderHelper.order.itemWeight;
+    const productLength = orderHelper.order.itemLength;
+    const productWidth = orderHelper.order.itemWidth;
+    const productHeight = orderHelper.order.itemHeight;
+
+    const LstDichVuCongThem = [];
+
+    orderHelper.order.paymentMethod == PaymentMethod.COD &&
+      LstDichVuCongThem.push({
+        DichVuCongThemId: 3,
+        TrongLuongQuyDoi: 0,
+        SoTienTinhCuoc: orderHelper.order.subtotal.toString(),
+      });
+    const data: ICalculateAllShipFeeRequest = {
+      MaDichVu: defaultServiceCode,
+      MaTinhGui,
+      MaQuanGui,
+      MaTinhNhan,
+      MaQuanNhan,
+      Dai: productLength,
+      Rong: productWidth,
+      Cao: productHeight,
+      KhoiLuong: productWeight,
+      ThuCuocNguoiNhan: orderHelper.order.paymentMethod == PaymentMethod.COD,
+      LstDichVuCongThem,
+    };
+    // noi thanh
+
+    const service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
+      data
+    );
+
+    // console.log('--------------------> service',service);
+
+    serviceList.push({
+      ...service,
+      storehouse,
+      codAmountEvaluation,
+      productWeight,
+      productLength,
+      productWidth,
+      productHeight,
+    });
+  }
+  // console.log("serviceList", serviceList);
+  serviceList = serviceList.sort(
+    (a, b) => a.TongCuocBaoGomDVCT - b.TongCuocBaoGomDVCT
+  );
+
+  return serviceList[0];
+};
+
+const calculateServiceByMainStorehouse = async (
+  mainStorehouseId: string,
+  orderHelper: OrderHelper
+) => {
+  const defaultServiceCode = await SettingHelper.load(
+    SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
+  );
+
+  const storehouse = await AddressStorehouseModel.findById(mainStorehouseId);
+
+  let MaTinhGui = storehouse.provinceId,
+    MaQuanGui = storehouse.districtId,
+    MaTinhNhan = orderHelper.order.buyerProvinceId,
+    MaQuanNhan = orderHelper.order.buyerDistrictId;
+
+  const codAmountEvaluation =
+    orderHelper.order.paymentMethod == PaymentMethod.COD
+      ? orderHelper.order.subtotal
+      : 0;
+
+  const productWeight = orderHelper.order.itemWeight;
+  const productLength = orderHelper.order.itemLength;
+  const productWidth = orderHelper.order.itemWidth;
+  const productHeight = orderHelper.order.itemHeight;
+
+  const LstDichVuCongThem = [];
+
+  orderHelper.order.paymentMethod == PaymentMethod.COD &&
+    LstDichVuCongThem.push({
+      DichVuCongThemId: 3,
+      TrongLuongQuyDoi: 0,
+      SoTienTinhCuoc: orderHelper.order.subtotal.toString(),
+    });
+  const data: ICalculateAllShipFeeRequest = {
+    MaDichVu: defaultServiceCode,
+    MaTinhGui,
+    MaQuanGui,
+    MaTinhNhan,
+    MaQuanNhan,
+    Dai: productLength,
+    Rong: productWidth,
+    Cao: productHeight,
+    KhoiLuong: productWeight,
+    ThuCuocNguoiNhan: orderHelper.order.paymentMethod == PaymentMethod.COD,
+    LstDichVuCongThem,
+  };
+  // noi thanh
+
+  const service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
+    data
+  );
+
+  return {
+    ...service,
+    storehouse,
+    codAmountEvaluation,
+    productWeight,
+    productLength,
+    productWidth,
+    productHeight,
+  };
+};
+
+
+const calculateServiceByGoogle = async (
+  mainStorehouseId: string,
+  orderHelper: OrderHelper
+) => {
+  const defaultServiceCode = await SettingHelper.load(
+    SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
+  );
+
+  const storehouse = await AddressStorehouseModel.findById(mainStorehouseId);
+
+  let MaTinhGui = storehouse.provinceId,
+    MaQuanGui = storehouse.districtId,
+    MaTinhNhan = orderHelper.order.buyerProvinceId,
+    MaQuanNhan = orderHelper.order.buyerDistrictId;
+
+  const codAmountEvaluation =
+    orderHelper.order.paymentMethod == PaymentMethod.COD
+      ? orderHelper.order.subtotal
+      : 0;
+
+  const productWeight = orderHelper.order.itemWeight;
+  const productLength = orderHelper.order.itemLength;
+  const productWidth = orderHelper.order.itemWidth;
+  const productHeight = orderHelper.order.itemHeight;
+
+  const LstDichVuCongThem = [];
+
+  orderHelper.order.paymentMethod == PaymentMethod.COD &&
+    LstDichVuCongThem.push({
+      DichVuCongThemId: 3,
+      TrongLuongQuyDoi: 0,
+      SoTienTinhCuoc: orderHelper.order.subtotal.toString(),
+    });
+  const data: ICalculateAllShipFeeRequest = {
+    MaDichVu: defaultServiceCode,
+    MaTinhGui,
+    MaQuanGui,
+    MaTinhNhan,
+    MaQuanNhan,
+    Dai: productLength,
+    Rong: productWidth,
+    Cao: productHeight,
+    KhoiLuong: productWeight,
+    ThuCuocNguoiNhan: orderHelper.order.paymentMethod == PaymentMethod.COD,
+    LstDichVuCongThem,
+  };
+  // noi thanh
+
+  const service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
+    data
+  );
+
+  return {
+    ...service,
+    storehouse,
+    codAmountEvaluation,
+    productWeight,
+    productLength,
+    productWidth,
+    productHeight,
+  };
+};
+

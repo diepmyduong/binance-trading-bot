@@ -11,10 +11,10 @@ import { OrderItemModel } from "../../orderItem/orderItem.model";
     
     RULE
     phải là PENDING
-    member đó xác nhận.
+    toMember sẽ xác nhận.
 */
 
-const confirmOrder = async (root: any, args: any, context: Context) => {
+const confirmToMemberOrder = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const { id } = args;
 
@@ -28,7 +28,7 @@ const confirmOrder = async (root: any, args: any, context: Context) => {
 
   // tạo params lấy ra đơn hàng của chủ shop đó
   if (context.isMember()) {
-    params.sellerId = context.id;
+    params.toMemberId = context.id;
   }
 
   // lấy ra danh sách như params
@@ -36,10 +36,10 @@ const confirmOrder = async (root: any, args: any, context: Context) => {
 
   if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
 
-  for (const o of order.itemIds) {
+  for (const orderItem of order.itemIds) {
     // Duyệt số lượng sao đó trừ inventory
-    const item = await OrderItemModel.findByIdAndUpdate(
-      o,
+    await OrderItemModel.findByIdAndUpdate(
+      orderItem,
       { $set: { status: OrderStatus.CONFIRMED } },
       { new: true }
     );
@@ -47,16 +47,13 @@ const confirmOrder = async (root: any, args: any, context: Context) => {
 
   order.status = OrderStatus.CONFIRMED;
 
-
-  return await order.save().then(
-    async (order) => {
-      onConfirmedOrder.next(order);
-      return order;
-    }
-  );
+  return await order.save().then(async (order) => {
+    // onConfirmedOrder.next(order);
+    return order;
+  });
 };
 
 const Mutation = {
-  confirmOrder,
+  confirmToMemberOrder,
 };
 export default { Mutation };

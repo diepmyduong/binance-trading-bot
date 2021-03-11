@@ -24,6 +24,7 @@ const schema = gql`
 
     #VNPOST
     deliveryOrder(orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order
+    deliveryToMemberOrder(orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order
 
     #A => A
     confirmOrder(id: ID!, note: String): Order
@@ -198,6 +199,8 @@ const schema = gql`
     toMemberNote: String
     addressStorehouse: AddressStorehouse
     addressDelivery: AddressDelivery
+    
+    toMember: Member
   }
 
   type OrderPageData {

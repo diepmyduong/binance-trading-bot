@@ -8,10 +8,10 @@ class OrderRoute extends BaseRoute {
   }
 
   customRouting() {
-    this.router.get("/export", [auth], this.route(this.exportToPDF));
+    this.router.get("/exportOrderToPdf", [auth], this.route(this.exportOrderToPdf));
   }
 
-  async exportToPDF(req: Request, res: Response) {
+  async exportOrderToPdf(req: Request, res: Response) {
   
   }
 }

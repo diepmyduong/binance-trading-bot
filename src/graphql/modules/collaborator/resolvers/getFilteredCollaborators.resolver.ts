@@ -12,7 +12,7 @@ const getFilteredCollaborators = async (
   args: any,
   context: Context
 ) => {
-  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR);
+  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const queryInput = args.q;
   let { fromDate, toDate, memberId } = queryInput.filter;
   let $gte = null,

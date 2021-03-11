@@ -62,11 +62,11 @@ class OrderRoute extends BaseRoute {
       params.sellerId = context.id;
     }
 
-    console.log("params", params);
+    // console.log("params", params);
 
     const order = await OrderModel.findOne(params);
 
-    console.log("order", order);
+    // console.log("order", order);
 
     if (!order) {
       throw ErrorHelper.requestDataInvalid("Tham số đầu vào không hợp lệ!");
@@ -137,7 +137,7 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
           },
           [
             {
-              text: "Đơn hàng",
+              text: "Phiếu xuất kho",
               color: "#333333",
               width: "*",
               fontSize: 28,
@@ -230,6 +230,25 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
             bold: true,
             color: "#333333",
             margin: [0, 20, 0, 5],
+            alignment: "left",
+          },
+        ],
+      },
+      {
+        columns: [
+          {
+            text: "Cửa hàng",
+            color: "#aaaaab",
+            bold: true,
+            fontSize: 14,
+            alignment: "left",
+            margin: [0, 0, 0, 5],
+          },
+          {
+            text: member.shopName,
+            bold: true,
+            color: "#333333",
+            margin: [0, 0, 0, 5],
             alignment: "left",
           },
         ],

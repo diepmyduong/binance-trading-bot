@@ -7,16 +7,24 @@ import { AddressDeliveryModel } from "./addressDelivery.model";
 const Query = {
   getShopAddressDelivery: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.CUSTOMER]);
+
+    const { provinceId, districtId, wardId } = args;
     // console.log("sellerId", context.sellerId);
     const member = await MemberModel.findById(context.sellerId);
 
     // console.log("member", member);
     if (!member) throw ErrorHelper.recoredNotFound("chủ shop");
 
-    const addresses = await AddressDeliveryModel.find({
+    const params: any = {
       _id: { $in: member.addressDeliveryIds },
-      activated: true
-    });
+      activated: true,
+    };
+
+    provinceId ? (params.provinceId = provinceId) : null;
+    districtId ? (params.districtId = districtId) : null;
+    wardId ? (params.wardId = wardId) : null;
+
+    const addresses = await AddressDeliveryModel.find(params);
 
     // console.log("address", addresses);
 

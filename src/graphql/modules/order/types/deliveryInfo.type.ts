@@ -23,7 +23,7 @@ export type DeliveryInfo = {
 
   receiverAddressType: AddressType; // Kiểu địa chỉ người nhận: 1 Nhà riêng, 2: Cơ quan Nếu không có thông tin thì để null
 
-  serviceName?: ServiceCode; //"BK"; // tên dịch vụ *
+  serviceName: ServiceCode; //"BK"; // tên dịch vụ *
 
   orderCode: string; // mã đơn hàng
   packageContent: string; //"Món hàng A + Món hàng B"; // nội dung hàng
@@ -37,7 +37,7 @@ export type DeliveryInfo = {
 
   isPackageViewable?: boolean; // cho xem hàng
 
-  pickupType?: PickupType; //1;
+  pickupType: PickupType; //1;
 
   orderAmountEvaluation: number; // giá trị đơn hàng tạm tính
 
@@ -88,7 +88,8 @@ export const DeliveryInfoSchema = new Schema({
   serviceName: {
     type: Schema.Types.String,
     enum: Object.values(ServiceCode),
-    required: true,
+    default: ServiceCode.DONG_GIA,
+    // required: true,
   }, //"BK"; // tên dịch vụ *
 
   orderCode: { type: Schema.Types.String }, // mã đơn hàng
@@ -106,7 +107,8 @@ export const DeliveryInfoSchema = new Schema({
   pickupType: {
     type: Schema.Types.Number,
     enum: Object.values(PickupType),
-    required: true,
+    default: PickupType.DROP_OFF,
+    // required: true,
   }, //1;
 
   orderAmountEvaluation: { type: Schema.Types.Number }, // giá trị đơn hàng tạm tính

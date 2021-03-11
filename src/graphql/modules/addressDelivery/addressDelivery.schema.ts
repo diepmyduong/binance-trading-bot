@@ -96,6 +96,9 @@ const schema = gql`
     ward: String
     "Hiệu lực"
     activated: Boolean
+
+    "Bưu cục"
+    member: Member
   }
 
   type AddressDeliveryPageData {

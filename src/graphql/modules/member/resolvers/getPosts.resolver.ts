@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { set } from "lodash";
 import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper } from "../../../../helpers";
@@ -10,6 +11,7 @@ const Query = {
     AuthHelper.acceptRoles(context, [ROLES.MEMBER]);
 
     set(args, "q.filter.type", MemberType.BRANCH);
+    set(args, "q.filter.id", { $ne: new ObjectId(context.id) });
     // set(args, "q.filter.type", MemberType.BRANCH);
 
     return memberService.fetch(args.q);

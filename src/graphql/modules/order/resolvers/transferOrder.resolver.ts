@@ -18,6 +18,9 @@ const transferOrder = async (root: any, args: any, context: Context) => {
   // params lấy ra danh sách pending
   let params: any = {
     _id: id,
+    $in: [
+      OrderStatus.PENDING, // ko duyet khi don da ok
+    ],
   };
 
   // tạo params lấy ra đơn hàng của chủ shop đó
@@ -30,29 +33,22 @@ const transferOrder = async (root: any, args: any, context: Context) => {
 
   if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
 
-  if (order.status === OrderStatus.DELIVERING) {
-    throw ErrorHelper.somethingWentWrong(
-      "Không thể chuyển đơn hàng này do trạng thái đơn hàng đang vận chuyển."
-    );
-  }
-
-  if (order.status === OrderStatus.COMPLETED) {
-    throw ErrorHelper.somethingWentWrong(
-      "Không thể chuyển đơn hàng này do trạng thái đơn hàng đã thành công."
-    );
-  }
-
-  if (order.status === OrderStatus.RETURNED) {
-    throw ErrorHelper.somethingWentWrong(
-      "Không thể chuyển đơn hàng này do trạng thái đơn hàng đã hoàn hàng thành công."
-    );
-  }
-
   const member = await MemberModel.findById(memberId);
 
   if (!member) {
     throw ErrorHelper.mgRecoredNotFound("bưu cục này.");
   }
+
+/*
+điểm nhận	code	`=> Bưu cục nào		`=> 
+				
+đến kho	code			
+				
+A => A	toMemberId = null			
+A => B	toMemberId = getMemberIdByAddressDeliveryCode()			
+
+*/
+
 
   order.toMemberId = member.id;
 

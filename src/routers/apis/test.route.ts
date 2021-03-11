@@ -25,6 +25,73 @@ class TestRoute extends BaseRoute {
   }
 
   async addAddressToShop(req: Request, res: Response) {
+    // console.log("aaaaaaaaaa ........");
+
+    const shops = await MemberModel.find({});
+
+    const addressDeliverys = await AddressDeliveryModel.find({});
+
+    const addressStorehouses = await AddressStorehouseModel.find({});
+
+    for (const shop of shops) {
+      const shopAddressDeliveryIds = addressDeliverys
+        .filter((addr) => addr.code !== shop.code)
+        .map((addr) => addr._id);
+
+      const filteredshopAddressStorehouse = addressStorehouses.find(
+        (addr) => addr.code === shop.code
+      );
+
+      const shopAddressStorehouseId = filteredshopAddressStorehouse
+        ? filteredshopAddressStorehouse.id
+        : null;
+
+      // console.log("shopAddressDeliveryIds", shopAddressDeliveryIds);
+      // console.log("shopAddressStorehouseId", shopAddressStorehouseId);
+
+      if (shopAddressStorehouseId) {
+        await MemberModel.findByIdAndUpdate(
+          shop.id,
+          {
+            addressStorehouseIds: [shopAddressStorehouseId],
+            // mainAddressStorehouseId: shopAddressStorehouseId,
+            addressDeliveryIds: shopAddressDeliveryIds,
+          },
+          { new: true }
+        );
+      }
+    }
+
+    res.sendStatus(200);
+  }
+
+  async addAddressStorehouseToShop(req: Request, res: Response) {
+    const shops = await MemberModel.find({});
+
+    const addressStorehouses = await AddressStorehouseModel.find({});
+
+    for (const shop of shops) {
+      const addressStorehouseIds = addressStorehouses
+        .filter(
+          (addr) =>
+            addr.code !== shop.mainAddressStorehouseId &&
+            !["60336471423465cf3b0f4dfa", "60336471423465cf3b0f4dfb"].includes(
+              addr.id
+            )
+        )
+        .map((store) => store.id);
+      await MemberModel.findByIdAndUpdate(
+        shop.id,
+        { addressStorehouseIds },
+        { new: true }
+      );
+    }
+
+    res.sendStatus(200);
+  }
+
+
+  async updateAddressByShop(req: Request, res: Response) {
     const members = await MemberModel.find({});
 
     for (const member of members) {

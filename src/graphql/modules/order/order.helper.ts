@@ -266,6 +266,7 @@ export class OrderHelper {
         commission0,
         commission1,
         commission2,
+        commission3,
         enabledMemberBonus,
         enabledCustomerBonus,
         memberBonusFactor,
@@ -288,6 +289,7 @@ export class OrderHelper {
         commission0,
         commission1,
         commission2,
+        commission3
       };
 
       const getPointFromPrice = (factor: any, price: any) =>

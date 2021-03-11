@@ -94,7 +94,7 @@ export enum SettingKey {
   DELIVERY_PENDING_MSG_FOR_MEMBER = "DELIVERY_PENDING_MSG_FOR_MEMBER",
   DELIVERY_ENABLED_DONG_GIA = "DELIVERY_ENABLED_DONG_GIA",
   POST_CREATE_ORDER_ALERT_ENABLED = "POST_CREATE_ORDER_ALERT_ENABLED",
-
+  DELIVERY_ENABLED_CONTACT = "DELIVERY_ENABLED_CONTACT",
 
   // { label: "Tự liên hệ", value: ShipMethod.NONE },
   // { label: "Nhận hàng tại chi nhánh", value: ShipMethod.POST },
@@ -129,8 +129,6 @@ export enum SettingKey {
 
   OVERVIEW_PRODUCT_COUNT_SERVICE_ENABLED = "OVERVIEW_PRODUCT_COUNT_SERVICE_ENABLED",
   OVERVIEW_PRODUCT_COUNT_SERVICE_TITLE = "OVERVIEW_PRODUCT_COUNT_SERVICE_TITLE",
-
-
 }
 
 export const SETTING_DATA = [
@@ -751,6 +749,15 @@ Link đăng ký:
         readOnly: false,
       },
       {
+        type: SettingType.boolean,
+        name: "Bật tự liên hệ",
+        key: SettingKey.DELIVERY_ENABLED_CONTACT,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
         type: SettingType.number,
         name: "Phí ship nhận hàng tại chi nhánh",
         key: SettingKey.DELIVERY_POST_FEE,
@@ -1158,24 +1165,24 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
         isPrivate: true,
         readOnly: false,
       },
-        {
-          type: SettingType.boolean,
-          name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - Dịch vụ - Bật tắt",
-          key: SettingKey.OVERVIEW_PRODUCT_COUNT_SERVICE_ENABLED,
-          value: true,
-          isActive: true,
-          isPrivate: true,
-          readOnly: false,
-        },
-        {
-          type: SettingType.string,
-          name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - Dịch vụ - Hiển thị",
-          key: SettingKey.OVERVIEW_PRODUCT_COUNT_SERVICE_TITLE,
-          value: "Dịch vụ khác",
-          isActive: true,
-          isPrivate: true,
-          readOnly: false,
-        },
+      {
+        type: SettingType.boolean,
+        name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - Dịch vụ - Bật tắt",
+        key: SettingKey.OVERVIEW_PRODUCT_COUNT_SERVICE_ENABLED,
+        value: true,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - Dịch vụ - Hiển thị",
+        key: SettingKey.OVERVIEW_PRODUCT_COUNT_SERVICE_TITLE,
+        value: "Dịch vụ khác",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
     ],
   },
 ];

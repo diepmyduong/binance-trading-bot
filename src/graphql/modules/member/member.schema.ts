@@ -70,6 +70,18 @@ const schema = gql`
     district: String
     "Phường/xã"
     ward: String
+    "Điểm nhận hàng bưu cục"
+    addressDelivery: AddressDelivery
+
+    "Danh sách mã điểm nhận hàng"
+    addressDeliveryIds: [ID]
+    addressDeliverys: [AddressDelivery]
+
+    "Danh sách mã kho"
+    addressStorehouseIds: [ID]
+    addressStorehouses: [AddressStorehouse]
+    mainAddressStorehouseId: ID
+    mainAddressStorehouse: AddressStorehouse
   }
 
   input CreateMemberInput {
@@ -200,6 +212,9 @@ const schema = gql`
     "Danh sách mã điểm nhận hàng"
     addressDeliveryIds: [ID]
     addressDeliverys: [AddressDelivery]
+
+    "Điểm nhận hàng bưu cục"
+    addressDelivery: AddressDelivery
   }
 
   type MemberPageData {

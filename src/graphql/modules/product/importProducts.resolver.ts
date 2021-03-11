@@ -18,7 +18,6 @@ const NAME = "Tên sản phẩm";
 const DESC = "Mô tả";
 const TYPE = "Loại sản phẩm";
 const CATEGORY = "Danh mục";
-
 const IMAGE = "Hình ảnh (đường link)";
 const PRICE = "Giá tiền";
 const LENGTH = "Chiều dài (cm)";
@@ -27,6 +26,7 @@ const HEIGHT = "Chiều cao (cm)";
 const WEIGHT = "Khối lượng (gr)";
 const COMMISSION_1 = "Hoa hồng cho người bán trực tiếp";
 const COMMISSION_2 = "Hoa hồng cho người giới thiệu";
+const COMMISSION_3 = "Hoa hồng kho";
 const LINE = "line";
 
 const HEADER_DATA = [
@@ -44,6 +44,7 @@ const HEADER_DATA = [
   WEIGHT,
   COMMISSION_1,
   COMMISSION_2,
+  COMMISSION_3,
 ];
 
 //[Backend] Cung cấp API import file excel chưa danh sách số điện thoại đăng ký dịch vụ cần duyệt
@@ -80,6 +81,7 @@ const importProducts = async (root: any, args: any, context: Context) => {
     const productWeight = excelRow[WEIGHT]; // Khối lượng (gr)
     const commission1 = excelRow[COMMISSION_1]; // Hoa hồng cho người bán trực tiếp
     const commission2 = excelRow[COMMISSION_2]; // Hoa hồng cho người giới thiệu
+    const commission3 = excelRow[COMMISSION_3]; // Hoa hồng cho người giới thiệu
 
     if (!code) {
       success = false;
@@ -117,12 +119,12 @@ const importProducts = async (root: any, args: any, context: Context) => {
       );
     }
 
-    if (!image) {
-      success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${IMAGE}]`).message
-      );
-    }
+    // if (!image) {
+    //   success = false;
+    //   errors.push(
+    //     ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${IMAGE}]`).message
+    //   );
+    // }
 
     if (!price) {
       success = false;
@@ -178,6 +180,10 @@ const importProducts = async (root: any, args: any, context: Context) => {
       );
     }
 
+    console.log("vào đây");
+
+    console.log("category", category);
+
     const categoryEnt = await CategoryModel.findOne({ name: category });
 
     const params = {
@@ -196,6 +202,7 @@ const importProducts = async (root: any, args: any, context: Context) => {
       productWeight,
       commission1,
       commission2,
+      commission3,
     };
 
     logList.push({ ...params, success, error: errors.join("\n") });
@@ -218,6 +225,7 @@ const importProducts = async (root: any, args: any, context: Context) => {
           commission0: 0, // Hoa hồng Mobifone
           commission1: params.commission1, // Hoa hồng điểm bán
           commission2: params.commission2, // Hoa hồng giới thiệu
+          commission3: params.commission3, // hoa hồng điểm bán
           // baseCommission: number; // Hoa hồng CHO ĐIỂM BÁN
           enabledMemberBonus: false, // Thưởng cho điểm bán
           enabledCustomerBonus: false, // Thưởng cho khách hàng
@@ -242,8 +250,55 @@ const importProducts = async (root: any, args: any, context: Context) => {
   // console.log("dataList", dataList);
   // console.log("logList", logList);
 
+  for (const data of dataList) {
+    const product = await ProductModel.findOne({ name: data.name });
+    if(product){
+      await ProductModel.findByIdAndUpdate(
+        product.id,
+        {
+          code: data.code,
+          name: data.name,
+          isPrimary: true,
+          isCrossSale: false,
+          crossSaleInventory: 0,
+          crossSaleOrdered: 0,
+          type: ProductType.RETAIL,
+          categoryId: data.categoryId,
+  
+          basePrice: data.basePrice, // Gía bán
+          subtitle: data.subtitle, // Mô tả ngắn
+          intro: data.intro, // Giới thiệu sản phẩm
+          commission0: 0, // Hoa hồng Mobifone
+          commission1: data.commission1, // Hoa hồng điểm bán
+          commission2: data.commission2, // Hoa hồng giới thiệu
+          commission3: data.commission3, // hoa hồng điểm bán
+          // baseCommission: number; // Hoa hồng CHO ĐIỂM BÁN
+          enabledMemberBonus: false, // Thưởng cho điểm bán
+          enabledCustomerBonus: false, // Thưởng cho khách hàng
+          // categoryId: string; // Danh mục sản phẩm
+          // smsSyntax: string; // Cú pháp SMS
+          // smsPhone: string; // SMS tới số điện thoại
+          priority: 99, // độ ưu tiên
+          allowSale: true, // Mở bán
+          // memberId: string; // Mã thành viên quản lý sản phẩm
+          // qty: 100
+          // outOfStock: boolean; //hết hàng
+  
+          width: data.width, // chiều rộng
+          length: data.length, // chiều dài
+          height: data.height, // chiều cao
+          weight: data.weight, // cân nặng
+        },
+        { new: true }
+      );
+    }
+    else{
+      ProductModel.insertMany(data);
+    }
+  }
+
   await Promise.all([
-    ProductModel.insertMany(dataList),
+    // ProductModel.insertMany(dataList),
     ProductImportingLogModel.insertMany(logList),
   ]);
 

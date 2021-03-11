@@ -1,9 +1,10 @@
 import { helpers } from "faker";
+import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../helpers";
 import { Context } from "../../context";
 import { AddressHelper } from "../address/address.helper";
-import { MemberModel } from "../member/member.model";
+import { MemberLoader, MemberModel } from "../member/member.model";
 import { AddressDeliveryHelper } from "./addressDelivery.helper";
 import {
   AddressDeliveryModel,
@@ -87,7 +88,11 @@ const Mutation = {
   },
 };
 
-const AddressDelivery = {};
+const AddressDelivery = {
+  member: async (root: IAddressDelivery, args: any, context: Context) => {
+    return await MemberModel.findOne({ code: root.code });
+  },
+};
 
 export default {
   Query,

@@ -11,7 +11,10 @@ import {
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
 import { AddressHelper } from "../address/address.helper";
-import { AddressDeliveryLoader } from "../addressDelivery/addressDelivery.model";
+import {
+  AddressDeliveryLoader,
+  AddressDeliveryModel,
+} from "../addressDelivery/addressDelivery.model";
 import { AddressStorehouseLoader } from "../addressStorehouse/addressStorehouse.model";
 import { BranchLoader } from "../branch/branch.model";
 import { PositionLoader } from "../position/position.model";
@@ -96,7 +99,10 @@ const Member = {
   branch: GraphQLHelper.loadById(BranchLoader, "branchId"),
   position: GraphQLHelper.loadById(PositionLoader, "positionId"),
   parents: GraphQLHelper.loadManyById(MemberLoader, "parentIds"),
-  mainAddressStorehouse: GraphQLHelper.loadById(AddressStorehouseLoader,"mainAddressStorehouseId"),
+  mainAddressStorehouse: GraphQLHelper.loadById(
+    AddressStorehouseLoader,
+    "mainAddressStorehouseId"
+  ),
   addressStorehouses: GraphQLHelper.loadManyById(
     AddressStorehouseLoader,
     "addressStorehouseIds"
@@ -105,6 +111,12 @@ const Member = {
     AddressDeliveryLoader,
     "addressDeliveryIds"
   ),
+
+  addressDelivery: async (root: IMember, args: any, context: Context) => {
+    console.log("member", root.code);
+    return await AddressDeliveryModel.findOne({ code: root.code });
+  },
+
   subscribers: async (root: IMember, args: any, context: Context) => {
     return new MemberHelper(root).getSubscribers();
   },
@@ -114,8 +126,27 @@ const Member = {
   },
 };
 
+const Shop = {
+  addressDelivery: async (root: IMember, args: any, context: Context) => {
+    return await AddressDeliveryModel.findOne({ code: root.code });
+  },
+  mainAddressStorehouse: GraphQLHelper.loadById(
+    AddressStorehouseLoader,
+    "mainAddressStorehouseId"
+  ),
+  addressStorehouses: GraphQLHelper.loadManyById(
+    AddressStorehouseLoader,
+    "addressStorehouseIds"
+  ),
+  addressDeliverys: GraphQLHelper.loadManyById(
+    AddressDeliveryLoader,
+    "addressDeliveryIds"
+  ),
+}
+
 export default {
   Query,
   Mutation,
   Member,
+  Shop
 };

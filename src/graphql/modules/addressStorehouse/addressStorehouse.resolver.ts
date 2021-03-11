@@ -89,7 +89,11 @@ const Mutation = {
   },
 };
 
-const AddressStorehouse = {};
+const AddressStorehouse = {
+  member: async (root: IAddressStorehouse, args: any, context: Context) => {
+    return await MemberModel.findOne({ code: root.code });
+  },
+};
 
 export default {
   Query,

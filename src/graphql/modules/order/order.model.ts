@@ -90,6 +90,7 @@ export type IOrder = BaseDocument & {
   paymentMethod?: PaymentMethod;
   productIds: string[];
   addressStorehouseId?: string; // Mã kho
+  oldAddressDeliveryId: string; // Mã điểm nhận
   addressDeliveryId: string; // Mã điểm nhận
   isUrbanDelivery: boolean;
   campaignCode: string;
@@ -158,6 +159,7 @@ const orderSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "AddressStorehouse",
     },
+    oldAddressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery" },
     addressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery" },
     isUrbanDelivery: { type: Boolean, default: false },
     collaboratorId: { type: Schema.Types.ObjectId, ref: "Collaborator" },

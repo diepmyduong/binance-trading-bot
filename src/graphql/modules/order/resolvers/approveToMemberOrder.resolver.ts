@@ -15,10 +15,12 @@ const approveToMemberOrder = async (root: any, args: any, context: Context) => {
 
   let params: any = {
     _id: id,
-    $in: [
-      OrderStatus.CONFIRMED, // ko duyet khi don da ok
-      OrderStatus.DELIVERING, // ko duyet khi don that bai
-    ],
+    status: {
+      $in: [
+        OrderStatus.CONFIRMED, // ko duyet khi don da ok
+        OrderStatus.DELIVERING, // ko duyet khi don that bai
+      ],
+    },
   };
 
   if (context.isMember()) {

@@ -14,6 +14,8 @@ import _, { reverse, sortBy } from "lodash";
 import numeral from "numeral";
 import path from "path";
 import { PrinterHelper } from "../../helpers/printerHelper";
+import { IOrder, OrderStatus } from "../../graphql/modules/order/order.model";
+import { OrderModel } from "../../graphql/modules/order/order.model";
 
 class OrderRoute extends BaseRoute {
   constructor() {
@@ -29,7 +31,7 @@ class OrderRoute extends BaseRoute {
     this.router.get(
       "/exportToMemberOrderToPdf",
       [auth],
-      this.route(this.exportOrderToPdf)
+      this.route(this.exportToMemberOrderToPdf)
     );
   }
 
@@ -39,516 +41,82 @@ class OrderRoute extends BaseRoute {
     context.auth([ROLES.MEMBER]);
     const orderId = req.query.orderId;
 
-    console.log("orderId", orderId);
+    // console.log("orderId", orderId);
 
-    
-    const pdfContent = await getPDFSample(null);
-    return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${"0003"}`);
+    let params: any = {
+      _id: orderId,
+      status: {
+        $in: [OrderStatus.CONFIRMED, OrderStatus.DELIVERING],
+      },
+    };
+
+    if (context.isMember()) {
+      params.sellerId = context.id;
+    }
+
+    console.log('params',params);
+
+    const order = await OrderModel.findOne(params);
+
+    console.log('order',order);
+
+    if (!order) {
+      throw ErrorHelper.requestDataInvalid("Tham số đầu vào không hợp lệ!");
+    }
+
+    await OrderModel.findByIdAndUpdate(
+      order.id,
+      { status: OrderStatus.DELIVERING },
+      { new: true }
+    );
+
+    const pdfContent = await getPDFSample(order);
+    return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${order.code}`);
   }
 
   async exportToMemberOrderToPdf(req: Request, res: Response) {
     const context = (req as any).context as Context;
-    
+    const orderId = req.query.orderId;
+
+    let params: any = {
+      _id: orderId,
+      status: {
+        $in: [OrderStatus.CONFIRMED, OrderStatus.DELIVERING],
+      },
+    };
+
+    if (context.isMember()) {
+      params.toMemberId = context.id;
+    }
+
+    const order = await OrderModel.findOne(params);
+
+    if (!order) {
+      throw ErrorHelper.requestDataInvalid("Tham số đầu vào không hợp lệ!");
+    }
+
+    await OrderModel.findByIdAndUpdate(
+      order.id,
+      { status: OrderStatus.DELIVERING },
+      { new: true }
+    );
     const pdfContent = await getPDFSample(null);
-    return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${"0003"}`);
+    return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${order.code}`);
   }
 }
 
 export default new OrderRoute().router;
 
-const getPDFSample  = async (data: any) => {
-  let dd ={
-    content: [
-      'First paragraph',
-      'Another paragraph, this time a little bit longer to make sure, this line will be divided into at least two lines'
-    ]   
-  }
-
-  return dd;
-}
-
-const getPDFContent = async (data: any) => {
+const getPDFSample = async (data: any) => {
   let dd = {
     content: [
-      {
-        table: {
-          widths: ["50%", "50%"],
-          body: [
-            [
-              {
-                image: path.join(
-                  __dirname,
-                  "../../../views/public/imagePDF/image001.png"
-                ),
-                alignment: "left",
-                width: 150,
-              },
-              {
-                image: path.join(
-                  __dirname,
-                  "../../../views/public/imagePDF/image007.png"
-                ),
-                alignment: "right",
-                width: 150,
-              },
-            ],
-          ],
-        },
-        fillColor: "#ffffff",
-        layout: "noBorders",
-      },
-      {
-        columns: [
-          {
-            stack: [
-              { text: "PROSOUND CENTER VIETNAM  CO. LTD.", bold: true },
-              { text: "730/16 Huỳnh Tấn Phát, P. Tân Phú, Quận 7" },
-              { text: "Tp. Hồ Chí Minh - Việt Nam" },
-              { text: "Tel: (028) 3662 0048  Email: info@prosoundcenter.vn" },
-            ],
-          },
-          {
-            stack: [
-              " ",
-              {
-                table: {
-                  widths: ["60%", "40%"],
-                  body: [
-                    [
-                      { text: "Số báo giá: ", alignment: "right" },
-                      {
-                        text: data.quotation.code || " ",
-                        alignment: "right",
-                        bold: true,
-                      },
-                    ],
-                    [
-                      { text: "Ngày: ", alignment: "right" },
-                      {
-                        text: data.quotation.createdDate || " ",
-                        alignment: "right",
-                        bold: true,
-                      },
-                    ],
-                  ],
-                },
-                fillColor: "#ffffff",
-                layout: "noBorders",
-              },
-            ],
-          },
-        ],
-      },
-      " ",
-      {
-        columns: [
-          {
-            width: "70%",
-            table: {
-              widths: ["100%"],
-              body: [
-                [
-                  {
-                    stack: [
-                      {
-                        text: `Khách hàng:  ${
-                          data.quotation.customerName || " "
-                        }`,
-                        bold: true,
-                      },
-                      {
-                        table: {
-                          body: [
-                            [
-                              { text: "Đơn vị:" },
-                              {
-                                text: data.quotation.customerCompanyName || " ",
-                                bold: true,
-                              },
-                            ],
-                          ],
-                        },
-                        layout: "noBorders",
-                      },
-                      {
-                        text: `Địa chỉ:  ${
-                          data.quotation.customerAddress || " "
-                        } `,
-                      },
-                      {
-                        text: `Tel:  ${data.quotation.customerPhone || " "}`,
-                      },
-                      {
-                        text: `Email:  ${data.quotation.customerEmail || " "}`,
-                      },
-                    ],
-                  },
-                ],
-              ],
-            },
-          },
-          {
-            table: {
-              widths: ["100%"],
-              body: [
-                [
-                  {
-                    stack: [
-                      {
-                        text: "TỔNG CỘNG",
-                        bold: true,
-                        alignment: "center",
-                        decoration: "underline",
-                      },
-                      { text: " " },
-                      {
-                        columns: [
-                          { text: "VND", alignment: "left" },
-                          {
-                            text: lintNum(data.quotation.amount),
-                            alignment: "right",
-                          },
-                        ],
-                        fontSize: 10,
-                        bold: true,
-                      },
-                      {
-                        text: "Giá đã bao gồm 10% VAT",
-                        alignment: "center",
-                        italics: true,
-                        fontSize: 7,
-                      },
-                      {
-                        text: "Có giá trị trong vòng 30 ngày",
-                        alignment: "center",
-                        italics: true,
-                        fontSize: 7,
-                      },
-                    ],
-                  },
-                ],
-              ],
-            },
-            fillColor: "#f2f2f2",
-          },
-        ],
-      },
-      " ",
-      {
-        table: {
-          widths: ["5%", "*", "15%", "14%", "10%", "5%", "12%", "12%"],
-          body: [
-            [
-              { text: "No.", alignment: "center" },
-              { text: "Thương hiệu ", alignment: "center" },
-              { text: "Model", alignment: "center" },
-              { text: "Nguồn gốc/ NSX", alignment: "center" },
-              { text: "ĐVT", alignment: "center" },
-              { text: "SL", alignment: "center" },
-              { text: "ĐƠN GIÁ", alignment: "center" },
-              { text: "THÀNH TIỀN", alignment: "center" },
-            ],
-            ...(await getTableContent(data)),
-          ],
-        },
-        fillColor: "#a6a6a6",
-        bold: true,
-        layout: {
-          hLineColor: function (i: any, node: any) {
-            return i === 0 || i === node.table.body.length
-              ? "#a6a6a6"
-              : "#a6a6a6";
-          },
-          vLineColor: function (i: any, node: any) {
-            return i === 0 || i === node.table.widths.length
-              ? "#a6a6a6"
-              : "#a6a6a6";
-          },
-        },
-      },
-      {
-        table: {
-          widths: ["70%", "30%"],
-          body: [
-            [
-              {
-                columns: [
-                  { width: "5%", text: "" },
-                  {
-                    width: "45%",
-                    stack: [
-                      { text: "ĐIỀU KIỆN THƯƠNG MẠI", bold: true },
-                      " ",
-                      { text: "Thời gian giao hàng:", bold: true },
-                      { text: " 7-20 ngày tính từ ngày đặt hàng" },
-                      " ",
-                      { text: "Phương thức thanh toán:", bold: true },
-                      { text: "+ Đặt cọc: 30% ngay sau khi ký hợp đồng" },
-                      { text: "+ Thanh toán: 40% sau khi nhận hàng" },
-                      { text: "+ Thanh toán: 30% sau khi bàn giao" },
-                    ],
-                  },
-                  {
-                    width: "45%",
-                    stack: [
-                      " ",
-                      " ",
-                      { text: "Bảo hành: ", bold: true },
-                      { text: "12 tháng theo tiêu chuẩn nhà sản xuất " },
-                    ],
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    stack:
-                      data.quotation.discount > 0
-                        ? [
-                            { text: "THÀNH TIỀN", bold: true },
-                            { text: " ", fontSize: 4 },
-                            { text: "Giảm giá" },
-                            { text: " ", fontSize: 4 },
-                            { text: "Còn lại", bold: true },
-                            { text: " ", fontSize: 4 },
-                            { text: "THUẾ VAT 10%" },
-                            { text: " ", fontSize: 4 },
-                            { text: "TỔNG CỘNG", bold: true },
-                          ]
-                        : [
-                            { text: "THÀNH TIỀN", bold: true },
-                            { text: " ", fontSize: 4 },
-                            { text: "THUẾ VAT 10%" },
-                            { text: " ", fontSize: 4 },
-                            { text: "TỔNG CỘNG", bold: true },
-                          ],
-                    alignment: "center",
-                  },
-                  {
-                    stack:
-                      data.quotation.discount > 0
-                        ? [
-                            {
-                              text: lintNum(data.quotation.subTotal) || 0,
-                              alignment: "right",
-                              bold: true,
-                            },
-                            { text: " ", fontSize: 4 },
-                            {
-                              text: `(${
-                                lintNum(data.quotation.discount) || 0
-                              })`,
-                              alignment: "right",
-                            },
-                            {
-                              text: "_______________________________",
-                              fontSize: 4,
-                              alignment: "right",
-                            },
-                            {
-                              text: lintNum(
-                                data.quotation.subTotal -
-                                  data.quotation.discount
-                              ),
-                              alignment: "right",
-                              bold: true,
-                            },
-                            { text: " ", fontSize: 4 },
-                            {
-                              text: lintNum(data.quotation.vatAmount) || 0,
-                              alignment: "right",
-                            },
-                            {
-                              text: "_______________________________",
-                              fontSize: 4,
-                              alignment: "right",
-                            },
-                            {
-                              text: lintNum(data.quotation.amount) || 0,
-                              alignment: "right",
-                              bold: true,
-                            },
-                          ]
-                        : [
-                            {
-                              text: lintNum(data.quotation.subTotal) || 0,
-                              alignment: "right",
-                              bold: true,
-                            },
-                            { text: " ", fontSize: 4 },
-                            {
-                              text: lintNum(data.quotation.vatAmount) || 0,
-                              alignment: "right",
-                            },
-                            {
-                              text: "_______________________________",
-                              fontSize: 4,
-                              alignment: "right",
-                            },
-                            {
-                              text: lintNum(data.quotation.amount) || 0,
-                              alignment: "right",
-                              bold: true,
-                            },
-                          ],
-                  },
-                ],
-                fillColor: "#bfbfbf",
-              },
-            ],
-          ],
-        },
-      },
-      { text: " " },
-      {
-        columns: [
-          {
-            width: "45%",
-            stack: [
-              { text: "XÁC NHẬN CỦA KHÁCH HÀNG", alignment: "center" },
-              {
-                table: { widths: ["*"], body: [[""], [""]] },
-                layout: {
-                  hLineWidth: function (i: any, node: any) {
-                    return i === 0 || i === node.table.body.length ? 0 : 1;
-                  },
-                  vLineWidth: function (i: any, node: any) {
-                    return 0;
-                  },
-                  paddingRight: function (i: any, node: any) {
-                    return i === node.table.widths.length - 1 ? 100 : 8;
-                  },
-                },
-              },
-            ],
-          },
-          {},
-          {
-            width: "50%",
-            stack: [
-              {
-                text: "PROSOUND CENTER VIETNAM CO. LTD.",
-                alignment: "center",
-              },
-              {
-                table: { widths: ["*"], body: [[""], [""]] },
-                layout: {
-                  hLineWidth: function (i: any, node: any) {
-                    return i === 0 || i === node.table.body.length ? 0 : 1;
-                  },
-                  vLineWidth: function (i: any, node: any) {
-                    return 0;
-                  },
-                  paddingRight: function (i: any, node: any) {
-                    return i === node.table.widths.length - 1 ? 100 : 8;
-                  },
-                },
-              },
-              {
-                text: "Người đại diện",
-                alignment: "center",
-                pageBreak: "after",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        table: {
-          widths: ["50%", "50%"],
-          body: [
-            [
-              {
-                image: path.join(
-                  __dirname,
-                  "../../../views/public/imagePDF/image001.png"
-                ),
-                alignment: "left",
-                width: 150,
-              },
-              {
-                image: path.join(
-                  __dirname,
-                  "../../../views/public/imagePDF/image011.png"
-                ),
-                alignment: "right",
-                width: 150,
-              },
-            ],
-          ],
-        },
-        fillColor: "#ffffff",
-        layout: "noBorders",
-      },
-      {
-        columns: [
-          {
-            stack: [
-              { text: "PROSOUND CENTER VIETNAM  CO. LTD.", bold: true },
-              { text: "730/16 Huỳnh Tấn Phát, P. Tân Phú, Quận 7" },
-              { text: "Tp. Hồ Chí Minh - Việt Nam" },
-              { text: "Tel: (028) 3662 0048  Email: info@prosoundcenter.vn" },
-            ],
-          },
-          {
-            stack: [
-              " ",
-              {
-                table: {
-                  widths: ["60%", "40%"],
-                  body: [
-                    [
-                      { text: "Số báo giá: ", alignment: "right" },
-                      {
-                        text: data.quotation.code || " ",
-                        alignment: "right",
-                        bold: true,
-                      },
-                    ],
-                    [
-                      { text: "Ngày: ", alignment: "right" },
-                      {
-                        text: data.quotation.createdDate || " ",
-                        alignment: "right",
-                        bold: true,
-                      },
-                    ],
-                  ],
-                },
-                fillColor: "#ffffff",
-                layout: "noBorders",
-              },
-            ],
-          },
-        ],
-      },
-      ...(await getBodyImage(data)),
+      "First paragraph",
+      "Another paragraph, this time a little bit longer to make sure, this line will be divided into at least two lines",
     ],
-    footer: function (currentPage: any, pageCount: any) {
-      return {
-        columns: [
-          {
-            text: "www.prosoundcenter.vn",
-            link: "http://www.prosoundcenter.vn/",
-            margin: [10],
-          },
-          {
-            text: `Trang ` + currentPage.toString() + "/" + pageCount,
-            margin: [0, 0, 10],
-            alignment: "right",
-          },
-        ],
-      };
-    },
-    styles: {
-      ...PrinterHelper.getStyles(),
-      total: { fillColor: "#3f3f3f", alignment: "right", color: "#ffffff" },
-    },
-    defaultStyle: { columnGap: 10, fontSize: 8, margin: [20, 20, 20, 20] },
   };
+
   return dd;
 };
-
 const lintNumber = async (value: any, style: any) => {
   return {
     text: `${value ? numeral(value).format("0,0") : " "}`,

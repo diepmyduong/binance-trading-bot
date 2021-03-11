@@ -5,12 +5,15 @@ import { getShipMethods, ShipMethod } from "../order.model";
 
 const Query = {
   getAllDeliveryMethod: async (root: any, args: any, context: Context) => {
-    const [enabledVNPost] = await SettingHelper.loadMany([
+    const [enabledVNPost, enabledContact] = await SettingHelper.loadMany([
       SettingKey.DELIVERY_ENABLED_VNPOST,
+      SettingKey.DELIVERY_ENABLED_CONTACT
     ]);
+
+
     const shipMethods = await getShipMethods();
     const results = [];
-    results.push(shipMethods.find((ship) => ship.value === ShipMethod.NONE));
+    enabledContact && results.push(shipMethods.find((ship) => ship.value === ShipMethod.NONE));
     results.push(shipMethods.find((ship) => ship.value === ShipMethod.POST));
     enabledVNPost &&
       results.push(

@@ -9,7 +9,6 @@ import { OrderItemModel } from "../../orderItem/orderItem.model";
 //[Backend] Cung cấp API duyệt lịch sử đăng ký dịch vụ SMS
 const approveToMemberOrder = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const { id, note , status} = args;
 
   if (!id) throw ErrorHelper.requestDataInvalid("mã đơn hàng");
@@ -45,6 +44,7 @@ const approveToMemberOrder = async (root: any, args: any, context: Context) => {
 
   order.status = status;
   order.note = note;
+  
   for (const orderItemId of order.itemIds) {
     await OrderItemModel.findByIdAndUpdate(
       orderItemId,

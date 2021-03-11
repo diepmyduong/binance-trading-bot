@@ -243,17 +243,17 @@ const importMembers = async (root: any, args: any, context: Context) => {
       );
     }
 
-    if (email) {
-      const member = await MemberModel.findOne({ code, username: email });
-      if (member) {
-        success = false;
-        errors.push(
-          ErrorHelper.requestDataInvalid(
-            `. Trùng dữ liệu cột [${CODE} - ${EMAIL}]`
-          ).message
-        );
-      }
-    }
+    // if (email) {
+    //   const member = await MemberModel.findOne({ code, username: email });
+    //   if (member) {
+    //     success = false;
+    //     errors.push(
+    //       ErrorHelper.requestDataInvalid(
+    //         `. Trùng dữ liệu cột [${CODE} - ${EMAIL}]`
+    //       ).message
+    //     );
+    //   }
+    // }
 
     let branchId = null;
     if (branchCode) {

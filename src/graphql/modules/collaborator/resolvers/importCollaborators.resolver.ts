@@ -72,6 +72,7 @@ const importCollaborators = async (root: any, args: any, context: Context) => {
     const params = {
       line,
       no,
+      code,
       name,
       phone,
       memberId: context.id,

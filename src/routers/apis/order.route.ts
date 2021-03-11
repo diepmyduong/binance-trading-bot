@@ -125,7 +125,7 @@ class OrderRoute extends BaseRoute {
 
 export default new OrderRoute().router;
 
-const getPDFOrder = async (data: any, addressDelivery: any, member: any) => {
+const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
   // console.log(data);
   var dd = {
     content: [
@@ -437,18 +437,82 @@ const getPDFOrder = async (data: any, addressDelivery: any, member: any) => {
       " ",
       {
         table: {
-          widths: ["5%", "40%", "30%", "30%", "30%"],
+          widths: ["5%", "40%", "10%", "20%", "20%"],
           body: [
             [
-              { text: "No.", alignment: "center" },
-              { text: "Model", alignment: "center" },
-              { text: "SL", alignment: "center" },
-              { text: "ĐƠN GIÁ", alignment: "center" },
-              { text: "THÀNH TIỀN", alignment: "center" },
+              { text: "STT", alignment: "center" },
+              { text: "Tên hàng", alignment: "center" },
+              { text: "Số lượng", alignment: "center" },
+              { text: "Đơn giá", alignment: "center" },
+              { text: "Thành tiền", alignment: "center" },
             ],
             ...(await getTableContent(data.itemIds)),
           ],
         },
+      },
+      "\n",
+      {
+        columns: [
+          {
+            text: "",
+            alignment: "left",
+            margin: [0, 0, 0, 5],
+          },
+          {
+            text: "Tiền hàng:",
+            bold: true,
+            fontSize: 14,
+            margin: [0, 0, 0, 5],
+            alignment: "center",
+          },
+          {
+            text: data.subtotal.toString() + " VND",
+            margin: [0, 0, 0, 5],
+            alignment: "right",
+          },
+        ],
+      },
+      {
+        columns: [
+          {
+            text: "",
+            alignment: "left",
+            margin: [0, 0, 0, 5],
+          },
+          {
+            text: "Phí giao hàng:",
+            bold: true,
+            fontSize: 14,
+            margin: [0, 0, 0, 5],
+            alignment: "center",
+          },
+          {
+            text: data.shipfee.toString() + " VND",
+            margin: [0, 0, 0, 5],
+            alignment: "right",
+          },
+        ],
+      },
+      {
+        columns: [
+          {
+            text: "",
+            alignment: "left",
+            margin: [0, 0, 0, 5],
+          },
+          {
+            text: "Tổng cộng:",
+            bold: true,
+            fontSize: 14,
+            margin: [0, 0, 0, 5],
+            alignment: "center",
+          },
+          {
+            text: data.subtotal.toString() + " VND",
+            margin: [0, 0, 0, 5],
+            alignment: "right",
+          },
+        ],
       },
       "\n",
       {
@@ -462,11 +526,13 @@ const getPDFOrder = async (data: any, addressDelivery: any, member: any) => {
           },
           {
             text: "Nhân viên giao",
+            bold: true,
             margin: [0, 0, 0, 5],
             alignment: "center",
           },
           {
             text: "Người nhận hàng",
+            bold: true,
             margin: [0, 0, 0, 5],
             alignment: "right",
           },

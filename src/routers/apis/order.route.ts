@@ -126,7 +126,322 @@ class OrderRoute extends BaseRoute {
 export default new OrderRoute().router;
 
 const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
-  // console.log(data);
+  const PHIEU_XUAT_KHO = {
+    text: "Phiếu xuất kho",
+    color: "#333333",
+    width: "*",
+    fontSize: 28,
+    bold: true,
+    alignment: "right",
+    margin: [0, 0, 0, 15],
+  };
+
+  const MA_DON = {
+    columns: [
+      {
+        text: "Mã đơn",
+        color: "#aaaaab",
+        bold: true,
+        width: "*",
+        fontSize: 12,
+        alignment: "right",
+      },
+      {
+        text: data.code,
+        bold: true,
+        color: "#333333",
+        fontSize: 12,
+        alignment: "right",
+        width: 100,
+      },
+    ],
+  };
+
+  const NGAY_TAO = {
+    columns: [
+      {
+        text: "Ngày tạo",
+        color: "#aaaaab",
+        bold: true,
+        width: "*",
+        fontSize: 12,
+        alignment: "right",
+      },
+      {
+        text: data.createdAt.toISOString().split(/T/)[0],
+        bold: true,
+        color: "#333333",
+        fontSize: 12,
+        alignment: "right",
+        width: 100,
+      },
+    ],
+  };
+  const TINH_TRANG = {
+    columns: [
+      {
+        text: "Status",
+        color: "#aaaaab",
+        bold: true,
+        fontSize: 12,
+        alignment: "right",
+        width: "*",
+      },
+      {
+        text: "PAID",
+        bold: true,
+        fontSize: 14,
+        alignment: "right",
+        color: "green",
+        width: 100,
+      },
+    ],
+  };
+  const KHACH_HANG = {
+    columns: [
+      {
+        text: "Khách hàng",
+        color: "#aaaaab",
+        bold: true,
+        fontSize: 14,
+        alignment: "left",
+        margin: [0, 20, 0, 5],
+      },
+      {
+        text: data.buyerName,
+        bold: true,
+        color: "#333333",
+        margin: [0, 20, 0, 5],
+        alignment: "left",
+      },
+    ],
+  };
+
+  const CUA_HANG = {
+    columns: [
+      {
+        text: "Bưu cục",
+        color: "#aaaaab",
+        bold: true,
+        fontSize: 14,
+        alignment: "left",
+        margin: [0, 0, 0, 5],
+      },
+      {
+        text: member.shopName,
+        bold: true,
+        color: "#333333",
+        margin: [0, 0, 0, 5],
+        alignment: "left",
+      },
+    ],
+  }
+
+  const DIA_CHI_CUA_HANG = {
+    columns: [
+      {
+        text: "Cửa hàng",
+        color: "#aaaaab",
+        bold: true,
+        fontSize: 14,
+        alignment: "left",
+        margin: [0, 0, 0, 5],
+      },
+      {
+        text: member.shopName,
+        bold: true,
+        color: "#333333",
+        margin: [0, 0, 0, 5],
+        alignment: "left",
+      },
+    ],
+  }
+
+  const LOAI_DON__DIEM_THUONG = [
+    {
+      columns: [
+        {
+          text: "Loại đơn",
+          bold: true,
+          color: "#333333",
+          margin: [0, 20, 0, 5],
+          alignment: "left",
+        },
+        {
+          text: "Điểm thưởng người bán",
+          bold: true,
+          color: "#333333",
+          margin: [0, 20, 0, 5],
+          alignment: "left",
+        },
+        {
+          text: "Điểm thưởng người mua",
+          bold: true,
+          color: "#333333",
+          margin: [0, 20, 0, 5],
+          alignment: "left",
+        },
+      ],
+    },
+    {
+      columns: [
+        {
+          text: "Đơn cửa hàng",
+          alignment: "left",
+        },
+        {
+          text: data.sellerBonusPoint.toString() + " VND",
+          alignment: "left",
+        },
+        {
+          text: data.buyerBonusPoint.toString() + " VND",
+          alignment: "left",
+        },
+      ],
+    }
+  ]
+
+  const HOA_HONG = [
+    {
+      columns: [
+        {
+          text: "Hoa hồng điểm bán",
+          bold: true,
+          color: "#333333",
+          margin: [0, 20, 0, 5],
+          alignment: "left",
+        },
+        {
+          text: "Hoa hồng cộng tác viên",
+          bold: true,
+          color: "#333333",
+          margin: [0, 20, 0, 5],
+          alignment: "left",
+        },
+        {
+          text: "Hoa hồng kho",
+          bold: true,
+          color: "#333333",
+          margin: [0, 20, 0, 5],
+          alignment: "left",
+        },
+      ],
+    },
+    {
+      columns: [
+        {
+          text: data.commission1.toString() + " VND",
+          alignment: "left",
+        },
+        {
+          text: data.commission2.toString() + " VND",
+          alignment: "left",
+        },
+        {
+          text: data.commission3.toString() + " VND",
+          alignment: "left",
+        },
+      ],
+    }
+  ];
+
+  const PHUONG_THUC_GIAO_HANG = [
+    {
+      columns: [
+        {
+          text: "Phương thức giao hàng",
+          bold: true,
+          color: "#333333",
+          margin: [0, 20, 0, 5],
+          alignment: "left",
+        },
+        {
+          text: "Mã vận đơn",
+          bold: true,
+          color: "#333333",
+          margin: [0, 20, 0, 5],
+          alignment: "left",
+        },
+      ],
+    },
+    {
+      columns: [
+        {
+          text:
+            ShipMethod.POST === data.shipMethod
+              ? "Nhận hàng tại địa chỉ"
+              : "Giao hàng tại địa chỉ",
+          alignment: "left",
+        },
+        {
+          text: data.deliveryInfo ? data.deliveryInfo.itemCode : "[Không có]",
+          alignment: "left",
+        },
+      ],
+    },
+  ];
+
+  const DIA_DIEM_NHAN = [
+    {
+      columns: [
+        {
+          text: "Tên điểm nhận",
+          bold: true,
+          color: "#333333",
+          margin: [0, 20, 0, 5],
+          alignment: "left",
+        },
+        {
+          text: "SĐT điểm nhận",
+          bold: true,
+          color: "#333333",
+          margin: [0, 20, 0, 5],
+          alignment: "left",
+        },
+        {
+          text: "Địa chỉ điểm nhận",
+          bold: true,
+          color: "#333333",
+          margin: [0, 20, 0, 5],
+          alignment: "left",
+        },
+      ],
+    },
+    {
+      columns: [
+        {
+          text: addressDelivery.name,
+          alignment: "left",
+        },
+        {
+          text: addressDelivery.phone,
+          alignment: "left",
+        },
+        {
+          text: addressDelivery.address,
+          alignment: "left",
+        },
+      ],
+    },
+  ];
+
+  const GHI_CHU = {
+    columns: [
+      {
+        text: "Ghi chú",
+        bold: true,
+        fontSize: 14,
+        alignment: "left",
+        margin: [0, 0, 0, 5],
+      },
+      {
+        text: "Không có",
+        margin: [0, 0, 0, 5],
+        alignment: "left",
+      },
+    ],
+  }
+
   var dd = {
     content: [
       {
@@ -136,315 +451,25 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
             width: 150,
           },
           [
-            {
-              text: "Phiếu xuất kho",
-              color: "#333333",
-              width: "*",
-              fontSize: 28,
-              bold: true,
-              alignment: "right",
-              margin: [0, 0, 0, 15],
-            },
+            PHIEU_XUAT_KHO,
             {
               stack: [
-                {
-                  columns: [
-                    {
-                      text: "Mã đơn",
-                      color: "#aaaaab",
-                      bold: true,
-                      width: "*",
-                      fontSize: 12,
-                      alignment: "right",
-                    },
-                    {
-                      text: data.code,
-                      bold: true,
-                      color: "#333333",
-                      fontSize: 12,
-                      alignment: "right",
-                      width: 100,
-                    },
-                  ],
-                },
-                {
-                  columns: [
-                    {
-                      text: "Ngày tạo",
-                      color: "#aaaaab",
-                      bold: true,
-                      width: "*",
-                      fontSize: 12,
-                      alignment: "right",
-                    },
-                    {
-                      text: data.createdAt
-                        .toISOString()
-                        .replace(/T/, " ") // replace T with a space
-                        .replace(/\..+/, ""),
-                      bold: true,
-                      color: "#333333",
-                      fontSize: 12,
-                      alignment: "right",
-                      width: 100,
-                    },
-                  ],
-                },
-                // {
-                //   columns: [
-                //     {
-                //       text: "Status",
-                //       color: "#aaaaab",
-                //       bold: true,
-                //       fontSize: 12,
-                //       alignment: "right",
-                //       width: "*",
-                //     },
-                //     {
-                //       text: "PAID",
-                //       bold: true,
-                //       fontSize: 14,
-                //       alignment: "right",
-                //       color: "green",
-                //       width: 100,
-                //     },
-                //   ],
-                // },
+                MA_DON,
+                NGAY_TAO,
+                // TINH_TRANG,
               ],
             },
           ],
         ],
       },
-      {
-        columns: [
-          {
-            text: "Khách hàng",
-            color: "#aaaaab",
-            bold: true,
-            fontSize: 14,
-            alignment: "left",
-            margin: [0, 20, 0, 5],
-          },
-          {
-            text: data.buyerName,
-            bold: true,
-            color: "#333333",
-            margin: [0, 20, 0, 5],
-            alignment: "left",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Cửa hàng",
-            color: "#aaaaab",
-            bold: true,
-            fontSize: 14,
-            alignment: "left",
-            margin: [0, 0, 0, 5],
-          },
-          {
-            text: member.shopName,
-            bold: true,
-            color: "#333333",
-            margin: [0, 0, 0, 5],
-            alignment: "left",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Cửa hàng",
-            color: "#aaaaab",
-            bold: true,
-            fontSize: 14,
-            alignment: "left",
-            margin: [0, 0, 0, 5],
-          },
-          {
-            text: member.shopName,
-            bold: true,
-            color: "#333333",
-            margin: [0, 0, 0, 5],
-            alignment: "left",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Loại đơn",
-            bold: true,
-            color: "#333333",
-            margin: [0, 20, 0, 5],
-            alignment: "left",
-          },
-          {
-            text: "Điểm thưởng người bán",
-            bold: true,
-            color: "#333333",
-            margin: [0, 20, 0, 5],
-            alignment: "left",
-          },
-          {
-            text: "Điểm thưởng người mua",
-            bold: true,
-            color: "#333333",
-            margin: [0, 20, 0, 5],
-            alignment: "left",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Đơn cửa hàng",
-            alignment: "left",
-          },
-          {
-            text: data.sellerBonusPoint.toString() + " VND",
-            alignment: "left",
-          },
-          {
-            text: data.buyerBonusPoint.toString() + " VND",
-            alignment: "left",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Hoa hồng điểm bán",
-            bold: true,
-            color: "#333333",
-            margin: [0, 20, 0, 5],
-            alignment: "left",
-          },
-          {
-            text: "Hoa hồng cộng tác viên",
-            bold: true,
-            color: "#333333",
-            margin: [0, 20, 0, 5],
-            alignment: "left",
-          },
-          {
-            text: "Hoa hồng kho",
-            bold: true,
-            color: "#333333",
-            margin: [0, 20, 0, 5],
-            alignment: "left",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: data.commission1.toString() + " VND",
-            alignment: "left",
-          },
-          {
-            text: data.commission2.toString() + " VND",
-            alignment: "left",
-          },
-          {
-            text: data.commission3.toString() + " VND",
-            alignment: "left",
-          },
-        ],
-      },
-
-      {
-        columns: [
-          {
-            text: "Phương thức giao hàng",
-            bold: true,
-            color: "#333333",
-            margin: [0, 20, 0, 5],
-            alignment: "left",
-          },
-          {
-            text: "Mã vận đơn",
-            bold: true,
-            color: "#333333",
-            margin: [0, 20, 0, 5],
-            alignment: "left",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text:
-              ShipMethod.POST === data.shipMethod
-                ? "Nhận hàng tại địa chỉ"
-                : "Giao hàng tại địa chỉ",
-            alignment: "left",
-          },
-          {
-            text: data.deliveryInfo ? data.deliveryInfo.itemCode : "[Không có]",
-            alignment: "left",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Tên điểm nhận",
-            bold: true,
-            color: "#333333",
-            margin: [0, 20, 0, 5],
-            alignment: "left",
-          },
-          {
-            text: "SĐT điểm nhận",
-            bold: true,
-            color: "#333333",
-            margin: [0, 20, 0, 5],
-            alignment: "left",
-          },
-          {
-            text: "Địa chỉ điểm nhận",
-            bold: true,
-            color: "#333333",
-            margin: [0, 20, 0, 5],
-            alignment: "left",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: addressDelivery.name,
-            alignment: "left",
-          },
-          {
-            text: addressDelivery.phone,
-            alignment: "left",
-          },
-          {
-            text: addressDelivery.address,
-            alignment: "left",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Ghi chú",
-            bold: true,
-            fontSize: 14,
-            alignment: "left",
-            margin: [0, 0, 0, 5],
-          },
-          {
-            text: "Không có",
-            margin: [0, 0, 0, 5],
-            alignment: "left",
-          },
-        ],
-      },
+      KHACH_HANG,
+      CUA_HANG,
+      // DIA_CHI_CUA_HANG,
+      ...LOAI_DON__DIEM_THUONG,
+      ...HOA_HONG,
+      ...PHUONG_THUC_GIAO_HANG,
+      ...DIA_DIEM_NHAN,
+      GHI_CHU,
       {
         width: "100%",
         alignment: "center",

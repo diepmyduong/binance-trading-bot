@@ -401,15 +401,20 @@ export class OrderHelper {
 
         this.order.isUrbanDelivery = urbanStores.length > 0;
 
-        const nearestLocation = await calculateServiceByStorehouses(
-          urbanStores,
-          this
-        );
+        // const nearestLocation = await calculateServiceByStorehouses(
+        //   urbanStores,
+        //   this
+        // );
 
-        const cheapestService = await calculateServiceByGoogle(
-          nearestLocation.storehouse._id,
+        // const cheapestService = await calculateServiceByGoogle(
+        //   nearestLocation.storehouse._id,
+        //   this
+        // );
+
+        const cheapestService = await calculateServiceByMainStorehouse(
+          member.mainAddressStorehouseId,
           this
-        );
+        )
 
         const cheapestShipFee = cheapestService.TongCuocBaoGomDVCT;
         // co thu tien hang ko ?
@@ -594,6 +599,8 @@ const calculateServiceByMainStorehouse = async (
 
   const storehouse = await AddressStorehouseModel.findById(mainStorehouseId);
 
+  console.log("-------------> ",orderHelper.order);
+
   let MaTinhGui = storehouse.provinceId,
     MaQuanGui = storehouse.districtId,
     MaTinhNhan = orderHelper.order.buyerProvinceId,
@@ -630,6 +637,8 @@ const calculateServiceByMainStorehouse = async (
     ThuCuocNguoiNhan: orderHelper.order.paymentMethod == PaymentMethod.COD,
     LstDichVuCongThem,
   };
+
+  console.log('data',data);
   // noi thanh
 
   const service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(

@@ -14,6 +14,8 @@ import _, { reverse, sortBy } from "lodash";
 import numeral from "numeral";
 import path from "path";
 import { PrinterHelper } from "../../helpers/printerHelper";
+import { OrderStatus } from "../../graphql/modules/order/order.model";
+import { OrderModel } from "../../graphql/modules/order/order.model";
 
 class OrderRoute extends BaseRoute {
   constructor() {
@@ -39,18 +41,59 @@ class OrderRoute extends BaseRoute {
     context.auth([ROLES.MEMBER]);
     const orderId = req.query.orderId;
 
-    console.log("orderId", orderId);
+    // console.log("orderId", orderId);
 
+    let params: any = {
+      _id: orderId,
+      status: {
+        $in: [
+          OrderStatus.CONFIRMED,
+        ],
+      },
+    };
+  
+    if (context.isMember()) {
+      params.sellerId = context.id;
+    }
+  
+    const order = await OrderModel.findOne(params);
+    
+    if(!order){
+      throw ErrorHelper.requestDataInvalid("Tham số đầu vào không hợp lệ!");
+    }
+
+    await OrderModel.findByIdAndUpdate(order.id,{ status: OrderStatus.DELIVERING }, {new:true});
     
     const pdfContent = await getPDFSample(null);
-    return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${"0003"}`);
+    return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${order.code}`);
   }
 
   async exportToMemberOrderToPdf(req: Request, res: Response) {
     const context = (req as any).context as Context;
+    const orderId = req.query.orderId;
     
+    let params: any = {
+      _id: orderId,
+      status: {
+        $in: [
+          OrderStatus.CONFIRMED,
+        ],
+      },
+    };
+  
+    if (context.isMember()) {
+      params.toMemberId = context.id;
+    }
+  
+    const order = await OrderModel.findOne(params);
+    
+    if(!order){
+      throw ErrorHelper.requestDataInvalid("Tham số đầu vào không hợp lệ!");
+    }
+
+    await OrderModel.findByIdAndUpdate(order.id,{ status: OrderStatus.DELIVERING }, {new:true});
     const pdfContent = await getPDFSample(null);
-    return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${"0003"}`);
+    return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${order.code}`);
   }
 }
 

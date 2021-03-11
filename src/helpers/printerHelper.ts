@@ -33,23 +33,23 @@ export class PrinterHelper {
             Roboto: {
                 normal: path.resolve(
                     __dirname,
-                    '../../../views/public/fonts/Roboto-Regular.ttf'
+                    '../../public/fonts/Roboto-Regular.ttf'
                 ),
                 bold: path.resolve(
                     __dirname,
-                    '../../../views/public/fonts/Roboto-Medium.ttf'
+                    '../../public/fonts/Roboto-Medium.ttf'
                 ),
                 italics: path.resolve(
                     __dirname,
-                    '../../../views/public/fonts/Roboto-Italic.ttf'
+                    '../../public/fonts/Roboto-Italic.ttf'
                 ),
                 bolditalics: path.resolve(
                     __dirname,
-                    '../../../views/public/fonts/Roboto-MediumItalic.ttf'
+                    '../../public/fonts/Roboto-MediumItalic.ttf'
                 ),
                 // timesNewRoman: path.resolve(
                 //     __dirname,
-                //     '../../../views/public/fonts/Times_New_Roman_Normal.ttf')
+                //     '../../public/fonts/Times_New_Roman_Normal.ttf')
             }
         });
         const pdfDoc = printer.createPdfKitDocument(pdfContent);

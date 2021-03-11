@@ -389,8 +389,9 @@ export class OrderHelper {
         break;
 
       case ShipMethod.VNPOST:
-
-        let serviceCode = null;
+        const defaultServiceCode = await SettingHelper.load(
+          SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
+        );
 
         const urbanStores = storehouses.filter(
           (store) => store.provinceId === this.order.buyerProvinceId
@@ -412,7 +413,7 @@ export class OrderHelper {
         this.order.addressStorehouseId = cheapestService.storehouse._id;
 
         const deliveryInfo: any = {
-          serviceName: serviceCode,
+          serviceName: defaultServiceCode,
           codAmountEvaluation: cheapestService.codAmountEvaluation,
           deliveryDateEvaluation: cheapestService.ThoiGianPhatDuKien,
           heightEvaluation: cheapestService.productHeight,

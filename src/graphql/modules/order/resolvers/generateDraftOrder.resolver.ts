@@ -71,6 +71,7 @@ const Mutation = {
     }
   },
 };
+
 const Order = {
   items: async (root: IOrder, args: any, context: OrderContext) => {
     if (context.isDraft) {
@@ -84,4 +85,5 @@ const Order = {
     }
   },
 };
+
 export default { Mutation, Order };

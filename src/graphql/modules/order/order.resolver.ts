@@ -66,7 +66,7 @@ const Order = {
   items: GraphQLHelper.loadManyById(OrderItemLoader, "itemIds"),
   seller: GraphQLHelper.loadById(MemberLoader, "sellerId"),
   fromMember: GraphQLHelper.loadById(MemberLoader, "fromMemberId"),
-  toMember: GraphQLHelper.loadById(MemberLoader, "toMember"),
+  toMember: GraphQLHelper.loadById(MemberLoader, "toMemberId"),
   updatedByUser: GraphQLHelper.loadById(UserLoader, "updatedByUserId"),
   buyer: GraphQLHelper.loadById(CustomerLoader, "buyerId"),
   collaborator: GraphQLHelper.loadById(CollaboratorLoader, "collaboratorId"),

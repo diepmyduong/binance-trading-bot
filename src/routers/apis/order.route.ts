@@ -41,17 +41,31 @@ class OrderRoute extends BaseRoute {
 
     console.log("orderId", orderId);
 
-    res.sendStatus(200);
+    
+    const pdfContent = await getPDFSample(null);
+    return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${"0003"}`);
   }
 
   async exportToMemberOrderToPdf(req: Request, res: Response) {
     const context = (req as any).context as Context;
-
-    res.sendStatus(200);
+    
+    const pdfContent = await getPDFSample(null);
+    return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${"0003"}`);
   }
 }
 
 export default new OrderRoute().router;
+
+const getPDFSample  = async (data: any) => {
+  let dd ={
+    content: [
+      'First paragraph',
+      'Another paragraph, this time a little bit longer to make sure, this line will be divided into at least two lines'
+    ]   
+  }
+
+  return dd;
+}
 
 const getPDFContent = async (data: any) => {
   let dd = {

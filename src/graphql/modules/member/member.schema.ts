@@ -85,6 +85,7 @@ const schema = gql`
   }
 
   input CreateMemberInput {
+    code: String!
     username: String!
     name: String!
     avatar: String

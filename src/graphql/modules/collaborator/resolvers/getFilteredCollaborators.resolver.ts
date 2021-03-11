@@ -1,5 +1,5 @@
 import { ObjectId } from "bson";
-import { set } from "lodash";
+import { set, groupBy } from "lodash";
 import { configs } from "../../../../configs";
 import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../../helpers";
@@ -74,12 +74,21 @@ const getFilteredCollaborators = async (
       },
     },
     {
+      $project: {
+        _id: 0,
+        memberIds: 1,
+        customerId: { $arrayElemAt: ["$customerIds", 0] },
+        total: 1,
+      },
+    },
+    {
       $limit,
     },
     {
       $skip,
     },
   ]);
+
 
   return {
     data: result,

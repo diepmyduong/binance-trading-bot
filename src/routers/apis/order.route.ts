@@ -14,8 +14,9 @@ import _, { reverse, sortBy } from "lodash";
 import numeral from "numeral";
 import path from "path";
 import { PrinterHelper } from "../../helpers/printerHelper";
-import { IOrder, OrderStatus } from "../../graphql/modules/order/order.model";
+import { getShipMethods, IOrder, OrderStatus, ShipMethod } from "../../graphql/modules/order/order.model";
 import { OrderModel } from "../../graphql/modules/order/order.model";
+import { OrderItemModel } from "../../graphql/modules/orderItem/orderItem.model";
 
 class OrderRoute extends BaseRoute {
   constructor() {
@@ -100,14 +101,14 @@ class OrderRoute extends BaseRoute {
       { status: OrderStatus.DELIVERING },
       { new: true }
     );
-    const pdfContent = await getPDFOrder(null);
+    const pdfContent = await getPDFOrder(order);
     return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${order.code}`);
   }
 }
 
 export default new OrderRoute().router;
 
-const getPDFOrder = async (data: any) => {
+const getPDFOrder = async (data: IOrder) => {
   var dd = {
     content: [
       {
@@ -140,7 +141,7 @@ const getPDFOrder = async (data: any) => {
                       alignment: "right",
                     },
                     {
-                      text: "{{order.id}}",
+                      text: data.code,
                       bold: true,
                       color: "#333333",
                       fontSize: 12,
@@ -160,7 +161,7 @@ const getPDFOrder = async (data: any) => {
                       alignment: "right",
                     },
                     {
-                      text: "June 01, 2016",
+                      text: data.createdAt,
                       bold: true,
                       color: "#333333",
                       fontSize: 12,
@@ -169,26 +170,26 @@ const getPDFOrder = async (data: any) => {
                     },
                   ],
                 },
-                {
-                  columns: [
-                    {
-                      text: "Status",
-                      color: "#aaaaab",
-                      bold: true,
-                      fontSize: 12,
-                      alignment: "right",
-                      width: "*",
-                    },
-                    {
-                      text: "PAID",
-                      bold: true,
-                      fontSize: 14,
-                      alignment: "right",
-                      color: "green",
-                      width: 100,
-                    },
-                  ],
-                },
+                // {
+                //   columns: [
+                //     {
+                //       text: "Status",
+                //       color: "#aaaaab",
+                //       bold: true,
+                //       fontSize: 12,
+                //       alignment: "right",
+                //       width: "*",
+                //     },
+                //     {
+                //       text: "PAID",
+                //       bold: true,
+                //       fontSize: 14,
+                //       alignment: "right",
+                //       color: "green",
+                //       width: 100,
+                //     },
+                //   ],
+                // },
               ],
             },
           ],
@@ -205,7 +206,7 @@ const getPDFOrder = async (data: any) => {
             margin: [0, 20, 0, 5],
           },
           {
-            text: "Lê Thanh Vương",
+            text: data.buyerName,
             bold: true,
             color: "#333333",
             margin: [0, 20, 0, 5],
@@ -224,7 +225,7 @@ const getPDFOrder = async (data: any) => {
             margin: [0, 0, 0, 5],
           },
           {
-            text: "Lê Thanh Vương",
+            text: data.sellerId,
             bold: true,
             color: "#333333",
             margin: [0, 0, 0, 5],
@@ -264,11 +265,11 @@ const getPDFOrder = async (data: any) => {
             alignment: "left",
           },
           {
-            text: "0",
+            text: data.sellerBonusPoint.toString() + "VND",
             alignment: "left",
           },
           {
-            text: "0",
+            text: data.buyerBonusPoint.toString() + "VND",
             alignment: "left",
           },
         ],
@@ -301,15 +302,15 @@ const getPDFOrder = async (data: any) => {
       {
         columns: [
           {
-            text: "7.782 VND",
+            text: data.commission1.toString() + "VND",
             alignment: "left",
           },
           {
-            text: "3.113 VND",
+            text: data.commission2.toString() + "VND",
             alignment: "left",
           },
           {
-            text: "0",
+            text: data.commission3.toString() + "VND",
             alignment: "left",
           },
         ],
@@ -331,27 +332,16 @@ const getPDFOrder = async (data: any) => {
             margin: [0, 20, 0, 5],
             alignment: "left",
           },
-          {
-            text: "Trạng thái vận đơn",
-            bold: true,
-            color: "#333333",
-            margin: [0, 20, 0, 5],
-            alignment: "left",
-          },
         ],
       },
       {
         columns: [
           {
-            text: "Nhận hàng tại bưu cục",
+            text: ShipMethod.POST === data.shipMethod ? "Nhận hàng tại địa chỉ" : "Giao hàng tại địa chỉ",
             alignment: "left",
           },
           {
-            text: "[Không có]",
-            alignment: "left",
-          },
-          {
-            text: "[Không có]",
+            text: data.deliveryInfo ? data.deliveryInfo.itemCode : "[Không có]" ,
             alignment: "left",
           },
         ],
@@ -422,208 +412,24 @@ const getPDFOrder = async (data: any) => {
         margin: [0, 10, 0, 10],
         fontSize: 15,
       },
-      // {
-      //   layout: {
-      //     defaultBorder: false,
-      //     hLineWidth: function (i: any, node: any) {
-      //       return 1;
-      //     },
-      //     vLineWidth: function (i: any, node: any) {
-      //       return 1;
-      //     },
-      //     hLineColor: function (i: any, node: any) {
-      //       if (i === 1 || i === 0) {
-      //         return "#bfdde8";
-      //       }
-      //       return "#eaeaea";
-      //     },
-      //     vLineColor: function (i: any, node: any) {
-      //       return "#eaeaea";
-      //     },
-      //     hLineStyle: (i: any, node: any): any => {
-      //       // if (i === 0 || i === node.table.body.length) {
-      //       return null;
-      //       //}
-      //     },
-      //     // vLineStyle: function (i:any, node: any) { return {dash: { length: 10, space: 4 }}; },
-      //     paddingLeft: function (i: any, node: any) {
-      //       return 10;
-      //     },
-      //     paddingRight: function (i: any, node: any) {
-      //       return 10;
-      //     },
-      //     paddingTop: function (i: any, node: any) {
-      //       return 2;
-      //     },
-      //     paddingBottom: function (i: any, node: any) {
-      //       return 2;
-      //     },
-      //     fillColor: (rowIndex: any, node: any, columnIndex: any): any => {
-      //       return "#fff";
-      //     },
-      //   },
-      //   table: {
-      //     headerRows: 1,
-      //     widths: ["*", 80],
-      //     body: [
-      //       [
-      //         {
-      //           text: "STT",
-      //           fillColor: "#eaf2f5",
-      //           border: [false, true, false, true],
-      //           margin: [0, 5, 0, 5],
-      //           textTransform: "uppercase",
-      //         },
-      //         {
-      //           text: "Sản phẩm",
-      //           fillColor: "#eaf2f5",
-      //           border: [false, true, false, true],
-      //           margin: [0, 5, 0, 5],
-      //           textTransform: "uppercase",
-      //         },
-      //         {
-      //           text: "Tổng giá",
-      //           border: [false, true, false, true],
-      //           alignment: "right",
-      //           fillColor: "#eaf2f5",
-      //           margin: [0, 5, 0, 5],
-      //           textTransform: "uppercase",
-      //         },
-      //       ],
-      //       [
-      //         {
-      //           text: "1",
-      //           border: [false, false, false, true],
-      //           margin: [0, 5, 0, 5],
-      //           alignment: "left",
-      //         },
-      //         {
-      //           text:
-      //             "Dầu ăn hướng dương hữu cơ Organic nhãn xanh Sloboda 1,8 Lít",
-      //           border: [false, false, false, true],
-      //           margin: [0, 5, 0, 5],
-      //           alignment: "left",
-      //         },
-      //         {
-      //           border: [false, false, false, true],
-      //           text: "$999.99",
-      //           fillColor: "#f5f5f5",
-      //           alignment: "right",
-      //           margin: [0, 5, 0, 5],
-      //         },
-      //       ],
-      //       [
-      //         {
-      //           text: "Item 2",
-      //           border: [false, false, false, true],
-      //           margin: [0, 5, 0, 5],
-      //           alignment: "left",
-      //         },
-      //         {
-      //           text: "$999.99",
-      //           border: [false, false, false, true],
-      //           fillColor: "#f5f5f5",
-      //           alignment: "right",
-      //           margin: [0, 5, 0, 5],
-      //         },
-      //       ],
-      //     ],
-      //   },
-      // },
-      // "\n",
-      // {
-      //   layout: {
-      //     defaultBorder: false,
-      //     hLineWidth: function (i: any, node: any) {
-      //       return 1;
-      //     },
-      //     vLineWidth: function (i: any, node: any) {
-      //       return 1;
-      //     },
-      //     hLineColor: function (i: any, node: any) {
-      //       return "#eaeaea";
-      //     },
-      //     vLineColor: function (i: any, node: any) {
-      //       return "#eaeaea";
-      //     },
-      //     hLineStyle:  (i: any, node: any):any => {
-      //       // if (i === 0 || i === node.table.body.length) {
-      //       return null;
-      //       //}
-      //     },
-      //     // vLineStyle: function (i:any, node: any) { return {dash: { length: 10, space: 4 }}; },
-      //     paddingLeft: function (i: any, node: any) {
-      //       return 10;
-      //     },
-      //     paddingRight: function (i: any, node: any) {
-      //       return 10;
-      //     },
-      //     paddingTop: function (i: any, node: any) {
-      //       return 3;
-      //     },
-      //     paddingBottom: function (i: any, node: any) {
-      //       return 3;
-      //     },
-      //     fillColor:  (rowIndex:any, node:any, columnIndex:any) => {
-      //       return "#fff";
-      //     },
-      //   },
-      //   table: {
-      //     headerRows: 1,
-      //     widths: ["*", "auto"],
-      //     body: [
-      //       [
-      //         {
-      //           text: "Payment Subtotal",
-      //           border: [false, true, false, true],
-      //           alignment: "right",
-      //           margin: [0, 5, 0, 5],
-      //         },
-      //         {
-      //           border: [false, true, false, true],
-      //           text: "$999.99",
-      //           alignment: "right",
-      //           fillColor: "#f5f5f5",
-      //           margin: [0, 5, 0, 5],
-      //         },
-      //       ],
-      //       [
-      //         {
-      //           text: "Payment Processing Fee",
-      //           border: [false, false, false, true],
-      //           alignment: "right",
-      //           margin: [0, 5, 0, 5],
-      //         },
-      //         {
-      //           text: "$999.99",
-      //           border: [false, false, false, true],
-      //           fillColor: "#f5f5f5",
-      //           alignment: "right",
-      //           margin: [0, 5, 0, 5],
-      //         },
-      //       ],
-      //       [
-      //         {
-      //           text: "Total Amount",
-      //           bold: true,
-      //           fontSize: 20,
-      //           alignment: "right",
-      //           border: [false, false, false, true],
-      //           margin: [0, 5, 0, 5],
-      //         },
-      //         {
-      //           text: "USD $999.99",
-      //           bold: true,
-      //           fontSize: 20,
-      //           alignment: "right",
-      //           border: [false, false, false, true],
-      //           fillColor: "#f5f5f5",
-      //           margin: [0, 5, 0, 5],
-      //         },
-      //       ],
-      //     ],
-      //   },
-      // },
+      " ",
+        {
+          table: {
+            widths: ["5%", "30%", "14%",  "12%", "12%"],
+            body: [
+              [
+                { text: "No.", alignment: "center" },
+                { text: "Model", alignment: "center" },
+                { text: "SL", alignment: "center" },
+                { text: "ĐƠN GIÁ", alignment: "center" },
+                { text: "THÀNH TIỀN", alignment: "center" },
+              ],
+              ...(await getTableContent(data.itemIds)),
+            ],
+          }
+      },
+      "\n",
+      
     ],
     styles: {
       notesTitle: {
@@ -653,169 +459,35 @@ const lintNum = async (value: any) => {
   return `${value ? numeral(value).format("0,0") : " "}`;
 };
 
-const getTableContent = async (data: any) => {
+const getTableContent = async (items: any) => {
+
+  const data = await OrderItemModel.find({ _id: {$in:items} });
+
+  console.log("data",data);
+
   const contents: any[] = [];
   const fcAcsii = 65;
-  for (let i = 0; i < data.categorys.length; i++) {
-    const category = data.categorys[i];
+  for (let pr = 0; pr < data.length; pr++) {
+    const product = data[pr];
     contents.push([
+      { text: pr + 1, alignment: "center", fillColor: "#d9d9d9" },
       {
-        text: String.fromCharCode(fcAcsii + i),
+        text: product.productName || " ",
         alignment: "center",
-        fillColor: "#ff6626",
+        fillColor: "#d9d9d9",
       },
       {
-        text: category.name || " ",
-        alignment: "left",
-        colSpan: 5,
-        fillColor: "#ff6626",
-      },
-      ..._.times(4, () => ""),
-      { text: "VNĐ", alignment: "right", fillColor: "#ff6626" },
-      {
-        text: lintNum(category.amount) || 0,
+        text: lintNum(product.basePrice) || 0,
         alignment: "right",
-        fillColor: "#ff6626",
+        fillColor: "#d9d9d9",
       },
-    ]);
-    const productsOfCategory = data.tables[category.id];
-    for (let pr = 0; pr < productsOfCategory.length; pr++) {
-      const product = productsOfCategory[pr];
-      contents.push([
-        { text: pr + 1, alignment: "center", fillColor: "#d9d9d9" },
-        {
-          text: _.get(product, "brand.name", " "),
-          alignment: "left",
-          fillColor: "#d9d9d9",
-        },
-        {
-          text: product.name || " ",
-          alignment: "center",
-          fillColor: "#d9d9d9",
-        },
-        {
-          text: product.madeIn || " ",
-          alignment: "center",
-          fillColor: "#d9d9d9",
-        },
-        {
-          text: product.unit || " ",
-          alignment: "center",
-          fillColor: "#d9d9d9",
-        },
-        { text: product.qty || 0, alignment: "center", fillColor: "#d9d9d9" },
-        {
-          text: lintNum(product.price) || 0,
-          alignment: "right",
-          fillColor: "#d9d9d9",
-        },
-        {
-          text: lintNum(product.amount) || 0,
-          alignment: "right",
-          fillColor: "#d9d9d9",
-        },
-      ]);
-      if (product.overview) {
-        contents.push([
-          { text: " ", alignment: "center", fillColor: "#ffffff" },
-          {
-            text: product.overview || " ",
-            alignment: "left",
-            colSpan: 7,
-            fillColor: "#ffffff",
-          },
-          ..._.times(6, () => ""),
-        ]);
+      { text: product.qty || 0, alignment: "center", fillColor: "#d9d9d9" },
+      {
+        text: lintNum(product.amount) || 0,
+        alignment: "right",
+        fillColor: "#d9d9d9",
       }
-    }
-  }
-  return contents;
-};
-
-const getBodyImage = async (data: any) => {
-  let contents: any[] = [];
-  for (const category of data.categorys) {
-    const productsOfCategory = data.tables[category.id];
-    for (let i = 0; i < productsOfCategory.length; i++) {
-      const product = productsOfCategory[i];
-      let spec: any[] = [];
-      if (product.specs)
-        for (let j = 0; j < product.specs.length; j++) {
-          let specification = product.specs[j];
-          spec.push([
-            { text: specification.label || " " },
-            { text: specification.value || " " },
-          ]);
-        }
-
-      // const dataImage = await imagedatauri.encodeFromURL(
-      //   product.thumb || "https://placehold.it/500"
-      // );
-      contents.push({ text: " " });
-      contents.push({
-        text: i + 1,
-        fontSize: 13,
-        alignment: "right",
-        bold: true,
-      });
-      contents.push({
-        table: {
-          widths: ["100%"],
-          body: [
-            [
-              {
-                columns: [
-                  {
-                    // stack: [
-                    //   { image: dataImage, width: 300, alignment: "center" },
-                    // ],
-                    width: "65%",
-                  },
-                  {
-                    stack: [
-                      {
-                        text: product.name,
-                        alignment: "left",
-                        color: "#fc5f20",
-                        bold: true,
-                        fontSize: 15,
-                      },
-                      {
-                        text: product.overview,
-                        alignment: "left",
-                        bold: true,
-                        italics: true,
-                      },
-                      " ",
-                      { text: "Thông số kỹ thuật", color: "#fc5f20" },
-                      {
-                        table: {
-                          widths: ["50%", "50%"],
-                          body: _.isEmpty(spec) ? [[]] : spec,
-                        },
-                        layout: {
-                          hLineColor: function (row: any, col: any, node: any) {
-                            return "#ffffff";
-                          },
-                          vLineColor: function (row: any, col: any, node: any) {
-                            return "#ffffff";
-                          },
-                          fillColor: function (row: any, col: any, node: any) {
-                            return row > 0 && row % 2 ? null : "#f3f4f5";
-                          },
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          ],
-          dontBreakRows: true,
-        },
-      });
-    }
-  }
-
+    ]);
+  };
   return contents;
 };

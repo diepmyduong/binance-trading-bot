@@ -6,6 +6,7 @@ import { addressService } from "./address.service";
 const Query = {
   getAllAddress: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR);
+    
     return addressService.fetch(args.q);
   },
   getOneAddress: async (root: any, args: any, context: Context) => {

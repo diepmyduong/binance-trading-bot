@@ -38,7 +38,7 @@ const approveToMemberOrder = async (root: any, args: any, context: Context) => {
     }
   }
 
-  if (![OrderStatus.COMPLETED, OrderStatus.CANCELED].includes(status)) {
+  if (![OrderStatus.COMPLETED, OrderStatus.FAILURE].includes(status)) {
     throw ErrorHelper.requestDataInvalid("Không có trạng thái này");
   }
 

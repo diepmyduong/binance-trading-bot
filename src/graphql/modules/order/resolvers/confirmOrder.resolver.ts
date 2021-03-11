@@ -16,7 +16,7 @@ import { OrderItemModel } from "../../orderItem/orderItem.model";
 
 const confirmOrder = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  const { id } = args;
+  const { id, note } = args;
 
   if (!id) throw ErrorHelper.requestDataInvalid("mã đơn hàng");
 
@@ -36,15 +36,16 @@ const confirmOrder = async (root: any, args: any, context: Context) => {
 
   if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
 
-  for (const o of order.itemIds) {
+  for (const orderItemId of order.itemIds) {
     // Duyệt số lượng sao đó trừ inventory
-    const item = await OrderItemModel.findByIdAndUpdate(
-      o,
+    await OrderItemModel.findByIdAndUpdate(
+      orderItemId,
       { $set: { status: OrderStatus.CONFIRMED } },
       { new: true }
     );
   }
 
+  note ? order.note = note : null;
   order.status = OrderStatus.CONFIRMED;
 
 

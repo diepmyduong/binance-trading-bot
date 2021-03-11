@@ -32,7 +32,7 @@ export default gql`
     receiverAddressType: Int
 
     "Mã Dịch vụ chuyển phát '${DeliveryServices.map(s=>`${s.code}-${s.name}`).join(' | ')}'"
-    serviceName: String!
+    serviceName: String
 
     "Mã hóa đơn liên quan"
     orderCode: String
@@ -41,7 +41,7 @@ export default gql`
     packageContent: String
 
     "Trọng lượng (gr)"
-    weightEvaluation: Int!
+    weightEvaluation: Int
     "Chiều rộng (cm)"
     widthEvaluation: Int
     "Chiều dài (cm)"
@@ -135,7 +135,7 @@ export default gql`
     receiverAddressType: Int
 
     "Mã Dịch vụ chuyển phát '${DeliveryServices.map(s=>`${s.code}-${s.name}`).join(' | ')}'"
-    serviceName: String!
+    serviceName: String
 
     "Mã hóa đơn liên quan"
     orderCode: String
@@ -159,7 +159,7 @@ export default gql`
     isPackageViewable: Boolean!
 
     "Hình thức thu gom '${PickupTypes.map(s=>`${s.code}-${s.name}`).join(' | ')}'"
-    pickupType: Int!
+    pickupType: Int
 
     "Giá trị đơn hàng tạm tính"
     orderAmountEvaluation: Float

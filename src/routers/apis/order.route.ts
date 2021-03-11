@@ -437,8 +437,7 @@ const getPDFOrder = async (data: any, addressDelivery: any, member: any) => {
       " ",
       {
         table: {
-          innerWidth: "100%",
-          widths: ["5%", "30%", "14%", "12%", "12%"],
+          widths: ["5%", "40%", "30%", "30%", "30%"],
           body: [
             [
               { text: "No.", alignment: "center" },
@@ -452,6 +451,27 @@ const getPDFOrder = async (data: any, addressDelivery: any, member: any) => {
         },
       },
       "\n",
+      {
+        columns: [
+          {
+            text: "Trưởng bưu cục",
+            bold: true,
+            fontSize: 14,
+            alignment: "left",
+            margin: [0, 0, 0, 5],
+          },
+          {
+            text: "Nhân viên giao",
+            margin: [0, 0, 0, 5],
+            alignment: "center",
+          },
+          {
+            text: "Người nhận hàng",
+            margin: [0, 0, 0, 5],
+            alignment: "right",
+          },
+        ],
+      },
     ],
     styles: {
       notesTitle: {

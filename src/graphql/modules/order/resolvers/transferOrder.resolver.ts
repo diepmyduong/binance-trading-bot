@@ -18,9 +18,11 @@ const transferOrder = async (root: any, args: any, context: Context) => {
   // params lấy ra danh sách pending
   let params: any = {
     _id: id,
-    $in: [
-      OrderStatus.PENDING, // ko duyet khi don da ok
-    ],
+    status: {
+      $in: [
+        OrderStatus.PENDING, // ko duyet khi don da ok
+      ],
+    },
   };
 
   // tạo params lấy ra đơn hàng của chủ shop đó
@@ -28,10 +30,13 @@ const transferOrder = async (root: any, args: any, context: Context) => {
     params.sellerId = context.id;
   }
 
+  // console.log("params", params);
   // lấy ra danh sách như params
   const order = await OrderModel.findOne(params);
 
   if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
+
+  // console.log("order", order);
 
   const member = await MemberModel.findById(memberId);
 
@@ -39,7 +44,7 @@ const transferOrder = async (root: any, args: any, context: Context) => {
     throw ErrorHelper.mgRecoredNotFound("bưu cục này.");
   }
 
-/*
+  /*
 điểm nhận	code	`=> Bưu cục nào		`=> 
 				
 đến kho	code			
@@ -48,7 +53,6 @@ A => A	toMemberId = null
 A => B	toMemberId = getMemberIdByAddressDeliveryCode()			
 
 */
-
 
   order.toMemberId = member.id;
 

@@ -399,8 +399,13 @@ export class OrderHelper {
 
         this.order.isUrbanDelivery = urbanStores.length > 0;
 
+        const nearestLocation = await calculateServiceByStorehouses(
+          urbanStores,
+          this
+        );
+
         const cheapestService = await calculateServiceByGoogle(
-          mainAddressStorehouseId,
+          nearestLocation.storehouse._id,
           this
         );
 
@@ -504,17 +509,13 @@ export class OrderHelper {
 }
 
 const calculateServiceByStorehouses = async (
-  storehouses: [IAddressStorehouse],
+  storehouses: any,
   orderHelper: OrderHelper
 ) => {
-  const defaultServiceCode = await SettingHelper.load(
-    SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
-  );
-
   // filter storehouse co the giao nhan
 
   const getAvailableStorehouses = storehouses.filter(
-    (store) => store.provinceId
+    (store: any) => store.provinceId
   );
 
   let serviceList = [];
@@ -543,7 +544,7 @@ const calculateServiceByStorehouses = async (
         SoTienTinhCuoc: orderHelper.order.subtotal.toString(),
       });
     const data: ICalculateAllShipFeeRequest = {
-      MaDichVu: defaultServiceCode,
+      MaDichVu: "BK",
       MaTinhGui,
       MaQuanGui,
       MaTinhNhan,
@@ -644,7 +645,6 @@ const calculateServiceByMainStorehouse = async (
   };
 };
 
-
 const calculateServiceByGoogle = async (
   mainStorehouseId: string,
   orderHelper: OrderHelper
@@ -707,4 +707,3 @@ const calculateServiceByGoogle = async (
     productHeight,
   };
 };
-

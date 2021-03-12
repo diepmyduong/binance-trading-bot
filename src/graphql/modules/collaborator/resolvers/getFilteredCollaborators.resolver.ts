@@ -74,14 +74,6 @@ const getFilteredCollaborators = async (
       },
     },
     {
-      $project: {
-        _id: 0,
-        memberIds: 1,
-        customerId: { $arrayElemAt: ["$customerIds", 0] },
-        total: 1,
-      },
-    },
-    {
       $limit,
     },
     {

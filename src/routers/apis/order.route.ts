@@ -381,7 +381,7 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
     },
   ];
 
-  const DIA_DIEM_NHAN = [
+  const DIA_DIEM_GIAO_NHAN = ShipMethod.POST === data.shipMethod ? [
     {
       columns: [
         {
@@ -419,6 +419,37 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
         },
         {
           text: addressDelivery.address,
+          alignment: "left",
+        },
+      ],
+    },
+  ]:[
+    {
+      columns: [
+        {
+          text: "Địa chỉ giao",
+          bold: true,
+          color: "#333333",
+          margin: [0, 20, 0, 5],
+          alignment: "left",
+        },
+        {
+          text: "SĐT khách hàng",
+          bold: true,
+          color: "#333333",
+          margin: [0, 20, 0, 5],
+          alignment: "left",
+        },
+      ],
+    },
+    {
+      columns: [
+        {
+          text: `${data.buyerAddress} - ${data.buyerWard} -  ${data.buyerDistrict} -  ${data.buyerProvince}`,
+          alignment: "left",
+        },
+        {
+          text: data.buyerPhone,
           alignment: "left",
         },
       ],
@@ -468,7 +499,7 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
       ...LOAI_DON__DIEM_THUONG,
       ...HOA_HONG,
       ...PHUONG_THUC_GIAO_HANG,
-      ...DIA_DIEM_NHAN,
+      ...DIA_DIEM_GIAO_NHAN,
       GHI_CHU,
       {
         width: "100%",

@@ -24,7 +24,7 @@ const schema = gql`
   }
 
   input CreateCollaboratorInput {
-    code: String!
+    code: String
     name: String!
     phone: String!
   }

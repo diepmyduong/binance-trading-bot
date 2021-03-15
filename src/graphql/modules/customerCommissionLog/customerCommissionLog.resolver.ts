@@ -37,9 +37,13 @@ const CustomerCommissionLog = {
   customer: GraphQLHelper.loadById(CustomerLoader, "customerId"),
 
   note: async (root: ICustomerCommissionLog, args: any, context: Context) => {
+
+    const order = await OrderLoader.load(root.orderId);
+    const member = await MemberLoader.load(order.sellerId);
+
     switch (root.type) {
       case CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER:
-        return "Nhận từ đơn hàng";
+        return `Nhận từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
       case CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_REGI_SERVICE:
         return "Nhận từ đăng ký dịch vụ";
       case CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_SMS:

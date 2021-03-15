@@ -10,10 +10,9 @@ import { CustomerModel } from "../customer/customer.model";
 const Query = {
   getAllCollaborator: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-
     if (context.isMember()) {
+      args.q.filter.memberId = context.id;
     }
-
     return collaboratorService.fetch(args.q);
   },
   getOneCollaborator: async (root: any, args: any, context: Context) => {
@@ -57,7 +56,7 @@ const Mutation = {
       throw ErrorHelper.duplicateError("Số điện thoại");
 
     data.memberId = context.id;
-    
+
     return await collaboratorService.updateOne(id, data);
   },
 
@@ -69,9 +68,9 @@ const Mutation = {
 };
 
 const Collaborator = {
-  member: GraphQLHelper.loadById(MemberLoader, 'memberId'),
+  member: GraphQLHelper.loadById(MemberLoader, "memberId"),
   customer: async (root: ICollaborator, args: any, context: Context) => {
-    return await CustomerModel.findOne({phone: root.phone});
+    return await CustomerModel.findOne({ phone: root.phone });
   },
 };
 

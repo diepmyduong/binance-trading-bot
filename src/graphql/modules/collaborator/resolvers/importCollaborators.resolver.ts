@@ -44,7 +44,6 @@ const importCollaborators = async (root: any, args: any, context: Context) => {
     const phone = excelRow[PHONE];
 
     if (!code) {
-      success = false;
       errors.push(
         ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${CODE}]`).message
       );

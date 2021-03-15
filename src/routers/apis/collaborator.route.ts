@@ -54,6 +54,8 @@ class CollaboratorRoute extends BaseRoute {
       [auth],
       this.route(this.exportCollaboratorsReport)
     );
+
+    this.router.get("/assignCollaborator", this.route(this.assignCollaborator));
   }
 
   async exportResultsToExcel(req: Request, res: Response) {
@@ -240,6 +242,16 @@ class CollaboratorRoute extends BaseRoute {
     });
 
     return UtilsHelper.responseExcel(res, workbook, RESULT_FILE_NAME);
+  }
+
+  async assignCollaborator(req: Request, res: Response) {
+    const context = (req as any).context as Context;
+    context.auth([ROLES.CUSTOMER]);
+    const customerId = context.id;
+
+    
+
+    return res.status(200).json({ success: true });
   }
 }
 

@@ -18,12 +18,23 @@ const collaboratorSchema = new Schema(
     name: { type: String, required: true },
     phone: { type: String, required: true },
     memberId: { type: Schema.Types.ObjectId, ref: "Member" },
-    customerId : { type: Schema.Types.ObjectId, ref: "Customer" },
+    customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
   },
   { timestamps: true }
 );
 
-// collaboratorSchema.index({ name: "text" }, { weights: { name: 2 } });
+collaboratorSchema.index(
+  {
+    name: "text",
+    phone: "text",
+  },
+  {
+    weights: {
+      name: 2,
+      phone: 1,
+    },
+  }
+);
 
 export const CollaboratorHook = new ModelHook<ICollaborator>(
   collaboratorSchema

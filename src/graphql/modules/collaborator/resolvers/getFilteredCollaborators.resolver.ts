@@ -1,5 +1,5 @@
 import { ObjectId } from "bson";
-import { set } from "lodash";
+import { set, groupBy } from "lodash";
 import { configs } from "../../../../configs";
 import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../../helpers";
@@ -12,7 +12,7 @@ const getFilteredCollaborators = async (
   args: any,
   context: Context
 ) => {
-  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR);
+  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const queryInput = args.q;
   let { fromDate, toDate, memberId } = queryInput.filter;
   let $gte = null,
@@ -80,6 +80,7 @@ const getFilteredCollaborators = async (
       $skip,
     },
   ]);
+
 
   return {
     data: result,

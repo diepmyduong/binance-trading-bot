@@ -16,7 +16,7 @@ class TestRoute extends BaseRoute {
   }
 
   customRouting() {
-    this.router.get("/", this.route(this.addAddressStorehouseToShop));
+    this.router.get("/", this.route(this.addAddressToShop));
   }
 
   async test(req: Request, res: Response) {
@@ -53,7 +53,7 @@ class TestRoute extends BaseRoute {
         await MemberModel.findByIdAndUpdate(
           shop.id,
           {
-            // addressStorehouseIds: [shopAddressStorehouseId],
+            addressStorehouseIds: [shopAddressStorehouseId],
             // mainAddressStorehouseId: shopAddressStorehouseId,
             addressDeliveryIds: shopAddressDeliveryIds,
           },
@@ -83,6 +83,43 @@ class TestRoute extends BaseRoute {
       await MemberModel.findByIdAndUpdate(
         shop.id,
         { addressStorehouseIds },
+        { new: true }
+      );
+    }
+
+    res.sendStatus(200);
+  }
+
+
+  async updateAddressByShop(req: Request, res: Response) {
+    const members = await MemberModel.find({});
+
+    for (const member of members) {
+      await AddressDeliveryModel.findOneAndUpdate(
+        { code: member.code },
+        {
+          province:member.province,
+          district:member.district,
+          ward:member.ward,
+          provinceId: member.provinceId,
+          districtId: member.districtId,
+          wardId: member.wardId,
+          email:member.username,
+        },
+        { new: true }
+      );
+
+      await AddressStorehouseModel.findOneAndUpdate(
+        { code: member.code },
+        {
+          province:member.province,
+          district:member.district,
+          ward:member.ward,
+          provinceId: member.provinceId,
+          districtId: member.districtId,
+          wardId: member.wardId,
+          email:member.username,
+        },
         { new: true }
       );
     }

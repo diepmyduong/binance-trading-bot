@@ -266,6 +266,7 @@ export class OrderHelper {
         commission0,
         commission1,
         commission2,
+        commission3,
         enabledMemberBonus,
         enabledCustomerBonus,
         memberBonusFactor,
@@ -288,6 +289,7 @@ export class OrderHelper {
         commission0,
         commission1,
         commission2,
+        commission3
       };
 
       const getPointFromPrice = (factor: any, price: any) =>
@@ -389,8 +391,9 @@ export class OrderHelper {
         break;
 
       case ShipMethod.VNPOST:
-
-        let serviceCode = null;
+        const defaultServiceCode = await SettingHelper.load(
+          SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
+        );
 
         const urbanStores = storehouses.filter(
           (store) => store.provinceId === this.order.buyerProvinceId
@@ -398,10 +401,20 @@ export class OrderHelper {
 
         this.order.isUrbanDelivery = urbanStores.length > 0;
 
-        const cheapestService = await calculateServiceByGoogle(
-          mainAddressStorehouseId,
+        // const nearestLocation = await calculateServiceByStorehouses(
+        //   urbanStores,
+        //   this
+        // );
+
+        // const cheapestService = await calculateServiceByGoogle(
+        //   nearestLocation.storehouse._id,
+        //   this
+        // );
+
+        const cheapestService = await calculateServiceByMainStorehouse(
+          member.mainAddressStorehouseId,
           this
-        );
+        )
 
         const cheapestShipFee = cheapestService.TongCuocBaoGomDVCT;
         // co thu tien hang ko ?
@@ -412,7 +425,7 @@ export class OrderHelper {
         this.order.addressStorehouseId = cheapestService.storehouse._id;
 
         const deliveryInfo: any = {
-          serviceName: serviceCode,
+          serviceName: defaultServiceCode,
           codAmountEvaluation: cheapestService.codAmountEvaluation,
           deliveryDateEvaluation: cheapestService.ThoiGianPhatDuKien,
           heightEvaluation: cheapestService.productHeight,
@@ -503,17 +516,13 @@ export class OrderHelper {
 }
 
 const calculateServiceByStorehouses = async (
-  storehouses: [IAddressStorehouse],
+  storehouses: any,
   orderHelper: OrderHelper
 ) => {
-  const defaultServiceCode = await SettingHelper.load(
-    SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
-  );
-
   // filter storehouse co the giao nhan
 
   const getAvailableStorehouses = storehouses.filter(
-    (store) => store.provinceId
+    (store: any) => store.provinceId
   );
 
   let serviceList = [];
@@ -542,7 +551,7 @@ const calculateServiceByStorehouses = async (
         SoTienTinhCuoc: orderHelper.order.subtotal.toString(),
       });
     const data: ICalculateAllShipFeeRequest = {
-      MaDichVu: defaultServiceCode,
+      MaDichVu: "BK",
       MaTinhGui,
       MaQuanGui,
       MaTinhNhan,
@@ -590,6 +599,8 @@ const calculateServiceByMainStorehouse = async (
 
   const storehouse = await AddressStorehouseModel.findById(mainStorehouseId);
 
+  console.log("-------------> ",orderHelper.order);
+
   let MaTinhGui = storehouse.provinceId,
     MaQuanGui = storehouse.districtId,
     MaTinhNhan = orderHelper.order.buyerProvinceId,
@@ -626,6 +637,8 @@ const calculateServiceByMainStorehouse = async (
     ThuCuocNguoiNhan: orderHelper.order.paymentMethod == PaymentMethod.COD,
     LstDichVuCongThem,
   };
+
+  console.log('data',data);
   // noi thanh
 
   const service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
@@ -642,7 +655,6 @@ const calculateServiceByMainStorehouse = async (
     productHeight,
   };
 };
-
 
 const calculateServiceByGoogle = async (
   mainStorehouseId: string,
@@ -706,4 +718,3 @@ const calculateServiceByGoogle = async (
     productHeight,
   };
 };
-

@@ -101,7 +101,7 @@ export type ICreateDeliveryOrderRequest = {
 
   ReceiverAddressType: AddressType; // Kiểu địa chỉ người nhận: 1 Nhà riêng, 2: Cơ quan Nếu không có thông tin thì để null
 
-  ServiceName?: ServiceCode; //"BK"; // tên dịch vụ *
+  ServiceName: ServiceCode; //"BK"; // tên dịch vụ *
 
   OrderCode: string; // mã đơn hàng
   PackageContent: string; //"Món hàng A + Món hàng B"; // nội dung hàng
@@ -376,7 +376,7 @@ export class VietnamPostHelper {
   }
 
   static calculateAllShipFee(
-    data: ICalculateAllShipFeeRequest
+    data: any
   ): ICalculateAllShipFeeRespone {
     //https://donhang.vnpost.vn/api/api/TinhCuoc/TinhTatCaCuoc
     // console.log('vao vnpost')

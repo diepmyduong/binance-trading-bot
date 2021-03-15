@@ -9,8 +9,6 @@ const Query = {
       SettingKey.DELIVERY_ENABLED_VNPOST,
       SettingKey.DELIVERY_ENABLED_CONTACT
     ]);
-
-
     const shipMethods = await getShipMethods();
     const results = [];
     enabledContact && results.push(shipMethods.find((ship) => ship.value === ShipMethod.NONE));

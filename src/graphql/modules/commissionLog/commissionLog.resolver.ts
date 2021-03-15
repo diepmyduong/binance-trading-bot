@@ -5,6 +5,7 @@ import { AuthHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
 import { MemberHelper } from "../member/member.helper";
+import { MemberLoader } from "../member/member.model";
 import { OrderLoader } from "../order/order.model";
 import { RegisServiceLoader } from "../regisService/regisService.model";
 import { RegisSMSLoader } from "../regisSMS/regisSMS.model";
@@ -28,9 +29,11 @@ const CommissionLog = {
   regisService: GraphQLHelper.loadById(RegisServiceLoader, "regisServiceId"),
 
   note: async (root: ICommissionLog, args: any, context: Context) => {
+    const order = await OrderLoader.load(root.orderId);
+    const member = await MemberLoader.load(order.sellerId);
     switch (root.type) {
       case CommissionLogType.RECEIVE_COMMISSION_1_FROM_ORDER:
-        return "Hoa hồng nhận từ đơn hàng dành cho Chủ shop";
+        return `Hoa hồng nhận dành cho chủ shop từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
 
       case CommissionLogType.RECEIVE_COMMISSION_1_FROM_REGI_SERVICE:
         return "Hoa hồng nhận từ dịch vụ đăng ký dành cho Chủ shop";

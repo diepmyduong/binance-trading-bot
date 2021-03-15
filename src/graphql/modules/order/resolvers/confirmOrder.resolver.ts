@@ -5,6 +5,8 @@ import { Context } from "../../../context";
 import { OrderModel, IOrder, OrderStatus, ShipMethod } from "../order.model";
 import { onConfirmedOrder } from "../../../../events/onConfirmedOrder.event";
 import { OrderItemModel } from "../../orderItem/orderItem.model";
+import { AddressDeliveryModel } from "../../addressDelivery/addressDelivery.model";
+import { MemberModel } from "../../member/member.model";
 
 /*
     PENDING => xác nhận => CONFIRMED
@@ -35,6 +37,27 @@ const confirmOrder = async (root: any, args: any, context: Context) => {
   const order = await OrderModel.findOne(params);
 
   if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
+  let addressDeliveryId = null;
+  if (order.addressDeliveryId) {
+    const temp = JSON.stringify({ id: order.addressDeliveryId.toString() });
+    addressDeliveryId = JSON.parse(temp).id;
+  }
+  // console.log('addressDeliveryId',addressDeliveryId);
+
+  const member = await MemberModel.findById(context.id);
+
+  if (order.shipMethod === ShipMethod.POST) {
+    if (addressDeliveryId) {
+      const addressDeliveryByCode = await AddressDeliveryModel.findOne({
+        code: member.code,
+      });
+
+      if (order.addressDeliveryId !== addressDeliveryByCode.id) {
+        (order.oldAddressDeliveryId = addressDeliveryId),
+          (order.addressDeliveryId = addressDeliveryByCode.id);
+      }
+    }
+  }
 
   for (const orderItemId of order.itemIds) {
     // Duyệt số lượng sao đó trừ inventory
@@ -45,16 +68,13 @@ const confirmOrder = async (root: any, args: any, context: Context) => {
     );
   }
 
-  note ? order.note = note : null;
+  note ? (order.note = note) : null;
   order.status = OrderStatus.CONFIRMED;
 
-
-  return await order.save().then(
-    async (order) => {
-      onConfirmedOrder.next(order);
-      return order;
-    }
-  );
+  return await order.save().then(async (order) => {
+    onConfirmedOrder.next(order);
+    return order;
+  });
 };
 
 const Mutation = {

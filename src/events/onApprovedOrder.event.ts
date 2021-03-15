@@ -313,8 +313,8 @@ onApprovedOrder.subscribe(async (order) => {
 
 // tinh hoa hồng kho
 onApprovedOrder.subscribe(async (order) => {
-  const { commission3, id, shipMethod , addressDeliveryId } = order;
-  if(shipMethod === ShipMethod.POST && commission3 > 0){
+  const { commission3, id , addressDeliveryId } = order;
+  if(commission3 > 0){
     const addressDelivery = await AddressDeliveryModel.findById(addressDeliveryId);
     const member = await MemberModel.findOne({code: addressDelivery.code})
     const commission = new StoreHouseCommissionLogModel({

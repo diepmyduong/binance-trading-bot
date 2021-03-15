@@ -5,7 +5,7 @@ import { Gender } from "../member/member.model";
 const Schema = mongoose.Schema;
 
 export type ICollaborator = BaseDocument & {
-  code?: string; // mã cộng tác viên
+  code: string; // mã cộng tác viên
   name?: string; // Tên cộng tác viên
   phone?: string; // Số điện thoại
   memberId: string; // Chủ shop
@@ -14,7 +14,7 @@ export type ICollaborator = BaseDocument & {
 
 const collaboratorSchema = new Schema(
   {
-    code: { type: String, required: true },
+    code: { type: String },
     name: { type: String, required: true },
     phone: { type: String, required: true },
     memberId: { type: Schema.Types.ObjectId, ref: "Member" },

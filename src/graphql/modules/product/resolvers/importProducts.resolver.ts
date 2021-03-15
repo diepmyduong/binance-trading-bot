@@ -1,16 +1,15 @@
-import csv from "csv-parser";
-import { ROLES } from "../../../constants/role.const";
-import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../helpers";
-import { Context } from "../../context";
+import { ROLES } from "../../../../constants/role.const";
+import { AuthHelper, ErrorHelper } from "../../../../helpers";
+import { Context } from "../../../context";
 import {
   getDataFromExcelStream,
   modifyExcelData,
-} from "../../../helpers/workSheet";
-import { SettingHelper } from "../setting/setting.helper";
-import { SettingKey } from "../../../configs/settingData";
-import { ProductImportingLogModel } from "../productImportingLog/productImportingLog.model";
-import { ProductModel, ProductType } from "./product.model";
-import { CategoryModel } from "../category/category.model";
+} from "../../../../helpers/workSheet";
+import { SettingHelper } from "../../setting/setting.helper";
+import { SettingKey } from "../../../../configs/settingData";
+import { ProductImportingLogModel } from "../../productImportingLog/productImportingLog.model";
+import { ProductModel, ProductType } from "../product.model";
+import { CategoryModel } from "../../category/category.model";
 
 const STT = "STT";
 const CODE = "Mã sản phẩm";

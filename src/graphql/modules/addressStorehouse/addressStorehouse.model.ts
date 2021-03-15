@@ -26,7 +26,7 @@ const addressStorehouseSchema = new Schema(
     phone: { type: String },
     email: { type: String },
     address: { type: String, required: true },
-    wardId: { type: String},
+    wardId: { type: String },
     districtId: { type: String },
     provinceId: { type: String },
     province: { type: String },
@@ -37,7 +37,22 @@ const addressStorehouseSchema = new Schema(
   { timestamps: true }
 );
 
-// addressStorehouseSchema.index({ name: "text" }, { weights: { name: 2 } });
+addressStorehouseSchema.index(
+  {
+    name: "text",
+    address: "text",
+    phone: "text",
+    email: "text",
+  },
+  {
+    weights: {
+      name: 2,
+      address: 2,
+      phone: 1,
+      email: 1,
+    },
+  }
+);
 
 export const AddressStorehouseHook = new ModelHook<IAddressStorehouse>(
   addressStorehouseSchema

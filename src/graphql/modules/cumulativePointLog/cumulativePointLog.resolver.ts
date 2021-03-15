@@ -3,6 +3,7 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
+import { MemberLoader, MemberType } from "../member/member.model";
 import { OrderLoader } from "../order/order.model";
 import { RegisServiceLoader } from "../regisService/regisService.model";
 import { RegisSMSLoader } from "../regisSMS/regisSMS.model";
@@ -24,11 +25,13 @@ const CumulativePointLog = {
   regisService: GraphQLHelper.loadById(RegisServiceLoader, "regisServiceId"),
 
   note: async (root: ICumulativePointLog, args: any, context: Context) => {
+    const order = await OrderLoader.load(root.orderId);
+    const member = await MemberLoader.load(order.sellerId);
     switch (root.type) {
       case CumulativePointLogType.RECEIVE_FROM_ORDER:
-        return "Nhận từ đơn hàng";
+        return `Nhận từ đơn hàng ${order.code} - ${member.shopName}` ;
       case CumulativePointLogType.RECEIVE_FROM_INVITE:
-        return "Nhận từ mời thành viên";
+        return `Nhận từ mời thành viên - ${member.name}`;
       case CumulativePointLogType.RECEIVE_FROM_RESIS_SERVICE:
         return "Nhận từ đăng ký dịch vụ";
       case CumulativePointLogType.RECEIVE_FROM_REGIS_SMS:

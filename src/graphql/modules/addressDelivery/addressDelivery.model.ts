@@ -39,7 +39,20 @@ const addressDeliverySchema = new Schema(
 
 // STT	Tên kho	Số điện thoại	Email	Địa chỉ	Tỉnh/Thành	Quận/Huyện	Phường/Xã
 
-// addressDeliverySchema.index({ name: "text" }, { weights: { name: 2 } });
+addressDeliverySchema.index(
+  { 
+    name: "text" ,
+    address: "text" ,
+    phone: "text" ,
+    email: "text" ,
+  }, 
+  { weights: { 
+    name: 2,
+    address: 2 ,
+    phone: 1 ,
+    email: 1 ,
+  } }
+  );
 
 export const AddressDeliveryHook = new ModelHook<IAddressDelivery>(
   addressDeliverySchema

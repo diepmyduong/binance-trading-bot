@@ -4,6 +4,7 @@ import { ProductType } from "./product.model";
 const schema = gql`
   extend type Query {
     getAllProduct(q: QueryGetListInput): ProductPageData
+    getAllPostProducts(q: QueryGetListInput): ProductPageData
     getMobifoneProducts(q: QueryGetListInput): ProductPageData
     getAllCrossSaleProducts(sellerId:ID): [Product]
     getOneProduct(id: ID!): Product

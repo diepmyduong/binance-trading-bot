@@ -67,8 +67,8 @@ const customerSchema = new Schema(
 );
 
 customerSchema.index(
-  { name: "text", code: "text", facebookName: "text" },
-  { weights: { name: 2, code: 2, facebookName: 2 } }
+  { name: "text", code: "text", facebookName: "text", phone: "text" },
+  { weights: { name: 2, code: 2, facebookName: 2, phone: 1 } }
 );
 
 export const CustomerHook = new ModelHook<ICustomer>(customerSchema);

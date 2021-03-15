@@ -73,7 +73,7 @@ const luckyWheelSchema = new Schema(
   { timestamps: true }
 );
 
-// luckyWheelSchema.index({ name: "text" }, { weights: { name: 2 } });
+luckyWheelSchema.index({ title: "text" }, { weights: { title: 2 } });
 
 export const LuckyWheelHook = new ModelHook<ILuckyWheel>(luckyWheelSchema);
 export const LuckyWheelModel: mongoose.Model<ILuckyWheel> = MainConnection.model(

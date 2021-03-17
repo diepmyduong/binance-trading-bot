@@ -98,6 +98,8 @@ export type IOrder = BaseDocument & {
   note: string;
   toMemberNote: string;
   toMemberId: string; // Bưu cục được chuyển đơn
+  longitude: string;
+  latitude: string;
 };
 
 const orderSchema = new Schema(
@@ -167,6 +169,8 @@ const orderSchema = new Schema(
     toMemberNote: { type: Schema.Types.String },
     // chuyển đơn cho member khác xử lý
     toMemberId : { type: Schema.Types.ObjectId, ref: "Member" },
+    longitude : { type: Schema.Types.String },
+    latitude : { type: Schema.Types.String },
   },
   { timestamps: true }
 );

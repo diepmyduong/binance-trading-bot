@@ -42,7 +42,7 @@ const Query = {
   },
 
   getOneProduct: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
+    // AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
     const { id } = args;
     return await productService.findOne({ _id: id });
   },

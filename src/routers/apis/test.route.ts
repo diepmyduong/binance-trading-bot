@@ -7,6 +7,7 @@ import {
   Response,
   NextFunction,
 } from "../../base/baseRoute";
+import { VietnamPostHelper } from "../../helpers";
 // import { ObjectId } from "mongodb";
 // import khongdau from "khong-dau";
 
@@ -16,7 +17,7 @@ class TestRoute extends BaseRoute {
   }
 
   customRouting() {
-    this.router.get("/", this.route(this.addAddressToShop));
+    this.router.get("/", this.route(this.updateStorehouseLocation));
   }
 
   async test(req: Request, res: Response) {
@@ -90,7 +91,6 @@ class TestRoute extends BaseRoute {
     res.sendStatus(200);
   }
 
-
   async updateAddressByShop(req: Request, res: Response) {
     const members = await MemberModel.find({});
 
@@ -98,13 +98,13 @@ class TestRoute extends BaseRoute {
       await AddressDeliveryModel.findOneAndUpdate(
         { code: member.code },
         {
-          province:member.province,
-          district:member.district,
-          ward:member.ward,
+          province: member.province,
+          district: member.district,
+          ward: member.ward,
           provinceId: member.provinceId,
           districtId: member.districtId,
           wardId: member.wardId,
-          email:member.username,
+          email: member.username,
         },
         { new: true }
       );
@@ -112,13 +112,43 @@ class TestRoute extends BaseRoute {
       await AddressStorehouseModel.findOneAndUpdate(
         { code: member.code },
         {
-          province:member.province,
-          district:member.district,
-          ward:member.ward,
+          province: member.province,
+          district: member.district,
+          ward: member.ward,
           provinceId: member.provinceId,
           districtId: member.districtId,
           wardId: member.wardId,
-          email:member.username,
+          email: member.username,
+        },
+        { new: true }
+      );
+    }
+
+    res.sendStatus(200);
+  }
+
+  async updateStorehouseLocation(req: Request, res: Response) {
+    const storehouses = await AddressStorehouseModel.find({});
+
+    console.log("storehouses", storehouses);
+
+    for (const storehouse of storehouses) {
+      const post = await VietnamPostHelper.getPostByAddress(
+        storehouse.provinceId,
+        storehouse.districtId,
+        storehouse.wardId
+      );
+
+      const location = {
+        coordinates: [post.Longitude, post.Latitude],
+        type: "Point",
+      };
+
+      // console.log("location", location);
+      await AddressStorehouseModel.findByIdAndUpdate(
+        storehouse.id,
+        {
+          location,
         },
         { new: true }
       );

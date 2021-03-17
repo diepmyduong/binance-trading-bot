@@ -634,7 +634,7 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
       CUA_HANG,
       // DIA_CHI_CUA_HANG,
       ...LOAI_DON__DIEM_THUONG,
-      ...HOA_HONG,
+      // ...HOA_HONG,
       ...PHUONG_THUC_GIAO_HANG,
       ...DIA_DIEM_GIAO_NHAN,
       GHI_CHU,
@@ -684,5 +684,5 @@ const getTableContent = async (items: any) => {
 };
 
 const moneyCast = (value: any) => {
-  return `${value ? numeral(value).format("0,0 VND") : " "}`;
+  return `${value ? `${numeral(value).format("0.0")} VND`: ""}`;
 };

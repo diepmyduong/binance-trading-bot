@@ -289,7 +289,7 @@ export class OrderHelper {
         commission0,
         commission1,
         commission2,
-        commission3
+        commission3,
       };
 
       const getPointFromPrice = (factor: any, price: any) =>
@@ -401,20 +401,21 @@ export class OrderHelper {
 
         this.order.isUrbanDelivery = urbanStores.length > 0;
 
-        // const nearestLocation = await calculateServiceByStorehouses(
-        //   urbanStores,
-        //   this
-        // );
-
-        // const cheapestService = await calculateServiceByGoogle(
-        //   nearestLocation.storehouse._id,
-        //   this
-        // );
-
+        const addressStorehouse = await AddressStorehouseModel.findOne({
+          location: {
+            $near: {
+              $geometry: {
+                type: "Point",
+                coordinates: [this.order.longitude, this.order.latitude],
+              },
+            },
+          },
+        });
+        
         const cheapestService = await calculateServiceByMainStorehouse(
-          member.mainAddressStorehouseId,
+          addressStorehouse.id,
           this
-        )
+        );
 
         const cheapestShipFee = cheapestService.TongCuocBaoGomDVCT;
         // co thu tien hang ko ?
@@ -599,7 +600,7 @@ const calculateServiceByMainStorehouse = async (
 
   const storehouse = await AddressStorehouseModel.findById(mainStorehouseId);
 
-  console.log("-------------> ",orderHelper.order);
+  console.log("-------------> ", orderHelper.order);
 
   let MaTinhGui = storehouse.provinceId,
     MaQuanGui = storehouse.districtId,
@@ -638,7 +639,7 @@ const calculateServiceByMainStorehouse = async (
     LstDichVuCongThem,
   };
 
-  console.log('data',data);
+  console.log("data", data);
   // noi thanh
 
   const service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(

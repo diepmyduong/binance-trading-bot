@@ -375,9 +375,7 @@ export class VietnamPostHelper {
     });
   }
 
-  static calculateAllShipFee(
-    data: any
-  ): ICalculateAllShipFeeRespone {
+  static calculateAllShipFee(data: any): ICalculateAllShipFeeRespone {
     //https://donhang.vnpost.vn/api/api/TinhCuoc/TinhTatCaCuoc
     // console.log('vao vnpost')
     // console.log("data", data);
@@ -392,7 +390,7 @@ export class VietnamPostHelper {
     )
       .then((res) => get(res, "data"))
       .catch((error) => {
-        console.log('=======================>error',error);
+        console.log("=======================>error", error);
         throw error;
       });
     return result;
@@ -429,258 +427,46 @@ export class VietnamPostHelper {
     return result;
   }
 
-  // static getPriceAll({
-  //   senderProvince,
-  //   senderDistrict,
-  //   receiverProvince,
-  //   receiverDistrict,
-  //   producType = "HH",
-  //   productWeight = 300,
-  //   productPrice,
-  //   moneyCollection,
-  //   type = 1,
-  // }: GetAllPriceProps) {
-  //   return Axios.post(`${this.host}/order/getPriceAll`, {
-  //     SENDER_PROVINCE: parseInt(senderProvince.toString()),
-  //     SENDER_DISTRICT: parseInt(senderDistrict.toString()),
-  //     RECEIVER_PROVINCE: parseInt(receiverProvince.toString()),
-  //     RECEIVER_DISTRICT: parseInt(receiverDistrict.toString()),
-  //     PRODUCT_TYPE: producType,
-  //     PRODUCT_WEIGHT: productWeight,
-  //     PRODUCT_PRICE: productPrice,
-  //     MONEY_COLLECTION: moneyCollection.toString(),
-  //     TYPE: type,
-  //   }).then(
-  //     (res) =>
-  //       get(res, "data", []).map(
-  //         (r: any) =>
-  //           ({
-  //             code: r["MA_DV_CHINH"],
-  //             name: r["TEN_DICHVU"],
-  //             price: r["GIA_CUOC"],
-  //             time: r["THOI_GIAN"],
-  //             exchangeWeight: r["EXCHANGE_WEIGHT"],
-  //           } as ShipServicePricing)
-  //       ) as ShipServicePricing[]
-  //   );
-  // }
-
-  // static getPricing({
-  //   productWeight = 300,
-  //   productPrice,
-  //   moneyCollection,
-  //   orderServiceAdd = "",
-  //   orderService = "VCN",
-  //   senderProvince,
-  //   senderDistrict,
-  //   receiverProvince,
-  //   receiverDistrict,
-  //   productType = "HH",
-  //   nationalType = 1,
-  // }: GetPricingProps) {
-  //   return Axios.post(`${this.host}/order/getPriceAll`, {
-  //     PRODUCT_WEIGHT: productWeight,
-  //     PRODUCT_PRICE: productPrice,
-  //     MONEY_COLLECTION: moneyCollection,
-  //     ORDER_SERVICE_ADD: orderServiceAdd,
-  //     ORDER_SERVICE: orderService,
-  //     SENDER_PROVINCE: parseInt(senderProvince.toString()),
-  //     SENDER_DISTRICT: parseInt(senderDistrict.toString()),
-  //     RECEIVER_PROVINCE: parseInt(receiverProvince.toString()),
-  //     RECEIVER_DISTRICT: parseInt(receiverDistrict.toString()),
-  //     PRODUCT_TYPE: productType,
-  //     NATIONAL_TYPE: nationalType,
-  //   }).then((res) => get(res, "data"));
-  // }
-
-  // static getListInventory() {
-  //   return Axios.get(`${this.host}/user/listInventory`, {
-  //     headers: { token: configs.viettelPost.token },
-  //   }).then((res) => {
-  //     return get(res, "data.data", []).map((r: any) => {
-  //       return {
-  //         groupaddressId: r["groupaddressId"].toString(),
-  //         cusId: r["cusId"].toString(),
-  //         name: r["name"],
-  //         phone: r["phone"],
-  //         address: r["address"],
-  //         provinceId: r["provinceId"].toString(),
-  //         districtId: r["districtId"].toString(),
-  //         wardsId: r["wardsId"].toString(),
-  //       };
-  //     }) as Inventory[];
-  //   });
-  // }
-
-  // static registerInventory({ name, phone, address, wardId }: any) {
-  //   return Axios.post(
-  //     `${this.host}/user/registerInventory`,
-  //     {
-  //       PHONE: phone,
-  //       NAME: name,
-  //       ADDRESS: address,
-  //       WARDS_ID: parseInt(wardId),
-  //     },
-  //     {
-  //       headers: { token: configs.viettelPost.token },
-  //     }
-  //   ).then((res) => {
-  //     return get(res, "data.data", [])
-  //       .map((r: any) => {
-  //         return {
-  //           groupaddressId: r["groupaddressId"].toString(),
-  //           cusId: r["cusId"].toString(),
-  //           name: r["name"],
-  //           phone: r["phone"],
-  //           address: r["address"],
-  //           provinceId: r["provinceId"].toString(),
-  //           districtId: r["districtId"].toString(),
-  //           wardsId: r["wardsId"].toString(),
-  //         };
-  //       })
-  //       .find((r: any) => r.wardsId == parseInt(wardId)) as Inventory;
-  //   });
-  // }
-
-  // static updateOrder({ orderNumber, type, note, date }: UpdateOrderProps) {
-  //   return Axios.post(
-  //     `${this.host}/order/UpdateOrder`,
-  //     {
-  //       TYPE: type,
-  //       ORDER_NUMBER: orderNumber,
-  //       NOTE: note,
-  //       DATE:
-  //         type == UpdateOrderType.reorder
-  //           ? moment(date).format("DD/MM/YYYY HH:mm:ss")
-  //           : undefined,
-  //     },
-  //     {
-  //       headers: { token: configs.viettelPost.token },
-  //     }
-  //   ).then((res) => {
-  //     if (get(res, "data.status") == 200) return get(res, "data.message");
-  //     else throw ErrorHelper.externalRequestFailed(get(res, "data.message"));
-  //   });
-  // }
-
-  // static trackingOrderStatus(orderNumber: string) {
-  //   return Axios.get(
-  //     `https://api.viettelpost.vn/api/setting/listOrderTrackingVTP`,
-  //     {
-  //       headers: { token: configs.viettelPost.token },
-  //       params: { OrderNumber: orderNumber },
-  //     }
-  //   ).then((res) => {
-  //     return get(res, "data.0");
-  //   });
-  // }
-
-  // static getLinkPrint(orderNumbers: string[]) {
-  //   if (!configs.viettelPost.printToken)
-  //     throw ErrorHelper.somethingWentWrong(
-  //       "Chưa cấu hình khoá in vận đơn từ Viettel Post."
-  //     );
-  //   return Axios.post(
-  //     `${this.host}/order/encryptLinkPrint`,
-  //     {
-  //       TYPE: 1,
-  //       ORDER_ARRAY: orderNumbers,
-  //       EXPIRY_TIME: moment().add(5, "minutes").toDate().getTime(),
-  //       PRINT_TOKEN: configs.viettelPost.printToken,
-  //     },
-  //     {
-  //       headers: { token: configs.viettelPost.token },
-  //     }
-  //   ).then((res) => {
-  //     if (get(res, "data.status") == 200)
-  //       return get(res, "data.message") as string;
-  //     else throw ErrorHelper.externalRequestFailed(get(res, "data.message"));
-  //   });
-  // }
+  static getPostByAddress(
+    provinceId: string,
+    districtId: string,
+    wardId: string
+  ):IPostByAddress {
+    //https://donhang.vnpost.vn/api/api/TinhCuoc/TinhTatCaCuoc
+    const result: any = Axios.post(
+      `${this.host}/BuuCuc/GetListBuuCucByXaHuyenTinh`,
+      {
+        MaTinhThanh: provinceId,
+        MaQuanHuyen: districtId,
+        MaPhuongXa: wardId,
+      },
+      {
+        headers: {
+          "h-token": configs.vietnamPost.token,
+        },
+      }
+    ).then((res) => get(res, "data")[0]);
+    return result;
+  }
 }
 
-///////////////////////////
-
-enum UpdateOrderType {
-  confirm = 1,
-  returnShipping = 2,
-  deliveryAgain = 3,
-  cancel = 4,
-  reorder = 5,
-  deleteCancel = 11,
-}
-type UpdateOrderProps = {
-  orderNumber: string;
-  type: UpdateOrderType;
-  note: string;
-  date: Date;
-};
-type Ward = {
-  wardId: string;
-  wardName: string;
-  districtId: string;
-};
-
-type GetAllPriceProps = {
-  senderProvince?: string;
-  senderDistrict?: string;
-  receiverProvince?: string;
-  receiverDistrict?: string;
-  producType?: string;
-  productWeight?: number;
-  productPrice?: number;
-  moneyCollection?: number;
-  type?: number;
-};
-
-type GetPricingProps = {
-  productWeight?: number;
-  productPrice?: number;
-  moneyCollection?: number;
-  orderServiceAdd?: string;
-  orderService?: string;
-  senderProvince?: string;
-  senderDistrict?: string;
-  receiverProvince?: string;
-  receiverDistrict?: string;
-  productType?: string;
-  nationalType?: number;
-};
-
-type BillItem = {
-  productName: string;
-  productPrice: number;
-  productWeight: number;
-  productQty: number;
-};
-
-type Inventory = {
-  groupaddressId: string; // Mã kho
-  cusId: string; // Mã khách hàng
-  name: string; // Tên kho
-  phone: string; // Điện thoại
-  address: string; // Địa chỉ
-  provinceId: string; // Mã tỉnh thành
-  districtId: string; // Mã quận huyện
-  wardsId: string; // Mã phường xã
-};
-
-type Bill = {
-  orderCode: string;
-  orderNumber: string;
-  moneyCollection: number;
-  exchangeWeight: number;
-  moneyTotal: number;
-  moneyTotalFee: number;
-  moneyFee: number;
-  moneyCollectionFee: number;
-  moneyOtherFee: number;
-  moneyVAS: number;
-  moneyVAT: number;
-  KPI_HT: number;
-  receiverProvince: string;
-  receiverDistrict: string;
-  receiverWard: string;
+export type IPostByAddress = {
+  MaBuuCuc: string;
+  TenBuuCuc: string;
+  SoDienThoai: string;
+  DiaChi: string;
+  TenDayDuKhongDau: string;
+  MaTinhThanh: string;
+  MaQuanHuyen: string;
+  MaPhuongXa: string;
+  DiaChiDayDu: string;
+  Longitude: number;
+  Latitude: number;
+  POSTypeCode: number;
+  StatusName: string;
+  ThoiGianLamViec: string;
+  NgayCapNhat: string;
+  MaTrungTam: string;
 };
 
 export type memberProps = {
@@ -692,17 +478,3 @@ export type memberProps = {
   MaQuanHuyen: string;
   MaPhuongXa: string;
 };
-
-// const test = {
-//   "MaDichVu": "DONG_GIA",
-//   "MaTinhNhan": "70",
-//   "MaQuanNhan": "7100",
-//   "Dai": 10,
-//   "Rong": 10,
-//   "Cao": 10,
-//   "KhoiLuong": 100,
-//   "ThuCuocNguoiNhan": true,
-//   // LstDichVuCongThem: [
-//   //   { DichVuCongThemId: 3, TrongLuongQuyDoi: 0, SoTienTinhCuoc: "285000" },
-//   // ],
-// };

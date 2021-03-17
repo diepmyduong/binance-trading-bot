@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
+import { LocationSchema } from "./types/location.type";
 const Schema = mongoose.Schema;
 
 export type IAddressStorehouse = BaseDocument & {
@@ -16,6 +17,7 @@ export type IAddressStorehouse = BaseDocument & {
   district: string; // Quận/huyện
   ward: string; // Phường/xã
   activated: boolean; // hiệu lực hay không hiệu lực
+  allowPickup: boolean //cho phép thu gom
 };
 
 //địa điểm kho
@@ -32,7 +34,9 @@ const addressStorehouseSchema = new Schema(
     province: { type: String },
     district: { type: String },
     ward: { type: String },
+    allowPickup: {type: Boolean},
     activated: { type: Boolean, default: true },
+    location: { type: LocationSchema ,default: null }
   },
   { timestamps: true }
 );

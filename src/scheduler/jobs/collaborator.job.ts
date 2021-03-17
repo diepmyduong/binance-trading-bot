@@ -5,6 +5,7 @@ import { SettingKey } from "../../configs/settingData";
 import { SettingHelper } from "../../graphql/modules/setting/setting.helper";
 import { Agenda } from "../agenda";
 import { CustomerModel } from "../../graphql/modules/customer/customer.model";
+import { KeycodeHelper } from "../../helpers";
 
 export class CollaboratorJob {
   static jobName = "Collaborator";
@@ -21,6 +22,8 @@ export default CollaboratorJob;
 
 const doBusiness = async () => {
   // console.log('doBusiness');
+
+  const host = await SettingHelper.load(SettingKey.APP_DOMAIN);
 
   const collaborators = await CollaboratorModel.find({
     $or: [{ customerId: { $exists: false } }, { customerId: null }],
@@ -40,20 +43,58 @@ const doBusiness = async () => {
       (col) => col.phone === customer.phone
     );
     if (collaborator) {
-      await CollaboratorModel.findByIdAndUpdate(
-        collaborator.id,
-        {
-          $set: {
-            customerId: customer._id,
+
+      if(!collaborator.customerId){
+        await CollaboratorModel.findByIdAndUpdate(
+          collaborator.id,
+          {
+            $set: {
+              customerId: customer._id,
+            },
           },
-        },
-        { new: true }
-      );
+          { new: true }
+        );
+      }
+
+      if(!collaborator.shortUrl){
+        const collaboratorId = collaborator.id;
+        const memberId = collaborator.memberId;
+        const customerId = collaborator.customerId;
+        const secret = `${collaboratorId.toString()}-${customerId.toString()}-${memberId.toString()}`;
+  
+        let shortCode = KeycodeHelper.alpha(secret, 6);
+        let shortUrl = `${host}/ctv/${shortCode}`;
+  
+        let countShortUrl = await CollaboratorModel.count({ shortUrl });
+        while (countShortUrl > 0) {
+          shortCode = KeycodeHelper.alpha(secret, 6);
+          shortUrl = `${host}/ctv/${shortCode}`;
+          countShortUrl = await CollaboratorModel.count({ shortUrl });
+        }
+
+        await CollaboratorModel.findByIdAndUpdate(
+          collaborator.id,
+          {
+            $set: {
+              shortUrl,
+            },
+          },
+          { new: true }
+        );
+      }
+      
+
+      
+
+     
     }
   }
 };
+
+
 
 // (async () => {
 //   console.log("test businessssssssssssssssssssssss");
 //   await doBusiness();
 // })();
+

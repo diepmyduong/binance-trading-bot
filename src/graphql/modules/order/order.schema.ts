@@ -63,6 +63,8 @@ const schema = gql`
     shipMethod: String!
     paymentMethod: String!
     addressDeliveryId: ID
+    latitude: Float
+    longitude: Float
   }
 
   type DraftOrderData {
@@ -203,7 +205,7 @@ const schema = gql`
     toMemberNote: String
     addressStorehouse: AddressStorehouse
     addressDelivery: AddressDelivery
-    
+
     latitude: Float
     longitude: Float
     

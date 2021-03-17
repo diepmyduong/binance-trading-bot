@@ -21,7 +21,9 @@ const schema = gql`
     districtId: String
     wardId: String
     avatar: String
-    gender: String
+    gender: String,
+    latitude: Float,
+    longitude: Float,
   }
 
   type CustomerLoginData {
@@ -76,6 +78,9 @@ const schema = gql`
     collaboratorShops: [Member]
     "Cộng tác viên"
     collaborator: Collaborator
+    
+    latitude: Float,
+    longitude: Float,
   }
 
   type CustomerPageAccount {

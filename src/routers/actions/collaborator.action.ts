@@ -13,17 +13,17 @@ class CollaboratorAction extends BaseRoute {
   }
 
   customRouting() {
-    this.router.get("/:shortUrl", this.route(this.index));
+    this.router.get("/:shortCode", this.route(this.index));
   }
   //{{host}}/api/campaign?campaign=C10004&page=243084826060782&product=sms-all
   async index(req: Request, res: Response) {
-    const shortUrl: any = req.params.shortUrl;
+    const shortCode: any = req.params.shortCode;
     // console.log('shortUrl', shortUrl);
 
-    if (!shortUrl)
+    if (!shortCode)
       throw ErrorHelper.requestDataInvalid(". Không có đường dẩn.");
 
-    const collaborator = await CollaboratorModel.findOne({ shortUrl });
+    const collaborator = await CollaboratorModel.findOne({ shortCode });
     if (!collaborator)
       throw ErrorHelper.mgRecoredNotFound("cộng tác viên.");
 

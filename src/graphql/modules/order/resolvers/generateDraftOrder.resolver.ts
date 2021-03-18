@@ -24,7 +24,7 @@ const Mutation = {
       data.buyerId = buyerId;
       data.sellerId = sellerId;
     }
-    console.log('----------------> orderdata',data);
+    // console.log('----------------> orderdata',data);
 
     try {
       const ordersData = await OrderHelper.orderProducts(data);

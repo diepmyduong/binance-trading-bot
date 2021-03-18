@@ -22,6 +22,7 @@ export class Context {
     public isAuth: boolean = false,
     public isTokenExpired: boolean = false,
     public campaignCode: string = null,
+    public collaboratorId: string = null,
     public tokenData?: TokenData,
     public token: string = null,
     public messengerSignPayload?: MessengerTokenDecoded
@@ -53,12 +54,12 @@ export class Context {
   parseToken(params: any) {
     try {
       const { req, connection } = params;
-      let token;
-      let campaignCode;
+      let token,campaignCode,collaboratorId;
 
       if (req) {
         token = _.get(req, "headers.x-token") || _.get(req, "query.x-token");
         campaignCode = _.get(req, "headers.x-campaign-code");
+        collaboratorId = _.get(req, "headers.x-collaborator-id");
       }
 
       if (connection && connection.context) {
@@ -74,6 +75,11 @@ export class Context {
       if (campaignCode) {
         this.campaignCode = campaignCode;
       }
+
+      if (collaboratorId) {
+        this.collaboratorId = collaboratorId;
+      }
+      
     } catch (err) {
       // console.log("error", err);
       if (err instanceof TokenExpiredError) {

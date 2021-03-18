@@ -165,6 +165,7 @@ const schema = gql`
 
     category: Category
     member: Member
+    collaboratorProduct : CollaboratorProduct
   }
 
   type ProductPageData {

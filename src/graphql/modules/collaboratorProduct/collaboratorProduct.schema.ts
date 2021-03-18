@@ -22,12 +22,17 @@ const schema = gql`
     id: String    
     createdAt: DateTime
     updatedAt: DateTime
-
-    shortUrl: String
+    "Mã cộng tác viên"
     collaboratorId: ID
+    "Mã sản phẩm"
     productId: ID
     collaborator: Collaborator
     product: Product
+
+    "Mã giới thiệu"
+    shortCode: String
+    "Link giới thiệu"
+    shortUrl: String
   }
 
   type CollaboratorProductPageData {

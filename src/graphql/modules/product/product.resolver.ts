@@ -5,6 +5,8 @@ import { AuthHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
 import { CategoryLoader } from "../category/category.model";
+import { CollaboratorModel } from "../collaborator/collaborator.model";
+import { CollaboratorProductModel } from "../collaboratorProduct/collaboratorProduct.model";
 import { CrossSaleModel } from "../crossSale/crossSale.model";
 import { MemberHelper } from "../member/member.helper";
 import { IMember, MemberLoader, MemberModel } from "../member/member.model";
@@ -109,6 +111,19 @@ const Mutation = {
 const Product = {
   category: GraphQLHelper.loadById(CategoryLoader, "categoryId"),
   member: GraphQLHelper.loadById(MemberLoader, "memberId"),
+  collaboratorProduct: async (root: IProduct, args: any, context: Context) => {
+    let collaProduct = null;
+    if (context.isCustomer()) {
+      const collaborator = await CollaboratorModel.findOne({
+        customerId: context.id,
+      });
+      collaProduct = await CollaboratorProductModel.findOne({
+        productId: root.id,
+        collaboratorId: collaborator.id,
+      });
+    }
+    return collaProduct;
+  },
 };
 
 export default {

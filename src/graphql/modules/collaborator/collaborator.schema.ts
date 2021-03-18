@@ -49,6 +49,11 @@ const schema = gql`
     "Chủ shop"
     memberId: ID
 
+    "Mã giới thiệu"
+    shortCode: String
+    "Link giới thiệu"
+    shortUrl: String
+
     customer: Customer
     member: Member
   }

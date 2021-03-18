@@ -210,13 +210,15 @@ export class OrderHelper {
 
     const customer = await CustomerModel.findById(order.buyerId);
 
-    const collaborator = await CollaboratorModel.findOne({
-      phone: customer.phone,
-      memberId: data.sellerId,
-    });
-
-    if (collaborator) {
-      order.collaboratorId = collaborator._id;
+    if(!data.collaboratorId){
+      const collaborator = await CollaboratorModel.findOne({
+        phone: customer.phone,
+        memberId: data.sellerId,
+      });
+  
+      if (collaborator) {
+        order.collaboratorId = collaborator._id;
+      }
     }
 
     const helper = new OrderHelper(order);
@@ -401,25 +403,28 @@ export class OrderHelper {
 
         this.order.isUrbanDelivery = urbanStores.length > 0;
 
+        const longitude = this.order.longitude ? this.order.longitude : 0;
+        const latitude = this.order.latitude ? this.order.latitude : 0;
+
         const addressStorehouse = await AddressStorehouseModel.findOne({
           location: {
             $near: {
               $geometry: {
                 type: "Point",
-                coordinates: [this.order.longitude, this.order.latitude],
+                coordinates: [longitude, latitude],
               },
             },
           },
         });
+
+        const addressStorehouseId = addressStorehouse ? addressStorehouse.id : member.mainAddressStorehouseId;
         
         const cheapestService = await calculateServiceByMainStorehouse(
-          addressStorehouse.id,
+          addressStorehouseId,
           this
         );
 
         const cheapestShipFee = cheapestService.TongCuocBaoGomDVCT;
-        // co thu tien hang ko ?
-        // const cod = this.order.paymentMethod == PaymentMethod.COD;
 
         this.order.shipfee = cheapestShipFee;
 
@@ -600,7 +605,7 @@ const calculateServiceByMainStorehouse = async (
 
   const storehouse = await AddressStorehouseModel.findById(mainStorehouseId);
 
-  console.log("-------------> ", orderHelper.order);
+  // console.log("-------------> ", orderHelper.order);
 
   let MaTinhGui = storehouse.provinceId,
     MaQuanGui = storehouse.districtId,
@@ -639,7 +644,7 @@ const calculateServiceByMainStorehouse = async (
     LstDichVuCongThem,
   };
 
-  console.log("data", data);
+  // console.log("data", data);
   // noi thanh
 
   const service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(

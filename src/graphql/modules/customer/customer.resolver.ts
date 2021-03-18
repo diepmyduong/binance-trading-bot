@@ -4,7 +4,7 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
-import { CollaboratorModel } from "../collaborator/collaborator.model";
+import { CollaboratorLoader, CollaboratorModel } from "../collaborator/collaborator.model";
 import { MemberHelper } from "../member/member.helper";
 import { MemberLoader, MemberModel } from "../member/member.model";
 import { ICustomer } from "./customer.model";

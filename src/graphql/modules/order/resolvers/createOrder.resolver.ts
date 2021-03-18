@@ -8,7 +8,7 @@ import { OrderItemModel } from "../../orderItem/orderItem.model";
 const Mutation = {
   createOrder: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.CUSTOMER]);
-    const { campaignCode, sellerId, id: buyerId } = context;
+    const { campaignCode, sellerId, id: buyerId , collaboratorId} = context;
     const data = args.data;
 
     if (context.isCustomer()) {
@@ -18,6 +18,10 @@ const Mutation = {
 
     if (campaignCode) {
       data.campaignCode = campaignCode;
+    }
+
+    if(collaboratorId){
+      data.collaboratorId = collaboratorId;
     }
 
     const ordersData = await OrderHelper.orderProducts(data);

@@ -94,7 +94,7 @@ const updateShortUrl = async () => {
   const host = await SettingHelper.load(SettingKey.APP_DOMAIN);
 
   const collaborators = await CollaboratorModel.find({
-    $or: [{ shortUrl: { $exists: false } }, { shortUrl: null }],
+    $or: [{ shortCode: { $exists: false } }, { shortCode: null }],
   }).limit(1000);
 
   // console.log('collaborators',collaborators);
@@ -112,7 +112,7 @@ const updateShortUrl = async () => {
     );
     if (collaborator) {
 
-      if(!collaborator.shortUrl){
+      if(!collaborator.shortCode){
         const collaboratorId = collaborator.id;
         const memberId = collaborator.memberId;
         const customerId = collaborator.customerId;
@@ -133,6 +133,7 @@ const updateShortUrl = async () => {
           {
             $set: {
               shortUrl,
+              shortCode
             },
           },
           { new: true }

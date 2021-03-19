@@ -1,5 +1,5 @@
 import { ROLES } from "../../../../constants/role.const";
-import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../../helpers";
+import { AuthHelper, ErrorHelper, KeycodeHelper, UtilsHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import {
   getDataFromExcelStream,
@@ -32,6 +32,9 @@ const importCollaborators = async (root: any, args: any, context: Context) => {
   const logLength = await CollaboratorImportingLogModel.count({});
   if (logLength > 0) await CollaboratorImportingLogModel.collection.drop();
 
+
+  const _host = await SettingHelper.load(SettingKey.APP_DOMAIN);
+  
   for (let i = 0; i < data.length; i++) {
     let success = true;
     const errors = [];
@@ -68,7 +71,7 @@ const importCollaborators = async (root: any, args: any, context: Context) => {
       errors.push(ErrorHelper.duplicateError(`Cột [${PHONE}]`).message);
     }
 
-    const params = {
+    const params:any = {
       line,
       no,
       code,
@@ -77,6 +80,20 @@ const importCollaborators = async (root: any, args: any, context: Context) => {
       memberId: context.id,
     };
 
+    const secret = `${phone}-${context.id}`;
+
+    let shortCode = KeycodeHelper.alpha(secret, 6);
+    let shortUrl = `${_host}/ctv/${shortCode}`;
+
+    let countShortUrl = await CollaboratorModel.count({ shortUrl });
+    while (countShortUrl > 0) {
+      shortCode = KeycodeHelper.alpha(secret, 6);
+      shortUrl = `${_host}/ctv/${shortCode}`;
+      countShortUrl = await CollaboratorModel.count({ shortUrl });
+    }
+    
+    params.shortCode = shortCode;
+    params.shortUrl = shortUrl;
     // console.log('params',params);
 
     logList.push({ ...params, success, error: errors.join("\n") });
@@ -84,9 +101,6 @@ const importCollaborators = async (root: any, args: any, context: Context) => {
       dataList.push(new CollaboratorModel(params));
     }
   }
-
-  // console.log("dataList", dataList);
-  // console.log("logList", logList);
 
   await Promise.all([
     CollaboratorModel.insertMany(dataList),

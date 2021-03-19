@@ -15,7 +15,7 @@ import { SettingKey } from "../../../../configs/settingData";
 import { SettingHelper } from "../../setting/setting.helper";
 
 const Mutation = {
-  deliveryToMemberOrder: async (root: any, args: any, context: Context) => {
+  deliveryMemberOrder: async (root: any, args: any, context: Context) => {
     context.auth(ROLES.ADMIN_EDITOR_MEMBER);
     const { id } = args;
 

@@ -210,12 +210,12 @@ export class OrderHelper {
 
     const customer = await CustomerModel.findById(order.buyerId);
 
-    if(!data.collaboratorId){
+    if (!data.collaboratorId) {
       const collaborator = await CollaboratorModel.findOne({
         phone: customer.phone,
         memberId: data.sellerId,
       });
-  
+
       if (collaborator) {
         order.collaboratorId = collaborator._id;
       }
@@ -247,6 +247,9 @@ export class OrderHelper {
 
   async generateItemsFromRaw(products: any) {
     const UNIT_PRICE = await SettingHelper.load(SettingKey.UNIT_PRICE);
+    const member = await MemberModel.findById(this.order.sellerId);
+    const presenterId = member.parentIds ? member.parentIds[0] : null;
+
     this.order.subtotal = 0;
     this.order.itemCount = 0;
     this.order.itemIds = [];
@@ -288,11 +291,48 @@ export class OrderHelper {
         productHeight: height,
         productLength: length,
         productWidth: width,
-        commission0,
-        commission1,
-        commission2,
-        commission3,
+        commission0: 0,
+        commission1: 0,
+        commission2: 0,
+        commission3: 0,
       };
+
+      // kiem tra san pham - hoa hong vnpost > 0
+      // kiem tra don hang - primary ko
+      if (commission0 > 0) {
+        if (this.order.isPrimary) {
+          orderItem.commission0 = commission0;
+        }
+      }
+
+      // kiem tra san pham - hoa hong chu shop > 0
+      // kiem tra don hang - co chu shop ko ?
+      if (commission1 > 0) {
+        if (this.order.fromMemberId) {
+          orderItem.commission1 = commission1;
+        }
+      }
+
+      // kiem tra san pham - hoa hong nguoi gioi thieu > 0
+      // kiem tra don hang - kiem tra cong tac vien
+      if (commission2 > 0) {
+        if (this.order.collaboratorId) {
+          orderItem.commission2 = commission2;
+        } else {
+          // hoa hong chu shop gioi thieu chu shop
+          if (presenterId) {
+            orderItem.commission2 = commission2;
+          }
+        }
+      }
+
+      // kiem tra san pham - hh kho > 0
+      // kiem tra don hang - co kho chuyen ko ?
+      if (commission3 > 0) {
+        if (this.order.toMemberId) {
+          orderItem.commission3 = commission3;
+        }
+      }
 
       const getPointFromPrice = (factor: any, price: any) =>
         Math.round(((price / UNIT_PRICE) * 100) / 100) * factor;
@@ -340,6 +380,9 @@ export class OrderHelper {
       null,
       products.map(({ width }: any) => width)
     );
+
+    console.log('this.order.items',this.order);
+    console.log('this.order.items',this.order.items);
 
     return this.order.items;
   }
@@ -417,8 +460,10 @@ export class OrderHelper {
           },
         });
 
-        const addressStorehouseId = addressStorehouse ? addressStorehouse.id : member.mainAddressStorehouseId;
-        
+        const addressStorehouseId = addressStorehouse
+          ? addressStorehouse.id
+          : member.mainAddressStorehouseId;
+
         const cheapestService = await calculateServiceByMainStorehouse(
           addressStorehouseId,
           this

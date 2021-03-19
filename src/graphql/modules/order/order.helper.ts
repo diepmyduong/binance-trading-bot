@@ -234,11 +234,6 @@ export class OrderHelper {
         break;
 
       case ShipMethod.POST:
-        // const addressDelivery = await AddressDeliveryModel.findById(order.addressDeliveryId);
-        // const deliveringMember = await MemberModel.findById(order.sellerId);
-        // if(addressDelivery.code === deliveringMember.code){
-        //   order.toMemberId = deliveringMember.id;
-        // }
         break;
 
       case ShipMethod.VNPOST:
@@ -260,6 +255,7 @@ export class OrderHelper {
   async generateItemsFromRaw(products: any) {
     const UNIT_PRICE = await SettingHelper.load(SettingKey.UNIT_PRICE);
     const member = await MemberModel.findById(this.order.sellerId);
+    const addressDelivery = await AddressDeliveryModel.findById(this.order.addressDeliveryId);
     const presenterId = member.parentIds ? member.parentIds[0] : null;
 
     this.order.subtotal = 0;
@@ -343,6 +339,11 @@ export class OrderHelper {
       if (commission3 > 0) {
         if (this.order.toMemberId) {
           orderItem.commission3 = commission3;
+        }
+        else{
+          if(addressDelivery.code === member.code){
+            orderItem.commission3 = commission3;
+          }
         }
       }
 

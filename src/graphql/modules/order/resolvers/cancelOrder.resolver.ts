@@ -16,9 +16,6 @@ const Mutation = {
     };
 
     // User customer - PENDING    -> CANCELED
-
-    // User member PENDING- DELIVERING -> CANCEL DELIVERING -> CHECK DELIVERING CANCELED -> CANCELED
-
     if (context.isMember()) {
       params.sellerId = context.id;
     }

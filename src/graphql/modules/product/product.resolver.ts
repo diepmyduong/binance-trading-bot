@@ -1,4 +1,4 @@
-import { omit, set, isNull, isUndefined, get } from "lodash";
+import { omit, set, isNull, isUndefined } from "lodash";
 import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
@@ -7,11 +7,9 @@ import { Context } from "../../context";
 import { CategoryLoader } from "../category/category.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { CollaboratorProductModel } from "../collaboratorProduct/collaboratorProduct.model";
-import { CrossSaleModel } from "../crossSale/crossSale.model";
-import { MemberHelper } from "../member/member.helper";
-import { IMember, MemberLoader, MemberModel } from "../member/member.model";
+import {  MemberLoader } from "../member/member.model";
 import { ProductHelper } from "./product.helper";
-import { IProduct, ProductModel, ProductType } from "./product.model";
+import { IProduct, ProductModel } from "./product.model";
 import { productService } from "./product.service";
 
 const Query = {

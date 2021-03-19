@@ -28,7 +28,7 @@ const Mutation = {
 
     
     if (context.isMember()) {
-      params.toMemberId = context.id;
+      params.sellerId = context.id;
     }
 
     const order = await OrderModel.findOne(params);

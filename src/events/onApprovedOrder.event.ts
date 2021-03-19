@@ -16,7 +16,11 @@ import {
   MemberLoader,
   MemberModel,
 } from "../graphql/modules/member/member.model";
-import { IOrder, OrderStatus, ShipMethod } from "../graphql/modules/order/order.model";
+import {
+  IOrder,
+  OrderStatus,
+  ShipMethod,
+} from "../graphql/modules/order/order.model";
 import { OrderItemLoader } from "../graphql/modules/orderItem/orderItem.model";
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { UserModel } from "../graphql/modules/user/user.model";
@@ -31,6 +35,7 @@ import {
 import { onSendChatBotText } from "./onSendToChatbot.event";
 import { AddressDeliveryModel } from "../graphql/modules/addressDelivery/addressDelivery.model";
 import { StoreHouseCommissionLogModel } from "../graphql/modules/storeHouseCommissionLog/storeHouseCommissionLog.model";
+import { CollaboratorModel } from "../graphql/modules/collaborator/collaborator.model";
 
 //set lại type chứ ko bị đụng truncate thằng dòng dưới
 const { RECEIVE_FROM_ORDER: CUSTOMER_TYPE } = CustomerPointLogType;
@@ -85,9 +90,12 @@ onApprovedOrder.subscribe(async (order) => {
     buyerBonusPoint,
     commission2,
   } = order;
+
+  const collaborator = await CollaboratorModel.findById(order.collaboratorId);
+
   const [seller, customer, orderItems] = await Promise.all([
     MemberLoader.load(fromMemberId),
-    CustomerLoader.load(buyerId),
+    CustomerLoader.load(collaborator.customerId),
     OrderItemLoader.loadMany(itemIds),
   ]);
 
@@ -95,7 +103,7 @@ onApprovedOrder.subscribe(async (order) => {
   if (order.collaboratorId) {
     const [commissionLoging, customerUpdating] = await payCustomerCommission({
       memberId: seller.id,
-      customerId: buyerId,
+      customerId: customer.id,
       type: CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER,
       currentCommission: customer.commission,
       commission: commission2,
@@ -108,7 +116,7 @@ onApprovedOrder.subscribe(async (order) => {
   if (buyerBonusPoint) {
     if (buyerBonusPoint > 0)
       [, cumulativePointCustomer] = await payCustomerPoint({
-        customerId: buyerId,
+        customerId: customer.id,
         id: order._id,
         type: CUSTOMER_TYPE,
         buyerBonusPoint,
@@ -196,12 +204,7 @@ onApprovedOrder.subscribe(async (order) => {
 // tính Hoa hồng điểm bán - f1 - commission1
 // gửi cho cửa hàng bán chéo
 onApprovedOrder.subscribe(async (order) => {
-  const {
-    fromMemberId,
-    itemIds,
-    commission1,
-    sellerBonusPoint,
-  } = order;
+  const { fromMemberId, itemIds, commission1, sellerBonusPoint } = order;
 
   const [fromSeller, orderItems] = await Promise.all([
     MemberLoader.load(fromMemberId),
@@ -310,30 +313,29 @@ onApprovedOrder.subscribe(async (order) => {
   }
 });
 
-
 // tinh hoa hồng kho
 onApprovedOrder.subscribe(async (order) => {
-  const { commission3, id , addressDeliveryId } = order;
-  if(commission3 > 0){
-    const addressDelivery = await AddressDeliveryModel.findById(addressDeliveryId);
-    const member = await MemberModel.findOne({code: addressDelivery.code})
+  const { commission3, id, addressDeliveryId } = order;
+  if (commission3 > 0) {
+    const addressDelivery = await AddressDeliveryModel.findById(
+      addressDeliveryId
+    );
+    const member = await MemberModel.findOne({ code: addressDelivery.code });
     const commission = new StoreHouseCommissionLogModel({
       orderId: id,
       value: commission3,
       addressDeliveryId: addressDelivery.id,
-      memberId: member.id
+      memberId: member.id,
     });
     commission.save();
   }
 });
 
-// xac nhan don hang 
+// xac nhan don hang
 // thong bao den chu shop
 // thong bao den khach hang
 onApprovedOrder.subscribe(async (order) => {
-  const { shipMethod , addressDeliveryId } = order;
-  if(shipMethod === ShipMethod.POST){
- 
+  const { shipMethod, addressDeliveryId } = order;
+  if (shipMethod === ShipMethod.POST) {
   }
 });
-

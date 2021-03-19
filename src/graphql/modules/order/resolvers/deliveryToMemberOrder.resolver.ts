@@ -17,12 +17,12 @@ import { SettingHelper } from "../../setting/setting.helper";
 const Mutation = {
   deliveryToMemberOrder: async (root: any, args: any, context: Context) => {
     context.auth(ROLES.ADMIN_EDITOR_MEMBER);
-    const { orderId } = args;
+    const { id } = args;
 
-    // console.log("orderId", orderId);
+    // console.log("id", id);
 
     let params: any = {
-      _id: orderId,
+      _id: id,
       status: OrderStatus.CONFIRMED
     };
 

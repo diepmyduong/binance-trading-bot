@@ -26,12 +26,12 @@ const schema = gql`
     deliveryOrder(orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order
     #A => A
     confirmOrder(id: ID!, note: String): Order
-    deliveryMemberOrder(orderId: ID!): Order
+    deliveryMemberOrder(id: ID!): Order
     approveOrder(id: ID!, note: String , status: String): Order
 
     #A => B
     confirmToMemberOrder(id: ID!, note: String): Order
-    deliveryToMemberOrder (orderId: ID!): Order
+    deliveryToMemberOrder (id: ID!): Order
     approveToMemberOrder(id: ID!, note: String, status: String): Order
     
   }

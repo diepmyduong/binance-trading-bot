@@ -117,10 +117,12 @@ const Product = {
       const collaborator = await CollaboratorModel.findOne({
         customerId: context.id,
       });
-      collaProduct = await CollaboratorProductModel.findOne({
-        productId: root.id,
-        collaboratorId: collaborator.id,
-      });
+      if(collaborator){
+        collaProduct = await CollaboratorProductModel.findOne({
+          productId: root.id,
+          collaboratorId: collaborator.id,
+        });
+      }
     }
     return collaProduct;
   },

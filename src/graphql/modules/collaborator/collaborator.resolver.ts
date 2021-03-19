@@ -1,11 +1,13 @@
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { ROLES } from "../../../constants/role.const";
-import { AuthHelper, ErrorHelper } from "../../../helpers";
+import { AuthHelper, ErrorHelper, KeycodeHelper } from "../../../helpers";
 import { Context } from "../../context";
 import { MemberLoader } from "../member/member.model";
 import { CollaboratorModel, ICollaborator } from "./collaborator.model";
 import { collaboratorService } from "./collaborator.service";
 import { CustomerModel } from "../customer/customer.model";
+import { SettingHelper } from "../setting/setting.helper";
+import { SettingKey } from "../../../configs/settingData";
 
 const Query = {
   getAllCollaborator: async (root: any, args: any, context: Context) => {
@@ -25,6 +27,7 @@ const Query = {
 const Mutation = {
   createCollaborator: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.MEMBER]);
+    
     const { data } = args;
 
     const { phone } = data;
@@ -37,6 +40,22 @@ const Mutation = {
     if (existedCollaborator) throw ErrorHelper.duplicateError("Số điện thoại");
 
     data.memberId = context.id;
+
+    const host = await SettingHelper.load(SettingKey.APP_DOMAIN);
+    const secret = `${phone}-${context.id}`;
+  
+    let shortCode = KeycodeHelper.alpha(secret, 6);
+    let shortUrl = `${host}/ctv/${shortCode}`;
+
+    let countShortUrl = await CollaboratorModel.count({ shortUrl });
+    while (countShortUrl > 0) {
+      shortCode = KeycodeHelper.alpha(secret, 6);
+      shortUrl = `${host}/ctv/${shortCode}`;
+      countShortUrl = await CollaboratorModel.count({ shortUrl });
+    }
+    
+    data.shortCode = shortCode;
+    data.shortUrl = shortUrl;
 
     return await collaboratorService.create(data);
   },

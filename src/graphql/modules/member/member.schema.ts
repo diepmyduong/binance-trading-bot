@@ -216,6 +216,9 @@ const schema = gql`
 
     "Điểm nhận hàng bưu cục"
     addressDelivery: AddressDelivery
+
+    "Đường dẩn cửa hàng"
+    shopUrl: String
   }
 
   type MemberPageData {

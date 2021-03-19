@@ -55,6 +55,7 @@ const Mutation = {
     data.uid = fbUser.uid;
     data.code = await memberService.generateCode();
     const helper = new MemberHelper(new MemberModel(data));
+
     await Promise.all([
       AddressHelper.setProvinceName(helper.member),
       AddressHelper.setDistrictName(helper.member),
@@ -113,23 +114,30 @@ const Member = {
   ),
 
   addressDelivery: async (root: IMember, args: any, context: Context) => {
-    console.log("member", root.code);
+    // console.log("member", root.code);
     return await AddressDeliveryModel.findOne({ code: root.code });
   },
 
   subscribers: async (root: IMember, args: any, context: Context) => {
     return new MemberHelper(root).getSubscribers();
   },
+
   chatbotRef: async (root: IMember, args: any, context: Context) => {
     const ref = await SettingHelper.load(SettingKey.STORY_REF);
     return `https://m.me/${root.fanpageId}?ref=story.${ref}`;
   },
+
+  shopUrl : async (root: IMember, args: any, context: Context) => {
+    const host = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN);
+    return `${host}?pageId=${root.id}`;
+  }
 };
 
 const Shop = {
   addressDelivery: async (root: IMember, args: any, context: Context) => {
     return await AddressDeliveryModel.findOne({ code: root.code });
   },
+  
   mainAddressStorehouse: GraphQLHelper.loadById(
     AddressStorehouseLoader,
     "mainAddressStorehouseId"

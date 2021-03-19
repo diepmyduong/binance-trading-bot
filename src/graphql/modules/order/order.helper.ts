@@ -236,9 +236,18 @@ export class OrderHelper {
         break;
 
       case ShipMethod.POST:
+        // kiem tra post diem nhan co phai chinh minh ko ?
+        const addressDelivery = await AddressDeliveryModel.findById(order.addressDeliveryId);
+        const member = await MemberModel.findById(order.sellerId);
+        if(addressDelivery.code === member.code){
+          order.toMemberId = member.id;
+        }
         break;
 
       case ShipMethod.VNPOST:
+
+        
+
         await Promise.all([
           helper.setProvinceName(),
           helper.setDistrictName(),

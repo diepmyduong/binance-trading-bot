@@ -33,7 +33,7 @@ const Mutation = {};
 
 const Customer = {
   isCollaborator: async (root: ICustomer, args: any, context: Context) => {
-    const collaborator = await CollaboratorModel.findOne({ phone: root.phone , memberId: context.id });
+    const collaborator = await CollaboratorModel.findOne({ phone: root.phone , memberId: context.sellerId });
     return collaborator ? true : false;
   },
   //Danh sách các cửa hàng mà khách hàng đang cộng tác
@@ -45,7 +45,7 @@ const Customer = {
   },
   
   collaborator: async (root: ICustomer, args: any, context: Context) => {
-    const collaborator = await CollaboratorModel.findOne({ phone: root.phone , memberId: context.id });
+    const collaborator = await CollaboratorModel.findOne({ phone: root.phone , memberId: context.sellerId });
     return collaborator;
   },
 };

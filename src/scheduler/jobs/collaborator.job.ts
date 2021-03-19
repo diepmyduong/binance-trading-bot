@@ -143,8 +143,8 @@ const updateShortUrl = async () => {
   }
 };
 
-(async () => {
-  console.log("test businessssssssssssssssssssssss");
-  await updateShortUrl();
-})();
+// (async () => {
+//   console.log("test businessssssssssssssssssssssss");
+//   await updateShortUrl();
+// })();
 

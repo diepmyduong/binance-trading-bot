@@ -1,4 +1,4 @@
-import { chain, keyBy } from "lodash";
+import { chain, isNull, keyBy } from "lodash";
 import {
   ErrorHelper,
   ICalculateAllShipFeeRequest,
@@ -210,15 +210,19 @@ export class OrderHelper {
 
     const customer = await CustomerModel.findById(order.buyerId);
 
-    if (!data.collaboratorId) {
-      const collaborator = await CollaboratorModel.findOne({
+    let { collaboratorId } = data;
+    let collaborator = null;
+    if (collaboratorId) {
+      collaborator = await CollaboratorModel.findOne({
         phone: customer.phone,
         memberId: data.sellerId,
       });
+    } else {
+      collaborator = await CollaboratorModel.findById(collaboratorId);
+    }
 
-      if (collaborator) {
-        order.collaboratorId = collaborator._id;
-      }
+    if (collaborator) {
+      order.collaboratorId = collaborator.id;
     }
 
     const helper = new OrderHelper(order);
@@ -381,8 +385,8 @@ export class OrderHelper {
       products.map(({ width }: any) => width)
     );
 
-    console.log('this.order.items',this.order);
-    console.log('this.order.items',this.order.items);
+    // console.log('this.order.items',this.order);
+    // console.log('this.order.items',this.order.items);
 
     return this.order.items;
   }

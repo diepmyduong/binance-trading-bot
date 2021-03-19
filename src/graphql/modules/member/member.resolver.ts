@@ -129,7 +129,7 @@ const Member = {
 
   shopUrl : async (root: IMember, args: any, context: Context) => {
     const host = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN);
-    return `${host}?pageId=${root.id}`;
+    return `${host}?pageId=${root.fanpageId}`;
   }
 };
 

@@ -24,14 +24,14 @@ const schema = gql`
 
     #VNPOST
     deliveryOrder(orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order
-    deliveryToMemberOrder (orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order
-
     #A => A
     confirmOrder(id: ID!, note: String): Order
+    deliveryMemberOrder(orderId: ID!): Order
     approveOrder(id: ID!, note: String , status: String): Order
 
     #A => B
     confirmToMemberOrder(id: ID!, note: String): Order
+    deliveryToMemberOrder (orderId: ID!): Order
     approveToMemberOrder(id: ID!, note: String, status: String): Order
     
   }

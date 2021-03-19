@@ -99,7 +99,7 @@ export class OrderHelper {
     // kiểm tra danh sách
     const itemsLength = Object.keys(items).length;
     if (itemsLength === 0)
-      throw ErrorHelper.requestDataInvalid("Danh sách sản phẩm");
+      throw ErrorHelper.requestDataInvalid("Danh sách sản phẩm trong đơn hàng");
 
     const itemIDs = items.map((i: any) => i.productId);
 
@@ -336,15 +336,9 @@ export class OrderHelper {
 
       // kiem tra san pham - hh kho > 0
       // kiem tra don hang - co kho chuyen ko ?
+
       if (commission3 > 0) {
-        if (this.order.toMemberId) {
-          orderItem.commission3 = commission3;
-        }
-        else{
-          if(addressDelivery.code === member.code){
-            orderItem.commission3 = commission3;
-          }
-        }
+        orderItem.commission3 = commission3;
       }
 
       const getPointFromPrice = (factor: any, price: any) =>

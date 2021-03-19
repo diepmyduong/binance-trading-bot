@@ -94,9 +94,6 @@ class OrderRoute extends BaseRoute {
 
     let params: any = {
       _id: orderId,
-      status: {
-        $in: [OrderStatus.CONFIRMED, OrderStatus.DELIVERING],
-      },
     };
 
     if (context.isMember()) {
@@ -109,14 +106,10 @@ class OrderRoute extends BaseRoute {
       throw ErrorHelper.requestDataInvalid("Tham số đầu vào không hợp lệ!");
     }
 
-    await OrderModel.findByIdAndUpdate(
-      order.id,
-      { status: OrderStatus.DELIVERING },
-      { new: true }
-    );
     const addressDelivery = await AddressDeliveryModel.findById(
       order.addressDeliveryId
     );
+    
     const member = await MemberModel.findById(order.sellerId);
 
     const pdfContent = await getPDFOrder(order, addressDelivery, member);

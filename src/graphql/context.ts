@@ -4,6 +4,7 @@ import { TokenHelper } from "../helpers/token.helper";
 import { TokenExpiredError } from "jsonwebtoken";
 import { ROLES } from "../constants/role.const";
 import { ChatBotHelper, MessengerTokenDecoded } from "../helpers/chatbot.helper";
+import { ObjectId } from "bson";
 export type TokenData = {
   role: string;
   _id: string;
@@ -73,11 +74,11 @@ export class Context {
         this.token = token;
       }
       if (campaignCode) {
-        this.campaignCode = campaignCode;
+        this.campaignCode = campaignCode.replace('null',null);
       }
 
       if (collaboratorId) {
-        this.collaboratorId = collaboratorId;
+        this.collaboratorId = ObjectId.isValid(collaboratorId) ? collaboratorId : null;
       }
       
     } catch (err) {

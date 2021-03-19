@@ -1,4 +1,5 @@
 import { Subject } from "rxjs";
+import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
 
 import { SettingKey } from "../configs/settingData";
 import { CommissionLogType } from "../graphql/modules/commissionLog/commissionLog.model";
@@ -121,4 +122,9 @@ onOrderedProduct.subscribe(async (order: IOrder) => {
         }
 
     }
+});
+
+onOrderedProduct.subscribe(async (order: IOrder) => {
+    const { buyerId, sellerId, itemIds, isPrimary, code, buyerName, fromMemberId ,  } = order;
+    // const log = new OrderLogModel
 });

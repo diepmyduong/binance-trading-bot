@@ -5,8 +5,7 @@ import { OrderStatus } from "../order/order.model";
 const Schema = mongoose.Schema;
 
 export enum OrderLogType {
-  CUSTOMER_CREATED = "CUSTOMER_CREATED", // Khách hàng đặt đơn hàng
-  COLLABORATOR_CREATED = "COLLABORATOR_CREATED", // Cộng tác viên tạo đơn hàng
+  CREATED = "CREATED", // Khách hàng đặt đơn hàng
   CONFIRMED = "CONFIRMED", // Xác nhận nhận đơn hàng
   TRANSFERED = "TRANSFERED", // Chuyển đơn cho bưu cục khác
   

@@ -213,17 +213,15 @@ export class OrderHelper {
     let { collaboratorId } = data;
     let collaborator = null;
     if (collaboratorId) {
+      collaborator = await CollaboratorModel.findById(collaboratorId);
+    } else {
       collaborator = await CollaboratorModel.findOne({
         phone: customer.phone,
         memberId: data.sellerId,
       });
-    } else {
-      collaborator = await CollaboratorModel.findById(collaboratorId);
     }
 
-    if (collaborator) {
-      order.collaboratorId = collaborator.id;
-    }
+    order.collaboratorId = collaborator ? collaborator.id : null;
 
     const helper = new OrderHelper(order);
     switch (order.shipMethod) {
@@ -236,18 +234,19 @@ export class OrderHelper {
         break;
 
       case ShipMethod.POST:
-        // kiem tra post diem nhan co phai chinh minh ko ?
-        const addressDelivery = await AddressDeliveryModel.findById(order.addressDeliveryId);
-        const member = await MemberModel.findById(order.sellerId);
-        if(addressDelivery.code === member.code){
-          order.toMemberId = member.id;
-        }
+        // const addressDelivery = await AddressDeliveryModel.findById(order.addressDeliveryId);
+        // const deliveringMember = await MemberModel.findById(order.sellerId);
+        // if(addressDelivery.code === deliveringMember.code){
+        //   order.toMemberId = deliveringMember.id;
+        // }
         break;
 
       case ShipMethod.VNPOST:
-
-        
-
+        // const addressStorehouse = await AddressStorehouseModel.findById(order.addressStorehouseId);
+        // const storeHouseMember = await MemberModel.findById(order.sellerId);
+        // if(addressStorehouse.code === storeHouseMember.code){
+        //   order.toMemberId = storeHouseMember.id;
+        // }
         await Promise.all([
           helper.setProvinceName(),
           helper.setDistrictName(),

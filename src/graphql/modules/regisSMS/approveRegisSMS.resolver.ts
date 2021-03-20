@@ -3,7 +3,7 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper } from "../../../helpers";
 import { Context } from "../../context";
 import { RegisSMSModel, RegisSMSStatus } from "./regisSMS.model";
-import { onApprovedSMS } from '../../../events/onApprovedSMS.event';
+// import { onApprovedSMS } from '../../../events/onApprovedSMS.event';
 
 //[Backend] Cung cấp API duyệt lịch sử đăng ký dịch vụ SMS
 const approveRegisSMS = async (root: any, args: any, context: Context) => {
@@ -27,7 +27,7 @@ const approveRegisSMS = async (root: any, args: any, context: Context) => {
       new: true
     }
   ).then((res) => {
-    onApprovedSMS.next(res);
+    // onApprovedSMS.next(res);
     return res;
   });
 }

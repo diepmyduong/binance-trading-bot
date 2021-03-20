@@ -3,7 +3,7 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper } from "../../../helpers";
 import { Context } from "../../context";
 import { RegisServiceModel, RegisServiceStatus } from "./regisService.model";
-import { onApprovedRegisService } from '../../../events/onApprovedRegisService.event';
+// import { onApprovedRegisService } from '../../../events/onApprovedRegisService.event';
 
 //[Backend] Cung cấp API duyệt đơn đăng ký dịch vụ Offline
 const approveRegisService = async (root: any, args: any, context: Context) => {
@@ -26,7 +26,7 @@ const approveRegisService = async (root: any, args: any, context: Context) => {
       new: true
     }
   ).then((res) => {
-    onApprovedRegisService.next(res);
+    // onApprovedRegisService.next(res);
     return res;
   });
 }

@@ -2,7 +2,7 @@
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../helpers";
 import { Context } from "../../context";
-import { onApprovedSMS } from '../../../events/onApprovedSMS.event';
+// import { onApprovedSMS } from '../../../events/onApprovedSMS.event';
 import { getDataFromExcelStream, modifyExcelData } from "../../../helpers/workSheet";
 import { ProductModel } from "../product/product.model";
 import { RegisSMSImportingLogModel } from "../regisSMSImportingLog/regisSMSImportingLog.model";
@@ -80,7 +80,7 @@ const importSMSApproving = async (root: any, args: any, context: Context) => {
 
   Promise.all(updatedRegisSMSs).then((res) => {
     for (const r of res) {
-      onApprovedSMS.next(r);
+      // onApprovedSMS.next(r);
     }
   });
 

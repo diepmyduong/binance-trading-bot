@@ -3,8 +3,8 @@ import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper, ErrorHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { OrderModel, IOrder, OrderStatus, ShipMethod } from "../order.model";
-import { onConfirmedOrder } from "../../../../events/onConfirmedOrder.event";
 import { OrderItemModel } from "../../orderItem/orderItem.model";
+import { onApprovedOrder } from "../../../../events/onApprovedOrder.event";
 
 //[Backend] Cung cấp API duyệt lịch sử đăng ký dịch vụ SMS
 const approveToMemberOrder = async (root: any, args: any, context: Context) => {
@@ -56,7 +56,7 @@ const approveToMemberOrder = async (root: any, args: any, context: Context) => {
   }
 
   return await order.save().then(async (order) => {
-    // onApprovedOrder.next(order);
+    onApprovedOrder.next(order);
     return order;
   });
 };

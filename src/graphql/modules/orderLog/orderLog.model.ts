@@ -26,6 +26,7 @@ export type IOrderLog = BaseDocument & {
   orderId?: string; // Mã đơn hàng
   type?: OrderLogType; // Loại lịch sử
   memberId?: string; // Mã người dùng
+  toMemberId: string; //Ma buu cuc chuyen giao
   customerId?: string; // Mã khách hàng
   orderStatus?: OrderStatus; // Trạng thái thanh toán
 };
@@ -34,7 +35,8 @@ const orderLogSchema = new Schema(
   {
     orderId: { type: Schema.Types.ObjectId, ref: "Order", required: true },
     type: { type: String, enum: Object.values(OrderLogType), required: true },
-    userId: { type: Schema.Types.ObjectId, ref: "User" },
+    memberId: {type: Schema.Types.ObjectId, ref:"Member", required: true},
+    toMemberId: {type: Schema.Types.ObjectId, ref:"Member"},
     customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
     orderStatus: { type: String, enum: Object.values(OrderStatus) },
     value: { type: Number },

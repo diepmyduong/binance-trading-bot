@@ -3,7 +3,7 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper } from "../../../helpers";
 import { Context } from "../../context";
 import { RegisSMSModel, RegisSMSStatus } from "./regisSMS.model";
-import { onApprovedSMS } from '../../../events/onApprovedSMS.event';
+// import { onApprovedSMS } from '../../../events/onApprovedSMS.event';
 import { getJsonFromCSVStream, modifyCSVData } from "../../../helpers/workSheet";
 
 
@@ -71,7 +71,7 @@ class RegisSMSService extends CrudService<typeof RegisSMSModel> {
     // chạy promise 1 lần để lấy danh sách đã update status
     return Promise.all(modificationList).then((res) => {
       for (const r of res) {
-        onApprovedSMS.next(r);
+        // onApprovedSMS.next(r);
       }
       return res;
     });

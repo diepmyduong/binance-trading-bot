@@ -59,12 +59,12 @@ A => B	toMemberId = getMemberIdByAddressDeliveryCode()
   for (const orderId of order.itemIds) {
     await OrderItemModel.findByIdAndUpdate(
       orderId,
-      { $set: { status: OrderStatus.PENDING } },
+      { $set: { status: OrderStatus.CONFIRMED } },
       { new: true }
     );
   }
 
-  order.status = OrderStatus.PENDING;
+  order.status = OrderStatus.CONFIRMED;
   order.toMemberNote = note;
 
   return await order.save().then(async (order) => {

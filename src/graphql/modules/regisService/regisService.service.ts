@@ -3,7 +3,7 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper } from "../../../helpers";
 import { Context } from "../../context";
 import { RegisServiceModel, RegisServiceStatus } from "./regisService.model";
-import { onApprovedRegisService } from "../../../events/onApprovedRegisService.event";
+// import { onApprovedRegisService } from "../../../events/onApprovedRegisService.event";
 import { getJsonFromCSVStream, modifyCSVData } from "../../../helpers/workSheet";
 
 
@@ -64,7 +64,7 @@ class RegisServiceService extends CrudService<typeof RegisServiceModel> {
     // chạy promise 1 lần để lấy danh sách đã update status
     return Promise.all(modificationList).then((res) => {
       for (const r of res) {
-        onApprovedRegisService.next(r);
+        // onApprovedRegisService.next(r);
       }
       return res;
     });

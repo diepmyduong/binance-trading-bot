@@ -3,7 +3,7 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper } from "../../../helpers";
 import { Context } from "../../context";
 import { RegisServiceModel, RegisServiceStatus } from "./regisService.model";
-import { onApprovedRegisService } from "../../../events/onApprovedRegisService.event";
+// import { onApprovedRegisService } from "../../../events/onApprovedRegisService.event";
 import { getDataFromExcelStream, getJsonFromCSVStream, modifyCSVData, modifyExcelData } from "../../../helpers/workSheet";
 import { ProductModel } from "../product/product.model";
 import { SettingHelper } from "../setting/setting.helper";
@@ -81,7 +81,7 @@ const importRegisServiceApproving = async (root: any, args: any, context: Contex
 
   Promise.all(updatedRegisServices).then((res) => {
     for (const r of res) {
-      onApprovedRegisService.next(r);
+      // onApprovedRegisService.next(r);
     }
   });
 

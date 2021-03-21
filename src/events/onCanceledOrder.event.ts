@@ -1,4 +1,6 @@
 import { Subject } from "rxjs";
+import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
+import { OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 
 import { SettingKey } from "../configs/settingData";
 import { CustomerLoader } from "../graphql/modules/customer/customer.model";
@@ -89,4 +91,29 @@ onCanceledOrder.subscribe(async (order) => {
     message: msg,
     context: { seller, orderItems, order },
   });
+});
+
+
+onCanceledOrder.subscribe(async (order: IOrder) => {
+  const {
+    buyerId,
+    sellerId,
+    id,
+    status,
+    toMemberId
+  } = order;
+  
+  const log = new OrderLogModel({
+    orderId: id,
+    type: OrderLogType.MEMBER_CANCELED,
+    memberId: sellerId,
+    customerId: buyerId,
+    orderStatus: status,
+  });
+
+  if(toMemberId){
+    log.toMemberId = toMemberId;
+  }
+
+  await log.save();
 });

@@ -3,9 +3,10 @@ import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper, ErrorHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { OrderModel, IOrder, OrderStatus, ShipMethod } from "../order.model";
-import { onApprovedOrder } from "../../../../events/onApprovedOrder.event";
 import { ProductModel } from "../../product/product.model";
 import { OrderItemModel } from "../../orderItem/orderItem.model";
+import { onApprovedFailureOrder } from "../../../../events/onApprovedFailureOrder.event";
+import { onApprovedCompletedOrder } from "../../../../events/onApprovedCompletedOrder.event";
 
 /*
 
@@ -64,7 +65,12 @@ const approveOrder = async (root: any, args: any, context: Context) => {
   }
 
   return await order.save().then(async (order) => {
-    onApprovedOrder.next(order);
+    if(order.status === OrderStatus.COMPLETED){
+      onApprovedCompletedOrder.next(order);
+    }
+    if(order.status === OrderStatus.FAILURE){
+      onApprovedFailureOrder.next(order);
+    }
     return order;
   });
 };

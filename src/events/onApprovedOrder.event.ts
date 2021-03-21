@@ -36,6 +36,8 @@ import { onSendChatBotText } from "./onSendToChatbot.event";
 import { AddressDeliveryModel } from "../graphql/modules/addressDelivery/addressDelivery.model";
 import { StoreHouseCommissionLogModel } from "../graphql/modules/storeHouseCommissionLog/storeHouseCommissionLog.model";
 import { CollaboratorModel } from "../graphql/modules/collaborator/collaborator.model";
+import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
+import { OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 
 //set lại type chứ ko bị đụng truncate thằng dòng dưới
 const { RECEIVE_FROM_ORDER: CUSTOMER_TYPE } = CustomerPointLogType;
@@ -337,5 +339,47 @@ onApprovedOrder.subscribe(async (order) => {
 onApprovedOrder.subscribe(async (order) => {
   const { shipMethod, addressDeliveryId } = order;
   if (shipMethod === ShipMethod.POST) {
+  }
+});
+
+onApprovedOrder.subscribe(async (order: IOrder) => {
+  const { buyerId, sellerId, id, status, toMemberId } = order;
+
+  if (status === OrderStatus.COMPLETED) {
+    const log = new OrderLogModel({
+      orderId: id,
+      type: OrderLogType.MEMBER_COMPLETED,
+      memberId: sellerId,
+      customerId: buyerId,
+      orderStatus: status,
+    });
+
+    if (toMemberId) {
+      log.toMemberId = toMemberId;
+      log.type = OrderLogType.TO_MEMBER_COMPLETED;
+    }
+
+    await log.save();
+  }
+});
+
+onApprovedOrder.subscribe(async (order: IOrder) => {
+  const { buyerId, sellerId, id, status, toMemberId } = order;
+
+  if (status === OrderStatus.FAILURE) {
+    const log = new OrderLogModel({
+      orderId: id,
+      type: OrderLogType.MEMBER_FAILURE,
+      memberId: sellerId,
+      customerId: buyerId,
+      orderStatus: status,
+    });
+
+    if (toMemberId) {
+      log.toMemberId = toMemberId;
+      log.type = OrderLogType.TO_MEMBER_FAILURE;
+    }
+
+    await log.save();
   }
 });

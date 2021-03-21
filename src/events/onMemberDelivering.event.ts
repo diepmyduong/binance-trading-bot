@@ -1,5 +1,4 @@
 import { Subject } from "rxjs";
-import { CustomerCommissionLogType } from "../graphql/modules/customerCommissionLog/customerCommissionLog.model";
 
 import { SettingKey } from "../configs/settingData";
 import { CommissionLogType } from "../graphql/modules/commissionLog/commissionLog.model";
@@ -16,38 +15,22 @@ import {
   MemberLoader,
   MemberModel,
 } from "../graphql/modules/member/member.model";
-import { IOrder, OrderStatus, ShipMethod } from "../graphql/modules/order/order.model";
 import { OrderItemLoader } from "../graphql/modules/orderItem/orderItem.model";
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { UserModel } from "../graphql/modules/user/user.model";
 import { ErrorHelper } from "../helpers/error.helper";
-import {
-  payCommission,
-  payCustomerCommission,
-  payCustomerPoint,
-  payMobifoneCommission,
-  paySellerPoint,
-} from "./event.helper";
 import { onSendChatBotText } from "./onSendToChatbot.event";
-import { AddressDeliveryModel } from "../graphql/modules/addressDelivery/addressDelivery.model";
-import { StoreHouseCommissionLogModel } from "../graphql/modules/storeHouseCommissionLog/storeHouseCommissionLog.model";
-import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
-import { OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
+import {
+  IOrder,
+  OrderModel,
+  OrderStatus,
+  PaymentMethod,
+} from "../graphql/modules/order/order.model";
+import { OrderLogModel, OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 
+export const onMemberDelivering = new Subject<IOrder>();
 
-export const onConfirmedOrder = new Subject<IOrder>();
-
-// xac nhan don hang 
-// thong bao den chu shop
-// thong bao den khach hang
-onConfirmedOrder.subscribe(async (order) => {
-  const { shipMethod , addressDeliveryId } = order;
-  if(shipMethod === ShipMethod.POST){
- 
-  }
-});
-
-onConfirmedOrder.subscribe(async (order: IOrder) => {
+onMemberDelivering.subscribe(async (order: IOrder) => {
   const {
     buyerId,
     sellerId,
@@ -58,7 +41,7 @@ onConfirmedOrder.subscribe(async (order: IOrder) => {
   
   const log = new OrderLogModel({
     orderId: id,
-    type: OrderLogType.CONFIRMED,
+    type: OrderLogType.MEMBER_DELIVERING,
     memberId: sellerId,
     customerId: buyerId,
     orderStatus: status,
@@ -66,6 +49,7 @@ onConfirmedOrder.subscribe(async (order: IOrder) => {
 
   if(toMemberId){
     log.toMemberId = toMemberId;
+    log.type = OrderLogType.MEMBER_DELIVERING;
   }
 
   await log.save();

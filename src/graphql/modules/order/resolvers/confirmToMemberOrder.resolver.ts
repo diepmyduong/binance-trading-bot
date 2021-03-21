@@ -48,7 +48,7 @@ const confirmToMemberOrder = async (root: any, args: any, context: Context) => {
   order.status = OrderStatus.CONFIRMED;
 
   return await order.save().then(async (order) => {
-    // onConfirmedOrder.next(order);
+    onConfirmedOrder.next(order);
     return order;
   });
 };

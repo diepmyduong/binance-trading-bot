@@ -3,23 +3,9 @@ import { gql } from "apollo-server-express";
 const schema = gql`
   extend type Query {
     getAllOrderLog(q: QueryGetListInput): OrderLogPageData
+    getAllToMemberOrderLog(q: QueryGetListInput): OrderLogPageData
     getOneOrderLog(id: ID!): OrderLog
     # Add Query
-  }
-
-  extend type Mutation {
-    createOrderLog(data: CreateOrderLogInput!): OrderLog
-    updateOrderLog(id: ID!, data: UpdateOrderLogInput!): OrderLog
-    deleteOneOrderLog(id: ID!): OrderLog
-    # Add Mutation
-  }
-
-  input CreateOrderLogInput {
-    name: String
-  }
-
-  input UpdateOrderLogInput {
-    name: String
   }
 
   type OrderLog {
@@ -27,7 +13,17 @@ const schema = gql`
     createdAt: DateTime
     updatedAt: DateTime
 
-    name: String
+    orderId: ID
+    type: String
+    memberId: ID
+    toMemberId: ID
+    customerId: ID
+    note: String
+
+    order: Order
+    member: Member
+    toMember: Member
+    customer: Customer
   }
 
   type OrderLogPageData {

@@ -10,7 +10,6 @@ export enum OrderLogType {
   TRANSFERED = "TRANSFERED", // Chuyển đơn cho bưu cục khác
   
   CUSTOMER_CANCELED = "CUSTOMER_CANCELED", // Khách hàng huỷ đơn
-  COLLABORATOR_CANCELED = "COLLABORATOR_CANCELED", // Cộng tác viên huỷ đơn hàng
   MEMBER_CANCELED = "MEMBER_CANCELED", // Bưu cục huỷ đơn
 
   MEMBER_DELIVERING = "MEMBER_DELIVERING", // Bưu cục đổi trạng thái Đơn hàng giao

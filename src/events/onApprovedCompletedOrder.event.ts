@@ -50,11 +50,11 @@ const {
   RECEIVE_COMMISSION_1_FROM_ORDER,
   RECEIVE_COMMISSION_2_FROM_ORDER,
 } = CommissionLogType;
-export const onApprovedOrder = new Subject<IOrder>();
+export const onApprovedCompletedOrder = new Subject<IOrder>();
 
 // duyệt đơn thành công
 // gửi cho chủ cửa hàng
-onApprovedOrder.subscribe(async (order) => {
+onApprovedCompletedOrder.subscribe(async (order) => {
   const { buyerId, sellerId, itemIds, isPrimary } = order;
   if (!isPrimary) {
     const [seller, customer, orderItems] = await Promise.all([
@@ -84,7 +84,7 @@ onApprovedOrder.subscribe(async (order) => {
 // duyệt đơn thành công
 // tính điểm thưởng cho khách hàng + hoa hồng cộng tác viên
 // gửi cho khách hàng
-onApprovedOrder.subscribe(async (order) => {
+onApprovedCompletedOrder.subscribe(async (order) => {
   const {
     buyerId,
     fromMemberId,
@@ -156,7 +156,7 @@ onApprovedOrder.subscribe(async (order) => {
 // duyệt đơn thành công
 // tính hoa hồng mobifone - f0 - commission0
 // gửi cho mobiphone khi
-onApprovedOrder.subscribe(async (order) => {
+onApprovedCompletedOrder.subscribe(async (order) => {
   const { buyerId, fromMemberId, itemIds, commission0 } = order;
   //   console.log("order", order);
   const postOrderEnabled = SettingHelper.load(
@@ -205,7 +205,7 @@ onApprovedOrder.subscribe(async (order) => {
 // duyệt đơn hàng thành công
 // tính Hoa hồng điểm bán - f1 - commission1
 // gửi cho cửa hàng bán chéo
-onApprovedOrder.subscribe(async (order) => {
+onApprovedCompletedOrder.subscribe(async (order) => {
   const { fromMemberId, itemIds, commission1, sellerBonusPoint } = order;
 
   const [fromSeller, orderItems] = await Promise.all([
@@ -268,7 +268,7 @@ onApprovedOrder.subscribe(async (order) => {
 // duyệt đơn hàng thành công
 // Tính chiết khấu dành cho người giới thiêu
 // Gửi mess cho người giới thiệu
-onApprovedOrder.subscribe(async (order) => {
+onApprovedCompletedOrder.subscribe(async (order) => {
   const { sellerId, commission2, _id, code } = order;
   const shopper = await MemberLoader.load(sellerId);
   if (!shopper) throw ErrorHelper.mgRecoredNotFound("chủ shop");
@@ -316,7 +316,7 @@ onApprovedOrder.subscribe(async (order) => {
 });
 
 // tinh hoa hồng kho
-onApprovedOrder.subscribe(async (order) => {
+onApprovedCompletedOrder.subscribe(async (order) => {
   const { commission3, id, addressDeliveryId } = order;
   if (commission3 > 0) {
     const addressDelivery = await AddressDeliveryModel.findById(
@@ -336,13 +336,13 @@ onApprovedOrder.subscribe(async (order) => {
 // xac nhan don hang
 // thong bao den chu shop
 // thong bao den khach hang
-onApprovedOrder.subscribe(async (order) => {
+onApprovedCompletedOrder.subscribe(async (order) => {
   const { shipMethod, addressDeliveryId } = order;
   if (shipMethod === ShipMethod.POST) {
   }
 });
 
-onApprovedOrder.subscribe(async (order: IOrder) => {
+onApprovedCompletedOrder.subscribe(async (order: IOrder) => {
   const { buyerId, sellerId, id, status, toMemberId } = order;
 
   if (status === OrderStatus.COMPLETED) {
@@ -357,27 +357,6 @@ onApprovedOrder.subscribe(async (order: IOrder) => {
     if (toMemberId) {
       log.toMemberId = toMemberId;
       log.type = OrderLogType.TO_MEMBER_COMPLETED;
-    }
-
-    await log.save();
-  }
-});
-
-onApprovedOrder.subscribe(async (order: IOrder) => {
-  const { buyerId, sellerId, id, status, toMemberId } = order;
-
-  if (status === OrderStatus.FAILURE) {
-    const log = new OrderLogModel({
-      orderId: id,
-      type: OrderLogType.MEMBER_FAILURE,
-      memberId: sellerId,
-      customerId: buyerId,
-      orderStatus: status,
-    });
-
-    if (toMemberId) {
-      log.toMemberId = toMemberId;
-      log.type = OrderLogType.TO_MEMBER_FAILURE;
     }
 
     await log.save();

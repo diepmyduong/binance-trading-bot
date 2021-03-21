@@ -13,6 +13,7 @@ import { DeliveryInfo } from "../types/deliveryInfo.type";
 import { GetVietnamPostDeliveryStatusText } from "../../../../helpers/vietnamPost/vietnamPostDeliveryStatus";
 import { SettingKey } from "../../../../configs/settingData";
 import { SettingHelper } from "../../setting/setting.helper";
+import { onMemberDelivering } from "../../../../events/onMemberDelivering.event";
 
 const Mutation = {
   deliveryToMemberOrder: async (root: any, args: any, context: Context) => {
@@ -39,7 +40,10 @@ const Mutation = {
 
     order.status = OrderStatus.DELIVERING;
     
-    return await order.save();
+    return await order.save().then(async (order) => {
+      onMemberDelivering.next(order);
+      return order;
+    });
   },
 };
 

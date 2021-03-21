@@ -39,7 +39,7 @@ const DISTRICT_ID = "Mã Quận Huyện";
 const PROVINCE_ID = "Mã Tỉnh Thành";
 const STATUS = "Tình trạng";
 const LINE = "line";
-const PASSWORD = "pshop@2021";
+const PASSWORD = "Pshop#2021";
 
 // STT	Mã trung tâm	Tên trung tâm	Tên bưu cục	Mã bưu cục	Email	Họ tên	Giới tính	Số điện thoại	Ngày sinh	CMND	Địa chỉ	Phường/Xã	Quận/Huyện	Tỉnh/Thành	Tình trạng
 

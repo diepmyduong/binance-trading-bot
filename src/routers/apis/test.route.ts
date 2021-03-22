@@ -17,7 +17,7 @@ class TestRoute extends BaseRoute {
   }
 
   customRouting() {
-    this.router.get("/", this.route(this.checkUserNotExisted));
+    this.router.get("/", this.route(this.updateAddressByShop));
   }
 
   async test(req: Request, res: Response) {
@@ -30,7 +30,7 @@ class TestRoute extends BaseRoute {
 
     const shops = await MemberModel.find({});
 
-    const addressDeliverys = await AddressDeliveryModel.find({});
+    const addressDeliverys = await AddressDeliveryModel.find({ isPost: true });
 
     const addressStorehouses = await AddressStorehouseModel.find({});
 
@@ -55,7 +55,7 @@ class TestRoute extends BaseRoute {
           shop.id,
           {
             addressStorehouseIds: [shopAddressStorehouseId],
-            // mainAddressStorehouseId: shopAddressStorehouseId,
+            mainAddressStorehouseId: shopAddressStorehouseId,
             addressDeliveryIds: shopAddressDeliveryIds,
           },
           { new: true }
@@ -66,38 +66,33 @@ class TestRoute extends BaseRoute {
     res.sendStatus(200);
   }
 
-  async addAddressStorehouseToShop(req: Request, res: Response) {
-    const shops = await MemberModel.find({});
-
-    const addressStorehouses = await AddressStorehouseModel.find({});
-
-    for (const shop of shops) {
-      const addressStorehouseIds = addressStorehouses
-        .filter(
-          (addr) =>
-            addr.code !== shop.mainAddressStorehouseId &&
-            !["60336471423465cf3b0f4dfa", "60336471423465cf3b0f4dfb"].includes(
-              addr.id
-            )
-        )
-        .map((store) => store.id);
-      await MemberModel.findByIdAndUpdate(
-        shop.id,
-        { addressStorehouseIds },
-        { new: true }
-      );
-    }
-
-    res.sendStatus(200);
-  }
 
   async updateAddressByShop(req: Request, res: Response) {
-    const members = await MemberModel.find({});
+    const members = await MemberModel.find({ isPost: true });
 
     for (const member of members) {
-      await AddressDeliveryModel.findOneAndUpdate(
-        { code: member.code },
-        {
+      const addressDelivery = await AddressDeliveryModel.findOne({
+        code: member.code,
+      });
+      if (addressDelivery) {
+        await AddressDeliveryModel.findOneAndUpdate(
+          { code: member.code },
+          {
+            province: member.province,
+            district: member.district,
+            ward: member.ward,
+            provinceId: member.provinceId,
+            districtId: member.districtId,
+            wardId: member.wardId,
+            email: member.username,
+            address: member.address,
+            isPost: true,
+          },
+          { new: true }
+        );
+      } else {
+        const params: any = {
+          code: member.code,
           province: member.province,
           district: member.district,
           ward: member.ward,
@@ -105,13 +100,46 @@ class TestRoute extends BaseRoute {
           districtId: member.districtId,
           wardId: member.wardId,
           email: member.username,
-        },
-        { new: true }
-      );
+          address: member.address,
+          isPost: true,
+        };
+        await AddressDeliveryModel.create(params);
+      }
 
-      await AddressStorehouseModel.findOneAndUpdate(
-        { code: member.code },
-        {
+      const addressStorehouse = await AddressStorehouseModel.findOne({
+        code: member.code,
+      });
+
+      if (addressStorehouse) {
+        const post = await VietnamPostHelper.getPostByAddress(
+          member.provinceId,
+          member.districtId,
+          member.wardId
+        );
+  
+        const location = {
+          coordinates: [post.Longitude, post.Latitude],
+          type: "Point",
+        };
+
+        await AddressStorehouseModel.findOneAndUpdate(
+          { code: member.code },
+          {
+            province: member.province,
+            district: member.district,
+            ward: member.ward,
+            provinceId: member.provinceId,
+            districtId: member.districtId,
+            wardId: member.wardId,
+            email: member.username,
+            address: member.address,
+            isPost: true,
+          },
+          { new: true }
+        );
+      } else {
+        const params: any = {
+          code: member.code,
           province: member.province,
           district: member.district,
           ward: member.ward,
@@ -119,9 +147,12 @@ class TestRoute extends BaseRoute {
           districtId: member.districtId,
           wardId: member.wardId,
           email: member.username,
-        },
-        { new: true }
-      );
+          address: member.address,
+          isPost: true,
+        };
+
+        await AddressStorehouseModel.create(params);
+      }
     }
 
     res.sendStatus(200);
@@ -130,7 +161,7 @@ class TestRoute extends BaseRoute {
   async updateStorehouseLocation(req: Request, res: Response) {
     const storehouses = await AddressStorehouseModel.find({});
 
-    console.log("storehouses", storehouses);
+    // console.log("storehouses", storehouses);
 
     for (const storehouse of storehouses) {
       const post = await VietnamPostHelper.getPostByAddress(
@@ -565,10 +596,10 @@ class TestRoute extends BaseRoute {
     for (let i = 0; i < codes.length; i++) {
       const code = codes[i];
 
-      if(!memberCodes.includes(code)){
-        console.log("-------> code",code);
+      if (!memberCodes.includes(code)) {
+        console.log("-------> code", code);
       }
-      break;  
+      break;
     }
 
     res.sendStatus(200);

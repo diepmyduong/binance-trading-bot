@@ -153,7 +153,7 @@ export const SETTING_DATA = [
         key: SettingKey.LOGO,
         value: `https://mb-ashop.web.app/assets/img/logo.png`,
         isActive: true,
-        isPrivate: true,
+        isPrivate: false,
         readOnly: false,
       },
       {

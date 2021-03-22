@@ -15,6 +15,7 @@ export type IAddressDelivery = BaseDocument & {
   province: string; // Tỉnh/thành
   district: string; // Quận/huyện
   ward: string; // Phường/xã
+  isPost: boolean;
   activated: boolean; // hiệu lực hay không hiệu lực
 };
 
@@ -32,6 +33,7 @@ const addressDeliverySchema = new Schema(
     province: { type: String },
     district: { type: String },
     ward: { type: String },
+    isPost: { type: Boolean, default: false },
     activated: { type: Boolean, default: true },
   },
   { timestamps: true }

@@ -4,15 +4,12 @@ import {
   Response,
   NextFunction,
 } from "../../base/baseRoute";
-import { ErrorHelper } from "../../base/error";
-import { ROLES } from "../../constants/role.const";
-import { Context } from "../../graphql/context";
-import { UtilsHelper } from "../../helpers";
-import { auth } from "../../middleware/auth";
 import { SettingKey } from "../../configs/settingData";
 import { SettingHelper } from "../../graphql/modules/setting/setting.helper";
+import fs from "fs";
+import Axios from "axios";
 
-class EVoucherRoute extends BaseRoute {
+class CommonRoute extends BaseRoute {
   constructor() {
     super();
   }
@@ -22,11 +19,9 @@ class EVoucherRoute extends BaseRoute {
   }
 
   async getLogo(req: Request, res: Response) {
-    const logo = await SettingHelper.load(SettingKey.LOGO);
-    res.json({
-      imgUrl : logo
-    })
+    const logo: string = await SettingHelper.load(SettingKey.LOGO);
+    res.redirect(logo);
   }
 }
 
-export default new EVoucherRoute().router;
+export default new CommonRoute().router;

@@ -209,6 +209,7 @@ const schema = gql`
     latitude: Float
     longitude: Float
     
+    deliveringMember: Member
     toMember: Member
   }
 

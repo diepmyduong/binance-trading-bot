@@ -18,6 +18,7 @@ export type IAddressStorehouse = BaseDocument & {
   ward: string; // Phường/xã
   activated: boolean; // hiệu lực hay không hiệu lực
   isPost: boolean;
+  location: any;
   allowPickup: boolean; //cho phép thu gom
 };
 

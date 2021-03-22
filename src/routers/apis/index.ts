@@ -12,6 +12,7 @@ import diligencePointRoute from "./diligencePoint.route";
 import testRoute from "./test.route";
 import orderRoute from "./order.route";
 import serviceRoute from "./service.route";
+import commonRoute from "./common.route";
 
 const router = express.Router();
 router.use("/evoucher", evoucherRoute);
@@ -27,4 +28,5 @@ router.use("/delivery", delivery);
 router.use("/collaborator", collaborator);
 router.use("/test", testRoute);
 router.use("/order", orderRoute);
+router.use("/common", commonRoute);
 export default router;

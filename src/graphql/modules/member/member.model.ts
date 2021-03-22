@@ -108,6 +108,7 @@ const memberSchema = new Schema(
 
 memberSchema.index(
   {
+    code: "text",
     name: "text",
     phone: "text",
     fanpageName: "text",
@@ -117,6 +118,7 @@ memberSchema.index(
   },
   {
     weights: {
+      code: 2,
       name: 2,
       phone: 2,
       fanpageName: 2,

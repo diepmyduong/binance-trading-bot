@@ -17,7 +17,7 @@ class TestRoute extends BaseRoute {
   }
 
   customRouting() {
-    this.router.get("/", this.route(this.updateAddressByShop));
+    this.router.get("/", this.route(this.addAddressToShop));
   }
 
   async test(req: Request, res: Response) {
@@ -28,81 +28,89 @@ class TestRoute extends BaseRoute {
   async addAddressToShop(req: Request, res: Response) {
     // console.log("aaaaaaaaaa ........");
 
-    const shops = await MemberModel.find({});
+    const shops = await MemberModel.find({ isPost: true });
 
     const addressDeliverys = await AddressDeliveryModel.find({ isPost: true });
 
-    const addressStorehouses = await AddressStorehouseModel.find({});
+    const addressStorehouses = await AddressStorehouseModel.find({
+      isPost: true,
+    });
 
-    for (const shop of shops) {
-      const shopAddressDeliveryIds = addressDeliverys
-        .filter((addr) => addr.code !== shop.code)
-        .map((addr) => addr._id);
+    for (const member of shops) {
+      const params: any = {
+        addressStorehouseIds: addressStorehouses.map((id) => id),
+        addressDeliveryIds: addressDeliverys.map((id) => id),
+      };
 
-      const filteredshopAddressStorehouse = addressStorehouses.find(
-        (addr) => addr.code === shop.code
+      const mainAddressStorehouseId = addressStorehouses.find(
+        (addr) => addr.code === member.code
       );
 
-      const shopAddressStorehouseId = filteredshopAddressStorehouse
-        ? filteredshopAddressStorehouse.id
-        : null;
+      params.mainAddressStorehouseId = mainAddressStorehouseId;
 
-      // console.log("shopAddressDeliveryIds", shopAddressDeliveryIds);
-      // console.log("shopAddressStorehouseId", shopAddressStorehouseId);
-
-      if (shopAddressStorehouseId) {
-        await MemberModel.findByIdAndUpdate(
-          shop.id,
-          {
-            addressStorehouseIds: [shopAddressStorehouseId],
-            mainAddressStorehouseId: shopAddressStorehouseId,
-            addressDeliveryIds: shopAddressDeliveryIds,
-          },
-          { new: true }
-        );
-      }
+      await MemberModel.findByIdAndUpdate(
+        member.id,
+        { $set: params },
+        { new: true }
+      );
     }
 
     res.sendStatus(200);
   }
 
-
   async updateAddressByShop(req: Request, res: Response) {
     const members = await MemberModel.find({ isPost: true });
 
-    for (const member of members) {
+    for (let i = 0; i < members.length; i++) {
+      const member = members[i];
+      // console.log("member.code", i,member.code);
+
+      const post = await VietnamPostHelper.getPostByAddress(
+        member.provinceId,
+        member.districtId,
+        member.wardId
+      );
+
+      const location = {
+        coordinates: [post ? post.Longitude : 0, post ? post.Latitude : 0],
+        type: "Point",
+      };
+
       const addressDelivery = await AddressDeliveryModel.findOne({
         code: member.code,
       });
+
+      const params: any = {
+        code: member.code,
+        province: member.province,
+        district: member.district,
+        ward: member.ward,
+        provinceId: member.provinceId,
+        districtId: member.districtId,
+        wardId: member.wardId,
+        name: member.shopName,
+        email: member.username,
+        phone: member.phone,
+        address: member.address,
+        isPost: true,
+      };
+
+      if (location) {
+        params.location = location;
+      } else {
+        params.location = {
+          coordinates: [0, 0],
+          type: "Point",
+        };
+      }
+
       if (addressDelivery) {
         await AddressDeliveryModel.findOneAndUpdate(
           { code: member.code },
-          {
-            province: member.province,
-            district: member.district,
-            ward: member.ward,
-            provinceId: member.provinceId,
-            districtId: member.districtId,
-            wardId: member.wardId,
-            email: member.username,
-            address: member.address,
-            isPost: true,
-          },
+          params,
           { new: true }
         );
       } else {
-        const params: any = {
-          code: member.code,
-          province: member.province,
-          district: member.district,
-          ward: member.ward,
-          provinceId: member.provinceId,
-          districtId: member.districtId,
-          wardId: member.wardId,
-          email: member.username,
-          address: member.address,
-          isPost: true,
-        };
         await AddressDeliveryModel.create(params);
       }
 
@@ -111,46 +119,12 @@ class TestRoute extends BaseRoute {
       });
 
       if (addressStorehouse) {
-        const post = await VietnamPostHelper.getPostByAddress(
-          member.provinceId,
-          member.districtId,
-          member.wardId
-        );
-  
-        const location = {
-          coordinates: [post.Longitude, post.Latitude],
-          type: "Point",
-        };
-
         await AddressStorehouseModel.findOneAndUpdate(
           { code: member.code },
-          {
-            province: member.province,
-            district: member.district,
-            ward: member.ward,
-            provinceId: member.provinceId,
-            districtId: member.districtId,
-            wardId: member.wardId,
-            email: member.username,
-            address: member.address,
-            isPost: true,
-          },
+          params,
           { new: true }
         );
       } else {
-        const params: any = {
-          code: member.code,
-          province: member.province,
-          district: member.district,
-          ward: member.ward,
-          provinceId: member.provinceId,
-          districtId: member.districtId,
-          wardId: member.wardId,
-          email: member.username,
-          address: member.address,
-          isPost: true,
-        };
-
         await AddressStorehouseModel.create(params);
       }
     }

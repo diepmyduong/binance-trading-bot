@@ -4,7 +4,7 @@ import { AuthHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
 import { CustomerLoader } from "../customer/customer.model";
-import { MemberLoader } from "../member/member.model";
+import { MemberLoader, MemberModel } from "../member/member.model";
 import { OrderItemLoader } from "../orderItem/orderItem.model";
 import { UserLoader } from "../user/user.model";
 import { orderService } from "./order.service";
@@ -13,10 +13,17 @@ import {
   IOrder,
   OrderStatus,
   PaymentMethod,
+  ShipMethod,
 } from "./order.model";
 import { CollaboratorLoader } from "../collaborator/collaborator.model";
-import { AddressDeliveryLoader } from "../addressDelivery/addressDelivery.model";
-import { AddressStorehouseLoader } from "../addressStorehouse/addressStorehouse.model";
+import {
+  AddressDeliveryLoader,
+  AddressDeliveryModel,
+} from "../addressDelivery/addressDelivery.model";
+import {
+  AddressStorehouseLoader,
+  AddressStorehouseModel,
+} from "../addressStorehouse/addressStorehouse.model";
 
 const Query = {
   // neu la admin
@@ -27,7 +34,7 @@ const Query = {
     if (context.isMember()) {
       // console.log("args.q.filter", args.q.filter);
       // console.log("args.q.filter.isPrimary", args.q.filter);
-      
+
       if (!isNull(args.q.filter.isPrimary)) {
         delete args.q.filter.isPrimary;
       }
@@ -58,7 +65,7 @@ const Query = {
     if (context.isMember()) {
       set(args, "q.filter.toMemberId", context.id);
     }
-    
+
     return orderService.fetch(args.q);
   },
 };
@@ -74,8 +81,37 @@ const Order = {
   buyer: GraphQLHelper.loadById(CustomerLoader, "buyerId"),
   collaborator: GraphQLHelper.loadById(CollaboratorLoader, "collaboratorId"),
 
-  addressStorehouse: GraphQLHelper.loadById(AddressStorehouseLoader, "addressStorehouseId"),
-  addressDelivery: GraphQLHelper.loadById(AddressDeliveryLoader, "addressDeliveryId"),
+  addressStorehouse: GraphQLHelper.loadById(
+    AddressStorehouseLoader,
+    "addressStorehouseId"
+  ),
+  addressDelivery: GraphQLHelper.loadById(
+    AddressDeliveryLoader,
+    "addressDeliveryId"
+  ),
+
+  deliveringMember: async (root: IOrder, args: any, context: Context) => {
+    if (root.toMemberId) {
+      return await MemberModel.findById(root.toMemberId);
+    } 
+
+    let code = null;
+    if (root.shipMethod === ShipMethod.POST) {
+      const addressDelivery = await AddressDeliveryModel.findById(
+        root.addressDeliveryId
+      );
+      code = addressDelivery.code;
+    }
+
+    if (root.shipMethod === ShipMethod.VNPOST) {
+      const addressStorehouse = await AddressStorehouseModel.findById(
+        root.addressStorehouseId
+      );
+      code = addressStorehouse.code;
+    }
+
+    return await MemberModel.findOne({ code });
+  },
 
   paymentMethodText: async (root: IOrder, args: any, context: Context) => {
     switch (root.paymentMethod) {
@@ -108,7 +144,7 @@ const Order = {
     );
     return shipMethod ? shipMethod.label : "Không có phương thức này";
   },
-  
+
   statusText: async (root: IOrder, args: any, context: Context) => {
     switch (root.status) {
       case OrderStatus.PENDING:
@@ -120,7 +156,7 @@ const Order = {
       case OrderStatus.COMPLETED:
         return `Hoàn tất`;
       case OrderStatus.FAILURE:
-        return `Thất bại`
+        return `Thất bại`;
       case OrderStatus.CANCELED:
         return `Đã huỷ`;
       case OrderStatus.RETURNED:

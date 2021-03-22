@@ -363,7 +363,7 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
         {
           text:
             ShipMethod.POST === data.shipMethod
-              ? "Nhận hàng tại địa chỉ"
+              ? "Nhận hàng tại bưu cục"
               : "Giao hàng tại địa chỉ",
           alignment: "left",
         },

@@ -52,6 +52,7 @@ export type IMember = BaseDocument & {
   addressStorehouseIds: string[]; // danh sách id kho
   addressDeliveryIds: string[]; // danh sách id điểm nhận
   mainAddressStorehouseId: string;
+  isPost: boolean; // là bưu điện
 };
 
 const memberSchema = new Schema(
@@ -94,14 +95,24 @@ const memberSchema = new Schema(
     psids: { type: [String], default: [] },
     chatbotStory: { type: ChatbotStorySchema },
     // delivery
-    mainAddressStorehouseId:{ type: Schema.Types.ObjectId, ref: "AddressStorehouse" },
-    mainAddressDeliveryId:{ type: Schema.Types.ObjectId, ref: "AddressDelivery" }, //
+    mainAddressStorehouseId: {
+      type: Schema.Types.ObjectId,
+      ref: "AddressStorehouse",
+    },
+    mainAddressDeliveryId: {
+      type: Schema.Types.ObjectId,
+      ref: "AddressDelivery",
+    }, //
     addressStorehouseIds: {
       type: [{ type: Schema.Types.ObjectId, ref: "AddressStorehouse" }],
     }, // danh sách id kho
     addressDeliveryIds: {
       type: [{ type: Schema.Types.ObjectId, ref: "AddressDelivery" }],
     }, //
+    isPost: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

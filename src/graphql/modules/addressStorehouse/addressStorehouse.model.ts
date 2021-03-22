@@ -17,7 +17,8 @@ export type IAddressStorehouse = BaseDocument & {
   district: string; // Quận/huyện
   ward: string; // Phường/xã
   activated: boolean; // hiệu lực hay không hiệu lực
-  allowPickup: boolean //cho phép thu gom
+  isPost: boolean;
+  allowPickup: boolean; //cho phép thu gom
 };
 
 //địa điểm kho
@@ -36,6 +37,7 @@ const addressStorehouseSchema = new Schema(
     ward: { type: String },
     allowPickup: {type: Boolean},
     activated: { type: Boolean, default: true },
+    isPost: { type: Boolean, default: false },
     location: { type: LocationSchema ,default: null }
   },
   { timestamps: true }

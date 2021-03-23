@@ -10,21 +10,11 @@ import { CustomerModel } from "./customer.model";
 const Mutation = {
   loginCustomerByToken: async (root: any, args: any, context: Context) => {
     let { idToken, psid, pageId } = args;
-    // console.log('idToken', idToken);
-    // console.log('psid', psid);
-    // console.log("pageId", pageId);
     const tokenValid = !context.messengerSignPayload;
-    // console.log('context.messengerSignPayload', context.messengerSignPayload);
-    // console.log('!psid || !pageId', !psid || !pageId);
-    // console.log("tokenValid", tokenValid);
-
-    // console.log('psid', psid);
-    // console.log('pageId', pageId);
     if (tokenValid) {
       throw ErrorHelper.permissionDeny();
     } else {
       if (context.messengerSignPayload) {
-        //vuong fix - set psid pageId alwaits null
         psid = context.messengerSignPayload.psid;
         pageId = context.messengerSignPayload.pageId;
       }
@@ -33,11 +23,16 @@ const Mutation = {
     let decode = await firebaseHelper.verifyIdToken(idToken);
     let phone = decode.phone_number;
     if (!phone) throw ErrorHelper.badToken();
-    // console.log('psid', psid);
-    // console.log('pageId', pageId);
-    const member = await MemberModel.findOne({ fanpageId: pageId });
-    // console.log('member', member);
-    if (!member || !member.chatbotKey) throw Error("Fanpage này chưa được đăng ký.");
+
+    let member = null;
+
+    if (pageId) {
+      member = await MemberModel.findOne({ fanpageId: pageId, activated: true });
+      if (!member || !member.chatbotKey) throw Error("Fanpage này chưa được đăng ký.");
+    } else {
+      member = await MemberModel.findOne({ code: context.code, activated: true });
+      if (!member) throw Error("Fanpage này chưa được đăng ký.");
+    }
 
     phone = UtilsHelper.parsePhone(phone, "0");
     let customer = await CustomerModel.findOne({ uid: decode.uid });

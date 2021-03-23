@@ -6,9 +6,10 @@ const Schema = mongoose.Schema;
 export type ICollaboratorProduct = BaseDocument & {
   shortCode?: string;
   shortUrl?: string;
+  clickCount?: number;
   likeCount?: number;
   shareCount?: number;
-  commentCount?: string;
+  commentCount?: number;
   collaboratorId?: string;
   productId?: string;
 };
@@ -17,6 +18,7 @@ const collaboratorProductSchema = new Schema(
   {
     shortCode: { type: String },
     shortUrl: { type: String },
+    clickCount: { type: Number, default: 0 },
     likeCount: { type: Number, default: 0 },
     shareCount: { type: Number, default: 0 },
     commentCount: { type: Number, default: 0 },

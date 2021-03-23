@@ -53,6 +53,7 @@ export type IMember = BaseDocument & {
   addressDeliveryIds: string[]; // danh sách id điểm nhận
   mainAddressStorehouseId: string;
   isPost: boolean; // là bưu điện
+  facebookAccessToken: string;
 };
 
 const memberSchema = new Schema(
@@ -112,6 +113,9 @@ const memberSchema = new Schema(
     isPost: {
       type: Boolean,
       default: false,
+    },
+    facebookAccessToken: {
+      type: String,
     },
   },
   { timestamps: true }

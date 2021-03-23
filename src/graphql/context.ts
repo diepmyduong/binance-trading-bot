@@ -5,6 +5,7 @@ import { TokenExpiredError } from "jsonwebtoken";
 import { ROLES } from "../constants/role.const";
 import { ChatBotHelper, MessengerTokenDecoded } from "../helpers/chatbot.helper";
 import { ObjectId } from "bson";
+import { connect } from "mongodb";
 export type TokenData = {
   role: string;
   _id: string;
@@ -18,10 +19,12 @@ export type SignedRequestPayload = {
   issued_at: number;
   page_id: number;
 };
+
 export class Context {
   constructor(
     public isAuth: boolean = false,
     public isTokenExpired: boolean = false,
+    public code: string = null,
     public campaignCode: string = null,
     public collaboratorId: string = null,
     public tokenData?: TokenData,
@@ -95,18 +98,22 @@ export class Context {
   async parseSig(params: any) {
     try {
       const { req, connection } = params;
-      let sig;
-      let psid;
-      let pageId;
+      let sig,psid, pageId, code;
       if (req) {
         sig = _.get(req, "headers.x-sig") || _.get(req, "query.x-sig");
         psid = _.get(req, "headers.x-psid") || _.get(req, "query.x-psid");
         pageId = _.get(req, "headers.x-page-id") || _.get(req, "query.x-page-id");
+        code = _.get(req, "headers.x-code") || _.get(req, "query.x-code");
       }
       if (connection && connection.context) {
         sig = connection.context["x-sig"];
         psid = connection.context["x-psid"];
         pageId = connection.context["x-page-id"];
+        code = connection.context["x-code"];
+      }
+
+      if(code){
+        this.code = code;
       }
 
       if (psid && pageId) {
@@ -120,7 +127,6 @@ export class Context {
         signPayload.psid = !signPayload.psid || signPayload.psid == "" ? psid : signPayload.psid;
         this.messengerSignPayload = signPayload;
         this.isAuth = true;
-
         this.tokenData = { _id: this.messengerSignPayload.psid, role: ROLES.MESSENGER };
       }
     } catch (err) {

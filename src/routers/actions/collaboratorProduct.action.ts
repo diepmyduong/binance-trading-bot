@@ -44,7 +44,7 @@ class CollaboratorProductAction extends BaseRoute {
 
     const shopUri = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN).then(
       (webDomain: String) => {
-        return `${webDomain}/?pageId=${member.fanpageId}&collaboratorId=${collaborator.id}&productId=${collaProduct.productId}`;
+        return `${webDomain}/?code=${member.code}&collaboratorId=${collaborator.id}&productId=${collaProduct.productId}`;
       }
     );
 

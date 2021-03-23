@@ -31,10 +31,12 @@ const Mutation = {
       if (!member || !member.chatbotKey) throw Error("Fanpage này chưa được đăng ký.");
     } else {
       member = await MemberModel.findOne({ code: context.code, activated: true });
-      if (!member) throw Error("Fanpage này chưa được đăng ký.");
+      if (!member) throw Error("Mã bưu cục này không có");
     }
 
-    phone = UtilsHelper.parsePhone(phone, "0");
+    // console.log('member',member);
+
+    // phone = UtilsHelper.parsePhone(phone, "0");
     let customer = await CustomerModel.findOne({ uid: decode.uid });
     // Tạo mới tài khoản khách hàng nếu chưa có
     if (!customer) {
@@ -55,14 +57,19 @@ const Mutation = {
         pageAccounts: [],
       });
     }
+    // console.log('customer',customer);
     // Nếu tài khoản chưa từng đăng nhập bằng psid mới thì thêm vào danh sách tài khoản của page
-    if (!customer.pageAccounts.find((a) => a.psid == psid)) {
-      customer.pageAccounts.push({
-        memberId: member._id,
-        pageId: member.fanpageId,
-        psid: psid,
-      });
+    // console.log('customer.pageAccounts.find((a) => a.psid == psid)',customer.pageAccounts.find((a) => a.psid == psid));
+    if(psid){
+      if (!customer.pageAccounts.find((a) => a.psid == psid)) {
+        customer.pageAccounts.push({
+          memberId: member._id,
+          pageId: member.fanpageId,
+          psid: psid,
+        });
+      }
     }
+
     return {
       customer: await customer.save(),
       token: new CustomerHelper(customer).getToken({
@@ -75,17 +82,3 @@ const Mutation = {
 };
 
 export default { Mutation };
-
-// (async () => {
-//   const root: any = null;
-//   const args: any = {
-
-//   }
-
-//   const context: any = null;
-
-//   const result = await Mutation.loginCustomerByToken(root, args, context);
-
-//   console.log('result', result);
-
-// })();

@@ -19,7 +19,7 @@ const schema = gql`
     updateCollaborator(id: ID!, data: UpdateCollaboratorInput!): Collaborator
     deleteOneCollaborator(id: ID!): Collaborator
     importCollaborators(file: Upload!): String
-    
+    trackCollaboratorUrlEngagement(id: String!, accessToken:String): [Collaborator]
     # Add Mutation
   }
 
@@ -56,6 +56,15 @@ const schema = gql`
 
     customer: Customer
     member: Member
+
+    "Số lượng click"
+    clickCount: Int
+    "Số lượng like"
+    likeCount: Int
+    "Số lượng share"
+    shareCount: Int
+    "Số lượng comment"
+    commentCount: Int
   }
 
 

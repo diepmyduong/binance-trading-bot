@@ -12,6 +12,10 @@ export type ICollaborator = BaseDocument & {
   customerId: string; // khách hàng
   shortCode: string;
   shortUrl: string;
+  clickCount?: number;
+  likeCount?: number;
+  shareCount?: number;
+  commentCount?: number;
 };
 
 const collaboratorSchema = new Schema(
@@ -19,6 +23,10 @@ const collaboratorSchema = new Schema(
     code: { type: String },
     name: { type: String, required: true },
     phone: { type: String, required: true },
+    clickCount: { type: Number, default: 0 },
+    likeCount: { type: Number, default: 0 },
+    shareCount: { type: Number, default: 0 },
+    commentCount: { type: Number, default: 0 },
     memberId: { type: Schema.Types.ObjectId, ref: "Member" },
     customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
     shortCode: { type: String },

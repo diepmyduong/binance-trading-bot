@@ -36,7 +36,7 @@ const Mutation = {
 
     // console.log('member',member);
 
-    // phone = UtilsHelper.parsePhone(phone, "0");
+    phone = UtilsHelper.parsePhone(phone, "0");
     let customer = await CustomerModel.findOne({ uid: decode.uid });
     // Tạo mới tài khoản khách hàng nếu chưa có
     if (!customer) {

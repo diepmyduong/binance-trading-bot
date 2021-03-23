@@ -15,7 +15,6 @@ const Mutation = {
       _id: id,
     };
 
-    // User customer - PENDING    -> CANCELED
     if (context.isMember()) {
       params.sellerId = context.id;
     }
@@ -38,14 +37,14 @@ const Mutation = {
     }
 
     if (context.isMember()) {
-      if (order.status !== OrderStatus.PENDING) {
+      if (![OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING].includes(order.status)) {
         throw ErrorHelper.somethingWentWrong(
           "Đơn hàng này không hủy được."
         );
       }
     }
 
-    if (order.status === OrderStatus.DELIVERING) {
+    if (order.status === OrderStatus.DELIVERING && order.deliveryInfo.itemCode) {
       await VietnamPostHelper.cancelOrder(order.deliveryInfo.orderId);
     }
 

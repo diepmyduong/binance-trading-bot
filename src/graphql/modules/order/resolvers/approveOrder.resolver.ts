@@ -37,6 +37,8 @@ const approveOrder = async (root: any, args: any, context: Context) => {
     params.sellerId = context.id;
   }
 
+  console.log("params",params);
+
   const order = await OrderModel.findOne(params);
 
   if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");

@@ -27,7 +27,8 @@ const schema = gql`
     updateMemberAddressStorehouse(id: ID!, addressStorehouseIds: [ID], mainAddressStorehouseId:ID): Member
     importMembers(file: Upload!): String
     importUpdateMembers(file: Upload!): String
-    updateAllPostAddress(id: ID!): Member
+    updateAllAddressDelivery(id: ID!): Member
+    updateAllAddressStorehouse(id: ID!): Member
     # Add Mutation
   }
 

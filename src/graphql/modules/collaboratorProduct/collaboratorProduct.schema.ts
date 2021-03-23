@@ -8,8 +8,11 @@ const schema = gql`
   }
 
   extend type Mutation {
-    createCollaboratorProduct(data: CreateCollaboratorProductInput!): CollaboratorProduct
+    createCollaboratorProduct(
+      data: CreateCollaboratorProductInput!
+    ): CollaboratorProduct
     deleteOneCollaboratorProduct(id: ID!): CollaboratorProduct
+    trackProductUrlEngagement(campaignId: String!, accessToken:String): [CollaboratorProduct]
     # Add Mutation
   }
 
@@ -19,7 +22,7 @@ const schema = gql`
   }
 
   type CollaboratorProduct {
-    id: String    
+    id: String
     createdAt: DateTime
     updatedAt: DateTime
     "Mã cộng tác viên"
@@ -33,6 +36,14 @@ const schema = gql`
     shortCode: String
     "Link giới thiệu"
     shortUrl: String
+    "Số lượng click"
+    clickCount: Int
+    "Số lượng like"
+    likeCount: Int
+    "Số lượng share"
+    shareCount: Int
+    "Số lượng comment"
+    commentCount: Int
   }
 
   type CollaboratorProductPageData {

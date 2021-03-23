@@ -35,7 +35,7 @@ class CollaboratorAction extends BaseRoute {
       throw ErrorHelper.mgQueryFailed("Thành viên");
 
     const shopUri = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN).then((webDomain: String) => {
-      return `${webDomain}/?pageId=${member.fanpageId}&collaboratorId=${collaborator.id}`
+      return `${webDomain}/?code=${member.code}&collaboratorId=${collaborator.id}`
     });
     
     res.redirect(shopUri);

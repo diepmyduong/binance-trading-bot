@@ -7,7 +7,7 @@ import { AddressStorehouseModel } from "../../addressStorehouse/addressStorehous
 import { ErrorHelper } from "../../../../base/error";
 
 const Mutation = {
-  updateAllPostAddress: async (root: any, args: any, context: Context) => {
+  updateAllAddressDelivery: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.MEMBER]);
 
     const { id } = args;
@@ -16,21 +16,20 @@ const Mutation = {
     if (!member) throw ErrorHelper.requestDataInvalid("mã nhân viên");
 
     const addressDeliverys = await AddressDeliveryModel.find({ isPost: true });
+    const addressDeliveryIds:any[] = addressDeliverys.map((id) => id);
+    
 
-    const addressStorehouses = await AddressStorehouseModel.find({
-      isPost: true,
-    });
+    for (const id of member.addressDeliveryIds) {
+        if(!addressDeliveryIds.find(addrId => addrId === id.toString())){
+          addressDeliveryIds.push(id);
+        }
+    }
 
     const params: any = {
-      addressStorehouseIds: addressStorehouses.map((id) => id),
-      addressDeliveryIds: addressDeliverys.map((id) => id),
+      addressDeliveryIds,
     };
 
-    const mainAddressStorehouseId = addressStorehouses.find(
-      (addr) => addr.code === member.code
-    );
 
-    params.mainAddressStorehouseId = mainAddressStorehouseId;
 
     return await MemberModel.findByIdAndUpdate(
       member.id,

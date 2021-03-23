@@ -29,10 +29,6 @@ class CustomerCommissionLogService extends CrudService<
     };
 
     if (type === RECEIVE_COMMISSION_2_FROM_ORDER) params.orderId = id;
-    if (type === RECEIVE_COMMISSION_2_FROM_SMS) params.regisSMSId = id;
-    if (type === RECEIVE_COMMISSION_2_FROM_REGI_SERVICE)
-      params.regisServiceId = id;
-
     const commissionLog = new CustomerCommissionLogModel(params);
     return await commissionLog.save();
   };

@@ -1,5 +1,5 @@
 import { Subject } from "rxjs";
-import { CustomerCommissionLogType } from "../graphql/modules/customerCommissionLog/customerCommissionLog.model";
+import { CustomerCommissionLogModel, CustomerCommissionLogType } from "../graphql/modules/customerCommissionLog/customerCommissionLog.model";
 
 import { SettingKey } from "../configs/settingData";
 import { CommissionLogType } from "../graphql/modules/commissionLog/commissionLog.model";
@@ -38,6 +38,7 @@ import { StoreHouseCommissionLogModel } from "../graphql/modules/storeHouseCommi
 import { CollaboratorModel } from "../graphql/modules/collaborator/collaborator.model";
 import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
 import { OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
+import { customerCommissionLogService } from "../graphql/modules/customerCommissionLog/customerCommissionLog.service";
 
 //set lại type chứ ko bị đụng truncate thằng dòng dưới
 const { RECEIVE_FROM_ORDER: CUSTOMER_TYPE } = CustomerPointLogType;
@@ -269,47 +270,55 @@ onApprovedCompletedOrder.subscribe(async (order) => {
 // Tính chiết khấu dành cho người giới thiêu
 // Gửi mess cho người giới thiệu
 onApprovedCompletedOrder.subscribe(async (order) => {
-  const { sellerId, commission2, _id, code } = order;
+  const { sellerId, commission2, _id, code , collaboratorId } = order;
   const shopper = await MemberLoader.load(sellerId);
   if (!shopper) throw ErrorHelper.mgRecoredNotFound("chủ shop");
   if (commission2) {
     if (commission2 > 0) {
       // Kiểm tra có người giới thiệu shop đó ko ?
-      const presenterId = shopper.parentIds ? shopper.parentIds[0] : null;
-      if (presenterId) {
-        const presenter = await MemberModel.findById(presenterId);
-        if (!presenter) return;
-
-        //chi trả Hoa hồng cho người giới thiệu
-        await payCommission({
-          memberId: presenter._id,
-          type: RECEIVE_COMMISSION_2_FROM_ORDER,
-          currentCommission: presenter.commission,
-          commission: commission2,
-          id: _id,
-        }).then((res) => {
-          const commissionUpdating = res[1];
-          if (presenter.psids) {
-            SettingHelper.load(
-              SettingKey.ORDER_COMMISSION_MSG_FOR_PRESENTER
-            ).then((msg) => {
-              const params = {
-                apiKey: presenter.chatbotKey,
-                psids: presenter.psids,
-                message: msg,
-                context: {
-                  shopper,
-                  code,
-                  commission: commission2,
-                  myCommission: commission2
-                    ? commissionUpdating.commission
-                    : null,
-                },
-              };
-              onSendChatBotText.next(params);
-            });
-          }
+      if(collaboratorId){
+        const collaborator = await CollaboratorModel.findById(collaboratorId);
+        const customerPresenter = await MemberModel.findById(collaborator.customerId);
+        await customerCommissionLogService.payOneCommission({
+          customerId: customerPresenter.id,
+          memberId: sellerId,
+          type: CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER,
+          value: commission2,
         });
+      }else{
+        const presenterId = shopper.parentIds ? shopper.parentIds[0] : null;
+        if (presenterId) {
+          const memberPresenter = await MemberModel.findById(presenterId);
+          await payCommission({
+            memberId: memberPresenter._id,
+            type: RECEIVE_COMMISSION_2_FROM_ORDER,
+            currentCommission: memberPresenter.commission,
+            commission: commission2,
+            id: _id,
+          }).then((res) => {
+            const commissionUpdating = res[1];
+            if (memberPresenter.psids) {
+              SettingHelper.load(
+                SettingKey.ORDER_COMMISSION_MSG_FOR_PRESENTER
+              ).then((msg) => {
+                const params = {
+                  apiKey: memberPresenter.chatbotKey,
+                  psids: memberPresenter.psids,
+                  message: msg,
+                  context: {
+                    shopper,
+                    code,
+                    commission: commission2,
+                    myCommission: commission2
+                      ? commissionUpdating.commission
+                      : null,
+                  },
+                };
+                onSendChatBotText.next(params);
+              });
+            }
+          });
+        }
       }
     }
   }
@@ -318,6 +327,9 @@ onApprovedCompletedOrder.subscribe(async (order) => {
 // tinh hoa hồng kho
 onApprovedCompletedOrder.subscribe(async (order) => {
   const { commission3, id, addressDeliveryId } = order;
+
+  console.log("commission3",commission3);
+
   if (commission3 > 0) {
     const addressDelivery = await AddressDeliveryModel.findById(
       addressDeliveryId

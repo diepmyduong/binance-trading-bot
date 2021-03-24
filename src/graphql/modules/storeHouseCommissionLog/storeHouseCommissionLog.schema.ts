@@ -45,6 +45,8 @@ const schema = gql`
     value: Float
     "Đơn hàng"
     orderId: String
+    "Ghi chú"
+    note: String
     order:Order
   }
 

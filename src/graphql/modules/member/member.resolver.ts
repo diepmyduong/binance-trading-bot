@@ -114,8 +114,11 @@ const Member = {
   ),
 
   addressDelivery: async (root: IMember, args: any, context: Context) => {
-    // console.log("member", root.code);
-    return await AddressDeliveryModel.findOne({ code: root.code });
+    const address = await AddressDeliveryModel.findOne({ code: root.code });
+    const noExistedAddress = root.addressDeliveryIds.findIndex(addr => addr.toString() === address.id.toString()) === -1;
+    if(noExistedAddress) 
+      return null;
+    return address;
   },
 
   subscribers: async (root: IMember, args: any, context: Context) => {
@@ -134,28 +137,9 @@ const Member = {
   }
 };
 
-const Shop = {
-  addressDelivery: async (root: IMember, args: any, context: Context) => {
-    return await AddressDeliveryModel.findOne({ code: root.code });
-  },
-  
-  mainAddressStorehouse: GraphQLHelper.loadById(
-    AddressStorehouseLoader,
-    "mainAddressStorehouseId"
-  ),
-  addressStorehouses: GraphQLHelper.loadManyById(
-    AddressStorehouseLoader,
-    "addressStorehouseIds"
-  ),
-  addressDeliverys: GraphQLHelper.loadManyById(
-    AddressDeliveryLoader,
-    "addressDeliveryIds"
-  ),
-}
 
 export default {
   Query,
   Mutation,
   Member,
-  Shop
 };

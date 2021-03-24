@@ -21,8 +21,6 @@ const Mutation = {
       }
     }
 
-    console.log('context',context);
-
     let member = null;
     // kiem tra co pageid ko ?
     if (pageId) {
@@ -33,8 +31,10 @@ const Mutation = {
       if (!member) throw Error("Mã bưu cục này không có");
     }
 
+
     phone = UtilsHelper.parsePhone(phone, "0");
     let customer = await CustomerModel.findOne({ uid: decode.uid });
+    
     // Tạo mới tài khoản khách hàng nếu chưa có
     if (!customer) {
       customer = new CustomerModel({

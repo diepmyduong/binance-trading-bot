@@ -12,7 +12,6 @@ import { auth } from "../../middleware/auth";
 
 import _, { reverse, sortBy } from "lodash";
 import numeral from "numeral";
-import path from "path";
 import { PrinterHelper } from "../../helpers/printerHelper";
 import {
   // getShipMethods,
@@ -27,6 +26,7 @@ import { MemberModel } from "../../graphql/modules/member/member.model";
 import { LOGO_IMAGE_CONTENT } from "../../constants/resouce.const";
 import { SettingHelper } from "../../graphql/modules/setting/setting.helper";
 import { SettingKey } from "../../configs/settingData";
+import { createCanvas, loadImage }  from 'canvas';
 
 class OrderRoute extends BaseRoute {
   constructor() {
@@ -85,8 +85,9 @@ class OrderRoute extends BaseRoute {
       order.addressDeliveryId
     );
     const member = await MemberModel.findById(order.sellerId);
+    const logoImageUrl = await SettingHelper.load(SettingKey.LOGO);
 
-    const pdfContent = await getPDFOrder(order, addressDelivery, member);
+    const pdfContent = await getPDFOrder({ order, addressDelivery, member, logoImageUrl });
     return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${order.code}`);
   }
 
@@ -111,17 +112,30 @@ class OrderRoute extends BaseRoute {
     const addressDelivery = await AddressDeliveryModel.findById(
       order.addressDeliveryId
     );
-    
+
     const member = await MemberModel.findById(order.sellerId);
 
-    const pdfContent = await getPDFOrder(order, addressDelivery, member);
+    const logoImageUrl = await SettingHelper.load(SettingKey.LOGO);
+
+    const pdfContent = await getPDFOrder({ order, addressDelivery, member, logoImageUrl });
     return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${order.code}`);
   }
 }
 
 export default new OrderRoute().router;
 
-const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
+const getBase64ImageFromURL = async (url: string) => {
+  const canvas = createCanvas(400,400)
+  const ctx = canvas.getContext('2d');
+  const image = await loadImage(url);
+  ctx.drawImage(image, 0, 0, 300, 300);
+  return ctx.canvas.toDataURL();
+};
+
+const getPDFOrder = async ({ order, addressDelivery, member, logoImageUrl }: any) => {
+
+  const imgBase64 = await getBase64ImageFromURL(logoImageUrl);
+
   const PHIEU_XUAT_KHO = {
     text: "Phiếu xuất kho",
     color: "#333333",
@@ -143,7 +157,7 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
         alignment: "right",
       },
       {
-        text: data.code,
+        text: order.code,
         bold: true,
         color: "#333333",
         fontSize: 12,
@@ -164,7 +178,7 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
         alignment: "right",
       },
       {
-        text: data.createdAt.toISOString().split(/T/)[0],
+        text: order.createdAt.toISOString().split(/T/)[0],
         bold: true,
         color: "#333333",
         fontSize: 12,
@@ -204,7 +218,7 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
         margin: [0, 20, 0, 5],
       },
       {
-        text: data.buyerName,
+        text: order.buyerName,
         bold: true,
         color: "#333333",
         margin: [0, 20, 0, 5],
@@ -286,11 +300,11 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
           alignment: "left",
         },
         {
-          text: moneyCast(data.sellerBonusPoint),
+          text: moneyCast(order.sellerBonusPoint),
           alignment: "left",
         },
         {
-          text: moneyCast(data.buyerBonusPoint),
+          text: moneyCast(order.buyerBonusPoint),
           alignment: "left",
         },
       ],
@@ -326,15 +340,15 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
     {
       columns: [
         {
-          text: moneyCast(data.commission1),
+          text: moneyCast(order.commission1),
           alignment: "left",
         },
         {
-          text: moneyCast(data.commission2),
+          text: moneyCast(order.commission2),
           alignment: "left",
         },
         {
-          text: moneyCast(data.commission3),
+          text: moneyCast(order.commission3),
           alignment: "left",
         },
       ],
@@ -364,13 +378,13 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
       columns: [
         {
           text:
-            ShipMethod.POST === data.shipMethod
+            ShipMethod.POST === order.shipMethod
               ? "Nhận hàng tại bưu cục"
               : "Giao hàng tại địa chỉ",
           alignment: "left",
         },
         {
-          text: data.deliveryInfo ? data.deliveryInfo.itemCode : "[Không có]",
+          text: order.deliveryInfo ? order.deliveryInfo.itemCode : "[Không có]",
           alignment: "left",
         },
       ],
@@ -378,82 +392,82 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
   ];
 
   const DIA_DIEM_GIAO_NHAN =
-    ShipMethod.POST === data.shipMethod
+    ShipMethod.POST === order.shipMethod
       ? [
-          {
-            columns: [
-              {
-                text: "Tên điểm nhận",
-                bold: true,
-                color: "#333333",
-                margin: [0, 20, 0, 5],
-                alignment: "left",
-              },
-              {
-                text: "SĐT điểm nhận",
-                bold: true,
-                color: "#333333",
-                margin: [0, 20, 0, 5],
-                alignment: "left",
-              },
-              {
-                text: "Địa chỉ điểm nhận",
-                bold: true,
-                color: "#333333",
-                margin: [0, 20, 0, 5],
-                alignment: "left",
-              },
-            ],
-          },
-          {
-            columns: [
-              {
-                text: addressDelivery.name,
-                alignment: "left",
-              },
-              {
-                text: addressDelivery.phone,
-                alignment: "left",
-              },
-              {
-                text: addressDelivery.address,
-                alignment: "left",
-              },
-            ],
-          },
-        ]
+        {
+          columns: [
+            {
+              text: "Tên điểm nhận",
+              bold: true,
+              color: "#333333",
+              margin: [0, 20, 0, 5],
+              alignment: "left",
+            },
+            {
+              text: "SĐT điểm nhận",
+              bold: true,
+              color: "#333333",
+              margin: [0, 20, 0, 5],
+              alignment: "left",
+            },
+            {
+              text: "Địa chỉ điểm nhận",
+              bold: true,
+              color: "#333333",
+              margin: [0, 20, 0, 5],
+              alignment: "left",
+            },
+          ],
+        },
+        {
+          columns: [
+            {
+              text: addressDelivery.name,
+              alignment: "left",
+            },
+            {
+              text: addressDelivery.phone,
+              alignment: "left",
+            },
+            {
+              text: addressDelivery.address,
+              alignment: "left",
+            },
+          ],
+        },
+      ]
       : [
-          {
-            columns: [
-              {
-                text: "Địa chỉ giao",
-                bold: true,
-                color: "#333333",
-                margin: [0, 20, 0, 5],
-                alignment: "left",
-              },
-              {
-                text: "SĐT khách hàng",
-                bold: true,
-                color: "#333333",
-                margin: [0, 20, 0, 5],
-                alignment: "left",
-              },
-            ],
-          },
-          {
-            columns: [
-              {
-                text: `${data.buyerAddress} - ${data.buyerWard} -  ${data.buyerDistrict} -  ${data.buyerProvince}`,
-                alignment: "left",
-              },
-              {
-                text: data.buyerPhone,
-                alignment: "left",
-              },
-            ],
-          },
-        ];
+        {
+          columns: [
+            {
+              text: "Địa chỉ giao",
+              bold: true,
+              color: "#333333",
+              margin: [0, 20, 0, 5],
+              alignment: "left",
+            },
+            {
+              text: "SĐT khách hàng",
+              bold: true,
+              color: "#333333",
+              margin: [0, 20, 0, 5],
+              alignment: "left",
+            },
+          ],
+        },
+        {
+          columns: [
+            {
+              text: `${order.buyerAddress} - ${order.buyerWard} -  ${order.buyerDistrict} -  ${order.buyerProvince}`,
+              alignment: "left",
+            },
+            {
+              text: order.buyerPhone,
+              alignment: "left",
+            },
+          ],
+        },
+      ];
 
   const GHI_CHU = {
     columns: [
@@ -493,7 +507,7 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
             { text: "Đơn giá", alignment: "center" },
             { text: "Thành tiền", alignment: "center" },
           ],
-          ...(await getTableContent(data.itemIds)),
+          ...(await getTableContent(order.itemIds)),
         ],
       },
     },
@@ -514,7 +528,7 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
         alignment: "left",
       },
       {
-        text: moneyCast(data.subtotal),
+        text: moneyCast(order.subtotal),
         margin: [0, 0, 0, 5],
         alignment: "right",
       },
@@ -536,7 +550,7 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
         alignment: "left",
       },
       {
-        text: moneyCast(data.shipfee),
+        text: moneyCast(order.shipfee),
         margin: [0, 0, 0, 5],
         alignment: "right",
       },
@@ -558,7 +572,7 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
         alignment: "left",
       },
       {
-        text: moneyCast(data.subtotal),
+        text: moneyCast(order.subtotal),
         margin: [0, 0, 0, 5],
         alignment: "right",
       },
@@ -605,13 +619,13 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
     },
   };
 
-  const logoImage = await SettingHelper.load(SettingKey.LOGO);
+
 
   const LOGO = {
-    image: logoImage,
+    image: imgBase64,
     width: 150,
   };
- 
+
   var dd = {
     content: [
       {
@@ -683,5 +697,5 @@ const getTableContent = async (items: any) => {
 };
 
 const moneyCast = (value: any) => {
-  return `${value ? `${numeral(value).format("0.0")} VND`: ""}`;
+  return `${value ? `${numeral(value).format("0.0")} VND` : ""}`;
 };

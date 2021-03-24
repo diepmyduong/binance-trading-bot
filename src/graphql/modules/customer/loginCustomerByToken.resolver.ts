@@ -10,22 +10,16 @@ import { CustomerModel } from "./customer.model";
 const Mutation = {
   loginCustomerByToken: async (root: any, args: any, context: Context) => {
     let { idToken, psid, pageId } = args;
-    const tokenValid = !context.messengerSignPayload;
-    if (tokenValid) {
-      throw ErrorHelper.permissionDeny();
-    } else {
+    let decode = await firebaseHelper.verifyIdToken(idToken);
+    let phone = decode.phone_number;
+    if (!phone) throw ErrorHelper.badToken();
+    if (context.messengerSignPayload) {
       if (context.messengerSignPayload) {
         psid = context.messengerSignPayload.psid;
         pageId = context.messengerSignPayload.pageId;
       }
     }
-
-    let decode = await firebaseHelper.verifyIdToken(idToken);
-    let phone = decode.phone_number;
-    if (!phone) throw ErrorHelper.badToken();
-
     let member = null;
-
     if (pageId) {
       member = await MemberModel.findOne({ fanpageId: pageId, activated: true });
       if (!member || !member.chatbotKey) throw Error("Fanpage này chưa được đăng ký.");
@@ -40,22 +34,26 @@ const Mutation = {
     let customer = await CustomerModel.findOne({ uid: decode.uid });
     // Tạo mới tài khoản khách hàng nếu chưa có
     if (!customer) {
-      const chatbotHelper = new ChatBotHelper(member.chatbotKey);
-      const subscriberInfo = await chatbotHelper.getSubscriber(psid).catch((err) => {
-        return {
-          name: "Khách Vãng lai",
-        } as SubscriberInfo;
-      });
       customer = new CustomerModel({
         code: await CustomerHelper.generateCode(), // Mã khách hàng
-        name: subscriberInfo.name,
-        facebookName: subscriberInfo.name,
+        name: phone,
         uid: decode.uid,
         phone: phone,
-        avatar: subscriberInfo.profilePic,
-        gender: subscriberInfo.gender,
+        avatar: "https://placekitten.com/120",
         pageAccounts: [],
       });
+      if (psid) {
+        const chatbotHelper = new ChatBotHelper(member.chatbotKey);
+        const subscriberInfo = await chatbotHelper.getSubscriber(psid).catch((err) => {
+          return {
+            name: "Khách Vãng lai",
+          } as SubscriberInfo;
+        });
+        customer.name = subscriberInfo.name;
+        customer.facebookName = subscriberInfo.name;
+        customer.avatar = subscriberInfo.profilePic;
+        customer.gender = subscriberInfo.gender;
+      }
     }
     // console.log('customer',customer);
     // Nếu tài khoản chưa từng đăng nhập bằng psid mới thì thêm vào danh sách tài khoản của page

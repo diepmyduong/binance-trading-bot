@@ -9,31 +9,28 @@ import { ErrorHelper } from "../../../../base/error";
 const Mutation = {
   updateAllAddressDelivery: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.MEMBER]);
-
     const { id } = args;
+    let memberId = id;
+    if (context.isMember()) {
+      memberId = context.id;
+    }
 
-    const member = await MemberModel.findById(id);
+    const member = await MemberModel.findById(memberId);
     if (!member) throw ErrorHelper.requestDataInvalid("mã nhân viên");
 
     const addressDeliverys = await AddressDeliveryModel.find({ isPost: true });
-    const addressDeliveryIds:any[] = addressDeliverys.map((id) => id);
-    
+    const addressDeliveryIds = addressDeliverys.map((address) => address.id);
+
 
     for (const id of member.addressDeliveryIds) {
-        if(!addressDeliveryIds.find(addrId => addrId === id.toString())){
-          addressDeliveryIds.push(id);
-        }
+      if (!addressDeliveryIds.find(addrId => addrId === id.toString())) {
+        addressDeliveryIds.push(id);
+      }
     }
-
-    const params: any = {
-      addressDeliveryIds,
-    };
-
-
 
     return await MemberModel.findByIdAndUpdate(
       member.id,
-      { $set: params },
+      { $set: { addressDeliveryIds } },
       { new: true }
     );
   },

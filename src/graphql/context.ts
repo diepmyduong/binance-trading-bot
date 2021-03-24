@@ -5,12 +5,13 @@ import { TokenExpiredError } from "jsonwebtoken";
 import { ROLES } from "../constants/role.const";
 import { ChatBotHelper, MessengerTokenDecoded } from "../helpers/chatbot.helper";
 import { ObjectId } from "bson";
-import { connect } from "mongodb";
+
 export type TokenData = {
   role: string;
   _id: string;
   [name: string]: string;
 };
+
 export type SignedRequestPayload = {
   psid: string;
   algorithm: string;
@@ -105,6 +106,7 @@ export class Context {
         pageId = _.get(req, "headers.x-page-id") || _.get(req, "query.x-page-id");
         code = _.get(req, "headers.x-code") || _.get(req, "query.x-code");
       }
+
       if (connection && connection.context) {
         sig = connection.context["x-sig"];
         psid = connection.context["x-psid"];
@@ -112,9 +114,10 @@ export class Context {
         code = connection.context["x-code"];
       }
 
-      if(code){
-        this.code = code;
-      }
+      sig = sig.replace("null", null);
+      psid = psid.replace("null", null);
+      pageId = pageId.replace("null", null);
+      code = code.replace("null", null);
 
       if (psid && pageId) {
         this.messengerSignPayload = { pageId, psid, threadId: "" };

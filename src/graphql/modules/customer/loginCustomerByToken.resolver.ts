@@ -13,6 +13,7 @@ const Mutation = {
     let decode = await firebaseHelper.verifyIdToken(idToken);
     let phone = decode.phone_number;
     if (!phone) throw ErrorHelper.badToken();
+    // kiem tra co facebook ko ?
     if (context.messengerSignPayload) {
       if (context.messengerSignPayload) {
         psid = context.messengerSignPayload.psid;
@@ -20,6 +21,7 @@ const Mutation = {
       }
     }
     let member = null;
+    // kiem tra co pageid ko ?
     if (pageId) {
       member = await MemberModel.findOne({ fanpageId: pageId, activated: true });
       if (!member || !member.chatbotKey) throw Error("Fanpage này chưa được đăng ký.");

@@ -13,12 +13,13 @@ const Mutation = {
     let decode = await firebaseHelper.verifyIdToken(idToken);
     let phone = decode.phone_number;
     if (!phone) throw ErrorHelper.badToken();
+
+    
     // kiem tra co facebook ko ?
+    console.log('context.messengerSignPayload',context.messengerSignPayload);
     if (context.messengerSignPayload) {
-      if (context.messengerSignPayload) {
-        psid = context.messengerSignPayload.psid;
-        pageId = context.messengerSignPayload.pageId;
-      }
+      psid = context.messengerSignPayload.psid;
+      pageId = context.messengerSignPayload.pageId;
     }
 
     let member = null;
@@ -37,15 +38,15 @@ const Mutation = {
     let customer = await CustomerModel.findOne({ uid: decode.uid });
 
     if (customer) {
-      const psIdExisted = customer.pageAccounts.find((a) => a.psid == psid);
-      if (!psIdExisted) {
-        customer.pageAccounts.push({
-          memberId: member._id,
-          pageId: member.fanpageId,
-          psid,
-        });
-      }
-      if (psid) {
+      console.log('customer.pageAccounts',customer.pageAccounts);
+      if(psid){
+        if (customer.pageAccounts.findIndex((a) => a.psid == psid) === -1) {
+          customer.pageAccounts.push({
+            memberId: member._id,
+            pageId: member.fanpageId,
+            psid,
+          });
+        }
         const chatbotHelper = new ChatBotHelper(member.chatbotKey);
         const subscriberInfo = await chatbotHelper.getSubscriber(psid).catch((err) => {
           return {

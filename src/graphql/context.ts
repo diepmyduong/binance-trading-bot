@@ -31,7 +31,7 @@ export class Context {
     public tokenData?: TokenData,
     public token: string = null,
     public messengerSignPayload?: MessengerTokenDecoded
-  ) {}
+  ) { }
 
   isMember() {
     return get(this.tokenData, "role") == ROLES.MEMBER;
@@ -56,33 +56,21 @@ export class Context {
     return get(this.tokenData, "psid");
   }
 
-  parseToken(params: any) {
+  parseHeader(params: any) {
     try {
-      const { req, connection } = params;
-      let token,campaignCode,collaboratorId, memberCode;
+      const { req } = params;
+      let campaignCode, collaboratorId, memberCode;
 
       if (req) {
-        token = _.get(req, "headers.x-token") || _.get(req, "query.x-token");
+        console.log("header",req.headers)
         campaignCode = _.get(req, "headers.x-campaign-code");
         collaboratorId = _.get(req, "headers.x-collaborator-id");
         memberCode = _.get(req, "headers.x-code") || _.get(req, "query.x-code");
       }
 
-      if (connection && connection.context) {
-        token = connection.context["x-token"];
-      }
-
-      token = token.replace("null", null);
       campaignCode = campaignCode.replace("null", null);
       collaboratorId = collaboratorId.replace("null", null);
       memberCode = memberCode.replace("null", null);
-
-      if (token) {
-        const decodedToken: any = TokenHelper.decodeToken(token);
-        this.isAuth = true;
-        this.tokenData = decodedToken;
-        this.token = token;
-      }
 
       this.collaboratorId = ObjectId.isValid(collaboratorId) ? collaboratorId : null;
       this.campaignCode = campaignCode;
@@ -100,10 +88,40 @@ export class Context {
     }
   }
 
+  parseToken(params: any) {
+    try {
+      const { req, connection } = params;
+      let token;
+
+      if (req) {
+        token = _.get(req, "headers.x-token") || _.get(req, "query.x-token");
+      }
+
+      if (connection && connection.context) {
+        token = connection.context["x-token"];
+      }
+
+      if (token) {
+        const decodedToken: any = TokenHelper.decodeToken(token);
+        this.isAuth = true;
+        this.tokenData = decodedToken;
+        this.token = token;
+      }
+    } catch (err) {
+      // console.log("error", err);
+      if (err instanceof TokenExpiredError) {
+        this.isTokenExpired = true;
+      }
+      this.isAuth = false;
+    } finally {
+      return this;
+    }
+  }
+
   async parseSig(params: any) {
     try {
       const { req, connection } = params;
-      let sig,psid, pageId;
+      let sig, psid, pageId;
       if (req) {
         sig = _.get(req, "headers.x-sig") || _.get(req, "query.x-sig");
         psid = _.get(req, "headers.x-psid") || _.get(req, "query.x-psid");
@@ -148,5 +166,6 @@ export async function onContext(params: any) {
   let context: Context = new Context();
   await context.parseSig(params);
   context.parseToken(params);
+  context.parseHeader(params);
   return context;
 }

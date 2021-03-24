@@ -5,13 +5,12 @@ import { TokenExpiredError } from "jsonwebtoken";
 import { ROLES } from "../constants/role.const";
 import { ChatBotHelper, MessengerTokenDecoded } from "../helpers/chatbot.helper";
 import { ObjectId } from "bson";
-
+import { connect } from "mongodb";
 export type TokenData = {
   role: string;
   _id: string;
   [name: string]: string;
 };
-
 export type SignedRequestPayload = {
   psid: string;
   algorithm: string;
@@ -56,38 +55,6 @@ export class Context {
     return get(this.tokenData, "psid");
   }
 
-  parseHeader(params: any) {
-    try {
-      const { req } = params;
-      let campaignCode, collaboratorId, memberCode;
-
-      if (req) {
-        console.log("header",req.headers)
-        campaignCode = _.get(req, "headers.x-campaign-code");
-        collaboratorId = _.get(req, "headers.x-collaborator-id");
-        memberCode = _.get(req, "headers.x-code") || _.get(req, "query.x-code");
-      }
-
-      campaignCode = campaignCode.replace("null", null);
-      collaboratorId = collaboratorId.replace("null", null);
-      memberCode = memberCode.replace("null", null);
-
-      this.collaboratorId = ObjectId.isValid(collaboratorId) ? collaboratorId : null;
-      this.campaignCode = campaignCode;
-      this.collaboratorId = collaboratorId;
-      this.memberCode = memberCode;
-
-    } catch (err) {
-      // console.log("error", err);
-      if (err instanceof TokenExpiredError) {
-        this.isTokenExpired = true;
-      }
-      this.isAuth = false;
-    } finally {
-      return this;
-    }
-  }
-
   parseToken(params: any) {
     try {
       const { req, connection } = params;
@@ -107,6 +74,7 @@ export class Context {
         this.tokenData = decodedToken;
         this.token = token;
       }
+
     } catch (err) {
       // console.log("error", err);
       if (err instanceof TokenExpiredError) {
@@ -127,16 +95,11 @@ export class Context {
         psid = _.get(req, "headers.x-psid") || _.get(req, "query.x-psid");
         pageId = _.get(req, "headers.x-page-id") || _.get(req, "query.x-page-id");
       }
-
       if (connection && connection.context) {
         sig = connection.context["x-sig"];
         psid = connection.context["x-psid"];
         pageId = connection.context["x-page-id"];
       }
-
-      sig = sig.replace("null", null);
-      psid = psid.replace("null", null);
-      pageId = pageId.replace("null", null);
 
       if (psid && pageId) {
         this.messengerSignPayload = { pageId, psid, threadId: "" };
@@ -152,6 +115,38 @@ export class Context {
         this.tokenData = { _id: this.messengerSignPayload.psid, role: ROLES.MESSENGER };
       }
     } catch (err) {
+    } finally {
+      return this;
+    }
+  }
+
+
+  parseHeader(params: any) {
+    try {
+      const { req } = params;
+      let campaignCode, collaboratorId, memberCode;
+
+      if (req) {
+        campaignCode = _.get(req, "headers.x-campaign-code");
+        collaboratorId = _.get(req, "headers.x-collaborator-id");
+        memberCode = _.get(req, "headers.x-code") || _.get(req, "query.x-code");
+      }
+
+      campaignCode = campaignCode ? campaignCode.replace("null", null) : null;
+      collaboratorId = collaboratorId ? collaboratorId.replace("null", null) : null;
+      memberCode = memberCode ? memberCode.replace("null", null) : null;
+
+      this.collaboratorId = ObjectId.isValid(collaboratorId) ? collaboratorId : null;
+      this.collaboratorId = collaboratorId;
+      this.campaignCode = campaignCode;
+      this.memberCode = memberCode;
+
+    } catch (err) {
+      // console.log("error", err);
+      if (err instanceof TokenExpiredError) {
+        this.isTokenExpired = true;
+      }
+      this.isAuth = false;
     } finally {
       return this;
     }

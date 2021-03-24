@@ -25,6 +25,8 @@ import { OrderItemModel } from "../../graphql/modules/orderItem/orderItem.model"
 import { AddressDeliveryModel } from "../../graphql/modules/addressDelivery/addressDelivery.model";
 import { MemberModel } from "../../graphql/modules/member/member.model";
 import { LOGO_IMAGE_CONTENT } from "../../constants/resouce.const";
+import { SettingHelper } from "../../graphql/modules/setting/setting.helper";
+import { SettingKey } from "../../configs/settingData";
 
 class OrderRoute extends BaseRoute {
   constructor() {
@@ -603,14 +605,18 @@ const getPDFOrder = async (data: IOrder, addressDelivery: any, member: any) => {
     },
   };
 
+  const logoImage = await SettingHelper.load(SettingKey.LOGO);
+
+  const LOGO = {
+    image: logoImage,
+    width: 150,
+  };
+ 
   var dd = {
     content: [
       {
         columns: [
-          {
-            image: LOGO_IMAGE_CONTENT,
-            width: 150,
-          },
+          LOGO,
           [
             PHIEU_XUAT_KHO,
             {

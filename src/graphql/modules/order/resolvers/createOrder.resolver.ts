@@ -16,10 +16,6 @@ const Mutation = {
       data.sellerId = sellerId;
     }
 
-    if (campaignCode) {
-      data.campaignCode = campaignCode;
-    }
-
     if(collaboratorId){
       data.collaboratorId = collaboratorId;
     }
@@ -43,14 +39,11 @@ const Mutation = {
       orderHelper.order.code = await OrderHelper.generateCode();
 
       // console.log('log loi tai day 4',orderHelper.order.code);
-
-      // const campaignBulk = orderHelper.addCampaignBulk(campaignCode);
+      await orderHelper.addCampaign(campaignCode);
 
       await Promise.all([
         orderHelper.order.save(),
         OrderItemModel.insertMany(orderHelper.order.items),
-        (await orderHelper.updateOrderedQtyBulk()).execute(),
-        // (await orderHelper.addCampaignBulk()).execute(),
       ]).then(([order]) => {
         orders.push(order);
       });

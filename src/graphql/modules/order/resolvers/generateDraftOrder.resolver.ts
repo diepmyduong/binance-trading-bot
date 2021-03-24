@@ -18,12 +18,13 @@ const Mutation = {
   generateDraftOrder: async (root: any, args: any, context: OrderContext) => {
     // tech --------------------
     // context.isDraft = true;
-    const { sellerId, id: buyerId } = context;
+    const { sellerId, id: buyerId , campaignCode , collaboratorId} = context;
     const data = args.data;
     if (context.isCustomer()) {
       data.buyerId = buyerId;
       data.sellerId = sellerId;
     }
+    data.collaboratorId = collaboratorId;
     // console.log('----------------> orderdata',data);
 
     try {
@@ -40,6 +41,12 @@ const Mutation = {
         // Calculate Amount
         orderHelper.calculateAmount();
         // console.log("result calculateAmount", orderHelper.order);
+
+
+      await orderHelper.addCampaign(campaignCode);
+
+      console.log('order',orderHelper.order);
+
         orders.push(orderHelper.order);
       }
       

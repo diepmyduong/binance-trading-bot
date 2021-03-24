@@ -8,39 +8,31 @@ import { ErrorHelper } from "../../../../base/error";
 
 const Mutation = {
   updateAllAddressStorehouse: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, [ROLES.MEMBER]);
-
+    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     const { id } = args;
+    let memberId = id;
+    if (context.isMember()) {
+      memberId = context.id;
+    }
 
-    const member = await MemberModel.findById(id);
+    const member = await MemberModel.findById(memberId);
     if (!member) throw ErrorHelper.requestDataInvalid("mã nhân viên");
 
     const addressStorehouses = await AddressStorehouseModel.find({
-      isPost: true,
+      isPost: true, allowPickup: true
     });
 
-    const addressStorehouseIds:any[] = addressStorehouses.map((id) => id);
-    
+    const addressStorehouseIds = addressStorehouses.map((address) => address.id);
 
     for (const id of member.addressStorehouseIds) {
-        if(!addressStorehouseIds.find(addrId => addrId === id.toString())){
-          addressStorehouseIds.push(id);
-        }
+      if (!addressStorehouseIds.find(addrId => addrId === id.toString())) {
+        addressStorehouseIds.push(id);
+      }
     }
-
-    const params: any = {
-      addressStorehouseIds: addressStorehouses.map((id) => id),
-    };
-
-    const mainAddressStorehouseId = addressStorehouses.find(
-      (addr) => addr.code === member.code
-    );
-
-    params.mainAddressStorehouseId = mainAddressStorehouseId;
 
     return await MemberModel.findByIdAndUpdate(
       member.id,
-      { $set: params },
+      { $set: { addressStorehouseIds } },
       { new: true }
     );
   },

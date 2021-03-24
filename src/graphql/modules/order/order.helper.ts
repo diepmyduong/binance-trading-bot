@@ -32,7 +32,7 @@ import { CustomerModel } from "../customer/customer.model";
 import { DeliveryInfo } from "./types/deliveryInfo.type";
 
 export class OrderHelper {
-  constructor(public order: IOrder) {}
+  constructor(public order: IOrder) { }
   value() {
     return this.order;
   }
@@ -524,17 +524,15 @@ export class OrderHelper {
     return this;
   }
 
-  async addCampaignBulk() {
+  async addCampaign(campaignCode: string) {
     const campaign = await CampaignModel.findOne({
       code: this.order.campaignCode,
     });
     if (campaign) {
-      const campaignSocialResults = campaign
-        ? await CampaignSocialResultModel.find({
-            memberId: this.order.sellerId,
-            campaignId: campaign.id,
-          })
-        : [];
+      const campaignSocialResults = await CampaignSocialResultModel.find({
+        memberId: this.order.sellerId,
+        campaignId: campaign.id,
+      });
 
       this.order.items.map((item: IOrderItem) => {
         const campaignResultByProductId = campaignSocialResults.find(

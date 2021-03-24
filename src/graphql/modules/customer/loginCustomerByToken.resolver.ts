@@ -21,6 +21,8 @@ const Mutation = {
       }
     }
 
+    console.log('context',context);
+
     let member = null;
     // kiem tra co pageid ko ?
     if (pageId) {

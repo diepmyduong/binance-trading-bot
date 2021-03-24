@@ -207,9 +207,7 @@ export class OrderHelper {
 
   static async fromRaw(data: any) {
     const order = new OrderModel(data);
-
     const customer = await CustomerModel.findById(order.buyerId);
-
     let { collaboratorId } = data;
     let collaborator = null;
     if (collaboratorId) {
@@ -526,7 +524,7 @@ export class OrderHelper {
 
   async addCampaign(campaignCode: string) {
     const campaign = await CampaignModel.findOne({
-      code: this.order.campaignCode,
+      code: campaignCode,
     });
     if (campaign) {
       const campaignSocialResults = await CampaignSocialResultModel.find({

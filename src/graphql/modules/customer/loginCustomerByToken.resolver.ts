@@ -21,8 +21,6 @@ const Mutation = {
       }
     }
 
-    console.log('context',context);
-
     let member = null;
     // kiem tra co pageid ko ?
     if (pageId) {
@@ -33,23 +31,25 @@ const Mutation = {
       if (!member) throw Error("Mã bưu cục này không có");
     }
 
+
     phone = UtilsHelper.parsePhone(phone, "0");
     let customer = await CustomerModel.findOne({ uid: decode.uid });
+    
     // Tạo mới tài khoản khách hàng nếu chưa có
     if (!customer) {
       customer = new CustomerModel({
         code: await CustomerHelper.generateCode(), // Mã khách hàng
-        name: phone,
+        name: "Khách vãng lai",
         uid: decode.uid,
         phone: phone,
-        avatar: "https://placekitten.com/120",
+        avatar: "https://i.imgur.com/NN9xQ5Q.png",
         pageAccounts: [],
       });
       if (psid) {
         const chatbotHelper = new ChatBotHelper(member.chatbotKey);
         const subscriberInfo = await chatbotHelper.getSubscriber(psid).catch((err) => {
           return {
-            name: "Khách Vãng lai",
+            name: "Khách vãng lai",
           } as SubscriberInfo;
         });
         customer.name = subscriberInfo.name;

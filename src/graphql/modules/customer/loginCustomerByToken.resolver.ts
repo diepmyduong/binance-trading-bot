@@ -20,17 +20,16 @@ const Mutation = {
         pageId = context.messengerSignPayload.pageId;
       }
     }
+
     let member = null;
     // kiem tra co pageid ko ?
     if (pageId) {
       member = await MemberModel.findOne({ fanpageId: pageId, activated: true });
       if (!member || !member.chatbotKey) throw Error("Fanpage này chưa được đăng ký.");
     } else {
-      member = await MemberModel.findOne({ code: context.code, activated: true });
+      member = await MemberModel.findOne({ code: context.memberCode, activated: true });
       if (!member) throw Error("Mã bưu cục này không có");
     }
-
-    // console.log('member',member);
 
     phone = UtilsHelper.parsePhone(phone, "0");
     let customer = await CustomerModel.findOne({ uid: decode.uid });

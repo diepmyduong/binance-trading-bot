@@ -25,7 +25,7 @@ export class Context {
   constructor(
     public isAuth: boolean = false,
     public isTokenExpired: boolean = false,
-    public code: string = null,
+    public memberCode: string = null,
     public campaignCode: string = null,
     public collaboratorId: string = null,
     public tokenData?: TokenData,
@@ -59,17 +59,23 @@ export class Context {
   parseToken(params: any) {
     try {
       const { req, connection } = params;
-      let token,campaignCode,collaboratorId;
+      let token,campaignCode,collaboratorId, memberCode;
 
       if (req) {
         token = _.get(req, "headers.x-token") || _.get(req, "query.x-token");
         campaignCode = _.get(req, "headers.x-campaign-code");
         collaboratorId = _.get(req, "headers.x-collaborator-id");
+        memberCode = _.get(req, "headers.x-code") || _.get(req, "query.x-code");
       }
 
       if (connection && connection.context) {
         token = connection.context["x-token"];
       }
+
+      token = token.replace("null", null);
+      campaignCode = campaignCode.replace("null", null);
+      collaboratorId = collaboratorId.replace("null", null);
+      memberCode = memberCode.replace("null", null);
 
       if (token) {
         const decodedToken: any = TokenHelper.decodeToken(token);
@@ -77,14 +83,12 @@ export class Context {
         this.tokenData = decodedToken;
         this.token = token;
       }
-      if (campaignCode) {
-        this.campaignCode = campaignCode.replace('null',null);
-      }
 
-      if (collaboratorId) {
-        this.collaboratorId = ObjectId.isValid(collaboratorId) ? collaboratorId : null;
-      }
-      
+      this.collaboratorId = ObjectId.isValid(collaboratorId) ? collaboratorId : null;
+      this.campaignCode = campaignCode;
+      this.collaboratorId = collaboratorId;
+      this.memberCode = memberCode;
+
     } catch (err) {
       // console.log("error", err);
       if (err instanceof TokenExpiredError) {
@@ -99,25 +103,22 @@ export class Context {
   async parseSig(params: any) {
     try {
       const { req, connection } = params;
-      let sig,psid, pageId, code;
+      let sig,psid, pageId;
       if (req) {
         sig = _.get(req, "headers.x-sig") || _.get(req, "query.x-sig");
         psid = _.get(req, "headers.x-psid") || _.get(req, "query.x-psid");
         pageId = _.get(req, "headers.x-page-id") || _.get(req, "query.x-page-id");
-        code = _.get(req, "headers.x-code") || _.get(req, "query.x-code");
       }
 
       if (connection && connection.context) {
         sig = connection.context["x-sig"];
         psid = connection.context["x-psid"];
         pageId = connection.context["x-page-id"];
-        code = connection.context["x-code"];
       }
 
       sig = sig.replace("null", null);
       psid = psid.replace("null", null);
       pageId = pageId.replace("null", null);
-      code = code.replace("null", null);
 
       if (psid && pageId) {
         this.messengerSignPayload = { pageId, psid, threadId: "" };

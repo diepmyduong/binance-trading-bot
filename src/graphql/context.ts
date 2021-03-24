@@ -68,6 +68,8 @@ export class Context {
         token = connection.context["x-token"];
       }
 
+      if(token === 'null') token = null;
+
       if (token) {
         const decodedToken: any = TokenHelper.decodeToken(token);
         this.isAuth = true;
@@ -101,6 +103,10 @@ export class Context {
         pageId = connection.context["x-page-id"];
       }
 
+      if(sig === 'null') sig = null;
+      if(psid === 'null') psid = null;
+      if(pageId === 'null') pageId = null;
+
       if (psid && pageId) {
         this.messengerSignPayload = { pageId, psid, threadId: "" };
         this.isAuth = true;
@@ -132,9 +138,9 @@ export class Context {
         memberCode = _.get(req, "headers.x-code") || _.get(req, "query.x-code");
       }
 
-      campaignCode = campaignCode ? campaignCode.replace("null", null) : null;
-      collaboratorId = collaboratorId ? collaboratorId.replace("null", null) : null;
-      memberCode = memberCode ? memberCode.replace("null", null) : null;
+      if(campaignCode === 'null') campaignCode = null;
+      if(collaboratorId === 'null') collaboratorId = null;
+      if(memberCode === 'null') memberCode = null;
 
       this.collaboratorId = ObjectId.isValid(collaboratorId) ? collaboratorId : null;
       this.collaboratorId = collaboratorId;

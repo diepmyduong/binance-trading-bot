@@ -18,7 +18,7 @@ class CommonRoute extends BaseRoute {
 
   async getLogo(req: Request, res: Response) {
     const logo: string = await SettingHelper.load(SettingKey.LOGO);
-    res.send(logo);
+    res.redirect(logo);
   }
 }
 

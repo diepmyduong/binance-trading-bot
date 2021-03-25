@@ -33,34 +33,38 @@ const confirmOrder = async (root: any, args: any, context: Context) => {
     params.sellerId = context.id;
   }
 
-  // lấy ra danh sách như params
+  // lấy ra order như params
   const order = await OrderModel.findOne(params);
-
   if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
-  let addressDeliveryId = null;
-  if (order.addressDeliveryId) {
-    const temp = JSON.stringify({ id: order.addressDeliveryId.toString() });
-    addressDeliveryId = JSON.parse(temp).id;
-  }
-  // console.log('addressDeliveryId',addressDeliveryId);
 
-  const member = await MemberModel.findById(context.id);
+  // lấy ra member 
+  const member = await MemberModel.findById(order.sellerId);
+  if (!member) throw Error("Không tìm thấy chủ shop trong đơn hàng này");
+  if (context.id !== member.id) throw Error("Không thể thao tác trên đơn hàng này do không đúng chủ shop");
 
+  // kiem tra
   if (order.shipMethod === ShipMethod.POST) {
-    if (addressDeliveryId) {
-      const addressDeliveryByCode = await AddressDeliveryModel.findOne({
-        code: member.code,
-      });
+    const addressDeliveryByCode = await AddressDeliveryModel.findOne({
+      code: member.code,
+    });
 
-      if (order.addressDeliveryId !== addressDeliveryByCode.id) {
-        (order.oldAddressDeliveryId = addressDeliveryId),
-          (order.addressDeliveryId = addressDeliveryByCode.id);
-      }
+    if (addressDeliveryByCode) {
+      order.oldAddressDeliveryId = addressDeliveryByCode.id;
+      order.addressDeliveryId = addressDeliveryByCode.id;
+      // if (!member.addressDeliveryIds.includes(addressDeliveryByCode.id)) {
+
+      // }
+      // if (order.addressDeliveryId !== addressDeliveryByCode.id) {
+
+      // }
     }
+
+  }
+
+  if (order.shipMethod === ShipMethod.VNPOST) {
   }
 
   for (const orderItemId of order.itemIds) {
-    // Duyệt số lượng sao đó trừ inventory
     await OrderItemModel.findByIdAndUpdate(
       orderItemId,
       { $set: { status: OrderStatus.CONFIRMED } },
@@ -68,8 +72,8 @@ const confirmOrder = async (root: any, args: any, context: Context) => {
     );
   }
 
-  note ? (order.note = note) : null;
   order.status = OrderStatus.CONFIRMED;
+  if (note) order.note = note
 
   return await order.save().then(async (order) => {
     onConfirmedOrder.next(order);

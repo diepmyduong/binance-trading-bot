@@ -113,6 +113,19 @@ onApprovedCompletedOrder.subscribe(async (order) => {
       id: order._id,
     });
   }
+  else{
+    // hoa hong ctv cho chu shop
+    // const [commissionLoging, customerUpdating] = await payCustomerCommission({
+    //   memberId: seller.id,
+    //   customerId: customer.id,
+    //   type: CustomerCommissionLogType.RETURN_COMMISSION_2_FROM_ORDER_TO_SHOPPER,
+    //   currentCommission: customer.commission,
+    //   commission: commission2,
+    //   id: order._id,
+    // });
+  }
+
+
 
   let cumulativePointCustomer: ICustomer = null;
   // Điểm thưởng cho khách hàng

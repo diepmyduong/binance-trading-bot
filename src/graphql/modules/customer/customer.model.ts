@@ -14,8 +14,8 @@ export type CustomerPageAccount = {
   memberId?: string; // Mã thành viên
 };
 const customerPageAccountSchema = new Schema({
-  psid: { type: String, required: true },
-  pageId: { type: String, required: true },
+  psid: { type: String },
+  pageId: { type: String },
   memberId: { type: Schema.Types.ObjectId, ref: "Member", required: true },
 });
 

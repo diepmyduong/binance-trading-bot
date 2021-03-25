@@ -1,3 +1,4 @@
+import e from "express";
 import { ErrorHelper } from "../../../base/error";
 import { firebaseHelper, UtilsHelper } from "../../../helpers";
 import { ChatBotHelper } from "../../../helpers/chatbot.helper";
@@ -21,7 +22,7 @@ const Mutation = {
       pageId = context.messengerSignPayload.pageId;
     }
 
-    let member = null;
+    let member: any = null;
     // kiem tra co pageid ko ?
     if (pageId) {
       member = await MemberModel.findOne({ fanpageId: pageId });
@@ -51,14 +52,21 @@ const Mutation = {
           name: "Khách vãng lai",
         } as SubscriberInfo;
       });
-
-
     phone = UtilsHelper.parsePhone(phone, "0");
     let customer = await CustomerModel.findOne({ uid: decode.uid });
-
+    // có customer
     if (customer) {
+      // có psid
       if (psid) {
-        if (customer.pageAccounts.findIndex((a) => a.psid == psid) === -1) {
+        console.log('customer + psid', psid);
+        // kiem tra nếu không có Index Page
+
+        const pageAccountByPsID = customer.pageAccounts.find((a: any) => a.psid == psid);
+        if (!pageAccountByPsID) {
+          const pageAccountIndexByMember = customer.pageAccounts.findIndex((a: any) => a.memberId.toString() == member.id);
+          if (pageAccountIndexByMember > -1) {
+            customer.pageAccounts.splice(pageAccountIndexByMember, 1);
+          }
           customer.pageAccounts.push({
             memberId: member._id,
             pageId: member.fanpageId,
@@ -67,15 +75,26 @@ const Mutation = {
         }
 
         const chatbotHelper = new ChatBotHelper(member.chatbotKey);
-
         const subscriberInfo = await getInfo(chatbotHelper, psid);
-        customer.facebookName   = customer.facebookName ? customer.facebookName : subscriberInfo.name;
-        customer.gender         = customer.gender       ? customer.gender       : subscriberInfo.gender;
-        customer.name =   customer.name === "Khách vãng lai"                    ? subscriberInfo.name       : customer.name;
+        customer.facebookName = customer.facebookName ? customer.facebookName : subscriberInfo.name;
+        customer.gender = customer.gender ? customer.gender : subscriberInfo.gender;
+        customer.name = customer.name === "Khách vãng lai" ? subscriberInfo.name : customer.name;
         customer.avatar = customer.avatar === "https://i.imgur.com/NN9xQ5Q.png" ? subscriberInfo.profilePic : customer.avatar;
+      }
+      else {
+        console.log('customer - psid');
+        const params = {
+          memberId: member._id,
+          pageId: member.fanpageId,
+        }
+        const pageAccountByMember = customer.pageAccounts.find((a: any) => a.memberId.toString() == member.id);
+        if (!pageAccountByMember) {
+          customer.pageAccounts.push(params);
+        }
       }
     }
     else {
+      console.log('no customer');
       customer = new CustomerModel({
         code: await CustomerHelper.generateCode(), // Mã khách hàng
         name: "Khách vãng lai",
@@ -88,6 +107,7 @@ const Mutation = {
         }],
       });
       if (psid) {
+        console.log('no customer + psId', psid);
         const chatbotHelper = new ChatBotHelper(member.chatbotKey);
         const subscriberInfo = await getInfo(chatbotHelper, psid);
         customer.name = subscriberInfo.name;

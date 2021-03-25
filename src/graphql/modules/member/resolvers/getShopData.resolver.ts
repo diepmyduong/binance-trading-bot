@@ -10,12 +10,12 @@ import { memberService } from "../member.service";
 
 const Query = {
   getShopData: async (root: any, args: any, context: Context) => {
-    const { pageId , memberCode } = context;
-    const params:any = {};
-    if(pageId){
+    const { pageId, memberCode } = context;
+    const params: any = {};
+    if (pageId) {
       params.fanpageId = pageId;
     }
-    if(memberCode){
+    if (memberCode) {
       params.code = memberCode;
     }
     return memberService.findOne(params);
@@ -25,12 +25,12 @@ const Query = {
 const Shop = {
   addressDelivery: async (root: IMember, args: any, context: Context) => {
     const address = await AddressDeliveryModel.findOne({ code: root.code });
-    const noExistedAddress = root.addressDeliveryIds.findIndex(addr => addr.toString() === address.id.toString()) === -1;
-    if(noExistedAddress) 
-      return null;
+    if (!address) return null;
+    const noExistedAddress = root.addressDeliveryIds.findIndex(addr => addr.toString() === address.id) === -1;
+    if (noExistedAddress) return null;
     return address;
   },
-  
+
   mainAddressStorehouse: GraphQLHelper.loadById(
     AddressStorehouseLoader,
     "mainAddressStorehouseId"

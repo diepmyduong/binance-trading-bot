@@ -62,7 +62,6 @@ onDelivering.subscribe(async (order) => {
     // console.log('pageAccount',pageAccount);
     if (pageAccount) {
       const status = GetOrderStatusByPostDeliveryStatus(deliveryInfo.status);
-      // console.log("status", status);
       if (status === DeliveryStatus.DELIVERING) {
         SettingHelper.load(SettingKey.DELIVERY_PENDING_MSG_FOR_CUSTOMER).then(
           (msg) => {

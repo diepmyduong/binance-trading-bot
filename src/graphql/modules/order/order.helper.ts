@@ -235,11 +235,6 @@ export class OrderHelper {
         break;
 
       case ShipMethod.VNPOST:
-        // const addressStorehouse = await AddressStorehouseModel.findById(order.addressStorehouseId);
-        // const storeHouseMember = await MemberModel.findById(order.sellerId);
-        // if(addressStorehouse.code === storeHouseMember.code){
-        //   order.toMemberId = storeHouseMember.id;
-        // }
         await Promise.all([
           helper.setProvinceName(),
           helper.setDistrictName(),
@@ -253,7 +248,6 @@ export class OrderHelper {
   async generateItemsFromRaw(products: any) {
     const UNIT_PRICE = await SettingHelper.load(SettingKey.UNIT_PRICE);
     const member = await MemberModel.findById(this.order.sellerId);
-    const addressDelivery = await AddressDeliveryModel.findById(this.order.addressDeliveryId);
     const presenterId = member.parentIds ? member.parentIds[0] : null;
 
     this.order.subtotal = 0;
@@ -386,9 +380,6 @@ export class OrderHelper {
       products.map(({ width }: any) => width)
     );
 
-    // console.log('this.order.items',this.order);
-    // console.log('this.order.items',this.order.items);
-
     return this.order.items;
   }
 
@@ -436,8 +427,6 @@ export class OrderHelper {
           SettingKey.DELIVERY_POST_FEE
         );
 
-        // đơn này ko thu tiền ship
-        this.order.addressStorehouseId = mainAddressStorehouseId;
         break;
 
       case ShipMethod.VNPOST:

@@ -2,7 +2,7 @@ import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { Context } from "../../context";
-import { OrderLoader } from "../order/order.model";
+import { OrderLoader, OrderModel } from "../order/order.model";
 import { RegisServiceLoader } from "../regisService/regisService.model";
 import { RegisSMSLoader } from "../regisSMS/regisSMS.model";
 import {
@@ -14,6 +14,7 @@ import { MemberLoader } from "../member/member.model";
 import { set } from "lodash";
 import { CustomerLoader } from "../customer/customer.model";
 import { CustomerHelper } from "../customer/customer.helper";
+import { CollaboratorModel } from "../collaborator/collaborator.model";
 
 const Query = {
   getAllCustomerCommissionLog: async (
@@ -40,14 +41,13 @@ const CustomerCommissionLog = {
 
     const order = await OrderLoader.load(root.orderId);
     const member = await MemberLoader.load(order.sellerId);
+    const collaborator = await CollaboratorModel.findById(order.collaboratorId);
 
     switch (root.type) {
       case CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER:
-        return `Nhận từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
-      case CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_REGI_SERVICE:
-        return "Nhận từ đăng ký dịch vụ";
-      case CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_SMS:
-        return "Nhận từ đăng ký SMS";
+        return `Hoa hồng CTV dành cho CTV : ${collaborator.name} - SĐT: ${collaborator.phone} từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
+      case CustomerCommissionLogType.RETURN_COMMISSION_2_FROM_ORDER_TO_SHOPPER:
+        return `Hoa hồng CTV dành cho BC: ${member.shopName} - mã BC: ${member.code} nhận từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
       default:
         return "";
     }

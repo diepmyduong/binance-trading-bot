@@ -6,9 +6,7 @@ import {
 } from "./customerCommissionLog.model";
 
 const {
-  RECEIVE_COMMISSION_2_FROM_ORDER,
-  RECEIVE_COMMISSION_2_FROM_REGI_SERVICE,
-  RECEIVE_COMMISSION_2_FROM_SMS,
+  RECEIVE_COMMISSION_2_FROM_ORDER
 } = CustomerCommissionLogType;
 class CustomerCommissionLogService extends CrudService<
   typeof CustomerCommissionLogModel

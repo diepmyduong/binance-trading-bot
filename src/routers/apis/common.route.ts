@@ -6,8 +6,6 @@ import {
 } from "../../base/baseRoute";
 import { SettingKey } from "../../configs/settingData";
 import { SettingHelper } from "../../graphql/modules/setting/setting.helper";
-import fs from "fs";
-import Axios from "axios";
 
 class CommonRoute extends BaseRoute {
   constructor() {
@@ -20,7 +18,7 @@ class CommonRoute extends BaseRoute {
 
   async getLogo(req: Request, res: Response) {
     const logo: string = await SettingHelper.load(SettingKey.LOGO);
-    res.redirect(logo);
+    res.send(logo);
   }
 }
 

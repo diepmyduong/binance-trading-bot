@@ -1,5 +1,4 @@
 import { set } from "lodash";
-
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
@@ -9,7 +8,6 @@ import { MemberHelper } from "../member/member.helper";
 import { MemberLoader, MemberModel } from "../member/member.model";
 import { ICustomer } from "./customer.model";
 import { customerService } from "./customer.service";
-import { CustomerIsCollaborator } from "./loader/customerIsCollaborator.loader";
 
 const Query = {
   getAllCustomer: async (root: any, args: any, context: Context) => {
@@ -33,19 +31,27 @@ const Mutation = {};
 
 const Customer = {
   isCollaborator: async (root: ICustomer, args: any, context: Context) => {
-    const collaborator = await CollaboratorModel.findOne({ phone: root.phone , memberId: context.sellerId });
+    const params: any = { phone: root.phone };
+    if (context.isMember()) {
+      params.memberId = context.id;
+    }
+    const collaborator = await CollaboratorModel.findOne(params);
     return collaborator ? true : false;
   },
-  //Danh sách các cửa hàng mà khách hàng đang cộng tác
+
   collaboratorShops: async (root: ICustomer, args: any, context: Context) => {
     const collaborator = await CollaboratorModel.find({ phone: root.phone });
     const memberIds = collaborator.map((c) => c.memberId);
     const members = await MemberModel.find({ _id: { $in: memberIds } });
     return members;
   },
-  
+
   collaborator: async (root: ICustomer, args: any, context: Context) => {
-    const collaborator = await CollaboratorModel.findOne({ phone: root.phone , memberId: context.sellerId });
+    const params: any = { phone: root.phone };
+    if (context.isMember()) {
+      params.memberId = context.id;
+    }
+    const collaborator = await CollaboratorModel.findOne(params);
     return collaborator;
   },
 };

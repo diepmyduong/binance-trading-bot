@@ -562,7 +562,7 @@ const getPDFOrder = async ({ order, addressDelivery, member, logoImageUrl }: any
         alignment: "left",
       },
       {
-        text: moneyCast(order.subtotal),
+        text: moneyCast(order.amount),
         margin: [0, 0, 0, 5],
         alignment: "right",
       },
@@ -636,7 +636,7 @@ const getPDFOrder = async ({ order, addressDelivery, member, logoImageUrl }: any
       KHACH_HANG,
       CUA_HANG,
       // DIA_CHI_CUA_HANG,
-      ...LOAI_DON__DIEM_THUONG,
+      // ...LOAI_DON__DIEM_THUONG,
       // ...HOA_HONG,
       ...PHUONG_THUC_GIAO_HANG,
       ...DIA_DIEM_GIAO_NHAN,

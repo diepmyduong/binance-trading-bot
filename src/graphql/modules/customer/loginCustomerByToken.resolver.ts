@@ -69,10 +69,10 @@ const Mutation = {
         const chatbotHelper = new ChatBotHelper(member.chatbotKey);
 
         const subscriberInfo = await getInfo(chatbotHelper, psid);
-        customer.name = subscriberInfo.name;
-        customer.facebookName = subscriberInfo.name;
-        customer.avatar = subscriberInfo.profilePic;
-        customer.gender = subscriberInfo.gender;
+        customer.facebookName   = customer.facebookName ? customer.facebookName : subscriberInfo.name;
+        customer.gender         = customer.gender       ? customer.gender       : subscriberInfo.gender;
+        customer.name =   customer.name === "Khách vãng lai"                    ? subscriberInfo.name       : customer.name;
+        customer.avatar = customer.avatar === "https://i.imgur.com/NN9xQ5Q.png" ? subscriberInfo.profilePic : customer.avatar;
       }
     }
     else {

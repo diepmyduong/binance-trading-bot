@@ -47,7 +47,8 @@ const schema = gql`
     orderId: String
     "Ghi chú"
     note: String
-    order:Order
+    order: Order
+    member: Member
   }
 
   type StoreHouseCommissionLogPageData {

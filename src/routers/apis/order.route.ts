@@ -23,10 +23,9 @@ import { OrderModel } from "../../graphql/modules/order/order.model";
 import { OrderItemModel } from "../../graphql/modules/orderItem/orderItem.model";
 import { AddressDeliveryModel } from "../../graphql/modules/addressDelivery/addressDelivery.model";
 import { MemberModel } from "../../graphql/modules/member/member.model";
-import { LOGO_IMAGE_CONTENT } from "../../constants/resouce.const";
 import { SettingHelper } from "../../graphql/modules/setting/setting.helper";
 import { SettingKey } from "../../configs/settingData";
-import { createCanvas, loadImage }  from 'canvas';
+import { createCanvas, loadImage } from 'canvas';
 
 class OrderRoute extends BaseRoute {
   constructor() {
@@ -56,9 +55,6 @@ class OrderRoute extends BaseRoute {
 
     let params: any = {
       _id: orderId,
-      status: {
-        $in: [OrderStatus.CONFIRMED, OrderStatus.DELIVERING],
-      },
     };
 
     if (context.isMember()) {
@@ -74,12 +70,6 @@ class OrderRoute extends BaseRoute {
     if (!order) {
       throw ErrorHelper.requestDataInvalid("Tham số đầu vào không hợp lệ!");
     }
-
-    await OrderModel.findByIdAndUpdate(
-      order.id,
-      { status: OrderStatus.DELIVERING },
-      { new: true }
-    );
 
     const addressDelivery = await AddressDeliveryModel.findById(
       order.addressDeliveryId
@@ -125,7 +115,7 @@ class OrderRoute extends BaseRoute {
 export default new OrderRoute().router;
 
 const getBase64ImageFromURL = async (url: string) => {
-  const canvas = createCanvas(400,400)
+  const canvas = createCanvas(400, 400)
   const ctx = canvas.getContext('2d');
   const image = await loadImage(url);
   ctx.drawImage(image, 0, 0, 300, 300);

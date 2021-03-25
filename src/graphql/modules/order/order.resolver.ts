@@ -50,7 +50,6 @@ const Query = {
     if (context.isCustomer()) {
       set(args, "q.filter.buyerId", context.id);
     }
-    //ne
     return orderService.fetch(args.q);
   },
   getOneOrder: async (root: any, args: any, context: Context) => {

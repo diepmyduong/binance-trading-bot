@@ -1,5 +1,19 @@
 FROM node:10-alpine AS BUILD_IMAGE
 
+RUN apk add --no-cache \
+        sudo \
+        curl \
+        build-base \
+        g++ \
+        libpng \
+        libpng-dev \
+        jpeg-dev \
+        pango-dev \
+        cairo-dev \
+        giflib-dev \
+        python \
+        ;
+
 WORKDIR /usr/src/app
 
 COPY package.json package-lock.json ./

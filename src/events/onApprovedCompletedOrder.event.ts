@@ -327,20 +327,19 @@ onApprovedCompletedOrder.subscribe(async (order) => {
 // tinh hoa hồng kho
 onApprovedCompletedOrder.subscribe(async (order) => {
   const { commission3, id, addressDeliveryId } = order;
-
-  console.log("commission3",commission3);
-
   if (commission3 > 0) {
     const addressDelivery = await AddressDeliveryModel.findById(
       addressDeliveryId
     );
     const member = await MemberModel.findOne({ code: addressDelivery.code });
+    
     const commission = new StoreHouseCommissionLogModel({
       orderId: id,
       value: commission3,
       addressDeliveryId: addressDelivery.id,
       memberId: member.id,
     });
+    
     commission.save();
   }
 });

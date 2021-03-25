@@ -35,7 +35,7 @@ const Mutation = {
 
 const StoreHouseCommissionLog = {
   order: GraphQLHelper.loadById(OrderLoader, "orderId"),
-
+  member: GraphQLHelper.loadById(MemberLoader, "memberId"),
   note: async (root: IStoreHouseCommissionLog, args: any, context: Context) => {
     const order = await OrderLoader.load(root.orderId);
     const member = await MemberLoader.load(order.sellerId);

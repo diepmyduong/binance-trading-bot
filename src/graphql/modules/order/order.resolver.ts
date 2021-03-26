@@ -89,6 +89,8 @@ const Order = {
       const customer = await CustomerModel.findById(collaborator.customerId);
       collaboratorMember.id = collaborator.id;
       collaboratorMember.customerId = collaborator.customerId;
+      collaboratorMember.name = collaborator.name;
+      collaboratorMember.phone = collaborator.phone;
       collaboratorMember.customer = customer;
     }
     return collaboratorMember ;

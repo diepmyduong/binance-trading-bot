@@ -106,10 +106,16 @@ const Order = {
       const addressStorehouse = await AddressStorehouseModel.findById(
         root.addressStorehouseId
       );
+
       code = addressStorehouse.code;
     }
 
-    return await MemberModel.findOne({ code });
+    const result = await MemberModel.findOne({ code });
+
+    if(!result)
+      return await MemberModel.findById(root.sellerId);
+
+    return result;
   },
 
   paymentMethodText: async (root: IOrder, args: any, context: Context) => {

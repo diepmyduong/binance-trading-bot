@@ -6,14 +6,6 @@ import { OrderModel, IOrder, OrderStatus, ShipMethod } from "../order.model";
 import { onConfirmedOrder } from "../../../../events/onConfirmedOrder.event";
 import { OrderItemModel } from "../../orderItem/orderItem.model";
 
-/*
-    PENDING => xác nhận => CONFIRMED
-    
-    RULE
-    phải là PENDING
-    toMember sẽ xác nhận.
-*/
-
 const confirmToMemberOrder = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const { id } = args;

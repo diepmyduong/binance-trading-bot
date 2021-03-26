@@ -3,7 +3,7 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
-import { CustomerLoader } from "../customer/customer.model";
+import { CustomerLoader, CustomerModel } from "../customer/customer.model";
 import { MemberLoader, MemberModel } from "../member/member.model";
 import { OrderItemLoader } from "../orderItem/orderItem.model";
 import { UserLoader } from "../user/user.model";
@@ -15,7 +15,7 @@ import {
   PaymentMethod,
   ShipMethod,
 } from "./order.model";
-import { CollaboratorLoader } from "../collaborator/collaborator.model";
+import { CollaboratorLoader, CollaboratorModel, ICollaborator } from "../collaborator/collaborator.model";
 import {
   AddressDeliveryLoader,
   AddressDeliveryModel,
@@ -78,7 +78,21 @@ const Order = {
   toMember: GraphQLHelper.loadById(MemberLoader, "toMemberId"),
   updatedByUser: GraphQLHelper.loadById(UserLoader, "updatedByUserId"),
   buyer: GraphQLHelper.loadById(CustomerLoader, "buyerId"),
-  collaborator: GraphQLHelper.loadById(CollaboratorLoader, "collaboratorId"),
+  collaborator:  async (root: IOrder, args: any, context: Context) => {
+    const collaborator = await CollaboratorModel.findById(root.collaboratorId);
+    const member = await MemberModel.findById(root.sellerId);
+    const collaboratorMember:any = {
+      memberId: context.id,
+      member
+    }
+    if(collaborator){
+      const customer = await CustomerModel.findById(collaborator.customerId);
+      collaboratorMember.id = collaborator.id;
+      collaboratorMember.customerId = collaborator.customerId;
+      collaboratorMember.customer = customer;
+    }
+    return collaboratorMember ;
+  },
 
   addressStorehouse: GraphQLHelper.loadById(
     AddressStorehouseLoader,

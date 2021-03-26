@@ -248,7 +248,6 @@ export class OrderHelper {
   async generateItemsFromRaw(products: any) {
     const UNIT_PRICE = await SettingHelper.load(SettingKey.UNIT_PRICE);
     const member = await MemberModel.findById(this.order.sellerId);
-    const presenterId = member.parentIds ? member.parentIds[0] : null;
 
     this.order.subtotal = 0;
     this.order.itemCount = 0;
@@ -320,7 +319,7 @@ export class OrderHelper {
           orderItem.commission2 = commission2;
         } else {
           // hoa hong chu shop gioi thieu chu shop
-          if (presenterId) {
+          if (member) {
             orderItem.commission2 = commission2;
           }
         }

@@ -217,6 +217,8 @@ const schema = gql`
 
   type CustomerCollaborator {
     id: ID
+    name: String
+    phone: String
     customerId: ID
     memberId: ID
     member: Member

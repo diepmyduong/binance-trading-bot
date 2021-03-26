@@ -50,10 +50,9 @@ export const payCustomerCommission = async ({
   commission,
   id,
 }: any) => {
-  const commissionLoging = customerCommissionLogService.payOneCommission({
+  const commissionLoging = customerCommissionLogService.payCustomerCommission({
     customerId,
     memberId,
-    type,
     commission,
     id,
   });

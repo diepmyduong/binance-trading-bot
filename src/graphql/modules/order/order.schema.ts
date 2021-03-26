@@ -211,6 +211,8 @@ const schema = gql`
     
     deliveringMember: Member
     toMember: Member
+    "Có chuyển kho không ?"
+    mustTransfer: Boolean
   }
 
   type CustomerCollaborator {

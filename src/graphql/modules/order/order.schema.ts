@@ -196,7 +196,7 @@ const schema = gql`
     "Mã Cộng tác viên"
     collaboratorId: ID
     "Cộng tác viên"
-    collaborator: Collaborator
+    collaborator: CustomerCollaborator
     "Là nội thành"
     isUrbanDelivery: Boolean
     "Bưu cục được chuyển đơn"
@@ -211,6 +211,14 @@ const schema = gql`
     
     deliveringMember: Member
     toMember: Member
+  }
+
+  type CustomerCollaborator {
+    id: ID
+    customerId: ID
+    memberId: ID
+    member: Member
+    customer: Customer
   }
 
   type OrderPageData {

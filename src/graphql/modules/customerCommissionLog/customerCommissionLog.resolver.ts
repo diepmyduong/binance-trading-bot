@@ -17,14 +17,17 @@ import { CustomerHelper } from "../customer/customer.helper";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
 
 const Query = {
-  getAllCustomerCommissionLog: async (
-    root: any,
-    args: any,
-    context: Context
-  ) => {
+  getAllCustomerCommissionLog: async (root: any, args: any, context: Context) => {
     const customerHelper = await CustomerHelper.fromContext(context);
     if (customerHelper) {
       set(args, "q.filter.customerId", customerHelper.customer._id);
+    }
+    return customerCommissionLogService.fetch(args.q);
+  },
+  getAllMemberCollaboratorCommissionLog: async (root: any, args: any, context: Context) => {
+    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+    if (context.isMember()) {
+      set(args, "q.filter.returnMemberId", context.id);
     }
     return customerCommissionLogService.fetch(args.q);
   },

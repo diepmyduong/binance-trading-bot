@@ -4,7 +4,31 @@ import { CustomerCommissionLogType } from "./customerCommissionLog.model";
 const schema = gql`
   extend type Query {
     getAllCustomerCommissionLog(q: QueryGetListInput): CustomerCommissionLogPageData
+    getAllMemberCollaboratorCommissionLog(q: QueryGetListInput): MemberCollaboratorCommissionLogPageData
+  }
 
+  type MemberCollaboratorCommissionLog {
+    id: String
+    createdAt: DateTime
+    updatedAt: DateTime
+
+    "Giá trị"
+    value: String
+    "Mã đơn hàng"
+    orderId: ID
+    "Ghi chú"
+    note: String
+    "Mã bưu cục ctv"
+    returnMemberId : ID
+
+    order: Order
+    returnMember: Member
+  }
+
+  type MemberCollaboratorCommissionLogPageData {
+    data: [MemberCollaboratorCommissionLog]
+    total: Int
+    pagination: Pagination
   }
 
   type CustomerCommissionLog {
@@ -34,6 +58,8 @@ const schema = gql`
     regisService: RegisService
     member: Member
     customer: Customer
+
+    returnMemberId : ID
   }
 
   type CustomerCommissionLogPageData {

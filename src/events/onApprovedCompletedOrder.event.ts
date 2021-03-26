@@ -95,6 +95,7 @@ onApprovedCompletedOrder.subscribe(async (order) => {
 
   const collaborator = await CollaboratorModel.findById(collaboratorId);
 
+
   const [seller, customer, orderItems] = await Promise.all([
     MemberLoader.load(fromMemberId),
     CustomerLoader.load(buyerId),
@@ -103,19 +104,19 @@ onApprovedCompletedOrder.subscribe(async (order) => {
 
   let cumulativePointCustomer: ICustomer = null;
   // Điểm thưởng cho khách hàng
-
-  if (collaborator.customerId === customer.id) {
-    if (buyerBonusPoint) {
-      if (buyerBonusPoint > 0)
-        [, cumulativePointCustomer] = await payCustomerPoint({
-          customerId: customer.id,
-          id: order._id,
-          type: CUSTOMER_TYPE,
-          buyerBonusPoint,
-        });
+  if (collaborator) {
+    if (collaborator.customerId === customer.id) {
+      if (buyerBonusPoint) {
+        if (buyerBonusPoint > 0)
+          [, cumulativePointCustomer] = await payCustomerPoint({
+            customerId: customer.id,
+            id: order._id,
+            type: CUSTOMER_TYPE,
+            buyerBonusPoint,
+          });
+      }
     }
   }
-
   const pageAccount = customer.pageAccounts.find(
     (p) => p.pageId == seller.fanpageId
   );
@@ -264,14 +265,14 @@ onApprovedCompletedOrder.subscribe(async (order) => {
   if (commission2) {
     if (commission2 > 0) {
       // Kiểm tra có người giới thiệu shop đó ko ?
-      if (collaboratorId) {
-        const collaborator = await CollaboratorModel.findById(collaboratorId);
-        const customerPresenter = await MemberModel.findById(collaborator.customerId);
+      const collaborator = await CollaboratorModel.findById(collaboratorId);
+      if (collaborator) {
+        const customerPresenter = await CustomerModel.findById(collaborator.customerId);
         await customerCommissionLogService.payCustomerCommission({
           customerId: customerPresenter.id,
           memberId: sellerId,
           commission: commission2,
-          id 
+          id
         });
       }
       else {
@@ -322,9 +323,9 @@ onApprovedCompletedOrder.subscribe(async (order) => {
 // tinh hoa hồng kho
 onApprovedCompletedOrder.subscribe(async (order) => {
   const { commission3, id, toMemberId, sellerId } = order;
-  if (commission3 > 0) {    
+  if (commission3 > 0) {
     let member = await MemberModel.findById(toMemberId);
-    if(!member){
+    if (!member) {
       member = await MemberModel.findById(sellerId);
     }
     const params = {

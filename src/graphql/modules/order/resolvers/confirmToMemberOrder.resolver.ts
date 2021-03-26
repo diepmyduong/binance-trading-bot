@@ -37,7 +37,6 @@ const confirmToMemberOrder = async (root: any, args: any, context: Context) => {
   if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
 
   for (const orderItem of order.itemIds) {
-    // Duyệt số lượng sao đó trừ inventory
     await OrderItemModel.findByIdAndUpdate(
       orderItem,
       { $set: { status: OrderStatus.CONFIRMED } },

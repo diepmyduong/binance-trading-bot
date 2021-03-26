@@ -95,7 +95,7 @@ const Order = {
   },
 
   mustTransfer:async (root: IOrder, args: any, context: Context) => {
-    const member = await MemberModel.findById(context.id);
+    const member = await MemberModel.findById(root.sellerId);
     if(member){
 
       if(root.shipMethod === ShipMethod.POST){

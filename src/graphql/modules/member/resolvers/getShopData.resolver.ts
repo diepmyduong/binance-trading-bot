@@ -1,11 +1,9 @@
-import { set } from "lodash";
-import { ROLES } from "../../../../constants/role.const";
-import { AuthHelper, ErrorHelper, firebaseHelper, UtilsHelper } from "../../../../helpers";
+import { ErrorHelper } from "../../../../base/error";
 import { GraphQLHelper } from "../../../../helpers/graphql.helper";
 import { Context } from "../../../context";
 import { AddressDeliveryLoader, AddressDeliveryModel } from "../../addressDelivery/addressDelivery.model";
 import { AddressStorehouseLoader } from "../../addressStorehouse/addressStorehouse.model";
-import { IMember, MemberType } from "../member.model";
+import { IMember } from "../member.model";
 import { memberService } from "../member.service";
 
 const Query = {
@@ -14,15 +12,19 @@ const Query = {
     const { pageId, memberCode } = context;
 
     const params: any = {};
+    
+    params.fanpageId = pageId;
 
     if (memberCode) {
       params.code = memberCode;
     }
-    else{
-      params.fanpageId = pageId;
-    }
     
-    return memberService.findOne(params);
+    const member = memberService.findOne(params);
+
+    if(!member)
+      throw ErrorHelper.mgRecoredNotFound("Bưu cục");
+    
+    return member;
   },
 };
 

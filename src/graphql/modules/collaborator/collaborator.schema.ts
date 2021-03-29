@@ -4,15 +4,9 @@ const schema = gql`
   extend type Query {
     getAllCollaborator(q: QueryGetListInput): CollaboratorPageData
     getOneCollaborator(id: ID!): Collaborator
-    getFilteredCollaborators(q: QueryGetListInput): FilteredCollaboratorPageData
-    getOverviewCollaboratorReport(q: QueryGetListInput): OverviewCollaboratorsReport
     # Add Query
   }
 
-  type OverviewCollaboratorsReport {
-    commission: Float
-    collaboratorCount: Int
-  }
 
   extend type Mutation {
     createCollaborator(data: CreateCollaboratorInput!): Collaborator
@@ -67,22 +61,6 @@ const schema = gql`
     commentCount: Int
   }
 
-
-  type FilteredCollaborator {
-    code: String
-    phone: String
-    memberIds: [ID]
-    customerId: ID
-    customer: Customer
-    members: [Member]
-    total:Float
-  }
-
-  type FilteredCollaboratorPageData {
-    data: [FilteredCollaborator]
-    total: Int
-    pagination: Pagination
-  }
 
   type CollaboratorPageData {
     data: [Collaborator]

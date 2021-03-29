@@ -4,33 +4,11 @@ const schema = gql`
   extend type Query {
     getAllStoreHouseCommissionLog(q: QueryGetListInput): StoreHouseCommissionLogPageData
     getOneStoreHouseCommissionLog(id: ID!): StoreHouseCommissionLog
-    getFilteredStoreHouseCommissionLog(q: QueryGetListInput): FilteredStorehouseCommissionLogPageData
-    getOverviewStoreHouseCommissionLog(q: QueryGetListInput): OverviewStorehouseCommissionLogReport
     # Add Query
   }
 
-  type OverviewStorehouseCommissionLogReport{
-    commission: Float
-    memberCount: Int
-  }
-
-  type FilteredStorehouseCommissionLog {
-    phone: String
-    memberId: String
-    member: Member
-    orderIds: [ID]
-    orders: [Order]
-    total:Float
-  }
-
-  type FilteredStorehouseCommissionLogPageData {
-    data: [FilteredStorehouseCommissionLog]
-    total: Int
-    pagination: Pagination
-  }
-
   extend type Mutation {
-    deleteOneStoreHouseCommissionLog(id: ID!): StoreHouseCommissionLog
+    getTest(id: ID!): String
     # Add Mutation
   }
 

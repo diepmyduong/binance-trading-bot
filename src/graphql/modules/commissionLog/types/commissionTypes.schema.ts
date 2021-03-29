@@ -1,13 +1,14 @@
 import { gql } from "apollo-server-express";
+
 export default gql`
     extend type Query {
-        getCommissionTypes: [CommissionType]
+        getMemberCommissionTypes: [MemberCommissionType]
     }
-    type CommissionType {
+
+    type MemberCommissionType {
         "Loại"
         type: String
         "Tên"
         name: String
-       
     }
 `;

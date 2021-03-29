@@ -5,17 +5,18 @@ import { MemberType } from "../member.model";
 
 const Query = {
   getMemberTypes: async (root: any, args: any, context: Context) => {
-    const [enabledVNPost, enabledContact] = await SettingHelper.loadMany([
-      SettingKey.DELIVERY_ENABLED_VNPOST,
-      SettingKey.DELIVERY_ENABLED_CONTACT
+    const [agencyText, saleText, branchText] = await SettingHelper.loadMany([
+      SettingKey.MEMBER_TYPE_AGENCY,
+      SettingKey.MEMBER_TYPE_SALE,
+      SettingKey.MEMBER_TYPE_BRANCH
     ]);
 
     const results = [];
-    
-    results.push({type : MemberType.BRANCH, name:"Bưu cục"});
-    results.push({type : MemberType.SALE, name:"Nhân viên"});
-    results.push({type : MemberType.AGENCY, name:"Điểm bán"});
-      
+
+    results.push({ type: MemberType.BRANCH, name: branchText });
+    results.push({ type: MemberType.SALE, name: saleText });
+    results.push({ type: MemberType.AGENCY, name: agencyText });
+
     return results;
   },
 };

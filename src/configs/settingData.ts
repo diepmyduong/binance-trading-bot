@@ -129,6 +129,12 @@ export enum SettingKey {
 
   OVERVIEW_PRODUCT_COUNT_SERVICE_ENABLED = "OVERVIEW_PRODUCT_COUNT_SERVICE_ENABLED",
   OVERVIEW_PRODUCT_COUNT_SERVICE_TITLE = "OVERVIEW_PRODUCT_COUNT_SERVICE_TITLE",
+
+  ////////////////////// Loại thành viên
+  MEMBER_TYPE_BRANCH = "MEMBER_TYPE_BRANCH",
+  MEMBER_TYPE_SALE = "MEMBER_TYPE_SALE",
+  MEMBER_TYPE_AGENCY = "MEMBER_TYPE_AGENCY"
+
 }
 
 export const SETTING_DATA = [
@@ -975,23 +981,6 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
       },
     ],
   },
-  {
-    slug: SettingGroupSlug.CAU_HINH_THONG_BAO_TONG_CUC,
-    name: "Cấu hình thông báo tổng cục",
-    desc: "Cấu hình thông báo tổng cục",
-    readOnly: true,
-    settings: [
-      {
-        type: SettingType.boolean,
-        name: "Bật tắt thông báo đặt đơn hàng",
-        key: SettingKey.POST_CREATE_ORDER_ALERT_ENABLED,
-        value: true,
-        isActive: true,
-        isPrivate: true,
-        readOnly: false,
-      },
-    ],
-  },
   ///
   {
     slug: SettingGroupSlug.CAU_HINH_DASHBOARD,
@@ -1179,6 +1168,34 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
         name: "THỐNG KÊ TỔNG QUAN SẢN PHẨM - Dịch vụ - Hiển thị",
         key: SettingKey.OVERVIEW_PRODUCT_COUNT_SERVICE_TITLE,
         value: "Dịch vụ khác",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      /// loai san pham
+      {
+        type: SettingType.string,
+        name: "LOẠI THÀNH VIÊN - Bưu cục",
+        key: SettingKey.MEMBER_TYPE_BRANCH,
+        value: "Bưu cục",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "LOẠI THÀNH VIÊN - Chi nhánh",
+        key: SettingKey.MEMBER_TYPE_SALE,
+        value: "Nhân viên",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "LOẠI THÀNH VIÊN - điểm bán",
+        key: SettingKey.MEMBER_TYPE_AGENCY,
+        value: "Điểm bán",
         isActive: true,
         isPrivate: true,
         readOnly: false,

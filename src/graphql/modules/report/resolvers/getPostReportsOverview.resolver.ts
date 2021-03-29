@@ -5,9 +5,9 @@ import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { CustomerCommissionLogModel } from "../../customerCommissionLog/customerCommissionLog.model";
-import { collaboratorService } from "../collaborator.service";
+import { collaboratorService } from "../../collaborator/collaborator.service";
 
-const getFilteredCollaborators = async (
+const getPostReportsOverview = async (
   root: any,
   args: any,
   context: Context
@@ -95,6 +95,6 @@ const getFilteredCollaborators = async (
 };
 
 const Query = {
-  getFilteredCollaborators,
+  getPostReportsOverview,
 };
 export default { Query };

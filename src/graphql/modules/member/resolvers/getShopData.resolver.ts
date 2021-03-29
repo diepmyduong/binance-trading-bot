@@ -8,22 +8,26 @@ import { memberService } from "../member.service";
 
 const Query = {
   getShopData: async (root: any, args: any, context: Context) => {
-    
+
     const { pageId, memberCode } = context;
 
     const params: any = {};
-    
-    params.fanpageId = pageId;
+
+    if (!pageId && !memberCode)
+      throw ErrorHelper.requestDataInvalid("");
 
     if (memberCode) {
       params.code = memberCode;
     }
-    
+    else {
+      params.fanpageId = pageId;
+    }
+
     const member = memberService.findOne(params);
 
-    if(!member)
+    if (!member)
       throw ErrorHelper.mgRecoredNotFound("Bưu cục");
-    
+
     return member;
   },
 };

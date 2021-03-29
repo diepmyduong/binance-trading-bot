@@ -21,13 +21,28 @@ const Query = {
     }
     return commissionLogService.fetch(args.q);
   },
+  // getCommissionTypes : 
 };
 
 const CommissionLog = {
   order: GraphQLHelper.loadById(OrderLoader, "orderId"),
   regisSMS: GraphQLHelper.loadById(RegisSMSLoader, "regisSMSId"),
   regisService: GraphQLHelper.loadById(RegisServiceLoader, "regisServiceId"),
+  // commissionType : async (root: ICommissionLog, args: any, context: Context) => {
+  //   switch (root.type) {
+  //     case CommissionLogType.RECEIVE_COMMISSION_1_FROM_ORDER:
+  //       return `HH Điểm bán`;
 
+  //     case CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR:
+  //       return `HH cộng tác viên`;
+
+  //     case CommissionLogType.RECEIVE_COMMISSION_3_FROM_ORDER:
+  //       return `HH giao hàng`;
+
+  //     default:
+  //       return "";
+  //   }
+  // },
   note: async (root: ICommissionLog, args: any, context: Context) => {
     const order = await OrderLoader.load(root.orderId);
     const member = await MemberLoader.load(order.sellerId);

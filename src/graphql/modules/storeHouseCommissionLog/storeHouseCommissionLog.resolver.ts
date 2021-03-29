@@ -26,10 +26,8 @@ const Query = {
 };
 
 const Mutation = {
-  deleteOneStoreHouseCommissionLog: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, [ROLES.ADMIN]);
-    const { id } = args;
-    return await storeHouseCommissionLogService.deleteOne(id);
+  getTest: async (root: any, args: any, context: Context) => {
+    return "";
   },
 };
 

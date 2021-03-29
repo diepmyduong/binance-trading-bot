@@ -17,7 +17,7 @@ const Query = {
     results.push({ type: MemberType.SALE, name: saleText });
     results.push({ type: MemberType.AGENCY, name: agencyText });
 
-    console.log("result", results);
+    // console.log("result", results);
 
     return results;
   },

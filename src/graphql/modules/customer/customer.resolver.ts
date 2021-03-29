@@ -51,6 +51,9 @@ const Customer = {
     if (context.isMember()) {
       params.memberId = context.id;
     }
+    if (context.isCustomer()) {
+      params.memberId = context.sellerId;
+    }
     const collaborator = await CollaboratorModel.findOne(params);
     return collaborator;
   },

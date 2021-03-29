@@ -8,7 +8,6 @@ import { memberService } from "../member.service";
 
 const Query = {
   getShopData: async (root: any, args: any, context: Context) => {
-
     const { pageId, memberCode } = context;
 
     const params: any = {};

@@ -5,30 +5,23 @@ const Schema = mongoose.Schema;
 
 export enum CustomerCommissionLogType {
   RECEIVE_COMMISSION_2_FROM_ORDER = "RECEIVE_COMMISSION_2_FROM_ORDER", // Hoa hồng nhận từ đơn hàng dành cho cộng tác viên
-  RETURN_COMMISSION_2_FROM_ORDER_TO_SHOPPER = "RETURN_COMMISSION_2_FROM_ORDER_TO_SHOPPER" // Hoa hồng ctv cho chủ shop nhận từ đơn hàng không có cộng tác viên
 }
 
 export type ICustomerCommissionLog = BaseDocument & {
   customerId: string; // Mã khách hàng
-  returnMemberId : string; // mã chủ shop nhận hoa hồng cộng tác viên
   memberId?: string;  // mã shop
   value?: number; // Giá trị
   type?: CustomerCommissionLogType; // Loại sự kiện
   orderId: string; // Mã đơn hàng
-  regisSMSId: string; // Mã đăng ký SMS
-  regisServiceId: string; //Mã đăng ký dịch vụ
 };
 
 const customerCommissionLogSchema = new Schema(
   {
     customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
-    returnMemberId: { type: Schema.Types.ObjectId, ref: "Member" },
     memberId: { type: Schema.Types.ObjectId, ref: "Member" },
     value: { type: Number, required: true },
     type: { type: String },
     orderId: { type: Schema.Types.ObjectId, ref: "Order" },
-    regisSMSId: { type: Schema.Types.ObjectId, ref: "RegisSMS" },
-    regisServiceId: { type: Schema.Types.ObjectId, ref: "RegisService" },
   },
   { timestamps: true }
 );

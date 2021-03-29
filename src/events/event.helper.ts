@@ -9,115 +9,118 @@ import { CustomerModel } from "../graphql/modules/customer/customer.model";
 import { customerService } from "../graphql/modules/customer/customer.service";
 import { customerCommissionLogService } from "../graphql/modules/customerCommissionLog/customerCommissionLog.service";
 
-export const payMobifoneCommission = async ({ type, commission, id }: any) => {
-  // làm cùng lúc log và cập nhật số dư
-  return await commissionMobifoneLogService.payOneCommission({
-    type,
-    commission,
-    id,
-  });
-};
+export class EventHelper {
+  constructor(public event: any) { }
 
-export const payCommission = async ({
-  memberId,
-  currentCommission,
-  type,
-  commission,
-  id,
-}: any) => {
-  const commissionLoging = commissionLogService.payOneCommission({
-    memberId,
-    type,
-    commission,
-    id,
-  });
+  static payMobifoneCommission = async ({ type, commission, id }: any) => {
+    // làm cùng lúc log và cập nhật số dư
+    return await commissionMobifoneLogService.payOneCommission({
+      type,
+      commission,
+      id,
+    });
+  };
 
-  const memberUpdating = memberService.increaseCommissions({
+  static payCommission = async ({
     memberId,
-    commission,
     currentCommission,
-  });
+    type,
+    commission,
+    id,
+  }: any) => {
+    const commissionLoging = commissionLogService.payOneCommission({
+      memberId,
+      type,
+      commission,
+      id,
+    });
 
-  // làm cùng lúc log và cập nhật số dư
-  return await Promise.all([commissionLoging, memberUpdating]);
-};
+    const memberUpdating = memberService.increaseCommissions({
+      memberId,
+      commission,
+      currentCommission,
+    });
 
-export const payCustomerCommission = async ({
-  customerId,
-  memberId,
-  currentCommission,
-  type,
-  commission,
-  id,
-}: any) => {
-  const commissionLoging = customerCommissionLogService.payCustomerCommission({
+    // làm cùng lúc log và cập nhật số dư
+    return await Promise.all([commissionLoging, memberUpdating]);
+  };
+
+  static payCollaboratorCommission = async ({
     customerId,
     memberId,
-    commission,
-    id,
-  });
-
-  const customerUpdating = customerService.increaseCommissions({
-    customerId,
-    commission,
     currentCommission,
-  });
-
-  // làm cùng lúc log và cập nhật số dư
-  return await Promise.all([commissionLoging, customerUpdating]);
-};
-
-export const payCustomerPoint = async ({
-  customerId,
-  id,
-  type,
-  buyerBonusPoint,
-}: any) => {
-  const customer = await CustomerModel.findById(customerId);
-  if (!customer) throw ErrorHelper.mgRecoredNotFound("khách hàng");
-
-  //ghi log
-  const pointLoging = customerPointLogService.payBonusPoint({
-    customerId: customer._id,
-    type,
+    commission,
     id,
-    value: buyerBonusPoint,
-  });
+  }: any) => {
+    const commissionLoging = customerCommissionLogService.payCustomerCommission({
+      customerId,
+      memberId,
+      commission,
+      id,
+    });
 
-  // cap nhat diem thuong ben customer
-  const customerUpdating = customerService.increasePoint({
-    customerId: customer._id,
-    currentCumulativePoint: customer.cumulativePoint,
-    cumulativePoint: buyerBonusPoint,
-  });
+    const customerUpdating = customerService.increaseCommissions({
+      customerId,
+      commission,
+      currentCommission,
+    });
 
-  return await Promise.all([pointLoging, customerUpdating]);
-};
+    // làm cùng lúc log và cập nhật số dư
+    return await Promise.all([commissionLoging, customerUpdating]);
+  };
 
-// memberId, type, id, value, fromMemberId
-export const paySellerPoint = async ({
-  sellerId,
-  id,
-  type,
-  sellerBonusPoint,
-}: any) => {
-  const member = await MemberModel.findById(sellerId);
-  if (!member) throw ErrorHelper.mgRecoredNotFound("thành viên");
-  console.log("paysellerpoint", sellerId, id, type, sellerBonusPoint);
-
-  const pointLoging = cumulativePointLogService.payBonusPoint({
-    memberId: sellerId,
-    type,
+  static payCustomerPoint = async ({
+    customerId,
     id,
-    value: sellerBonusPoint,
-  });
+    type,
+    buyerBonusPoint,
+  }: any) => {
+    const customer = await CustomerModel.findById(customerId);
+    if (!customer) throw ErrorHelper.mgRecoredNotFound("khách hàng");
 
-  // cap nhat diem thuong shopper
-  const memberUpdating = memberService.increasePoint({
-    memberId: member._id,
-    currentCumulativePoint: member.cumulativePoint,
-    cumulativePoint: sellerBonusPoint,
-  });
+    //ghi log
+    const pointLoging = customerPointLogService.payBonusPoint({
+      customerId: customer._id,
+      type,
+      id,
+      value: buyerBonusPoint,
+    });
 
-  return await Promise.all([pointLoging, memberUpdating]);
-};
+    // cap nhat diem thuong ben customer
+    const customerUpdating = customerService.increasePoint({
+      customerId: customer._id,
+      currentCumulativePoint: customer.cumulativePoint,
+      cumulativePoint: buyerBonusPoint,
+    });
+
+    return await Promise.all([pointLoging, customerUpdating]);
+  };
+
+  // memberId, type, id, value, fromMemberId
+  static paySellerPoint = async ({
+    sellerId,
+    id,
+    type,
+    sellerBonusPoint,
+  }: any) => {
+    const member = await MemberModel.findById(sellerId);
+    if (!member) throw ErrorHelper.mgRecoredNotFound("thành viên");
+    
+    const pointLoging = cumulativePointLogService.payBonusPoint({
+      memberId: sellerId,
+      type,
+      id,
+      value: sellerBonusPoint,
+    });
+
+    // cap nhat diem thuong shopper
+    const memberUpdating = memberService.increasePoint({
+      memberId: member._id,
+      currentCumulativePoint: member.cumulativePoint,
+      cumulativePoint: sellerBonusPoint,
+    });
+
+    return await Promise.all([pointLoging, memberUpdating]);
+  };
+
+}

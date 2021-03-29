@@ -12,7 +12,6 @@ const Query = {
 
     set(args, "q.filter.type", MemberType.BRANCH);
     set(args, "q.filter.id", { $ne: new ObjectId(context.id) });
-    // set(args, "q.filter.type", MemberType.BRANCH);
 
     return memberService.fetch(args.q);
   },

@@ -8,13 +8,6 @@ import { OrderItemModel } from "../../orderItem/orderItem.model";
 import { AddressDeliveryModel } from "../../addressDelivery/addressDelivery.model";
 import { MemberModel } from "../../member/member.model";
 
-/*
-    PENDING => xác nhận => CONFIRMED
-    
-    RULE
-    phải là PENDING
-    member đó xác nhận.
-*/
 
 const confirmOrder = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);

@@ -4,13 +4,9 @@ import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 const Schema = mongoose.Schema;
 export enum CommissionLogType {
   RECEIVE_COMMISSION_1_FROM_ORDER = "RECEIVE_COMMISSION_1_FROM_ORDER", // Hoa hồng nhận từ đơn hàng dành cho Chủ shop
-  RECEIVE_COMMISSION_2_FROM_ORDER = "RECEIVE_COMMISSION_2_FROM_ORDER", // Hoa hồng nhận từ đơn hàng dành cho người giới thiệu Chủ shop  
-
-  RECEIVE_COMMISSION_1_FROM_REGI_SERVICE = "RECEIVE_COMMISSION_1_FROM_REGI_SERVICE", // Hoa hồng nhận từ dịch vụ đăng ký dành cho Chủ shop
-  RECEIVE_COMMISSION_2_FROM_REGI_SERVICE = "RECEIVE_COMMISSION_2_FROM_REGI_SERVICE",// Hoa hồng nhận từ dịch vụ đăng ký dành cho người giới thiệu Chủ shop  
-
-  RECEIVE_COMMISSION_1_FROM_SMS = "RECEIVE_COMMISSION_1_FROM_SMS", // Hoa hồng nhận từ dịch vụ tin nhắn dành cho Chủ shop 
-  RECEIVE_COMMISSION_2_FROM_SMS = "RECEIVE_COMMISSION_2_FROM_SMS",// Hoa hồng nhận từ dịch vụ tin nhắn dành cho người giới thiệu Chủ shop  
+  RECEIVE_COMMISSION_2_FROM_ORDER_FOR_PRESENTER = "RECEIVE_COMMISSION_2_FROM_ORDER_FOR_PRESENTER", // Hoa hồng nhận từ đơn hàng dành cho người giới thiệu Chủ shop
+  RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR = "RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR", // Hoa hồng ctv nhận từ đơn hàng cho chủ shop
+  RECEIVE_COMMISSION_3_FROM_ORDER = "RECEIVE_COMMISSION_3_FROM_ORDER", // Hoa hồng kho nhận từ đơn hàng cho chủ shop
 }
 export type ICommissionLog = BaseDocument & {
   memberId?: string; // Mã thành viên

@@ -1,6 +1,5 @@
 import _, { set } from "lodash";
 import { ROLES } from "../../../constants/role.const";
-import { onCanceledSMS } from "../../../events/onCanceledSMS.event";
 import { AuthHelper, ErrorHelper } from "../../../helpers";
 import { Context } from "../../context";
 import { RegisSMSModel, RegisSMSStatus } from "./regisSMS.model";
@@ -30,7 +29,6 @@ const cancelRegisSMS = async (root: any, args: any, context: Context) => {
     )
   ]).then(async (res) => {
     const result = res[0];
-    onCanceledSMS.next(result);
     return result;
   });
 }

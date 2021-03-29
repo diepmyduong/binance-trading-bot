@@ -25,32 +25,14 @@ import { OrderItemLoader } from "../graphql/modules/orderItem/orderItem.model";
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { UserModel } from "../graphql/modules/user/user.model";
 import { ErrorHelper } from "../helpers/error.helper";
-import {
-  payCommission,
-  payCustomerCommission,
-  payCustomerPoint,
-  payMobifoneCommission,
-  paySellerPoint,
-} from "./event.helper";
+import { EventHelper } from "./event.helper";
 import { onSendChatBotText } from "./onSendToChatbot.event";
 import { AddressDeliveryModel } from "../graphql/modules/addressDelivery/addressDelivery.model";
 import { StoreHouseCommissionLogModel } from "../graphql/modules/storeHouseCommissionLog/storeHouseCommissionLog.model";
 import { CollaboratorModel } from "../graphql/modules/collaborator/collaborator.model";
 import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
 import { OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
-import { customerCommissionLogService } from "../graphql/modules/customerCommissionLog/customerCommissionLog.service";
 
-//set lại type chứ ko bị đụng truncate thằng dòng dưới
-const { RECEIVE_FROM_ORDER: CUSTOMER_TYPE } = CustomerPointLogType;
-
-const { RECEIVE_FROM_ORDER: SELLER_TYPE } = CumulativePointLogType;
-
-const { RECEIVE_COMMISSION_0_FROM_ORDER } = CommissionMobifoneLogType;
-
-const {
-  RECEIVE_COMMISSION_1_FROM_ORDER,
-  RECEIVE_COMMISSION_2_FROM_ORDER,
-} = CommissionLogType;
 export const onApprovedCompletedOrder = new Subject<IOrder>();
 
 // duyệt đơn thành công
@@ -108,10 +90,10 @@ onApprovedCompletedOrder.subscribe(async (order) => {
     if (collaborator.customerId === customer.id) {
       if (buyerBonusPoint) {
         if (buyerBonusPoint > 0)
-          [, cumulativePointCustomer] = await payCustomerPoint({
+          [, cumulativePointCustomer] = await EventHelper.payCustomerPoint({
             customerId: customer.id,
             id: order._id,
-            type: CUSTOMER_TYPE,
+            type: CustomerPointLogType.RECEIVE_FROM_ORDER,
             buyerBonusPoint,
           });
       }
@@ -164,8 +146,8 @@ onApprovedCompletedOrder.subscribe(async (order) => {
 
       // hoa hồng mobiphone
       if (commission0 > 0) {
-        const commission = await payMobifoneCommission({
-          type: RECEIVE_COMMISSION_0_FROM_ORDER,
+        await EventHelper.payMobifoneCommission({
+          type: CommissionMobifoneLogType.RECEIVE_COMMISSION_0_FROM_ORDER,
           commission: commission0,
           id: order._id,
         });
@@ -209,9 +191,9 @@ onApprovedCompletedOrder.subscribe(async (order) => {
   // Hoa hồng điểm bán
   if (commission1) {
     if (commission1 > 0) {
-      [, commissionUpdating] = await payCommission({
+      [, commissionUpdating] = await EventHelper.payCommission({
         memberId: fromSeller._id,
-        type: RECEIVE_COMMISSION_1_FROM_ORDER,
+        type: CommissionLogType.RECEIVE_COMMISSION_1_FROM_ORDER,
         currentCommission: fromSeller.commission,
         commission: commission1,
         id: order._id,
@@ -222,10 +204,10 @@ onApprovedCompletedOrder.subscribe(async (order) => {
   let cummulativeUpdating: IMember = null;
   // Điểm thưởng điểm bán
   if (sellerBonusPoint && sellerBonusPoint > 0) {
-    [, cummulativeUpdating] = await paySellerPoint({
+    [, cummulativeUpdating] = await EventHelper.paySellerPoint({
       id: order._id,
       sellerId: fromSeller._id,
-      type: SELLER_TYPE,
+      type: CumulativePointLogType.RECEIVE_FROM_ORDER,
       sellerBonusPoint,
     });
   }
@@ -268,7 +250,12 @@ onApprovedCompletedOrder.subscribe(async (order) => {
       const collaborator = await CollaboratorModel.findById(collaboratorId);
       if (collaborator) {
         const customerPresenter = await CustomerModel.findById(collaborator.customerId);
-        await customerCommissionLogService.payCustomerCommission({
+        //     customerId,
+        // memberId,
+        // currentCommission,
+        // commission,
+        // id,
+        await EventHelper.payCollaboratorCommission({
           customerId: customerPresenter.id,
           memberId: sellerId,
           commission: commission2,
@@ -276,65 +263,83 @@ onApprovedCompletedOrder.subscribe(async (order) => {
         });
       }
       else {
-        await customerCommissionLogService.payMemberCommission({
-          memberId: sellerId,
+        const member = await MemberModel.findById(order.sellerId);
+        const commissionResult = await EventHelper.payCommission({
+          memberId: member._id,
+          type: CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR,
+          currentCommission: member.commission,
           commission: commission2,
           id,
         });
-        // const presenterId = shopper.parentIds ? shopper.parentIds[0] : null;
-        // if (presenterId) {
-        //   const memberPresenter = await MemberModel.findById(presenterId);
-        //   await payCommission({
-        //     memberId: memberPresenter._id,
-        //     type: RECEIVE_COMMISSION_2_FROM_ORDER,
-        //     currentCommission: memberPresenter.commission,
-        //     commission: commission2,
-        //     id: _id,
-        //   }).then((res) => {
-        //     const commissionUpdating = res[1];
-        //     if (memberPresenter.psids) {
-        //       SettingHelper.load(
-        //         SettingKey.ORDER_COMMISSION_MSG_FOR_PRESENTER
-        //       ).then((msg) => {
-        //         const params = {
-        //           apiKey: memberPresenter.chatbotKey,
-        //           psids: memberPresenter.psids,
-        //           message: msg,
-        //           context: {
-        //             shopper,
-        //             code,
-        //             commission: commission2,
-        //             myCommission: commission2
-        //               ? commissionUpdating.commission
-        //               : null,
-        //           },
-        //         };
-        //         onSendChatBotText.next(params);
-        //       });
-        //     }
-        //   });
-        // }
+        const [, receiver] = commissionResult
+        if (member.psids) {
+          SettingHelper.load(
+            SettingKey.ORDER_COMMISSION_MSG_FOR_PRESENTER
+          ).then((msg) => {
+            const params = {
+              apiKey: member.chatbotKey,
+              psids: member.psids,
+              message: msg,
+              context: {
+                shopper,
+                code,
+                commission: commission2,
+                myCommission: commission2
+                  ? receiver.commission
+                  : null,
+              },
+            };
+            onSendChatBotText.next(params);
+          });
+        }
       }
     }
   }
 });
 
 
-// tinh hoa hồng kho
+// duyệt đơn hàng thành công
+// Tính chiết khấu dành cho kho giao hàng  - f3 - commission3
+// Gửi mess cho người giới thiệu
 onApprovedCompletedOrder.subscribe(async (order) => {
-  const { commission3, id, toMemberId, sellerId } = order;
+  const { commission3, id, toMemberId, sellerId , code } = order;
+  const shopper = await MemberLoader.load(sellerId);
+  if (!shopper) throw ErrorHelper.mgRecoredNotFound("chủ shop");
   if (commission3 > 0) {
     let member = await MemberModel.findById(toMemberId);
-    if (!member) {
+
+    if(!member)
       member = await MemberModel.findById(sellerId);
+
+    const commissionResult = await EventHelper.payCommission({
+      memberId: member._id,
+      type: CommissionLogType.RECEIVE_COMMISSION_3_FROM_ORDER,
+      currentCommission: member.commission,
+      commission: commission3,
+      id,
+    });
+
+    const [, receiver] = commissionResult
+    if (member.psids) {
+      SettingHelper.load(
+        SettingKey.ORDER_COMMISSION_MSG_FOR_PRESENTER
+      ).then((msg) => {
+        const params = {
+          apiKey: member.chatbotKey,
+          psids: member.psids,
+          message: msg,
+          context: {
+            shopper,
+            code,
+            commission: commission3,
+            myCommission: commission3
+              ? receiver.commission
+              : null,
+          },
+        };
+        onSendChatBotText.next(params);
+      });
     }
-    const params = {
-      orderId: id,
-      value: commission3,
-      memberId: member.id,
-    };
-    const commission = new StoreHouseCommissionLogModel(params);
-    commission.save();
   }
 });
 
@@ -347,6 +352,7 @@ onApprovedCompletedOrder.subscribe(async (order) => {
   }
 });
 
+// Ghi log
 onApprovedCompletedOrder.subscribe(async (order: IOrder) => {
   const { buyerId, sellerId, id, status, toMemberId } = order;
 

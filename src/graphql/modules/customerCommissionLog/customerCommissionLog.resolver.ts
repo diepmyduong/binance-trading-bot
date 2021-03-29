@@ -25,11 +25,7 @@ const Query = {
     return customerCommissionLogService.fetch(args.q);
   },
   getAllMemberCollaboratorCommissionLog: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-    if (context.isMember()) {
-      set(args, "q.filter.returnMemberId", context.id);
-    }
-    return customerCommissionLogService.fetch(args.q);
+    return;
   },
 };
 
@@ -43,14 +39,11 @@ const CustomerCommissionLog = {
   note: async (root: ICustomerCommissionLog, args: any, context: Context) => {
 
     const order = await OrderLoader.load(root.orderId);
-    const member = await MemberLoader.load(order.sellerId);
     const collaborator = await CollaboratorModel.findById(order.collaboratorId);
 
     switch (root.type) {
       case CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER:
         return `Hoa hồng CTV dành cho CTV : ${collaborator.name} - SĐT: ${collaborator.phone} từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
-      case CustomerCommissionLogType.RETURN_COMMISSION_2_FROM_ORDER_TO_SHOPPER:
-        return `Hoa hồng CTV dành cho BC: ${member.shopName} - mã BC: ${member.code} nhận từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
       default:
         return "";
     }
@@ -59,19 +52,15 @@ const CustomerCommissionLog = {
 
 const MemberCollaboratorCommissionLog = {
   order: GraphQLHelper.loadById(OrderLoader, "orderId"),
-  returnMember: GraphQLHelper.loadById(MemberLoader, "returnMemberId"),
 
   note: async (root: ICustomerCommissionLog, args: any, context: Context) => {
 
     const order = await OrderLoader.load(root.orderId);
-    const member = await MemberLoader.load(order.sellerId);
     const collaborator = await CollaboratorModel.findById(order.collaboratorId);
 
     switch (root.type) {
       case CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER:
         return `Hoa hồng CTV dành cho CTV : ${collaborator.name} - SĐT: ${collaborator.phone} từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
-      case CustomerCommissionLogType.RETURN_COMMISSION_2_FROM_ORDER_TO_SHOPPER:
-        return `Hoa hồng CTV dành cho BC: ${member.shopName} - mã BC: ${member.code} nhận từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
       default:
         return "";
     }

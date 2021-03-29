@@ -1,6 +1,5 @@
 import _, { set } from "lodash";
 import { ROLES } from "../../../constants/role.const";
-import { onCanceledRegisService } from "../../../events/onCanceledRegisService.event";
 import { AuthHelper, ErrorHelper } from "../../../helpers";
 import { Context } from "../../context";
 import { IRegisService, RegisServiceModel, RegisServiceStatus } from "./regisService.model";
@@ -28,7 +27,6 @@ const cancelRegisService = async (root: any, args: any, context: Context) => {
     )
   ]).then(async (res) => {
     const result = res[0];
-    onCanceledRegisService.next(result);
     return result;
   });
 }

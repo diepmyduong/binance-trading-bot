@@ -37,18 +37,7 @@ const StoreHouseCommissionLog = {
   order: GraphQLHelper.loadById(OrderLoader, "orderId"),
   member: GraphQLHelper.loadById(MemberLoader, "memberId"),
   note: async (root: IStoreHouseCommissionLog, args: any, context: Context) => {
-    const order = await OrderLoader.load(root.orderId);
-    const member = await MemberLoader.load(order.sellerId);
-    switch (order.shipMethod) {
-      case ShipMethod.POST:
-        return `Hoa hồng giao hàng dành cho bưu cục từ đơn hàng ${order.code} - khách hàng: ${order.buyerName} - Phương thức : Nhận hàng tại bưu cục`;
-
-      case ShipMethod.VNPOST:
-        return `Hoa hồng giao hàng dành cho bưu cục từ đơn hàng ${order.code} - khách hàng: ${order.buyerName} - Phương thức : Giao hàng tại địa chỉ`;
-
-      default:
-        return "";
-    }
+    return "";
   },
 };
 

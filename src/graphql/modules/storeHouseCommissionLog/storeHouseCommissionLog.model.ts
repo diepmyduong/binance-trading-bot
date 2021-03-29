@@ -4,16 +4,10 @@ import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 const Schema = mongoose.Schema;
 
 export type IStoreHouseCommissionLog = BaseDocument & {
-  memberId: string; // Mã thành viên
-  value?: number; // Giá trị
-  orderId: string; // Mã đơn hàng
 };
 
 const storeHouseCommissionLogSchema = new Schema(
   {
-    value: { type: Number, required: true },
-    memberId: { type: Schema.Types.ObjectId, ref: "Member" },
-    orderId: { type: Schema.Types.ObjectId, ref: "Order" },
   },
   { timestamps: true }
 );

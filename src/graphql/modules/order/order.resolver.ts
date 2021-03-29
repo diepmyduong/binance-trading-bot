@@ -30,26 +30,20 @@ const Query = {
   getAllOrder: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
 
-    if (!isNull(args.q.filter.isPrimary)) {
-      delete args.q.filter.isPrimary;
-    }
-
-    // neu la sellerId
     if (context.isMember()) {
-      // console.log("args.q.filter", args.q.filter);
-      // console.log("args.q.filter.isPrimary", args.q.filter);
-
       if (!isNull(args.q.filter.sellerId)) {
         delete args.q.filter.sellerId;
       }
-
       set(args, "q.filter.sellerId", context.id);
-    }
-
-    // neu la buyer id
-    if (context.isCustomer()) {
+    } else if (context.isCustomer()) {
       set(args, "q.filter.buyerId", context.id);
     }
+    else {
+      if (args.q.filter) {
+        delete args.q.filter.isPrimary;
+      }
+    }
+
     return orderService.fetch(args.q);
   },
   getOneOrder: async (root: any, args: any, context: Context) => {
@@ -78,14 +72,14 @@ const Order = {
   toMember: GraphQLHelper.loadById(MemberLoader, "toMemberId"),
   updatedByUser: GraphQLHelper.loadById(UserLoader, "updatedByUserId"),
   buyer: GraphQLHelper.loadById(CustomerLoader, "buyerId"),
-  collaborator:  async (root: IOrder, args: any, context: Context) => {
+  collaborator: async (root: IOrder, args: any, context: Context) => {
     const collaborator = await CollaboratorModel.findById(root.collaboratorId);
     const member = await MemberModel.findById(root.sellerId);
-    const collaboratorMember:any = {
+    const collaboratorMember: any = {
       memberId: context.id,
       member
     }
-    if(collaborator){
+    if (collaborator) {
       const customer = await CustomerModel.findById(collaborator.customerId);
       collaboratorMember.id = collaborator.id;
       collaboratorMember.customerId = collaborator.customerId;
@@ -93,24 +87,24 @@ const Order = {
       collaboratorMember.phone = collaborator.phone;
       collaboratorMember.customer = customer;
     }
-    return collaboratorMember ;
+    return collaboratorMember;
   },
 
-  mustTransfer:async (root: IOrder, args: any, context: Context) => {
+  mustTransfer: async (root: IOrder, args: any, context: Context) => {
     const member = await MemberModel.findById(root.sellerId);
-    if(member){
+    if (member) {
 
-      if(root.shipMethod === ShipMethod.POST){
+      if (root.shipMethod === ShipMethod.POST) {
         const address = await AddressDeliveryLoader.load(root.addressDeliveryId);
-        if(member.addressDeliveryIds.includes(address.id)){
+        if (member.addressDeliveryIds.includes(address.id)) {
           return true;
         }
         return false
       }
 
-      if(root.shipMethod === ShipMethod.VNPOST){
+      if (root.shipMethod === ShipMethod.VNPOST) {
         const address = await AddressStorehouseLoader.load(root.addressStorehouseId);
-        if(member.addressStorehouseIds.includes(address.id)){
+        if (member.addressStorehouseIds.includes(address.id)) {
           return true;
         }
         return false
@@ -132,7 +126,7 @@ const Order = {
   deliveringMember: async (root: IOrder, args: any, context: Context) => {
     if (root.toMemberId) {
       return await MemberModel.findById(root.toMemberId);
-    } 
+    }
 
     let code = null;
     if (root.shipMethod === ShipMethod.POST) {
@@ -152,7 +146,7 @@ const Order = {
 
     const result = await MemberModel.findOne({ code });
 
-    if(!result)
+    if (!result)
       return await MemberModel.findById(root.sellerId);
 
     return result;

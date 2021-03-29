@@ -1181,7 +1181,7 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
       },
       {
         type: SettingType.string,
-        name: "LOẠI THÀNH VIÊN - Chi nhánh",
+        name: "LOẠI THÀNH VIÊN - nhân viên",
         key: SettingKey.MEMBER_TYPE_SALE,
         value: "Nhân viên",
         isActive: true,

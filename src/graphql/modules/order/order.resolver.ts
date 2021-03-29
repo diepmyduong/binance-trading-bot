@@ -30,14 +30,14 @@ const Query = {
   getAllOrder: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
 
+    if (!isNull(args.q.filter.isPrimary)) {
+      delete args.q.filter.isPrimary;
+    }
+
     // neu la sellerId
     if (context.isMember()) {
       // console.log("args.q.filter", args.q.filter);
       // console.log("args.q.filter.isPrimary", args.q.filter);
-
-      if (!isNull(args.q.filter.isPrimary)) {
-        delete args.q.filter.isPrimary;
-      }
 
       if (!isNull(args.q.filter.sellerId)) {
         delete args.q.filter.sellerId;

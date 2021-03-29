@@ -8,6 +8,8 @@ export enum CommissionLogType {
   RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR = "RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR", // Hoa hồng ctv nhận từ đơn hàng cho chủ shop
   RECEIVE_COMMISSION_3_FROM_ORDER = "RECEIVE_COMMISSION_3_FROM_ORDER", // Hoa hồng kho nhận từ đơn hàng cho chủ shop
 }
+
+
 export type ICommissionLog = BaseDocument & {
   memberId?: string; // Mã thành viên
   value?: number; // Giá trị

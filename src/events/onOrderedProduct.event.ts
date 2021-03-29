@@ -24,13 +24,6 @@ import { IOrder, OrderStatus } from "../graphql/modules/order/order.model";
 import { OrderItemLoader } from "../graphql/modules/orderItem/orderItem.model";
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { UserModel } from "../graphql/modules/user/user.model";
-import { ErrorHelper } from "../helpers/error.helper";
-import {
-  payCommission,
-  payCustomerPoint,
-  payMobifoneCommission,
-  paySellerPoint,
-} from "./event.helper";
 import { onSendChatBotText } from "./onSendToChatbot.event";
 
 export const onOrderedProduct = new Subject<IOrder>();

@@ -1,19 +1,17 @@
 import { Subject } from "rxjs";
 
 import { SettingKey } from "../configs/settingData";
-import { CustomerLoader, CustomerModel, ICustomer } from "../graphql/modules/customer/customer.model";
+import { CustomerLoader, CustomerModel } from "../graphql/modules/customer/customer.model";
 import { CustomerPointLogType } from "../graphql/modules/customerPointLog/customerPointLog.model";
-import { LuckyWheelModel, WheelStatus } from "../graphql/modules/luckyWheel/luckyWheel.model";
-import { GiftType, ILuckyWheelGift, LuckyWheelGiftModel } from "../graphql/modules/luckyWheelGift/luckyWheelGift.model";
+import { LuckyWheelModel } from "../graphql/modules/luckyWheel/luckyWheel.model";
+import { GiftType, LuckyWheelGiftModel } from "../graphql/modules/luckyWheelGift/luckyWheelGift.model";
 import { ILuckyWheelResult, SpinStatus } from "../graphql/modules/luckyWheelResult/luckyWheelResult.model";
 import { MemberLoader, MemberModel } from "../graphql/modules/member/member.model";
 
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { UserModel } from "../graphql/modules/user/user.model";
 // import { ErrorHelper } from "../helpers/error.helper";
-import {
-    payCustomerPoint
-} from "./event.helper";
+import { EventHelper } from "./event.helper";
 import { onSendChatBotText } from "./onSendToChatbot.event";
 export const onGivenGifts = new Subject<ILuckyWheelResult>();
 
@@ -77,7 +75,7 @@ onGivenGifts.subscribe(async (result) => {
 
         if (result.giftType === GiftType.CUMMULATIVE_POINT) {
             //   ghi log - customerPointLogService - lại trước
-            await payCustomerPoint({
+            await EventHelper.payCustomerPoint({
                 customerId: result.customerId,
                 id: result._id,
                 type: CustomerPointLogType.RECEIVE_FROM_LUCKY_WHEEL,

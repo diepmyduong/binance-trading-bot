@@ -33,22 +33,17 @@ const CommissionLog = {
     const member = await MemberLoader.load(order.sellerId);
     switch (root.type) {
       case CommissionLogType.RECEIVE_COMMISSION_1_FROM_ORDER:
-        return `Hoa hồng nhận dành cho chủ shop từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
+        return `Bưu cục ${member.shopName} nhận hoa hồng điểm bán từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
 
-      case CommissionLogType.RECEIVE_COMMISSION_1_FROM_REGI_SERVICE:
-        return "Hoa hồng nhận từ dịch vụ đăng ký dành cho Chủ shop";
+      // case CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER_FOR_PRESENTER:
+      //   return `Hoa hồng giới thiệu cho chủ shop giới thiệu từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
 
-      case CommissionLogType.RECEIVE_COMMISSION_1_FROM_SMS:
-        return "Hoa hồng nhận từ dịch vụ tin nhắn dành cho Chủ shop";
+      case CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR:
+        return `Bưu cục ${member.shopName} nhận hoa hồng cộng tác viên từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
 
-      case CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER:
-        return "Hoa hồng nhận từ đơn hàng dành cho người giới thiệu Chủ shop";
+      case CommissionLogType.RECEIVE_COMMISSION_3_FROM_ORDER:
+        return `Bưu cục ${member.shopName} nhận hoa hồng kho từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
 
-      case CommissionLogType.RECEIVE_COMMISSION_2_FROM_REGI_SERVICE:
-        return "Hoa hồng nhận từ dịch vụ đăng ký dành cho người giới thiệu Chủ shop";
-
-      case CommissionLogType.RECEIVE_COMMISSION_2_FROM_SMS:
-        return "Hoa hồng nhận từ dịch vụ tin nhắn dành cho người giới thiệu Chủ shop";
       default:
         return "";
     }

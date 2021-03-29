@@ -89,8 +89,9 @@ export type IOrder = BaseDocument & {
   shipMethod?: ShipMethod;
   paymentMethod?: PaymentMethod;
   productIds: string[];
+  oldAddressStorehouseId: string; // Mã kho cũ
   addressStorehouseId?: string; // Mã kho
-  oldAddressDeliveryId: string; // Mã điểm nhận
+  oldAddressDeliveryId: string; // Mã điểm nhận cũ
   addressDeliveryId: string; // Mã điểm nhận
   isUrbanDelivery: boolean;
   campaignCode: string;
@@ -157,20 +158,20 @@ const orderSchema = new Schema(
     subtotal: { type: Number, default: 0, min: 0 },
     itemCount: { type: Number, default: 0, min: 0 },
 
-    addressStorehouseId: {
-      type: Schema.Types.ObjectId,
-      ref: "AddressStorehouse",
-    },
+    oldAddressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse" },
+    addressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse", },
+
     oldAddressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery" },
     addressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery" },
+
     isUrbanDelivery: { type: Boolean, default: false },
     collaboratorId: { type: Schema.Types.ObjectId, ref: "Collaborator" },
     note: { type: Schema.Types.String },
     toMemberNote: { type: Schema.Types.String },
     // chuyển đơn cho member khác xử lý
-    toMemberId : { type: Schema.Types.ObjectId, ref: "Member" },
-    longitude : { type: Schema.Types.String },
-    latitude : { type: Schema.Types.String },
+    toMemberId: { type: Schema.Types.ObjectId, ref: "Member" },
+    longitude: { type: Schema.Types.String },
+    latitude: { type: Schema.Types.String },
   },
   { timestamps: true }
 );

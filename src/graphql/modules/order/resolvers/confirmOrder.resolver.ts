@@ -7,6 +7,7 @@ import { onConfirmedOrder } from "../../../../events/onConfirmedOrder.event";
 import { OrderItemModel } from "../../orderItem/orderItem.model";
 import { AddressDeliveryModel } from "../../addressDelivery/addressDelivery.model";
 import { MemberModel } from "../../member/member.model";
+import { AddressStorehouseModel } from "../../addressStorehouse/addressStorehouse.model";
 
 
 const confirmOrder = async (root: any, args: any, context: Context) => {
@@ -35,26 +36,26 @@ const confirmOrder = async (root: any, args: any, context: Context) => {
   if (!member) throw Error("Không tìm thấy chủ shop trong đơn hàng này");
   if (context.id !== member.id) throw Error("Không thể thao tác trên đơn hàng này do không đúng chủ shop");
 
+  const temp = Object.create(order);
   // kiem tra
   if (order.shipMethod === ShipMethod.POST) {
     const addressDeliveryByCode = await AddressDeliveryModel.findOne({
       code: member.code,
     });
-
     if (addressDeliveryByCode) {
-      order.oldAddressDeliveryId = addressDeliveryByCode.id;
+      order.oldAddressDeliveryId = temp.addressDeliveryId;
       order.addressDeliveryId = addressDeliveryByCode.id;
-      // if (!member.addressDeliveryIds.includes(addressDeliveryByCode.id)) {
-
-      // }
-      // if (order.addressDeliveryId !== addressDeliveryByCode.id) {
-
-      // }
     }
-
   }
 
   if (order.shipMethod === ShipMethod.VNPOST) {
+    const addressStorehouseByCode = await AddressStorehouseModel.findOne({
+      code: member.code,
+    });
+    if (addressStorehouseByCode) {
+      order.oldAddressStorehouseId = temp.addressStorehouseId;
+      order.addressStorehouseId = addressStorehouseByCode.id;
+    }
   }
 
   for (const orderItemId of order.itemIds) {

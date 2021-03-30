@@ -58,7 +58,7 @@ const Mutation = {
     if (customer) {
       // có psid
       if (psid) {
-        console.log('customer + psid', psid);
+        // console.log('customer + psid', psid);
         // kiem tra nếu không có Index Page
 
         const pageAccountByPsID = customer.pageAccounts.find((a: any) => a.psid == psid);

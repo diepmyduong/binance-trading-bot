@@ -93,19 +93,24 @@ const Order = {
   mustTransfer: async (root: IOrder, args: any, context: Context) => {
     const member = await MemberModel.findById(root.sellerId);
     if (member) {
-
       if (root.shipMethod === ShipMethod.POST) {
         const address = await AddressDeliveryLoader.load(root.addressDeliveryId);
         if (member.addressDeliveryIds.includes(address.id)) {
-          return true;
+          if(member.code !== address.code){
+            return true
+          }
+          return false;
         }
-        return false
+        return false;
       }
 
       if (root.shipMethod === ShipMethod.VNPOST) {
         const address = await AddressStorehouseLoader.load(root.addressStorehouseId);
         if (member.addressStorehouseIds.includes(address.id)) {
-          return true;
+          if(member.code !== address.code){
+            return true
+          }
+          return false;
         }
         return false
       }

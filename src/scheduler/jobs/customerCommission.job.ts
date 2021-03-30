@@ -20,7 +20,6 @@ export class CustomerCommissionJob {
 export default CustomerCommissionJob;
 
 const doBusiness = async () => {
-  // console.log('doBusiness');
 
   const customers = await CustomerModel.find({}).limit(1000);
 

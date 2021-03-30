@@ -7,10 +7,11 @@ import { CustomerCommissionLogModel } from "../../customerCommissionLog/customer
 import { collaboratorService } from "../../collaborator/collaborator.service";
 import { memberService } from "../../member/member.service";
 import { IMember } from "../../member/member.model";
-import { OrderModel } from "../../order/order.model";
+import { OrderModel, OrderStatus } from "../../order/order.model";
 import { ObjectId } from "mongodb";
 import { CommissionLogModel } from "../../commissionLog/commissionLog.model";
 import { MemberStatistics } from "../../member/types/memberStatistics.type";
+import { CustomerModel } from "../../customer/customer.model";
 
 const getPostReports = async (
   root: any,
@@ -20,8 +21,13 @@ const getPostReports = async (
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const queryInput = args.q;
   let { fromDate, toDate } = queryInput.filter;
-  let $gte = null,
-    $lte = null;
+
+
+  console.log('fromDate',fromDate);
+  console.log('toDate',toDate);
+
+  let $gte: Date = null,
+    $lte: Date = null;
 
   if (fromDate && toDate) {
     fromDate = fromDate + "T00:00:00+07:00";
@@ -29,17 +35,67 @@ const getPostReports = async (
     $gte = new Date(fromDate);
     $lte = new Date(toDate);
   }
+  
+  console.log('$gte',$gte);
+  console.log('$lte',$lte);
 
   const membersObj = await memberService.fetch(args.q);
 
   const members = membersObj.data;
 
-  for (let i = 0 ; i < members.length ; i++) {
+  const $matchIncomeFromOrder = (member: any) => {
+    let match: any = {
+      $match: {
+        sellerId: new ObjectId(member.id),
+        status: OrderStatus.COMPLETED
+      }
+    };
+    
+    if (fromDate && toDate) {
+      set(match, "$match.createdAt", {
+        $gte, $lte
+      })
+    }
+
+    // console.log('set match',match);
+    return match;
+  };
+
+  const $matchCollaboratorsFromShop = (member: any) => {
+    const match: any = {
+      $match:{
+        "collaborators.memberId": new ObjectId(member.id),
+      }
+    };
+    if (fromDate && toDate) {
+      match.$match.createdAt = {
+        $gte, $lte
+      }
+    }
+    return match;
+  };
+
+  const $matchCommissionFromLog = (member: any) => {
+    const match: any = {
+      $match: {
+        memberId: new ObjectId(member.id),
+      }
+    };
+    if (fromDate && toDate) {
+      match.$match.createdAt = {
+        $gte, $lte
+      }
+    }
+    return match;
+  };
+
+
+  for (let i = 0; i < members.length; i++) {
     const member = members[i];
     // doanh thu
     const [incomeFromOrder] = await OrderModel.aggregate([
       {
-        $match: { sellerId: new ObjectId(member.id) }
+        ...($matchIncomeFromOrder(member))
       },
       {
         $group: {
@@ -56,9 +112,11 @@ const getPostReports = async (
 
     const income = incomeFromOrder ? incomeFromOrder.total : 0;
 
-    const collaboratorsFromShop = await OrderModel.aggregate([
+    const collaboratorsFromShop = await CustomerModel.aggregate([
       {
-        $match: { "pageAccounts.memberId": new ObjectId(member.id) }
+        $match: {
+          "pageAccounts.memberId": new ObjectId(member.id)
+        }
       },
       {
         $lookup: {
@@ -69,18 +127,16 @@ const getPostReports = async (
         },
       },
       {
-        $match: { "collaborators.memberId": new ObjectId(member.id) }
+        ...($matchCollaboratorsFromShop(member))
       },
     ]);
-    // console.log('collaboratorsFromShop',collaboratorsFromShop);
+    console.log('collaboratorsFromShop', collaboratorsFromShop);
 
     const collaboratorsCount = collaboratorsFromShop.length;
 
     const [commissionFromLog] = await CommissionLogModel.aggregate([
       {
-        $match: {
-          memberId: new ObjectId(member.id)
-        }
+        ...($matchCommissionFromLog(member))
       },
       {
         $group: {
@@ -102,7 +158,7 @@ const getPostReports = async (
       realCommission
     }
 
-    set(membersObj.data[i],"memberStatistics", statitics);
+    set(membersObj.data[i], "memberStatistics", statitics);
   }
   return membersObj;
 };

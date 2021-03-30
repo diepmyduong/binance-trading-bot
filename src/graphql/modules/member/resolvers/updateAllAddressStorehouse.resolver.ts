@@ -2,7 +2,6 @@ import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { MemberModel } from "../member.model";
-import { AddressDeliveryModel } from "../../addressDelivery/addressDelivery.model";
 import { AddressStorehouseModel } from "../../addressStorehouse/addressStorehouse.model";
 import { ErrorHelper } from "../../../../base/error";
 

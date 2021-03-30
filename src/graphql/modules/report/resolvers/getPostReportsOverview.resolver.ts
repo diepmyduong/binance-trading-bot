@@ -58,8 +58,8 @@ const getPostReportsOverview = async (
     {
       $group: {
         _id: "$customerId",
-        memberIds: { $push: "$memberId" },
-        customerIds: { $push: "$customerId" },
+        memberIds: { $addToSet: "$memberId" },
+        customerIds: { $addToSet: "$customerId" },
         total: {
           $sum: "$value",
         },

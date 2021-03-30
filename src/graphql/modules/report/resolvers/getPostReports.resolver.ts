@@ -1,4 +1,3 @@
-import { ObjectId } from "bson";
 import { set, groupBy } from "lodash";
 import { configs } from "../../../../configs";
 import { ROLES } from "../../../../constants/role.const";
@@ -6,6 +5,12 @@ import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { CustomerCommissionLogModel } from "../../customerCommissionLog/customerCommissionLog.model";
 import { collaboratorService } from "../../collaborator/collaborator.service";
+import { memberService } from "../../member/member.service";
+import { IMember } from "../../member/member.model";
+import { OrderModel } from "../../order/order.model";
+import { ObjectId } from "mongodb";
+import { CommissionLogModel } from "../../commissionLog/commissionLog.model";
+import { MemberStatistics } from "../../member/types/memberStatistics.type";
 
 const getPostReports = async (
   root: any,
@@ -14,84 +19,92 @@ const getPostReports = async (
 ) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const queryInput = args.q;
-  let { fromDate, toDate, memberId } = queryInput.filter;
+  let { fromDate, toDate } = queryInput.filter;
   let $gte = null,
     $lte = null;
-
-  const $match: any = {};
 
   if (fromDate && toDate) {
     fromDate = fromDate + "T00:00:00+07:00";
     toDate = toDate + "T24:00:00+07:00";
     $gte = new Date(fromDate);
     $lte = new Date(toDate);
-    $match.createdAt = { $gte, $lte };
   }
 
-  if(memberId){
-    $match.memberId = new ObjectId(memberId);
-  }
+  const membersObj = await memberService.fetch(args.q);
 
-  //customerId:ObjectId("603b6ea20c5de11eaca05606"),
+  const members = membersObj.data;
 
-  // console.log("$match", $match);
-
-  const $limit = queryInput.limit || configs.query.limit;
-  const $skip = queryInput.offset || (queryInput.page - 1) * $limit || 0;
-
-  const result = await CustomerCommissionLogModel.aggregate([
-    {
-      $project: {
-        _id: 1,
-        customerId: 1,
-        memberId: 1,
-        type: 1,
-        value: 1,
-        orderId: 1,
-        createdAt: 1,
-        updatedAt: 1,
+  for (let i = 0 ; i < members.length ; i++) {
+    const member = members[i];
+    // doanh thu
+    const [incomeFromOrder] = await OrderModel.aggregate([
+      {
+        $match: { sellerId: new ObjectId(member.id) }
       },
-    },
-    {
-      $match,
-    },
-    {
-      $group: {
-        _id: "$customerId",
-        memberIds: { $addToSet: "$memberId" },
-        customerIds: { $addToSet: "$customerId" },
-        total: {
-          $sum: "$value",
+      {
+        $group: {
+          _id: "$sellerId",
+          orderIds: { $addToSet: "$orderId" },
+          total: {
+            $sum: "$amount",
+          },
+        }
+      }
+    ]);
+
+    // console.log('incomeFromOrder',incomeFromOrder);
+
+    const income = incomeFromOrder ? incomeFromOrder.total : 0;
+
+    const collaboratorsFromShop = await OrderModel.aggregate([
+      {
+        $match: { "pageAccounts.memberId": new ObjectId(member.id) }
+      },
+      {
+        $lookup: {
+          from: "collaborators",
+          localField: "_id",
+          foreignField: "customerId",
+          as: "collaborators",
         },
       },
-    },
-    {
-      $project: {
-        _id: 0,
-        memberIds: 1,
-        customerId: { $arrayElemAt: ["$customerIds", 0] },
-        total: 1,
+      {
+        $match: { "collaborators.memberId": new ObjectId(member.id) }
       },
-    },
-    {
-      $limit,
-    },
-    {
-      $skip,
-    },
-  ]);
+    ]);
+    // console.log('collaboratorsFromShop',collaboratorsFromShop);
 
+    const collaboratorsCount = collaboratorsFromShop.length;
 
-  return {
-    data: result,
-    total: result.length,
-    pagination: {
-      page: queryInput.page || 1,
-      limit: $limit,
-      offset: $skip,
-      total: result.length,
-    },
-  };
+    const [commissionFromLog] = await CommissionLogModel.aggregate([
+      {
+        $match: {
+          memberId: new ObjectId(member.id)
+        }
+      },
+      {
+        $group: {
+          _id: "$memberId",
+          orderIds: { $addToSet: "$orderId" },
+          total: {
+            $sum: "$value",
+          },
+        }
+      }
+    ]);
+    // console.log('commissionFromLog',commissionFromLog);
+
+    const realCommission = commissionFromLog ? commissionFromLog.total : 0;
+
+    const statitics: MemberStatistics = {
+      income,
+      collaboratorsCount,
+      realCommission
+    }
+
+    set(membersObj.data[i],"memberStatistics", statitics);
+  }
+  return membersObj;
 };
 
 const Query = {

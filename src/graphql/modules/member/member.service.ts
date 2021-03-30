@@ -97,7 +97,7 @@ class MemberService extends CrudService<typeof MemberModel> {
 
     const newPoint = member.diligencePoint - updatedPoint + diligencePoint;
 
-    console.log('newPoint', newPoint);
+    // console.log('newPoint', newPoint);
 
     if (newPoint < 0)
       throw ErrorHelper.requestDataInvalid('điểm chuyên cần');

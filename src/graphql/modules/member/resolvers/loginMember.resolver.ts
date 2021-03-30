@@ -19,7 +19,7 @@ const Mutation = {
         xToken: token,
         lastLoginDate: new Date()
       }
-    }, { new: true })
+    }, { new: true });
 
     return { member: member, token };
   },

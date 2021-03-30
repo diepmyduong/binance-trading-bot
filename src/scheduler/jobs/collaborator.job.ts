@@ -13,6 +13,7 @@ export class CollaboratorJob {
     return Agenda.create(this.jobName, data);
   }
   static async execute(job: Job, done: any) {
+    console.log("Execute Job " + CollaboratorJob.jobName, moment().format());
     await updateCustomerId();
     await updateShortUrl();
     return done();

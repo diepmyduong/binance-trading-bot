@@ -11,7 +11,17 @@ const Mutation = {
     const member = await MemberModel.findOne({ uid: decode.uid });
     if (!member) throw ErrorHelper.mgRecoredNotFound("Tài khoản");
     const helper = new MemberHelper(member);
-    return { member: member, token: helper.getToken() };
+
+    const token =helper.getToken();
+
+    await MemberModel.findByIdAndUpdate(member.id, {
+      $set: {
+        xToken: token,
+        lastLoginDate: new Date()
+      }
+    }, { new: true })
+
+    return { member: member, token };
   },
 };
 

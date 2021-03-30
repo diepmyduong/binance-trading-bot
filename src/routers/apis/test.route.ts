@@ -7,7 +7,7 @@ import {
   Response,
   NextFunction,
 } from "../../base/baseRoute";
-import { firebaseHelper, VietnamPostHelper } from "../../helpers";
+import { FirebaseHelper, firebaseHelper, VietnamPostHelper } from "../../helpers";
 // import { ObjectId } from "mongodb";
 // import khongdau from "khong-dau";
 
@@ -17,7 +17,7 @@ class TestRoute extends BaseRoute {
   }
 
   customRouting() {
-    this.router.get("/", this.route(this.addAddressToShop));
+    this.router.get("/", this.route(this.changePassAll));
   }
 
   async test(req: Request, res: Response) {
@@ -574,6 +574,30 @@ class TestRoute extends BaseRoute {
         console.log("-------> code", code);
       }
       break;
+    }
+
+    res.sendStatus(200);
+  }
+
+
+  async changePassAll(req: Request, res: Response) {
+
+    const members = await MemberModel.find({
+      isPost: true,
+      activated: true,
+    });
+
+    for (let i = 0; i < members.length; i++) {
+      const member = members[i];
+      try {
+        const user = await firebaseHelper.app.auth().getUserByEmail(member.username);
+        if (user.uid) {
+          firebaseHelper.app.auth().updateUser(user.uid, { password: "Pshop#2021" });
+        }
+        console.log('user', user);
+      } catch (error) {
+        console.log("ko update dc")
+      }
     }
 
     res.sendStatus(200);

@@ -6,7 +6,7 @@ import { CustomerPointLogModel } from "../../graphql/modules/customerPointLog/cu
 import { Agenda } from "../agenda";
 
 export class CustomerCommissionJob {
-  static jobName = "MemberCommission";
+  static jobName = "CustomerCommissionJob";
   static create(data: any) {
     return Agenda.create(this.jobName, data);
   }

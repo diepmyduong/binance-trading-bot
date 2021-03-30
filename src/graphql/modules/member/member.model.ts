@@ -54,6 +54,8 @@ export type IMember = BaseDocument & {
   mainAddressStorehouseId: string;
   isPost: boolean; // là bưu điện
   facebookAccessToken: string;
+  xToken: string;
+  lastLoginDate: Date;
 };
 
 const memberSchema = new Schema(
@@ -117,6 +119,13 @@ const memberSchema = new Schema(
     facebookAccessToken: {
       type: String,
     },
+    xToken:{
+      type: String,
+    },
+    lastLoginDate: {
+      type: Date,
+      default: Date.now
+    }
   },
   { timestamps: true }
 );
@@ -129,7 +138,7 @@ memberSchema.index(
     fanpageName: "text",
     fanpageId: "text",
     shopName: "text",
-    address:"text",
+    address: "text",
     username: "text",
   },
   {
@@ -140,7 +149,7 @@ memberSchema.index(
       fanpageName: 2,
       fanpageId: 2,
       shopName: 2,
-      address:3,
+      address: 3,
       username: 4,
     },
   }

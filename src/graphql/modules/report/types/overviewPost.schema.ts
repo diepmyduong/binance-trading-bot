@@ -4,20 +4,32 @@ import { MemberType } from "../../member/member.model";
 const schema = gql`
   extend type Query {
     getPostReports(q: QueryGetListInput): OverviewPostPageData 
-    getPostReportsOverview(q: QueryGetListInput): OverviewPostsReport 
+    getPostReportsOverview(fromDate: String!, toDate: String!): OverviewPostsReport 
     # Add Query
   }
 
   type MemberStatistics{
+    "Doanh thu"
     income: Float
+    "Số lượng CTV"
     collaboratorsCount: Int
+    "Hoa hồng đã nhận"
     realCommission: Float
+    "Hoa hồng sẽ nhận"
+    estimatedCommission: Float
   }
 
   type OverviewPostsReport {
+    "Tổng doanh thu"
     totalIncome: Float
+    "Tổng số CTV"
     totalCollaboratorsCount: Int
+    "Tổng hoa hồng đã nhận"
     totalRealCommission: Float
+    "Tổng số bưu cục"
+    totalMembersCount: Int
+    "Tổng đơn hàng"
+    totalOrdersCount: Int
   }
 
 

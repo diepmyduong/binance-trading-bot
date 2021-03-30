@@ -259,6 +259,7 @@ onApprovedCompletedOrder.subscribe(async (order) => {
           customerId: customerPresenter.id,
           memberId: sellerId,
           commission: commission2,
+          currentCommission: customerPresenter.commission,
           id
         });
       }

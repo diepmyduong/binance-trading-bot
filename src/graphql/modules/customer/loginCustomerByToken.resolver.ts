@@ -38,6 +38,8 @@ const Mutation = {
     }
     else {
       member = await MemberModel.findOne({ code: context.memberCode });
+      console.log('context.memberCode',context.memberCode);
+      console.log('member',member);
       if (!member) {
         throw Error("Cửa hàng này chưa được đăng ký.");
       }

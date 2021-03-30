@@ -6,6 +6,9 @@ import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { CustomerCommissionLogModel } from "../../customerCommissionLog/customerCommissionLog.model";
 import { collaboratorService } from "../../collaborator/collaborator.service";
+import { OrderModel, OrderStatus } from "../../order/order.model";
+import { CustomerModel } from "../../customer/customer.model";
+import { CommissionLogModel } from "../../commissionLog/commissionLog.model";
 
 const getPostReportsOverview = async (
   root: any,
@@ -14,84 +17,117 @@ const getPostReportsOverview = async (
 ) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const queryInput = args.q;
-  let { fromDate, toDate, memberId } = queryInput.filter;
-  let $gte = null,
-    $lte = null;
+  let { fromDate, toDate } = queryInput.filter;
 
-  const $match: any = {};
+  let $gte: Date = null,
+    $lte: Date = null;
 
   if (fromDate && toDate) {
     fromDate = fromDate + "T00:00:00+07:00";
     toDate = toDate + "T24:00:00+07:00";
     $gte = new Date(fromDate);
     $lte = new Date(toDate);
-    $match.createdAt = { $gte, $lte };
   }
+  
+  delete args.q.filter.fromDate;
+  delete args.q.filter.toDate;
 
-  if(memberId){
-    $match.memberId = new ObjectId(memberId);
-  }
 
-  //customerId:ObjectId("603b6ea20c5de11eaca05606"),
+  const $matchIncomeFromOrder = () => {
+    const match: any = {
+      $match: {
+        status: OrderStatus.COMPLETED
+      }
+    };
+    if (fromDate && toDate) {
+      match.$match.createdAt = {
+        $gte, $lte
+      }
+    }
+    return match;
+  };
 
-  // console.log("$match", $match);
 
-  const $limit = queryInput.limit || configs.query.limit;
-  const $skip = queryInput.offset || (queryInput.page - 1) * $limit || 0;
+  const $matchCollaboratorsFromShop = () => {
+    const match: any = {
+      $match:{
+      }
+    };
+    if (fromDate && toDate) {
+      match.$match.createdAt = {
+        $gte, $lte
+      }
+    }
+    return match;
+  };
 
-  const result = await CustomerCommissionLogModel.aggregate([
+
+  const $matchCommissionFromLog = () => {
+    const match: any = {
+      $match: {
+      }
+    };
+    if (fromDate && toDate) {
+      match.$match.createdAt = {
+        $gte, $lte
+      }
+    }
+    return match;
+  };
+
+  const [incomeFromOrder] = await OrderModel.aggregate([
     {
-      $project: {
-        _id: 1,
-        customerId: 1,
-        memberId: 1,
-        type: 1,
-        value: 1,
-        orderId: 1,
-        createdAt: 1,
-        updatedAt: 1,
-      },
-    },
-    {
-      $match,
+      ...($matchIncomeFromOrder())
     },
     {
       $group: {
-        _id: "$customerId",
-        memberIds: { $addToSet: "$memberId" },
-        customerIds: { $addToSet: "$customerId" },
+        _id: "111111",
+        total: {
+          $sum: "$amount",
+        },
+      }
+    }
+  ]);
+
+  // console.log('incomeFromOrder',incomeFromOrder);
+  const totalIncome = incomeFromOrder? incomeFromOrder.total : 0
+
+  const collaboratorsFromShop = await CustomerModel.aggregate([
+    {
+      $lookup: {
+        from: "collaborators",
+        localField: "_id",
+        foreignField: "customerId",
+        as: "collaborators",
+      },
+    },
+    {
+      ...($matchCollaboratorsFromShop())
+    },
+  ]);
+  // console.log('collaboratorsFromShop', collaboratorsFromShop);
+
+  const totalCollaboratorsCount = collaboratorsFromShop.length ;
+
+  const [commissionFromLog] = await CommissionLogModel.aggregate([
+    {
+      ...($matchCommissionFromLog())
+    },
+    {
+      $group: {
+        _id: "11111",
         total: {
           $sum: "$value",
         },
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        memberIds: 1,
-        customerId: { $arrayElemAt: ["$customerIds", 0] },
-        total: 1,
-      },
-    },
-    {
-      $limit,
-    },
-    {
-      $skip,
-    },
+      }
+    }
   ]);
+  
+  const totalRealCommission= commissionFromLog ? commissionFromLog.total : 0;
 
 
-  return {
-    data: result,
-    total: result.length,
-    pagination: {
-      page: queryInput.page || 1,
-      limit: $limit,
-      offset: $skip,
-      total: result.length,
-    },
-  };
+  return {totalIncome, totalCollaboratorsCount,totalRealCommission}
+  
 };
 
 const Query = {

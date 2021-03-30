@@ -15,9 +15,9 @@ const schema = gql`
   }
 
   type OverviewPostsReport {
-    commission: Float
-    income: Float
-    postCount: Int
+    totalIncome: Float
+    totalCollaboratorsCount: Int
+    totalRealCommission: Float
   }
 
 

@@ -129,6 +129,7 @@ memberSchema.index(
     fanpageName: "text",
     fanpageId: "text",
     shopName: "text",
+    address:"text",
     username: "text",
   },
   {
@@ -139,6 +140,7 @@ memberSchema.index(
       fanpageName: 2,
       fanpageId: 2,
       shopName: 2,
+      address:3,
       username: 4,
     },
   }

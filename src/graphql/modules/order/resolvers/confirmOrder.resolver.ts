@@ -42,7 +42,12 @@ const confirmOrder = async (root: any, args: any, context: Context) => {
     const addressDeliveryByCode = await AddressDeliveryModel.findOne({
       code: member.code,
     });
-    if (addressDeliveryByCode) {
+
+    if(!addressDeliveryByCode){
+      throw Error("Không thể xác nhận đơn hàng do chưa cập nhật mã bưu cục cho địa điểm nhận hàng");
+    }
+
+    if (order.addressDeliveryId !== addressDeliveryByCode.id) {
       order.oldAddressDeliveryId = temp.addressDeliveryId;
       order.addressDeliveryId = addressDeliveryByCode.id;
     }
@@ -52,7 +57,12 @@ const confirmOrder = async (root: any, args: any, context: Context) => {
     const addressStorehouseByCode = await AddressStorehouseModel.findOne({
       code: member.code,
     });
-    if (addressStorehouseByCode) {
+
+    if(!addressStorehouseByCode){
+      throw Error("Không thể xác nhận đơn hàng do chưa cập nhật mã bưu cục cho địa điểm kho");
+    }
+    
+    if (order.addressStorehouseId !== addressStorehouseByCode.id) {
       order.oldAddressStorehouseId = temp.addressStorehouseId;
       order.addressStorehouseId = addressStorehouseByCode.id;
     }

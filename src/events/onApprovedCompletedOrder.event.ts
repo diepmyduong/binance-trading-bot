@@ -343,14 +343,6 @@ onApprovedCompletedOrder.subscribe(async (order) => {
   }
 });
 
-// xac nhan don hang
-// thong bao den chu shop
-// thong bao den khach hang
-onApprovedCompletedOrder.subscribe(async (order) => {
-  const { shipMethod, addressDeliveryId } = order;
-  if (shipMethod === ShipMethod.POST) {
-  }
-});
 
 // Ghi log
 onApprovedCompletedOrder.subscribe(async (order: IOrder) => {

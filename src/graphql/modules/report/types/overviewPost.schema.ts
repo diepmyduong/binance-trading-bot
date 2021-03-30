@@ -8,6 +8,11 @@ const schema = gql`
     # Add Query
   }
 
+  type MemberStatistics{
+    income: Float
+    collaboratorsCount: Int
+    realCommission: Float
+  }
 
   type OverviewPostsReport {
     commission: Float
@@ -43,6 +48,8 @@ const schema = gql`
     income: Float
     "Hoa hồng"
     commission: Float
+
+    memberStatistics: MemberStatistics
   }
 
   type OverviewPostPageData {

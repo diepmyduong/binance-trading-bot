@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 import { ChatbotStory, ChatbotStorySchema } from "./types/chatbotStory.type";
+import { MemberStatistics } from "./types/memberStatistics.type";
 
 const Schema = mongoose.Schema;
 export enum Gender {
@@ -14,6 +15,7 @@ export enum MemberType {
   SALE = "SALE",
   AGENCY = "AGENCY",
 }
+
 export type IMember = BaseDocument & {
   username?: string; // Mã chủ shop
   code?: string; // Mã chủ shop
@@ -56,6 +58,7 @@ export type IMember = BaseDocument & {
   facebookAccessToken: string;
   xToken: string;
   lastLoginDate: Date;
+  memberStatistics: MemberStatistics;
 };
 
 const memberSchema = new Schema(
@@ -125,7 +128,7 @@ const memberSchema = new Schema(
     lastLoginDate: {
       type: Date,
       default: Date.now
-    }
+    },
   },
   { timestamps: true }
 );

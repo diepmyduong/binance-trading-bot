@@ -22,10 +22,6 @@ const getPostReports = async (
   const queryInput = args.q;
   let { fromDate, toDate } = queryInput.filter;
 
-
-  console.log('fromDate',fromDate);
-  console.log('toDate',toDate);
-
   let $gte: Date = null,
     $lte: Date = null;
 
@@ -36,28 +32,25 @@ const getPostReports = async (
     $lte = new Date(toDate);
   }
   
-  console.log('$gte',$gte);
-  console.log('$lte',$lte);
+  delete args.q.filter.fromDate;
+  delete args.q.filter.toDate;
 
   const membersObj = await memberService.fetch(args.q);
 
   const members = membersObj.data;
 
   const $matchIncomeFromOrder = (member: any) => {
-    let match: any = {
+    const match: any = {
       $match: {
         sellerId: new ObjectId(member.id),
         status: OrderStatus.COMPLETED
       }
     };
-    
     if (fromDate && toDate) {
-      set(match, "$match.createdAt", {
+      match.$match.createdAt = {
         $gte, $lte
-      })
+      }
     }
-
-    // console.log('set match',match);
     return match;
   };
 
@@ -130,7 +123,7 @@ const getPostReports = async (
         ...($matchCollaboratorsFromShop(member))
       },
     ]);
-    console.log('collaboratorsFromShop', collaboratorsFromShop);
+    // console.log('collaboratorsFromShop', collaboratorsFromShop);
 
     const collaboratorsCount = collaboratorsFromShop.length;
 

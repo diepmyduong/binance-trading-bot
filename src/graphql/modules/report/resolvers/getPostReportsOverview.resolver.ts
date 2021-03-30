@@ -9,15 +9,11 @@ import { collaboratorService } from "../../collaborator/collaborator.service";
 import { OrderModel, OrderStatus } from "../../order/order.model";
 import { CustomerModel } from "../../customer/customer.model";
 import { CommissionLogModel } from "../../commissionLog/commissionLog.model";
+import { MemberModel, MemberType } from "../../member/member.model";
 
-const getPostReportsOverview = async (
-  root: any,
-  args: any,
-  context: Context
-) => {
+const getPostReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  const queryInput = args.q;
-  let { fromDate, toDate } = queryInput.filter;
+  let { fromDate, toDate } = args;
 
   let $gte: Date = null,
     $lte: Date = null;
@@ -28,10 +24,6 @@ const getPostReportsOverview = async (
     $gte = new Date(fromDate);
     $lte = new Date(toDate);
   }
-  
-  delete args.q.filter.fromDate;
-  delete args.q.filter.toDate;
-
 
   const $matchIncomeFromOrder = () => {
     const match: any = {
@@ -50,12 +42,13 @@ const getPostReportsOverview = async (
 
   const $matchCollaboratorsFromShop = () => {
     const match: any = {
-      $match:{
+      $match: {
       }
     };
     if (fromDate && toDate) {
       match.$match.createdAt = {
-        $gte, $lte
+        $gte,
+        $lte
       }
     }
     return match;
@@ -89,8 +82,8 @@ const getPostReportsOverview = async (
     }
   ]);
 
-  // console.log('incomeFromOrder',incomeFromOrder);
-  const totalIncome = incomeFromOrder? incomeFromOrder.total : 0
+  // console.log('incomeFromOrder', incomeFromOrder);
+  const totalIncome = incomeFromOrder ? incomeFromOrder.total : 0
 
   const collaboratorsFromShop = await CustomerModel.aggregate([
     {
@@ -107,7 +100,7 @@ const getPostReportsOverview = async (
   ]);
   // console.log('collaboratorsFromShop', collaboratorsFromShop);
 
-  const totalCollaboratorsCount = collaboratorsFromShop.length ;
+  const totalCollaboratorsCount = collaboratorsFromShop.length;
 
   const [commissionFromLog] = await CommissionLogModel.aggregate([
     {
@@ -122,12 +115,16 @@ const getPostReportsOverview = async (
       }
     }
   ]);
-  
-  const totalRealCommission= commissionFromLog ? commissionFromLog.total : 0;
+
+  const totalRealCommission = commissionFromLog ? commissionFromLog.total : 0;
+
+  const totalMembersCount = await MemberModel.count({ type: MemberType.BRANCH });
 
 
-  return {totalIncome, totalCollaboratorsCount,totalRealCommission}
-  
+  const totalOrdersCount = await OrderModel.count({ });
+
+
+  return { totalIncome, totalCollaboratorsCount, totalRealCommission, totalMembersCount , totalOrdersCount }
 };
 
 const Query = {

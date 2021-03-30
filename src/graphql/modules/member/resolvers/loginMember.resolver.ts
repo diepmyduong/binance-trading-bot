@@ -17,7 +17,7 @@ const Mutation = {
     await MemberModel.findByIdAndUpdate(member.id, {
       $set: {
         xToken: token, 
-        lastLoginDate: new Date(decode.auth_time)
+        lastLoginDate: new Date()
       }
     }, { new: true });
 

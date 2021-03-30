@@ -44,16 +44,6 @@ const transferOrder = async (root: any, args: any, context: Context) => {
     throw ErrorHelper.mgRecoredNotFound("bưu cục này.");
   }
 
-  /*
-điểm nhận	code	`=> Bưu cục nào		`=> 
-				
-đến kho	code			
-				
-A => A	toMemberId = null			
-A => B	toMemberId = getMemberIdByAddressDeliveryCode()			
-
-*/
-
   order.toMemberId = member.id;
 
   for (const orderId of order.itemIds) {
@@ -66,6 +56,9 @@ A => B	toMemberId = getMemberIdByAddressDeliveryCode()
 
   order.status = OrderStatus.CONFIRMED;
   order.toMemberNote = note;
+
+
+  // tính lại ship fee lưu vào partner fee
 
   return await order.save().then(async (order) => {
     // onConfirmedOrder.next(order);

@@ -127,7 +127,7 @@ const Member = {
 
   chatbotRef: async (root: IMember, args: any, context: Context) => {
     const ref = await SettingHelper.load(SettingKey.STORY_REF);
-    return `https://m.me/${root.fanpageId}?ref=story.${ref}`;
+    return root.fanpageId ? `https://m.me/${root.fanpageId}?ref=story.${ref}` : null;
   },
 
   shopUrl : async (root: IMember, args: any, context: Context) => {

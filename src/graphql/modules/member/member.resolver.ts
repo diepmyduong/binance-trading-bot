@@ -53,7 +53,7 @@ const Mutation = {
 
     const fbUser = await firebaseHelper.createUser(data.username, password);
     data.uid = fbUser.uid;
-    data.code = await memberService.generateCode();
+    data.code = data.code ? data.code : await memberService.generateCode();
     const helper = new MemberHelper(new MemberModel(data));
 
     await Promise.all([

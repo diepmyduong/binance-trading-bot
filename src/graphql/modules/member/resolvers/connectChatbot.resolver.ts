@@ -26,27 +26,28 @@ const Mutation = {
     member.fanpageName = pageData.pageName;
     member.fanpageImage = pageData.picture;
     member.chatbotKey = apiKey;
-    if (!member.chatbotStory || member.chatbotStory.pageId.toString() != pageData.id.toString()) {
-      // Khởi tạo câu chuyện
-      const [message, btnTitle, ref, webappDomain, name] = await SettingHelper.loadMany([
-        SettingKey.STORY_MESSAGE,
-        SettingKey.STORY_BTN_TITLE,
-        SettingKey.STORY_REF,
-        SettingKey.WEBAPP_DOMAIN,
-        SettingKey.STORY_NAME,
-      ]);
-      const chatbotStory = {
-        name,
-        message,
-        btnTitle,
-        ref,
-        webappDomain,
-        pageId: pageData.id,
-      } as ChatbotStory;
-      const memberHelper = new MemberHelper(member);
-      await memberHelper.generateChatbotStory(chatbotStory);
-    }
-    return await member.save();
+    // Khởi tạo câu chuyện
+    const [message, btnTitle, ref, webappDomain, name] = await SettingHelper.loadMany([
+      SettingKey.STORY_MESSAGE,
+      SettingKey.STORY_BTN_TITLE,
+      SettingKey.STORY_REF,
+      SettingKey.WEBAPP_DOMAIN,
+      SettingKey.STORY_NAME,
+    ]);
+    const chatbotStory = {
+      name,
+      message,
+      btnTitle,
+      ref,
+      webappDomain,
+      pageId: pageData.id,
+    } as ChatbotStory;
+    const memberHelper = new MemberHelper(member);
+    await memberHelper.generateChatbotStory(chatbotStory);
+    // if (!member.chatbotStory || member.chatbotStory.pageId.toString() != pageData.id.toString()) {
+
+    // }
+    return await memberHelper.member.save();
   },
 };
 

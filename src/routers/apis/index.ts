@@ -13,7 +13,8 @@ import testRoute from "./test.route";
 import orderRoute from "./order.route";
 import serviceRoute from "./service.route";
 import commonRoute from "./common.route";
-import SettingRoute from "./setting.route";
+import memberRoute from "./member.route";
+import settingRoute from "./setting.route";
 
 const router = express.Router();
 router.use("/evoucher", evoucherRoute);
@@ -29,6 +30,7 @@ router.use("/delivery", delivery);
 router.use("/collaborator", collaborator);
 router.use("/test", testRoute);
 router.use("/order", orderRoute);
+router.use("/member", memberRoute);
 router.use("/common", commonRoute);
-router.use("/setting", SettingRoute);
+router.use("/setting", settingRoute);
 export default router;

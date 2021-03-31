@@ -37,6 +37,7 @@ const Mutation = {
       }
     }
     else {
+      console.log('context.memberCode',context.memberCode);
       member = await MemberModel.findOne({ code: context.memberCode });
       console.log('context.memberCode',context.memberCode);
       console.log('member',member);

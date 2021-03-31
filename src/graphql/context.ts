@@ -151,6 +151,8 @@ export class Context {
       this.campaignCode = campaignCode;
       this.memberCode = memberCode ? memberCode : code;
 
+      console.log("this.memberCode",this.memberCode);
+
     } catch (err) {
       // console.log("error", err);
       if (err instanceof TokenExpiredError) {
@@ -171,6 +173,6 @@ export async function onContext(params: any) {
   let context: Context = new Context();
   await context.parseSig(params);
   context.parseToken(params);
-  context.parseHeader(params);
+  await context.parseHeader(params);
   return context;
 }

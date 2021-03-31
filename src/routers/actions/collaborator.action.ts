@@ -27,17 +27,17 @@ class CollaboratorAction extends BaseRoute {
     if (!collaborator)
       throw ErrorHelper.mgRecoredNotFound("cộng tác viên.");
 
-
-
     const member = await MemberModel.findById(collaborator.memberId);
 
     if (!member)
       throw ErrorHelper.mgQueryFailed("Thành viên");
 
+    await CollaboratorModel.findByIdAndUpdate(collaborator.id, { $inc: { clickCount: 1 } }, { new: true });
+
     const shopUri = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN).then((webDomain: String) => {
       return `${webDomain}/?code=${member.code}&collaboratorId=${collaborator.id}`
     });
-    
+
     res.redirect(shopUri);
   }
 }

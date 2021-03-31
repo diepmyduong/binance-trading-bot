@@ -165,7 +165,7 @@ export class Context {
   modifyMemberCode = async () => {
     try {
       const code = await SettingHelper.load(SettingKey.DEFAULT_SHOP_CODE);
-      if(this.memberCode && this.pageId){
+      if(!this.memberCode && !this.pageId){
         this.memberCode =  code;
       }
       // console.log("this.memberCode",this.memberCode);

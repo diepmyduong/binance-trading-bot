@@ -17,7 +17,7 @@ class TestRoute extends BaseRoute {
   }
 
   customRouting() {
-    this.router.get("/", this.route(this.addAddressToShop));
+    this.router.get("/", this.route(this.updateAddressStorehouseByShop));
   }
 
   async test(req: Request, res: Response) {

@@ -15,8 +15,8 @@ const Query = {
     if (!pageId && !memberCode)
       throw ErrorHelper.requestDataInvalid("");
 
-    console.log('pageId',pageId);
-    console.log('memberCode',memberCode);
+    // console.log('pageId',pageId);
+    // console.log('memberCode',memberCode);
 
     if (memberCode) {
       params.code = memberCode;

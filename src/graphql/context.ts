@@ -129,7 +129,7 @@ export class Context {
   }
 
 
-  parseHeader = async (params: any) => {
+  parseHeader = (params: any) => {
     try {
       const { req } = params;
       let campaignCode, collaboratorId, memberCode;
@@ -144,15 +144,31 @@ export class Context {
       if (collaboratorId === 'null') collaboratorId = null;
       if (memberCode === 'null') memberCode = null;
 
-      const code = await SettingHelper.load(SettingKey.DEFAULT_SHOP_CODE);
 
       this.collaboratorId = ObjectId.isValid(collaboratorId) ? collaboratorId : null;
       this.collaboratorId = collaboratorId;
       this.campaignCode = campaignCode;
-      this.memberCode = memberCode ? memberCode : code;
 
-      console.log("this.memberCode",this.memberCode);
+      this.memberCode = memberCode;
 
+    } catch (err) {
+      // console.log("error", err);
+      if (err instanceof TokenExpiredError) {
+        this.isTokenExpired = true;
+      }
+      this.isAuth = false;
+    } finally {
+      return this;
+    }
+  }
+
+  modifyMemberCode = async () => {
+    try {
+      const code = await SettingHelper.load(SettingKey.DEFAULT_SHOP_CODE);
+      if(this.memberCode && this.pageId){
+        this.memberCode =  code;
+      }
+      // console.log("this.memberCode",this.memberCode);
     } catch (err) {
       // console.log("error", err);
       if (err instanceof TokenExpiredError) {
@@ -173,6 +189,7 @@ export async function onContext(params: any) {
   let context: Context = new Context();
   await context.parseSig(params);
   context.parseToken(params);
-  await context.parseHeader(params);
+  context.parseHeader(params);
+  await context.modifyMemberCode();
   return context;
 }

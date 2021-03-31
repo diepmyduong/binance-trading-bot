@@ -6,6 +6,8 @@ import { ROLES } from "../constants/role.const";
 import { ChatBotHelper, MessengerTokenDecoded } from "../helpers/chatbot.helper";
 import { ObjectId } from "bson";
 import { connect } from "mongodb";
+import { SettingHelper } from "./modules/setting/setting.helper";
+import { SettingKey } from "../configs/settingData";
 export type TokenData = {
   role: string;
   _id: string;
@@ -68,7 +70,7 @@ export class Context {
         token = connection.context["x-token"];
       }
 
-      if(token === 'null') token = null;
+      if (token === 'null') token = null;
 
       if (token) {
         const decodedToken: any = TokenHelper.decodeToken(token);
@@ -103,9 +105,9 @@ export class Context {
         pageId = connection.context["x-page-id"];
       }
 
-      if(sig === 'null') sig = null;
-      if(psid === 'null') psid = null;
-      if(pageId === 'null') pageId = null;
+      if (sig === 'null') sig = null;
+      if (psid === 'null') psid = null;
+      if (pageId === 'null') pageId = null;
 
       if (psid && pageId) {
         this.messengerSignPayload = { pageId, psid, threadId: "" };
@@ -127,7 +129,7 @@ export class Context {
   }
 
 
-  parseHeader(params: any) {
+  parseHeader = async (params: any) => {
     try {
       const { req } = params;
       let campaignCode, collaboratorId, memberCode;
@@ -138,14 +140,16 @@ export class Context {
         memberCode = _.get(req, "headers.x-code") || _.get(req, "query.x-code");
       }
 
-      if(campaignCode === 'null') campaignCode = null;
-      if(collaboratorId === 'null') collaboratorId = null;
-      if(memberCode === 'null') memberCode = null;
+      if (campaignCode === 'null') campaignCode = null;
+      if (collaboratorId === 'null') collaboratorId = null;
+      if (memberCode === 'null') memberCode = null;
+
+      const code = await SettingHelper.load(SettingKey.DEFAULT_SHOP_CODE);
 
       this.collaboratorId = ObjectId.isValid(collaboratorId) ? collaboratorId : null;
       this.collaboratorId = collaboratorId;
       this.campaignCode = campaignCode;
-      this.memberCode = memberCode;
+      this.memberCode = memberCode ? memberCode : code;
 
     } catch (err) {
       // console.log("error", err);

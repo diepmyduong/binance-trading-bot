@@ -15,6 +15,8 @@ export enum SettingKey {
   LOGO = "LOGO",
   UNIT_PRICE = "UNIT_PRICE",
   CHATBOT_API_KEY = "CHATBOT_API_KEY",
+  DEFAULT_SHOP_CODE = "DEFAULT_SHOP_CODE",
+  
   // THONG_BAO_CHATBOT
   REGIS_SERVICE_COMMISSION_MSG = "REGIS_SERVICE_COMMISSION_MSG",
   REGIS_SERVICE_BONUS_POINT_MSG = "REGIS_SERVICE_BONUS_POINT_MSG",
@@ -178,6 +180,15 @@ export const SETTING_DATA = [
         value: "",
         isActive: true,
         isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "Bưu cục mặc định",
+        key: SettingKey.DEFAULT_SHOP_CODE,
+        value: "PKDBDHCM",
+        isActive: true,
+        isPrivate: false,
         readOnly: false,
       },
     ],

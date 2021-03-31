@@ -577,8 +577,7 @@ Quý khách {{tenKhachHang}} đã trúng thưởng [{{tenQua}} - {{maQua}}] sau 
       },
       {
         type: SettingType.richText,
-        name:
-          "Thông báo cho khách hàng trúng thưởng [Điểm thưởng] vòng quay may mắn",
+        name: "Thông báo cho khách hàng trúng thưởng [Điểm thưởng] vòng quay may mắn",
         key: SettingKey.LUCKYWHEEL_WIN_CUMMULATIVE_POINT_MSG_FOR_CUSTOMER,
         value: `[Thông báo tự động cho khách hàng]
 Quý khách đã may mắn trúng thưởng [{{diem}} điểm] - mã quà [{{maQua}}] sau khi quay vòng quay {{maVongQuay}}. 
@@ -591,8 +590,7 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
       },
       {
         type: SettingType.richText,
-        name:
-          "Thông báo cho khách hàng trúng thưởng [Hiện vật] vòng quay may mắn",
+        name: "Thông báo cho khách hàng trúng thưởng [Hiện vật] vòng quay may mắn",
         key: SettingKey.LUCKYWHEEL_WIN_PRESENT_MSG_FOR_CUSTOMER,
         value: `[Thông báo tự động cho khách hàng]
 Quý khách đã may mắn trúng giải thưởng [{{tenQua}} - MS:{{maQua}}] sau khi quay vòng quay {{maVongQuay}}.
@@ -605,8 +603,7 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
       },
       {
         type: SettingType.richText,
-        name:
-          "Thông báo cho khách hàng trúng thưởng [Voucher] vòng quay may mắn",
+        name: "Thông báo cho khách hàng trúng thưởng [Voucher] vòng quay may mắn",
         key: SettingKey.LUCKYWHEEL_WIN_EVOUCHER_MSG_FOR_CUSTOMER,
         value: `[Thông báo tự động cho khách hàng]
 Quý khách đã may mắn trúng giải thưởng [{{tenQua}}] sau khi quay vòng quay {{maVongQuay}}.

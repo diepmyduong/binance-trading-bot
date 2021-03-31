@@ -443,6 +443,7 @@ export class OrderHelper {
         const latitude = this.order.latitude ? this.order.latitude : 0;
 
         const addressStorehouse = await AddressStorehouseModel.findOne({
+          allowPickup:true,
           location: {
             $near: {
               $geometry: {

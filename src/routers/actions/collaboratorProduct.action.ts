@@ -42,6 +42,8 @@ class CollaboratorProductAction extends BaseRoute {
 
     if (!member) throw ErrorHelper.mgQueryFailed("Thành viên");
 
+    await CollaboratorProductModel.findByIdAndUpdate(collaProduct.id, { $inc: { clickCount: 1 } }, { new: true });
+
     const shopUri = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN).then(
       (webDomain: String) => {
         return `${webDomain}/?code=${member.code}&collaboratorId=${collaborator.id}&productId=${collaProduct.productId}`;

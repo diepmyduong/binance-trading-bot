@@ -451,7 +451,7 @@ export class OrderHelper {
               },
             },
           },
-          $in: addressStorehouseIds
+          _id: { $in: addressStorehouseIds }
         });
 
         const addressStorehouseId = addressStorehouse

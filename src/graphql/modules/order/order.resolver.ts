@@ -95,22 +95,16 @@ const Order = {
     if (member) {
       if (root.shipMethod === ShipMethod.POST) {
         const address = await AddressDeliveryLoader.load(root.addressDeliveryId);
-        if (member.addressDeliveryIds.includes(address.id)) {
-          if(member.code !== address.code){
-            return true
-          }
-          return false;
+        if(member.code !== address.code){
+          return true
         }
         return false;
       }
 
       if (root.shipMethod === ShipMethod.VNPOST) {
         const address = await AddressStorehouseLoader.load(root.addressStorehouseId);
-        if (member.addressStorehouseIds.includes(address.id)) {
-          if(member.code !== address.code){
-            return true
-          }
-          return false;
+        if(member.code !== address.code){
+          return true
         }
         return false
       }

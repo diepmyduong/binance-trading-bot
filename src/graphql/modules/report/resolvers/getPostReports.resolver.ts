@@ -6,7 +6,7 @@ import { memberService } from "../../member/member.service";
 import { OrderModel, OrderStatus } from "../../order/order.model";
 import { ObjectId } from "mongodb";
 import { CommissionLogModel } from "../../commissionLog/commissionLog.model";
-import { MemberStatistics } from "../../member/types/memberStatistics.type";
+import { MemberStatistics } from "../types/memberStatistics.type";
 import { CustomerModel } from "../../customer/customer.model";
 import moment from 'moment';
 
@@ -22,7 +22,7 @@ const getPostReports = async (
   let $gte: Date = null,
     $lte: Date = null;
   
-  const currentMonth = moment().month() + 1;
+  const currentMonth = moment().format("MM");
 
   if (fromDate && toDate) {
     fromDate = fromDate + "T00:00:00+07:00";
@@ -32,6 +32,7 @@ const getPostReports = async (
   }
   else {
     const currentTime = new Date();
+    // fromDate = `2021-${currentMonth}-01T00:00:00+07:00`; //2021-04-30
     fromDate = `2021-${currentMonth}-01T00:00:00+07:00`; //2021-04-30
     toDate = moment(currentTime).format("YYYY-MM-DD") + "T23:59:59+07:00"; //2021-04-30
     $gte = new Date(fromDate);
@@ -299,10 +300,13 @@ const getPostReports = async (
     const estimatedCommission = estimatedCommission1 + estimatedCommission2 + estimatedCommission3;
 
     const statitics: MemberStatistics = {
+      fromDate,
+      toDate,
       income,
       collaboratorsCount,
       realCommission,
-      estimatedCommission
+      estimatedCommission,
+      estimatedIncome:0
     }
 
     set(membersObj.data[i], "memberStatistics", statitics);

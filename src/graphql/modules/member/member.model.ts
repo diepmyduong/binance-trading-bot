@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 import { ChatbotStory, ChatbotStorySchema } from "./types/chatbotStory.type";
-import { MemberStatistics } from "./types/memberStatistics.type";
+import { MemberStatistics } from "../report/types/memberStatistics.type";
 
 const Schema = mongoose.Schema;
 export enum Gender {

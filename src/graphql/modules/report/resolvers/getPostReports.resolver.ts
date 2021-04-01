@@ -305,7 +305,8 @@ const getPostReports = async (
       income,
       collaboratorsCount,
       realCommission,
-      estimatedCommission
+      estimatedCommission,
+      estimatedIncome:0
     }
 
     set(membersObj.data[i], "memberStatistics", statitics);

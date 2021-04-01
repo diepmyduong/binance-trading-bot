@@ -5,4 +5,5 @@ export type MemberStatistics = {
   collaboratorsCount: number
   realCommission: number
   estimatedCommission: number
+  estimatedIncome: number
 };

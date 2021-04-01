@@ -33,14 +33,12 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
   const $matchIncomeFromOrder = () => {
     const match: any = {
       $match: {
-        status: OrderStatus.COMPLETED
+        status: OrderStatus.COMPLETED,
+        createdAt: {
+          $gte, $lte
+        }
       }
     };
-    if (fromDate && toDate) {
-      match.$match.createdAt = {
-        $gte, $lte
-      }
-    }
     return match;
   };
 
@@ -48,14 +46,11 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
   const $matchCollaboratorsFromShop = () => {
     const match: any = {
       $match: {
+        createdAt: {
+          $gte, $lte
+        }
       }
     };
-    if (fromDate && toDate) {
-      match.$match.createdAt = {
-        $gte,
-        $lte
-      }
-    }
     return match;
   };
 
@@ -63,13 +58,11 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
   const $matchCommissionFromLog = () => {
     const match: any = {
       $match: {
+        createdAt: {
+          $gte, $lte
+        }
       }
     };
-    if (fromDate && toDate) {
-      match.$match.createdAt = {
-        $gte, $lte
-      }
-    }
     return match;
   };
 

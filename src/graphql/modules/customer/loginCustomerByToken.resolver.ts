@@ -12,7 +12,6 @@ const Mutation = {
   loginCustomerByToken: async (root: any, args: any, context: Context) => {
     let { idToken, psid, pageId } = args;
 
-
     let decode = await firebaseHelper.verifyIdToken(idToken);
     let phone = decode.phone_number;
     if (!phone) throw ErrorHelper.badToken();
@@ -21,35 +20,43 @@ const Mutation = {
       psid = context.messengerSignPayload.psid;
       pageId = context.messengerSignPayload.pageId;
     }
-
     let member: any = null;
-    // kiem tra co pageid ko ?
-    if (pageId) {
-      member = await MemberModel.findOne({ fanpageId: pageId });
-      if (!member) {
-        throw Error("Fanpage này chưa được đăng ký.");
-      }
-      if (!member.activated) {
-        throw Error("Fanpage này chưa được kích hoạt.");
-      }
-      if (!member.chatbotKey) {
-        throw Error("Fanpage này chưa được đăng ký chatbot.");
-      }
-    }
-    else {
-      // console.log('context.memberCode',context.memberCode);
+    if (context.memberCode) {
       member = await MemberModel.findOne({ code: context.memberCode });
-      // console.log('context.memberCode',context.memberCode);
-      if (!member) {
-        throw Error("Cửa hàng này chưa được đăng ký.");
-      }
-      if (!member.activated) {
-        throw Error("Cửa hàng này chưa được kích hoạt.");
-      }
     }
+    if (!member && pageId) {
+      member = await MemberModel.findOne({ fanpageId: pageId });
+    }
+    if (!member) {
+      throw Error("Cửa hàng này chưa được đăng ký.");
+    }
+    // // kiem tra co pageid ko ?
+    // if (pageId) {
+    //   member = await MemberModel.findOne({ fanpageId: pageId });
+    //   // if (!member) {
+    //   //   throw Error("Fanpage này chưa được đăng ký.");
+    //   // }
+    //   // if (!member.activated) {
+    //   //   throw Error("Fanpage này chưa được kích hoạt.");
+    //   // }
+    //   // if (!member.chatbotKey) {
+    //   //   throw Error("Fanpage này chưa được đăng ký chatbot.");
+    //   // }
+    // }
+    // else {
+    //   // console.log('context.memberCode',context.memberCode);
+    //   member = await MemberModel.findOne({ code: context.memberCode });
+    //   // console.log('context.memberCode',context.memberCode);
+    //   if (!member) {
+    //     throw Error("Cửa hàng này chưa được đăng ký.");
+    //   }
+    //   if (!member.activated) {
+    //     throw Error("Cửa hàng này chưa được kích hoạt.");
+    //   }
+    // }
 
-    const getInfo = async (chatbotHelper: any, psid: string) => await chatbotHelper.getSubscriber(psid)
-      .catch((err: any) => {
+    const getInfo = async (chatbotHelper: any, psid: string) =>
+      await chatbotHelper.getSubscriber(psid).catch((err: any) => {
         return {
           name: "Khách vãng lai",
         } as SubscriberInfo;
@@ -65,7 +72,9 @@ const Mutation = {
 
         const pageAccountByPsID = customer.pageAccounts.find((a: any) => a.psid == psid);
         if (!pageAccountByPsID) {
-          const pageAccountIndexByMember = customer.pageAccounts.findIndex((a: any) => a.memberId.toString() == member.id);
+          const pageAccountIndexByMember = customer.pageAccounts.findIndex(
+            (a: any) => a.memberId.toString() == member.id
+          );
           if (pageAccountIndexByMember > -1) {
             customer.pageAccounts.splice(pageAccountIndexByMember, 1);
           }
@@ -81,35 +90,40 @@ const Mutation = {
         customer.facebookName = customer.facebookName ? customer.facebookName : subscriberInfo.name;
         customer.gender = customer.gender ? customer.gender : subscriberInfo.gender;
         customer.name = customer.name === "Khách vãng lai" ? subscriberInfo.name : customer.name;
-        customer.avatar = customer.avatar === "https://i.imgur.com/NN9xQ5Q.png" ? subscriberInfo.profilePic : customer.avatar;
-      }
-      else {
-        console.log('customer - psid');
+        customer.avatar =
+          customer.avatar === "https://i.imgur.com/NN9xQ5Q.png"
+            ? subscriberInfo.profilePic
+            : customer.avatar;
+      } else {
+        console.log("customer - psid");
         const params = {
           memberId: member._id,
           pageId: member.fanpageId,
-        }
-        const pageAccountByMember = customer.pageAccounts.find((a: any) => a.memberId.toString() == member.id);
+        };
+        const pageAccountByMember = customer.pageAccounts.find(
+          (a: any) => a.memberId.toString() == member.id
+        );
         if (!pageAccountByMember) {
           customer.pageAccounts.push(params);
         }
       }
-    }
-    else {
-      console.log('no customer');
+    } else {
+      console.log("no customer");
       customer = new CustomerModel({
         code: await CustomerHelper.generateCode(), // Mã khách hàng
         name: "Khách vãng lai",
         uid: decode.uid,
         phone: phone,
         avatar: "https://i.imgur.com/NN9xQ5Q.png",
-        pageAccounts: [{
-          memberId: member._id,
-          pageId: member.fanpageId,
-        }],
+        pageAccounts: [
+          {
+            memberId: member._id,
+            pageId: member.fanpageId,
+          },
+        ],
       });
       if (psid) {
-        console.log('no customer + psId', psid);
+        console.log("no customer + psId", psid);
         const chatbotHelper = new ChatBotHelper(member.chatbotKey);
         const subscriberInfo = await getInfo(chatbotHelper, psid);
         customer.name = subscriberInfo.name;

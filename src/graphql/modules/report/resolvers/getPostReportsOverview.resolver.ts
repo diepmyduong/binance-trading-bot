@@ -5,6 +5,7 @@ import { OrderModel, OrderStatus } from "../../order/order.model";
 import { CustomerModel } from "../../customer/customer.model";
 import { CommissionLogModel } from "../../commissionLog/commissionLog.model";
 import { MemberModel, MemberType } from "../../member/member.model";
+import moment from "moment";
 
 const getPostReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
@@ -13,9 +14,18 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
   let $gte: Date = null,
     $lte: Date = null;
 
+  const currentMonth = moment().month() + 1;
+
   if (fromDate && toDate) {
     fromDate = fromDate + "T00:00:00+07:00";
     toDate = toDate + "T24:00:00+07:00";
+    $gte = new Date(fromDate);
+    $lte = new Date(toDate);
+  }
+  else {
+    const currentTime = new Date();
+    fromDate = `2021-${currentMonth}-01T00:00:00+07:00`; //2021-04-30
+    toDate = moment(currentTime).format("YYYY-MM-DD") + "T23:59:59+07:00"; //2021-04-30
     $gte = new Date(fromDate);
     $lte = new Date(toDate);
   }
@@ -23,14 +33,12 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
   const $matchIncomeFromOrder = () => {
     const match: any = {
       $match: {
-        status: OrderStatus.COMPLETED
+        status: OrderStatus.COMPLETED,
+        createdAt: {
+          $gte, $lte
+        }
       }
     };
-    if (fromDate && toDate) {
-      match.$match.createdAt = {
-        $gte, $lte
-      }
-    }
     return match;
   };
 
@@ -38,14 +46,11 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
   const $matchCollaboratorsFromShop = () => {
     const match: any = {
       $match: {
+        createdAt: {
+          $gte, $lte
+        }
       }
     };
-    if (fromDate && toDate) {
-      match.$match.createdAt = {
-        $gte,
-        $lte
-      }
-    }
     return match;
   };
 
@@ -53,13 +58,11 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
   const $matchCommissionFromLog = () => {
     const match: any = {
       $match: {
+        createdAt: {
+          $gte, $lte
+        }
       }
     };
-    if (fromDate && toDate) {
-      match.$match.createdAt = {
-        $gte, $lte
-      }
-    }
     return match;
   };
 

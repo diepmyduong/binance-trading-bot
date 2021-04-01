@@ -4,6 +4,7 @@ const schema = gql`
   extend type Query {
     getAllCategory(q: QueryGetListInput): CategoryPageData
     getOneCategory(id: ID!): Category
+    getFilteringCategories: [Category]
   }
 
   extend type Mutation {

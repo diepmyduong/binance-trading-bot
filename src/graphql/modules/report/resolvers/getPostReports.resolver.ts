@@ -6,8 +6,9 @@ import { memberService } from "../../member/member.service";
 import { OrderModel, OrderStatus } from "../../order/order.model";
 import { ObjectId } from "mongodb";
 import { CommissionLogModel } from "../../commissionLog/commissionLog.model";
-import { MemberStatistics } from "../../member/types/memberStatistics.type";
+import { MemberStatistics } from "../types/memberStatistics.type";
 import { CustomerModel } from "../../customer/customer.model";
+import moment from 'moment';
 
 const getPostReports = async (
   root: any,
@@ -20,10 +21,20 @@ const getPostReports = async (
 
   let $gte: Date = null,
     $lte: Date = null;
+  
+  const currentMonth = moment().format("MM");
 
   if (fromDate && toDate) {
     fromDate = fromDate + "T00:00:00+07:00";
     toDate = toDate + "T24:00:00+07:00";
+    $gte = new Date(fromDate);
+    $lte = new Date(toDate);
+  }
+  else {
+    const currentTime = new Date();
+    // fromDate = `2021-${currentMonth}-01T00:00:00+07:00`; //2021-04-30
+    fromDate = `2021-${currentMonth}-01T00:00:00+07:00`; //2021-04-30
+    toDate = moment(currentTime).format("YYYY-MM-DD") + "T23:59:59+07:00"; //2021-04-30
     $gte = new Date(fromDate);
     $lte = new Date(toDate);
   }
@@ -39,14 +50,12 @@ const getPostReports = async (
     const match: any = {
       $match: {
         sellerId: new ObjectId(member.id),
-        status: OrderStatus.COMPLETED
+        status: OrderStatus.COMPLETED,
+        createdAt: {
+          $gte, $lte
+        }
       }
     };
-    if (fromDate && toDate) {
-      match.$match.createdAt = {
-        $gte, $lte
-      }
-    }
     return match;
   };
 
@@ -54,13 +63,11 @@ const getPostReports = async (
     const match: any = {
       $match: {
         "collaborators.memberId": new ObjectId(member.id),
+        createdAt: {
+          $gte, $lte
+        }
       }
     };
-    if (fromDate && toDate) {
-      match.$match.createdAt = {
-        $gte, $lte
-      }
-    }
     return match;
   };
 
@@ -68,13 +75,11 @@ const getPostReports = async (
     const match: any = {
       $match: {
         memberId: new ObjectId(member.id),
+        createdAt: {
+          $gte, $lte
+        }
       }
     };
-    if (fromDate && toDate) {
-      match.$match.createdAt = {
-        $gte, $lte
-      }
-    }
     return match;
   };
 
@@ -83,13 +88,11 @@ const getPostReports = async (
       $match: {
         sellerId: new ObjectId(member.id),
         status: { $in: [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING] },
+        createdAt: {
+          $gte, $lte
+        }
       }
     };
-    if (fromDate && toDate) {
-      match.$match.createdAt = {
-        $gte, $lte
-      }
-    }
     return match;
   }
 
@@ -99,13 +102,11 @@ const getPostReports = async (
         sellerId: new ObjectId(member.id),
         status: { $in: [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING] },
         collaboratorId: { $exists: false },
+        createdAt: {
+          $gte, $lte
+        }
       }
     };
-    if (fromDate && toDate) {
-      match.$match.createdAt = {
-        $gte, $lte
-      }
-    }
     return match;
   }
 
@@ -116,13 +117,11 @@ const getPostReports = async (
         status: { $in: [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING] },
         addressDeliveryId: { $exists: true },
         commission3: { $gt: 0 },
+        createdAt: {
+          $gte, $lte
+        }
       }
     };
-    if (fromDate && toDate) {
-      match.$match.createdAt = {
-        $gte, $lte
-      }
-    }
     return match;
   }
 
@@ -134,13 +133,11 @@ const getPostReports = async (
         status: { $in: [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING] },
         addressStorehouseId: { $exists: true },
         commission3: { $gt: 0 },
+        createdAt: {
+          $gte, $lte
+        }
       }
     };
-    if (fromDate && toDate) {
-      match.$match.createdAt = {
-        $gte, $lte
-      }
-    }
     return match;
   }
 
@@ -273,14 +270,14 @@ const getPostReports = async (
         ...($matchEstimatedCommission3ByDeliveringOrder(member))
       },
       {
-           $lookup: {
-                  from: "addressstorehouses",
-                  localField: "addressStorehouseId",
-                  foreignField: "_id",
-                  as: "addressstorehouse",
-                },
+        $lookup: {
+          from: "addressstorehouses",
+          localField: "addressStorehouseId",
+          foreignField: "_id",
+          as: "addressstorehouse",
+        },
       },
-      { $unwind : "$addressstorehouse" },
+      { $unwind: "$addressstorehouse" },
       {
         $match: {
           "addressstorehouse.code": member.code
@@ -303,10 +300,13 @@ const getPostReports = async (
     const estimatedCommission = estimatedCommission1 + estimatedCommission2 + estimatedCommission3;
 
     const statitics: MemberStatistics = {
+      fromDate,
+      toDate,
       income,
       collaboratorsCount,
       realCommission,
-      estimatedCommission
+      estimatedCommission,
+      estimatedIncome:0
     }
 
     set(membersObj.data[i], "memberStatistics", statitics);

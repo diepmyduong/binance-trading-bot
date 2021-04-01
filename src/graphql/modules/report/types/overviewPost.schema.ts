@@ -9,6 +9,10 @@ const schema = gql`
   }
 
   type MemberStatistics{
+    "Từ ngày"
+    fromDate: String
+    "Đến ngày"
+    toDate: String
     "Doanh thu"
     income: Float
     "Số lượng CTV"
@@ -20,6 +24,10 @@ const schema = gql`
   }
 
   type OverviewPostsReport {
+    "Từ ngày"
+    fromDate: String
+    "Đến ngày"
+    toDate: String
     "Tổng doanh thu"
     totalIncome: Float
     "Tổng số CTV"

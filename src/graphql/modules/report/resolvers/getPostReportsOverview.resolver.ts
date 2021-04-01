@@ -14,7 +14,7 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
   let $gte: Date = null,
     $lte: Date = null;
 
-  const currentMonth = moment().month() + 1;
+  const currentMonth = moment().format("MM");
 
   if (fromDate && toDate) {
     fromDate = fromDate + "T00:00:00+07:00";
@@ -119,10 +119,18 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
   const totalMembersCount = await MemberModel.count({ type: MemberType.BRANCH });
 
 
-  const totalOrdersCount = await OrderModel.count({ });
+  const totalOrdersCount = await OrderModel.count({});
 
 
-  return { totalIncome, totalCollaboratorsCount, totalRealCommission, totalMembersCount , totalOrdersCount }
+  return {
+    fromDate,
+    toDate,
+    totalIncome,
+    totalCollaboratorsCount,
+    totalRealCommission,
+    totalMembersCount,
+    totalOrdersCount
+  }
 };
 
 const Query = {

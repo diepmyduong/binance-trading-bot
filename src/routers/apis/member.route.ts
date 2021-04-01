@@ -22,6 +22,8 @@ import { CustomerModel } from "../../graphql/modules/customer/customer.model";
 import { Gender, MemberModel } from "../../graphql/modules/member/member.model";
 import { CustomerCommissionLogModel } from "../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
 import { ObjectId } from "mongodb";
+import moment from "moment";
+import { OrderStatus } from "../../graphql/modules/order/order.model";
 
 const STT = "STT";
 const NAME = "Tên";
@@ -99,106 +101,145 @@ class MemberRoute extends BaseRoute {
       ? req.query.memberId.toString()
       : null;
 
-    let data: any = [];
 
-    let $gte = null,
-      $lte = null;
+    let $gte: Date = null,
+      $lte: Date = null;
 
-    const $match: any = {};
+    const currentMonth = moment().month() + 1;
 
     if (fromDate && toDate) {
       fromDate = fromDate + "T00:00:00+07:00";
       toDate = toDate + "T24:00:00+07:00";
       $gte = new Date(fromDate);
       $lte = new Date(toDate);
-      $match.createdAt = { $gte, $lte };
+    }
+    else {
+      const currentTime = new Date();
+      fromDate = `2021-${currentMonth}-01T00:00:00+07:00`; //2021-04-30
+      toDate = moment(currentTime).format("YYYY-MM-DD") + "T23:59:59+07:00"; //2021-04-30
+      $gte = new Date(fromDate);
+      $lte = new Date(toDate);
     }
 
-    if (memberId) {
-      $match.memberId = new ObjectId(memberId);
+    const $matchIncomeFromOrder = (member: any) => {
+      const match: any = {
+        $match: {
+          sellerId: new ObjectId(member.id),
+          status: OrderStatus.COMPLETED,
+          createdAt: {
+            $gte, $lte
+          }
+        }
+      };
+      return match;
+    };
+
+    const $matchCollaboratorsFromShop = (member: any) => {
+      const match: any = {
+        $match: {
+          "collaborators.memberId": new ObjectId(member.id),
+          createdAt: {
+            $gte, $lte
+          }
+        }
+      };
+      return match;
+    };
+
+    const $matchCommissionFromLog = (member: any) => {
+      const match: any = {
+        $match: {
+          memberId: new ObjectId(member.id),
+          createdAt: {
+            $gte, $lte
+          }
+        }
+      };
+      return match;
+    };
+
+    const $matchEstimatedCommission1ByOrder = (member: any) => {
+      const match: any = {
+        $match: {
+          sellerId: new ObjectId(member.id),
+          status: { $in: [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING] },
+          createdAt: {
+            $gte, $lte
+          }
+        }
+      };
+      return match;
     }
 
-    //customerId:ObjectId("603b6ea20c5de11eaca05606"),
+    const $matchEstimatedCommission2ByOrder = (member: any) => {
+      const match: any = {
+        $match: {
+          sellerId: new ObjectId(member.id),
+          status: { $in: [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING] },
+          collaboratorId: { $exists: false },
+          createdAt: {
+            $gte, $lte
+          }
+        }
+      };
+      return match;
+    }
 
-    // console.log("$match", $match);
+    const $matchEstimatedCommission3ByReceivingOrder = (member: any) => {
+      const match: any = {
+        $match: {
+          sellerId: new ObjectId(member.id),
+          status: { $in: [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING] },
+          addressDeliveryId: { $exists: true },
+          commission3: { $gt: 0 },
+          createdAt: {
+            $gte, $lte
+          }
+        }
+      };
+      return match;
+    }
 
-    let result = await CustomerCommissionLogModel.aggregate([
-      {
-        $project: {
-          _id: 1,
-          customerId: 1,
-          memberId: 1,
-          type: 1,
-          value: 1,
-          orderId: 1,
-          createdAt: 1,
-          updatedAt: 1,
-        },
-      },
-      {
-        $match,
-      },
-      {
-        $group: {
-          _id: "$customerId",
-          memberIds: { $addToSet: "$memberId" },
-          customerIds: { $addToSet: "$customerId" },
-          total: {
-            $sum: "$value",
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          memberIds: 1,
-          customerId: { $arrayElemAt: ["$customerIds", 0] },
-          total: 1,
-        },
-      },
-      {
-        $lookup: {
-          from: "customers",
-          localField: "customerId",
-          foreignField: "_id",
-          as: "customer",
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          customerId: 1,
-          customer: { $arrayElemAt: ["$customer", 0] },
-          memberIds: 1,
-          total: 1,
-        },
-      },
-    ]);
+
+    const $matchEstimatedCommission3ByDeliveringOrder = (member: any) => {
+      const match: any = {
+        $match: {
+          sellerId: new ObjectId(member.id),
+          status: { $in: [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING] },
+          addressStorehouseId: { $exists: true },
+          commission3: { $gt: 0 },
+          createdAt: {
+            $gte, $lte
+          }
+        }
+      };
+      return match;
+    }
 
     const members = await MemberModel.find({});
 
-    data = [...data, ...result];
+    // data = [...data, ...result];
 
     const workbook = new Excel.Workbook();
-    const sheet = workbook.addWorksheet(SHEET_NAME);
-    const excelHeaders = [STT, NAME, PHONE, "Bưu cục", "Hoa hồng"];
-    sheet.addRow(excelHeaders);
+    // const sheet = workbook.addWorksheet(SHEET_NAME);
+    // const excelHeaders = [STT, NAME, PHONE, "Bưu cục", "Hoa hồng"];
+    // sheet.addRow(excelHeaders);
 
-    data.forEach((d: any, i: number) => {
-      const dataRow = [
-        i + 1,
-        d.customer.name,
-        d.customer.phone,
-        members
-          .filter((m) =>
-            d.memberIds.map((id: any) => id.toString()).includes(m.id)
-          )
-          .map((m) => m.shopName)
-          .join("\n"),
-        d.total,
-      ];
-      sheet.addRow(dataRow);
-    });
+    // data.forEach((d: any, i: number) => {
+    //   const dataRow = [
+    //     i + 1,
+    //     d.customer.name,
+    //     d.customer.phone,
+    //     members
+    //       .filter((m) =>
+    //         d.memberIds.map((id: any) => id.toString()).includes(m.id)
+    //       )
+    //       .map((m) => m.shopName)
+    //       .join("\n"),
+    //     d.total,
+    //   ];
+    //   sheet.addRow(dataRow);
+    // });
 
     return UtilsHelper.responseExcel(res, workbook, RESULT_FILE_NAME);
   }

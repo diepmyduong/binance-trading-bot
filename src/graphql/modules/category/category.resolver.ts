@@ -16,6 +16,9 @@ const Query = {
     const { id } = args;
     return await categoryService.findOne({ _id: id });
   },
+  getFilteringCategories: async (root: any, args: any, context: Context) => {
+    return await CategoryModel.find({isPrimary:true});
+  },
 };
 
 const Mutation = {

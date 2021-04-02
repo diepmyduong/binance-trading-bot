@@ -8,6 +8,7 @@ import {
   NextFunction,
 } from "../../base/baseRoute";
 import { FirebaseHelper, firebaseHelper, VietnamPostHelper } from "../../helpers";
+import { OrderModel } from "../../graphql/modules/order/order.model";
 // import { ObjectId } from "mongodb";
 // import khongdau from "khong-dau";
 
@@ -17,7 +18,7 @@ class TestRoute extends BaseRoute {
   }
 
   customRouting() {
-    this.router.get("/", this.route(this.test));
+    this.router.get("/", this.route(this.updateOrders));
   }
 
   async test(req: Request, res: Response) {
@@ -34,7 +35,7 @@ class TestRoute extends BaseRoute {
     const addressDeliverys = await AddressDeliveryModel.find({ isPost: true });
 
     const addressStorehouses = await AddressStorehouseModel.find({
-      isPost: true, allowPickup:true
+      isPost: true, allowPickup: true
     });
 
     for (const member of shops) {
@@ -77,7 +78,7 @@ class TestRoute extends BaseRoute {
         type: "Point",
       };
 
-      console.log('getMember',member.shopName);
+      console.log('getMember', member.shopName);
 
       const params: any = {
         code: member.code,
@@ -115,7 +116,7 @@ class TestRoute extends BaseRoute {
         // );
       } else {
         const created = await AddressStorehouseModel.create(params);
-        console.log('created',created.name);
+        console.log('created', created.name);
       }
     }
 
@@ -210,6 +211,20 @@ class TestRoute extends BaseRoute {
       } catch (error) {
         console.log("ko update dc")
       }
+    }
+
+    res.sendStatus(200);
+  }
+
+  async updateChatbotKey(req: Request, res: Response) {
+
+  }
+
+  async updateOrders(req: Request, res: Response) {
+    const orders = await OrderModel.find({});
+    for (const order of orders) {
+      const member = await MemberModel.findById(order.sellerId);
+      await OrderModel.findByIdAndUpdate(order.id, { $set: { sellerCode: member.code, sellerName: member.shopName } }, { new: true })
     }
 
     res.sendStatus(200);

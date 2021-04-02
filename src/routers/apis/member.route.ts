@@ -273,6 +273,7 @@ class MemberRoute extends BaseRoute {
 
     return UtilsHelper.responseExcel(res, workbook, POST_FILE_NAME);
   }
+
 }
 
 export default new MemberRoute().router;

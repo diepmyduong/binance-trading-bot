@@ -22,10 +22,15 @@ import {
 import { OrderModel } from "../../graphql/modules/order/order.model";
 import { OrderItemModel } from "../../graphql/modules/orderItem/orderItem.model";
 import { AddressDeliveryModel } from "../../graphql/modules/addressDelivery/addressDelivery.model";
-import { MemberModel } from "../../graphql/modules/member/member.model";
+import { MemberModel, MemberType } from "../../graphql/modules/member/member.model";
 import { SettingHelper } from "../../graphql/modules/setting/setting.helper";
 import { SettingKey } from "../../configs/settingData";
 import { createCanvas, loadImage } from 'canvas';
+import { UtilsHelper } from "../../helpers";
+import Excel from "exceljs";
+import { ObjectId } from "bson";
+import moment from "moment";
+import { AddressStorehouseModel } from "../../graphql/modules/addressStorehouse/addressStorehouse.model";
 
 class OrderRoute extends BaseRoute {
   constructor() {
@@ -42,6 +47,12 @@ class OrderRoute extends BaseRoute {
       "/exportToMemberOrderToPdf",
       [auth],
       this.route(this.exportToMemberOrderToPdf)
+    );
+
+    this.router.get(
+      "/exportOrdersReport",
+      [auth],
+      this.route(this.exportOrdersReport)
     );
   }
 
@@ -110,6 +121,149 @@ class OrderRoute extends BaseRoute {
     const pdfContent = await getPDFOrder({ order, addressDelivery, member, logoImageUrl });
     return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${order.code}`);
   }
+
+  async exportOrdersReport(req: Request, res: Response) {
+    const context = (req as any).context as Context;
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER);
+
+    let data: any = [];
+
+    let fromDate: string = req.query.fromDate
+      ? req.query.fromDate.toString()
+      : null;
+    let toDate: string = req.query.toDate ? req.query.toDate.toString() : null;
+    const memberId: string = req.query.memberId
+      ? req.query.memberId.toString()
+      : null;
+
+
+    let $gte: Date = null,
+      $lte: Date = null;
+
+    const currentMonth = moment().month() + 1;
+
+    if (fromDate && toDate) {
+      fromDate = fromDate + "T00:00:00+07:00";
+      toDate = toDate + "T24:00:00+07:00";
+      $gte = new Date(fromDate);
+      $lte = new Date(toDate);
+    }
+    else {
+      const currentTime = new Date();
+      fromDate = `2021-${currentMonth}-01T00:00:00+07:00`; //2021-04-30
+      toDate = moment(currentTime).format("YYYY-MM-DD") + "T23:59:59+07:00"; //2021-04-30
+      $gte = new Date(fromDate);
+      $lte = new Date(toDate);
+    }
+
+    const params: any = { 
+      createdAt: {
+        $gte, $lte
+      },
+    };
+
+    if (memberId) {
+      params.sellerId = new ObjectId(memberId);
+    }
+
+    const orders = await OrderModel.find(params);
+
+    const statusText = (order:any) => {
+      switch (order.status) {
+        case OrderStatus.PENDING:
+          return `Đang xử lý`;
+        case OrderStatus.CONFIRMED:
+          return `Đã xác nhận`;
+        case OrderStatus.DELIVERING:
+          return `Đang giao hàng`;
+        case OrderStatus.COMPLETED:
+          return `Hoàn tất`;
+        case OrderStatus.FAILURE:
+          return `Thất bại`;
+        case OrderStatus.CANCELED:
+          return `Đã huỷ`;
+        case OrderStatus.RETURNED:
+          return `Đã hoàn hàng`;
+        default:
+          return order.status;
+      }
+    }
+
+    for (let i = 0; i < orders.length; i++) {
+      const order = orders[i];
+      const shipMethod = order.shipMethod === ShipMethod.POST ? "Nhận hàng tại bưu cục" : "Giao hàng tại địa chỉ";
+      const seller = await MemberModel.findById(order.sellerId);
+      const addressDelivery = order.addressDeliveryId ? await AddressDeliveryModel.findById(order.addressDeliveryId) : null;
+      const addressStorehouse = order.addressStorehouseId ? await AddressStorehouseModel.findById(order.addressStorehouseId) : null;
+      const address = order.shipMethod === ShipMethod.POST ? addressDelivery?.address : addressStorehouse?.address;
+      const params = {
+        code: order.code,
+        shopName: seller.shopName,
+        shopCode: seller.code,
+        buyer: order.buyerName,
+        shipMethod,
+        address,
+        note: order.note,
+        commission1: order.commission1,
+        commission2: order.commission2,
+        commission3: order.commission3,
+        subTotal: order.subtotal,
+        shipfee: order?.shipfee,
+        amount: order.amount,
+        status: statusText(order)
+      }
+      // console.log('count', i);
+      data.push(params);
+    }
+
+    // console.log('data', data);
+
+    const workbook = new Excel.Workbook();
+    const sheet = workbook.addWorksheet("Sheet1");
+    const excelHeaders = [
+      "STT",
+      "Mã đơn",
+      "Bưu cục",
+      "Mã bưu cục",
+      "Người mua",
+      "PTVC",
+      "Địa chỉ",
+      "Ghi chú",
+      "HH điểm bán",
+      "HH CTV",
+      "HH giao hàng",
+      "Thành tiền",
+      "Phí ship",
+      "Tổng cộng",
+      "Tình trạng",
+    ];
+
+    sheet.addRow(excelHeaders);
+
+    data.forEach((d: any, i: number) => {
+      const dataRow = [
+        i + 1,
+        d.code,
+        d.shopName,
+        d.shopCode,
+        d.buyer,
+        d.shipMethod,
+        d.address,
+        d.note,
+        d.commission1,
+        d.commission2,
+        d.commission3,
+        d.subTotal,
+        d.shipfee,
+        d.amount,
+        d.status,
+      ];
+      sheet.addRow(dataRow);
+    });
+
+    return UtilsHelper.responseExcel(res, workbook, "danh_sach_don_hang");
+  }
+
 }
 
 export default new OrderRoute().router;

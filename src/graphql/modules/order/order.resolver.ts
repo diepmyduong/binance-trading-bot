@@ -200,7 +200,7 @@ const Order = {
       case OrderStatus.RETURNED:
         return `Đã hoàn hàng`;
       default:
-        return root.shipMethod;
+        return root.status;
     }
   },
 };

@@ -43,6 +43,12 @@ const schema = gql`
     district: String
     "Phường/xã"
     ward: String
+    "Cho phép giao"
+    allowPickup: Boolean
+    "vĩ độ"
+    latitude: Float
+    "kinh độ"
+    longitude: Float
     "Hiệu lực"
     activated: Boolean
   }
@@ -68,6 +74,12 @@ const schema = gql`
     district: String
     "Phường/xã"
     ward: String
+    "Cho phép giao"
+    allowPickup: Boolean
+    "vĩ độ"
+    latitude: Float
+    "kinh độ"
+    longitude: Float
     "Hiệu lực"
     activated: Boolean
     
@@ -102,7 +114,12 @@ const schema = gql`
     ward: String
     "Hiệu lực"
     activated: Boolean
-
+    "Cho phép giao"
+    allowPickup: Boolean
+    "vĩ độ"
+    latitude: Float
+    "kinh độ"
+    longitude: Float
     "Bưu cục"
     member: Member
   }

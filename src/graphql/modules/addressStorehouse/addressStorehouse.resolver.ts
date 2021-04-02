@@ -93,6 +93,14 @@ const AddressStorehouse = {
   member: async (root: IAddressStorehouse, args: any, context: Context) => {
     return await MemberModel.findOne({ code: root.code });
   },
+
+  longitude: (root: IAddressStorehouse, args: any, context: Context) => {
+    return root.location.coordinates[0];
+  },
+  
+  latitude: (root: IAddressStorehouse, args: any, context: Context) => {
+    return root.location.coordinates[1];
+  },
 };
 
 export default {

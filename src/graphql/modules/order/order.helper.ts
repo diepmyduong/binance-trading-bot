@@ -208,6 +208,8 @@ export class OrderHelper {
   static async fromRaw(data: any) {
     const order = new OrderModel(data);
     const customer = await CustomerModel.findById(order.buyerId);
+    const member = await MemberModel.findById(data.sellerId);
+
     let { collaboratorId } = data;
     let collaborator = null;
     if (collaboratorId) {
@@ -220,6 +222,8 @@ export class OrderHelper {
     }
 
     order.collaboratorId = collaborator ? collaborator.id : null;
+    order.sellerCode = member.code;
+    order.sellerName = member.shopName;
 
     const helper = new OrderHelper(order);
     switch (order.shipMethod) {

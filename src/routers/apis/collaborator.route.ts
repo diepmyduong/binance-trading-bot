@@ -192,6 +192,7 @@ class CollaboratorRoute extends BaseRoute {
           _id: 0,
           memberIds: 1,
           customerId: { $arrayElemAt: ["$customerIds", 0] },
+          createdAt:1,
           total: 1,
         },
       },
@@ -209,6 +210,7 @@ class CollaboratorRoute extends BaseRoute {
           customerId: 1,
           customer: { $arrayElemAt: ["$customer", 0] },
           memberIds: 1,
+          createdAt:1,
           total: 1,
         },
       },
@@ -220,7 +222,7 @@ class CollaboratorRoute extends BaseRoute {
 
     const workbook = new Excel.Workbook();
     const sheet = workbook.addWorksheet(SHEET_NAME);
-    const excelHeaders = [STT, NAME, PHONE, "Bưu cục", "Hoa hồng"];
+    const excelHeaders = [STT, NAME, PHONE, "Bưu cục", "Hoa hồng", "Ngày phát sinh"];
     sheet.addRow(excelHeaders);
 
     data.forEach((d: any, i: number) => {
@@ -235,6 +237,7 @@ class CollaboratorRoute extends BaseRoute {
           .map((m) => m.shopName)
           .join("\n"),
         d.total,
+        d.createdAt,
       ];
       sheet.addRow(dataRow);
     });

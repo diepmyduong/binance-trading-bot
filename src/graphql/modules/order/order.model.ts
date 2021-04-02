@@ -60,6 +60,8 @@ export type IOrder = BaseDocument & {
   subtotal?: number; // Tổng tiền hàng
   itemCount?: number; // Số lượng sản phẩm
   sellerId?: string; // Chủ shop bán
+  sellerCode: string; // Mã chủ shop bán
+  sellerName: string; // Chủ shop bán
   status?: OrderStatus; // Trạng thái
   updatedByUserId?: string; // Người cập nhật
   commission0?: number; // Hoa hồng Mobifone
@@ -114,6 +116,8 @@ const orderSchema = new Schema(
     },
     amount: { type: Number, default: 0, min: 0 },
     sellerId: { type: Schema.Types.ObjectId, ref: "Member" },
+    sellerCode: { type: String }, // Mã chủ shop bán
+    sellerName: { type: String }, // Chủ shop bán
     fromMemberId: { type: Schema.Types.ObjectId, ref: "Member" },
     status: {
       type: String,

@@ -6,7 +6,7 @@ enum LocationTypes {
 
 export type Location = {
   type: string;
-  coordinates: [number];
+  coordinates: number[];
 };
 
 export const LocationSchema = new Schema({

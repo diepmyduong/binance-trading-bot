@@ -31,6 +31,8 @@ import Excel from "exceljs";
 import { ObjectId } from "bson";
 import moment from "moment";
 import { AddressStorehouseModel } from "../../graphql/modules/addressStorehouse/addressStorehouse.model";
+import { AddressModel } from "../../graphql/modules/address/address.model";
+import { BranchModel } from "../../graphql/modules/branch/branch.model";
 
 class OrderRoute extends BaseRoute {
   constructor() {
@@ -156,7 +158,7 @@ class OrderRoute extends BaseRoute {
       $lte = new Date(toDate);
     }
 
-    const params: any = { 
+    const params: any = {
       createdAt: {
         $gte, $lte
       },
@@ -166,9 +168,15 @@ class OrderRoute extends BaseRoute {
       params.sellerId = new ObjectId(memberId);
     }
 
-    const orders = await OrderModel.find(params);
+    const [orders, addressDeliverys, addressStorehouses, sellers, branches] = await Promise.all([
+      OrderModel.find(params),
+      AddressDeliveryModel.find({}),
+      AddressStorehouseModel.find({}),
+      MemberModel.find({}),
+      BranchModel.find({})
+    ]);
 
-    const statusText = (order:any) => {
+    const statusText = (order: any) => {
       switch (order.status) {
         case OrderStatus.PENDING:
           return `Đang xử lý`;
@@ -192,17 +200,27 @@ class OrderRoute extends BaseRoute {
     for (let i = 0; i < orders.length; i++) {
       const order = orders[i];
       const shipMethod = order.shipMethod === ShipMethod.POST ? "Nhận hàng tại bưu cục" : "Giao hàng tại địa chỉ";
-      const seller = await MemberModel.findById(order.sellerId);
-      const addressDelivery = order.addressDeliveryId ? await AddressDeliveryModel.findById(order.addressDeliveryId) : null;
-      const addressStorehouse = order.addressStorehouseId ? await AddressStorehouseModel.findById(order.addressStorehouseId) : null;
-      const address = order.shipMethod === ShipMethod.POST ? addressDelivery?.address : addressStorehouse?.address;
+      const seller = sellers.find(member => member.id.toString() === order.sellerId.toString());
+      const addressDelivery = order.addressDeliveryId ? addressDeliverys.find(addr => addr.id.toString() === order.addressDeliveryId.toString()) : null;
+      const addressStorehouse = order.addressStorehouseId ? addressStorehouses.find(addr => addr.id.toString() === order.addressStorehouseId.toString()) : null;
+
+      const deliveryAddress = addressDelivery ? `${addressDelivery.name} - ${addressDelivery.address}` : null;
+      const storehouseAddress = addressStorehouse ? `${addressStorehouse.name} - ${addressStorehouse.address}` : null;
+      const buyerAddress = order.buyerAddress;
+      const branch = branches.find(br => br.id.toString() === seller.branchId.toString());
       const params = {
         code: order.code,
         shopName: seller.shopName,
         shopCode: seller.code,
+        shopDistrict: seller.district,
+        branchName: branch.name,
         buyer: order.buyerName,
+        buyerPhone: order.buyerPhone,
         shipMethod,
-        address,
+        deliveryAddress: order.shipMethod === ShipMethod.POST ? deliveryAddress : null,
+        storehouseAddress: order.shipMethod === ShipMethod.VNPOST ? storehouseAddress : null,
+        buyerAddress,
+        district: seller.district,
         note: order.note,
         commission1: order.commission1,
         commission2: order.commission2,
@@ -223,18 +241,29 @@ class OrderRoute extends BaseRoute {
     const excelHeaders = [
       "STT",
       "Mã đơn",
+
       "Bưu cục",
       "Mã bưu cục",
+      "Quận / Huyện",
+      "Chi nhánh",
+
       "Người mua",
+      "Địa chỉ người mua",
+      "SĐT",
+
       "PTVC",
-      "Địa chỉ",
+      "Địa chỉ bưu cục nhận",
+      "Địa chỉ bưu cục giao",
+
       "Ghi chú",
       "HH điểm bán",
       "HH CTV",
       "HH giao hàng",
+
       "Thành tiền",
       "Phí ship",
       "Tổng cộng",
+
       "Tình trạng",
     ];
 
@@ -244,18 +273,30 @@ class OrderRoute extends BaseRoute {
       const dataRow = [
         i + 1,
         d.code,
+
         d.shopName,
         d.shopCode,
+        d.shopDistrict,
+        d.branchName,
+
         d.buyer,
+        d.buyerAddress,
+        d.buyerPhone,
+
         d.shipMethod,
-        d.address,
+        d.deliveryAddress,
+        d.storehouseAddress,
+
         d.note,
+
         d.commission1,
         d.commission2,
         d.commission3,
+
         d.subTotal,
         d.shipfee,
         d.amount,
+
         d.status,
       ];
       sheet.addRow(dataRow);

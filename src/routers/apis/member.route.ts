@@ -24,11 +24,12 @@ import { CustomerCommissionLogModel } from "../../graphql/modules/customerCommis
 import { ObjectId } from "mongodb";
 import moment from "moment";
 import { IOrder, OrderModel, OrderStatus, ShipMethod } from "../../graphql/modules/order/order.model";
-import { CommissionLogModel } from "../../graphql/modules/commissionLog/commissionLog.model";
+import { CommissionLogModel, ICommissionLog } from "../../graphql/modules/commissionLog/commissionLog.model";
 import { set } from "lodash";
 import { MemberStatistics } from "../../graphql/modules/report/types/memberStatistics.type";
-import { AddressDeliveryLoader, AddressDeliveryModel } from "../../graphql/modules/addressDelivery/addressDelivery.model";
-import { AddressStorehouseModel } from "../../graphql/modules/addressStorehouse/addressStorehouse.model";
+import { AddressDeliveryLoader, AddressDeliveryModel, IAddressDelivery } from "../../graphql/modules/addressDelivery/addressDelivery.model";
+import { AddressStorehouseModel, IAddressStorehouse } from "../../graphql/modules/addressStorehouse/addressStorehouse.model";
+import { BranchModel } from "../../graphql/modules/branch/branch.model";
 
 const STT = "STT";
 const NAME = "Tên";
@@ -160,6 +161,11 @@ class MemberRoute extends BaseRoute {
     }
 
     const members = await MemberModel.find(memberParams);
+    const branches = await BranchModel.find();
+
+
+    const addressDeliverys = await AddressDeliveryModel.find();
+    const addressStorehouses = await AddressStorehouseModel.find();
 
     for (let i = 0; i < members.length; i++) {
       const member: any = members[i];
@@ -182,44 +188,41 @@ class MemberRoute extends BaseRoute {
           ...($matchCollaboratorsFromShop(member))
         },
       ]);
-      // console.log('collaboratorsFromShop', collaboratorsFromShop);
 
       const collaboratorsCount = collaboratorsFromShop.length;
 
-      const [commissionFromLog] = await CommissionLogModel.aggregate([
-        {
-          ...($matchCommissionFromLog(member))
-        },
-        {
-          $group: {
-            _id: "$memberId",
-            orderIds: { $addToSet: "$orderId" },
-            total: {
-              $sum: "$value",
-            },
-          }
+      const { allIncomeStats, allCommissionStats } = await getOrdersStats(member, $gte, $lte, addressDeliverys, addressStorehouses);
+
+      const branch = branches.find(br => br.id.toString() === member.branchId.toString());
+
+      const allMemberCommission = await CommissionLogModel.find({
+        memberId: member.id, createdAt: {
+          $gte, $lte
         }
-      ]);
+      });
 
-      const realCommission = commissionFromLog ? commissionFromLog.total : 0;
-
-      const { allStats } = await getOrdersStats(member, $gte, $lte);
+      const totalCommission = allMemberCommission.reduce((total: number, log: ICommissionLog) => total += log.value, 0);
 
       const params = {
         code: member.code,
         shopName: member.shopName,
+        address: member.address,
+        ward: member.ward,
+        district: member.district,
+        province: member.province,
+        branchName: branch?.name,
         collaboratorsCount,
-        ordersCount: allStats.allOrders.count,
-        pendingCount: allStats.pendingOrders.count,
-        confirmedCount: allStats.confirmedOrders.count,
-        deliveringCount: allStats.deliveringOrders.count,
-        completedCount: allStats.completedOrders.count,
-        failureCount: allStats.failureOrders.count,
-        canceledCount: allStats.canceledOrders.count,
-        estimatedCommission: allStats.estimatedOrders.commissions.totalCommission,
-        realCommission: realCommission,
-        estimatedIncome: allStats.estimatedOrders.sum,
-        income: allStats.completedOrders.sum
+        ordersCount: allIncomeStats.allOrders.count,
+        pendingCount: allIncomeStats.pendingOrders.count,
+        confirmedCount: allIncomeStats.confirmedOrders.count,
+        deliveringCount: allIncomeStats.deliveringOrders.count,
+        completedCount: allIncomeStats.completedOrders.count,
+        failureCount: allIncomeStats.failureOrders.count,
+        canceledCount: allIncomeStats.canceledOrders.count,
+        estimatedCommission: allCommissionStats.estimatedOrders.totalCommission,
+        realCommission: totalCommission,
+        estimatedIncome: allIncomeStats.estimatedOrders.sum,
+        income: allIncomeStats.completedOrders.sum,
       }
 
       // console.log('count', i);
@@ -234,6 +237,11 @@ class MemberRoute extends BaseRoute {
       STT,
       "Mã bưu cục",
       "Bưu cục",
+      "Địa chỉ",
+      "Phường / Xã",
+      "Quận / Huyện",
+      "Tỉnh / Thành",
+      "Chi nhánh",
       "Số lượng CTV",
       "Số lượng đơn hàng",
       "Đơn chờ",
@@ -255,6 +263,11 @@ class MemberRoute extends BaseRoute {
         i + 1,
         d.code,
         d.shopName,
+        d.address,
+        d.ward,
+        d.district,
+        d.province,
+        d.branchName,
         d.collaboratorsCount,
         d.ordersCount,
         d.pendingCount,
@@ -266,7 +279,8 @@ class MemberRoute extends BaseRoute {
         d.estimatedCommission,
         d.realCommission,
         d.estimatedIncome,
-        d.income
+        d.income,
+        d.totalIncome
       ];
       sheet.addRow(dataRow);
     });
@@ -278,49 +292,45 @@ class MemberRoute extends BaseRoute {
 
 export default new MemberRoute().router;
 
-const getOrdersStats = async (member: any, $gte: any, $lte: any) => {
+const getOrdersStats = async (member: any, $gte: any, $lte: any, addressDeliverys: IAddressDelivery[], addressStorehouses: IAddressStorehouse[]) => {
 
-  const orders = await OrderModel.aggregate([
+  const orders = await OrderModel.find(
     {
-      $match: {
-        sellerId: new ObjectId(member.id),
-        createdAt: {
-          $gte, $lte
-        }
+      sellerId: member.id,
+      createdAt: {
+        $gte, $lte
       }
     },
-  ]);
+  );
+
+  const allIncomeStats = getAllIncomeStats(orders);
+  // const noneIncomeStats = getNoneIncomeOrderStats(orders);
+  // const postIncomeStats = getPostIncomeOrderStats(orders);
+  // const vnportIncomeStats = getVNPORTIncomeOrderStats(orders);
 
 
+  const allCommissionStats = getAllCommissionStats(orders, addressDeliverys, addressStorehouses);
+  // const noneIncomeStats = getNoneIncomeOrderStats(orders);
+  // const postIncomeStats = getPostIncomeOrderStats(orders);
+  // const vnportIncomeStats = getVNPORTIncomeOrderStats(orders);
 
-  const allStats = await getAllStats(orders);
-  // const noneStats = await getNoneOrderStats(orders);
-  // const postStats = await getPostOrderStats(orders);
-  // const vnportStats = await getVNPORTOrderStats(orders);
-
-  // console.log('allStats', allStats);
-  // console.log('noneStats', noneStats);
-  // console.log('postStats', postStats);
-  // console.log('vnportStats', vnportStats);
 
   return {
-    allStats,
-    // noneStats,
-    // postStats,
-    // vnportStats
+    allIncomeStats,
+    allCommissionStats
   }
 }
 // nhan hang tai bc
-const getAllStats = async (orders: IOrder[]) => {
+const getAllIncomeStats = (orders: IOrder[]) => {
 
-  const allOrders = await getOrderStats(orders);
-  const pendingOrders = await getOrderStats(orders.filter((o: IOrder) => o.status === OrderStatus.PENDING));
-  const confirmedOrders = await getOrderStats(orders.filter((o: IOrder) => o.status === OrderStatus.CONFIRMED));
-  const deliveringOrders = await getOrderStats(orders.filter((o: IOrder) => o.status === OrderStatus.DELIVERING));
-  const estimatedOrders = await getOrderStats(orders.filter((o: IOrder) => [OrderStatus.DELIVERING, OrderStatus.PENDING, OrderStatus.CONFIRMED].includes(o.status)));
-  const completedOrders = await getOrderStats(orders.filter((o: IOrder) => o.status === OrderStatus.COMPLETED));
-  const failureOrders = await getOrderStats(orders.filter((o: IOrder) => o.status === OrderStatus.FAILURE));
-  const canceledOrders = await getOrderStats(orders.filter((o: IOrder) => o.status === OrderStatus.CANCELED));
+  const allOrders = getOrderStats(orders);
+  const pendingOrders = getOrderStats(orders.filter((o: IOrder) => o.status === OrderStatus.PENDING));
+  const confirmedOrders = getOrderStats(orders.filter((o: IOrder) => o.status === OrderStatus.CONFIRMED));
+  const deliveringOrders = getOrderStats(orders.filter((o: IOrder) => o.status === OrderStatus.DELIVERING));
+  const estimatedOrders = getOrderStats(orders.filter((o: IOrder) => [OrderStatus.DELIVERING, OrderStatus.PENDING, OrderStatus.CONFIRMED].includes(o.status)));
+  const completedOrders = getOrderStats(orders.filter((o: IOrder) => o.status === OrderStatus.COMPLETED));
+  const failureOrders = getOrderStats(orders.filter((o: IOrder) => o.status === OrderStatus.FAILURE));
+  const canceledOrders = getOrderStats(orders.filter((o: IOrder) => o.status === OrderStatus.CANCELED));
 
   return {
     allOrders,
@@ -336,38 +346,65 @@ const getAllStats = async (orders: IOrder[]) => {
 
 
 // nhan hang tai bc
-const getNoneOrderStats = async (orders: IOrder[]) => {
-  return await getAllStats(orders.filter((o: IOrder) => o.shipMethod === ShipMethod.NONE));
+const getNoneIncomeOrderStats = async (orders: IOrder[]) => {
+  return await getAllIncomeStats(orders.filter((o: IOrder) => o.shipMethod === ShipMethod.NONE));
 }
 
 // nhan hang tai bc
-const getPostOrderStats = async (orders: IOrder[]) => {
-  return await getAllStats(orders.filter((o: IOrder) => o.shipMethod === ShipMethod.POST));
+const getPostIncomeOrderStats = async (orders: IOrder[]) => {
+  return await getAllIncomeStats(orders.filter((o: IOrder) => o.shipMethod === ShipMethod.POST));
 }
 
 // giao hang tai dia chi
-const getVNPORTOrderStats = async (orders: IOrder[]) => {
-  return await getAllStats(orders.filter((o: IOrder) => o.shipMethod === ShipMethod.VNPOST));
+const getVNPORTIncomeOrderStats = async (orders: IOrder[]) => {
+  return await getAllIncomeStats(orders.filter((o: IOrder) => o.shipMethod === ShipMethod.VNPOST));
 }
 
 
-const getOrderStats = async (orders: IOrder[]) => {
+const getOrderStats = (orders: IOrder[]) => {
   const count = orders.length;
   const sum = count > 0 ? orders.reduce((total: number, o: IOrder) => total += o.amount, 0) : 0;
-  const commissions = await getAllCommissionStats(orders);
   return {
     count,
     sum,
-    commissions
   }
 }
 
-const getAllCommissionStats = async (orders: IOrder[]) => {
+
+const getAllCommissionStats = (orders: IOrder[], addressDeliverys: IAddressDelivery[], addressStorehouses: IAddressStorehouse[]) => {
+  const pendingFilteredOrders = orders.filter((o: IOrder) => o.status === OrderStatus.PENDING);
+  const confirmedFilteredOrders = orders.filter((o: IOrder) => o.status === OrderStatus.CONFIRMED);
+  const deliveringFilteredOrders = orders.filter((o: IOrder) => o.status === OrderStatus.DELIVERING)
+  const estimatedFilteredOrders = orders.filter((o: IOrder) => [OrderStatus.DELIVERING, OrderStatus.PENDING, OrderStatus.CONFIRMED].includes(o.status))
+  const completedFilteredOrders = orders.filter((o: IOrder) => o.status === OrderStatus.COMPLETED)
+  const failureFilteredOrders = orders.filter((o: IOrder) => o.status === OrderStatus.FAILURE)
+  const canceledFilteredOrders = orders.filter((o: IOrder) => o.status === OrderStatus.CANCELED)
+  const allOrders = getCommissionStats(orders, addressDeliverys, addressStorehouses);
+  const pendingOrders = getCommissionStats(pendingFilteredOrders, addressDeliverys, addressStorehouses);
+  const confirmedOrders = getCommissionStats(confirmedFilteredOrders, addressDeliverys, addressStorehouses);
+  const deliveringOrders = getCommissionStats(deliveringFilteredOrders, addressDeliverys, addressStorehouses);
+  const estimatedOrders = getCommissionStats(estimatedFilteredOrders, addressDeliverys, addressStorehouses);
+  const completedOrders = getCommissionStats(completedFilteredOrders, addressDeliverys, addressStorehouses);
+  const failureOrders = getCommissionStats(failureFilteredOrders, addressDeliverys, addressStorehouses);
+  const canceledOrders = getCommissionStats(canceledFilteredOrders, addressDeliverys, addressStorehouses);
+
+  return {
+    allOrders,
+    pendingOrders,
+    confirmedOrders,
+    deliveringOrders,
+    estimatedOrders,
+    completedOrders,
+    failureOrders,
+    canceledOrders,
+  }
+}
+
+const getCommissionStats = (orders: IOrder[], addressDeliverys: IAddressDelivery[], addressStorehouses: IAddressStorehouse[]) => {
   const count = orders.length;
   const totalCommission1 = count > 0 ? getCommission1FromOrder(orders) : 0;
   const totalCommission2 = count > 0 ? getCommission2FromOrder(orders) : 0;
-  const totalCommission3 = 0;
-  // const totalCommission3 = count > 0 ? await getCommission3FromOrder(orders) : 0;
+  const totalCommission3 = count > 0 ? getCommission3FromOrder(orders, addressDeliverys, addressStorehouses) : 0;
   const totalCommission = totalCommission1 + totalCommission2 + totalCommission3;
   return {
     totalCommission1,
@@ -388,23 +425,22 @@ const getCommission2FromOrder = (orders: IOrder[]) => {
   return memberOrders.reduce((total: number, o: IOrder) => total += o.commission2, 0);
 }
 
-const getCommission3FromOrder = async (orders: IOrder[]) => {
+const getCommission3FromOrder = (orders: IOrder[], addressDeliverys: IAddressDelivery[], addressStorehouses: IAddressStorehouse[]) => {
   const memberOrders: IOrder[] = [];
 
   for (const order of orders) {
-    const member = await MemberLoader.load(order.sellerId);
     if (order.addressDeliveryId) {
-      const addressDelivery = await AddressDeliveryLoader.load(order.addressDeliveryId);
+      const addressDelivery = addressDeliverys.find(addr => addr.id.toString() === order.addressDeliveryId.toString());
       if (addressDelivery) {
-        if (addressDelivery.code === member.code) {
+        if (addressDelivery.code === order.sellerCode) {
           memberOrders.push(order);
         }
       }
     }
     if (order.addressStorehouseId) {
-      const addressStorehouse = await AddressDeliveryLoader.load(order.addressStorehouseId);
+      const addressStorehouse = addressStorehouses.find(addr => addr.id.toString() === order.addressStorehouseId.toString());
       if (addressStorehouse) {
-        if (addressStorehouse.code === member.code) {
+        if (addressStorehouse.code === order.sellerCode) {
           memberOrders.push(order);
         }
       }

@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 import { ChatbotStory, ChatbotStorySchema } from "./types/chatbotStory.type";
-import { MemberStatistics } from "../report/types/memberStatistics.type";
 
 const Schema = mongoose.Schema;
 export enum Gender {
@@ -58,7 +57,8 @@ export type IMember = BaseDocument & {
   facebookAccessToken: string;
   xToken: string;
   lastLoginDate: Date;
-  memberStatistics: MemberStatistics;
+  fromDate:string;
+  toDate:string;
 };
 
 const memberSchema = new Schema(

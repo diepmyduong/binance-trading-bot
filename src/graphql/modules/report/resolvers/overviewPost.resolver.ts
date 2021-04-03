@@ -1,11 +1,14 @@
+import moment from "moment";
 import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { OrderModel, OrderStatus } from "../../order/order.model";
 import { CustomerModel } from "../../customer/customer.model";
 import { CommissionLogModel } from "../../commissionLog/commissionLog.model";
-import { MemberModel, MemberType } from "../../member/member.model";
-import moment from "moment";
+import { IMember, MemberModel, MemberType } from "../../member/member.model";
+import { MemberStatistics } from "./../loaders/memberStatistics.loader";
+import { memberService } from "../../member/member.service";
+import { set } from "lodash";
 
 const getPostReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
@@ -133,7 +136,43 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
   }
 };
 
+
+const getPostReports = async (
+  root: any,
+  args: any,
+  context: Context
+) => {
+  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+
+  const fromDate = args.q.filter.fromDate ? `${args.q.filter.fromDate}` : null;
+  const toDate = args.q.filter.toDate ? `${args.q.filter.toDate}` : null;
+
+  delete args.q.filter.fromDate;
+  delete args.q.filter.toDate;
+
+  const result = await memberService.fetch(args.q);
+  const members = result.data;
+
+  for (let i = 0; i < members.length; i++) {
+    set(members[i], "fromDate", fromDate);
+    set(members[i], "toDate", toDate);
+  }
+  result.data = members;
+  return result;
+};
+
+const OverviewPost = {
+  memberStatistics: async (root: any, args: any, context: Context) => {
+    return await MemberStatistics.getLoader(root);
+  }
+}
+
 const Query = {
   getPostReportsOverview,
+  getPostReports
 };
-export default { Query };
+
+export default {
+  Query,
+  OverviewPost
+};

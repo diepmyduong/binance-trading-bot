@@ -26,10 +26,11 @@ import moment from "moment";
 import { IOrder, OrderModel, OrderStatus, ShipMethod } from "../../graphql/modules/order/order.model";
 import { CommissionLogModel, ICommissionLog } from "../../graphql/modules/commissionLog/commissionLog.model";
 import { set } from "lodash";
-import { MemberStatistics } from "../../graphql/modules/report/types/memberStatistics.type";
 import { AddressDeliveryLoader, AddressDeliveryModel, IAddressDelivery } from "../../graphql/modules/addressDelivery/addressDelivery.model";
 import { AddressStorehouseModel, IAddressStorehouse } from "../../graphql/modules/addressStorehouse/addressStorehouse.model";
 import { BranchModel } from "../../graphql/modules/branch/branch.model";
+import { isValidObjectId } from "mongoose";
+import { ErrorHelper } from "../../base/error";
 
 const STT = "STT";
 const NAME = "Tên";
@@ -110,11 +111,12 @@ class MemberRoute extends BaseRoute {
       ? req.query.memberId.toString()
       : null;
 
+    if(!isValidObjectId(memberId)){
+      throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+    }
 
     let $gte: Date = null,
       $lte: Date = null;
-
-    const currentMonth = moment().month() + 1;
 
     if (fromDate && toDate) {
       fromDate = fromDate + "T00:00:00+07:00";
@@ -122,37 +124,6 @@ class MemberRoute extends BaseRoute {
       $gte = new Date(fromDate);
       $lte = new Date(toDate);
     }
-    else {
-      const currentTime = new Date();
-      fromDate = `2021-${currentMonth}-01T00:00:00+07:00`; //2021-04-30
-      toDate = moment(currentTime).format("YYYY-MM-DD") + "T23:59:59+07:00"; //2021-04-30
-      $gte = new Date(fromDate);
-      $lte = new Date(toDate);
-    }
-
-    const $matchCollaboratorsFromShop = (member: any) => {
-      const match: any = {
-        $match: {
-          "collaborators.memberId": new ObjectId(member.id),
-          createdAt: {
-            $gte, $lte
-          }
-        }
-      };
-      return match;
-    };
-
-    const $matchCommissionFromLog = (member: any) => {
-      const match: any = {
-        $match: {
-          memberId: new ObjectId(member.id),
-          createdAt: {
-            $gte, $lte
-          }
-        }
-      };
-      return match;
-    };
 
     const memberParams: any = { type: MemberType.BRANCH };
 
@@ -160,46 +131,35 @@ class MemberRoute extends BaseRoute {
       memberParams._id = new ObjectId(memberId);
     }
 
-    const members = await MemberModel.find(memberParams);
-    const branches = await BranchModel.find();
-
-
-    const addressDeliverys = await AddressDeliveryModel.find();
-    const addressStorehouses = await AddressStorehouseModel.find();
+    const [members,branches,addressDeliverys,addressStorehouses] = await Promise.all([
+      MemberModel.find(memberParams),
+      BranchModel.find(),
+      AddressDeliveryModel.find(),
+      AddressStorehouseModel.find()
+    ]);
 
     for (let i = 0; i < members.length; i++) {
       const member: any = members[i];
 
-      const collaboratorsFromShop = await CustomerModel.aggregate([
-        {
-          $match: {
-            "pageAccounts.memberId": new ObjectId(member.id)
-          }
-        },
-        {
-          $lookup: {
-            from: "collaborators",
-            localField: "_id",
-            foreignField: "customerId",
-            as: "collaborators",
-          },
-        },
-        {
-          ...($matchCollaboratorsFromShop(member))
-        },
+      const [
+        customers,
+        collaborators,
+        customersAsCollaborator,
+        allMemberCommission
+      ] = await Promise.all([
+        getCustomers(member, $gte, $lte),
+        getCollaborators(member, $gte, $lte),
+        getCustomersAsCollaborator(member, $gte, $lte),
+        getCommissionLogs(member, $gte, $lte),
       ]);
 
-      const collaboratorsCount = collaboratorsFromShop.length;
+      const customersCount = customers.length;
+      const collaboratorsCount = collaborators.length;
+      const customersAsCollaboratorCount = customersAsCollaborator.length;
 
       const { allIncomeStats, allCommissionStats } = await getOrdersStats(member, $gte, $lte, addressDeliverys, addressStorehouses);
 
       const branch = branches.find(br => br.id.toString() === member.branchId.toString());
-
-      const allMemberCommission = await CommissionLogModel.find({
-        memberId: member.id, createdAt: {
-          $gte, $lte
-        }
-      });
 
       const totalCommission = allMemberCommission.reduce((total: number, log: ICommissionLog) => total += log.value, 0);
 
@@ -211,7 +171,9 @@ class MemberRoute extends BaseRoute {
         district: member.district,
         province: member.province,
         branchName: branch?.name,
+        customersCount,
         collaboratorsCount,
+        customersAsCollaboratorCount,
         ordersCount: allIncomeStats.allOrders.count,
         pendingCount: allIncomeStats.pendingOrders.count,
         confirmedCount: allIncomeStats.confirmedOrders.count,
@@ -268,7 +230,7 @@ class MemberRoute extends BaseRoute {
         d.district,
         d.province,
         d.branchName,
-        d.collaboratorsCount,
+        d.customersAsCollaboratorCount,
         d.ordersCount,
         d.pendingCount,
         d.confirmedCount,
@@ -287,21 +249,102 @@ class MemberRoute extends BaseRoute {
 
     return UtilsHelper.responseExcel(res, workbook, POST_FILE_NAME);
   }
-
 }
 
 export default new MemberRoute().router;
 
-const getOrdersStats = async (member: any, $gte: any, $lte: any, addressDeliverys: IAddressDelivery[], addressStorehouses: IAddressStorehouse[]) => {
 
-  const orders = await OrderModel.find(
+const getCustomers = (member: any, $gte: any, $lte: any) => {
+
+  const $match: any = {
+    "pageAccounts.memberId": member.id
+  }
+
+  if ($gte && $lte) {
+    $match.createdAt = {
+      $gte, $lte
+    }
+  }
+
+  return CustomerModel.find($match);
+}
+
+const getCollaborators = (member: any, $gte: any, $lte: any) => {
+
+  const $match: any = {
+    memberId: member.id
+  }
+
+  if ($gte && $lte) {
+    $match.createdAt = {
+      $gte, $lte
+    }
+  }
+
+  return CollaboratorModel.find($match);
+}
+
+const getCommissionLogs = (member: any, $gte: any, $lte: any) => {
+  const $match: any = {
+    memberId: member.id
+  }
+
+  if ($gte && $lte) {
+    $match.createdAt = {
+      $gte, $lte
+    }
+  }
+
+  return CommissionLogModel.find($match)
+}
+
+
+const getCustomersAsCollaborator = (member: any, $gte: any, $lte:any) =>{
+
+  const $match:any ={
+    "collaborators.memberId": new ObjectId(member.id),
+  }
+
+  if($gte && $lte){
+    $match.createdAt ={
+      $gte, $lte
+    }
+  }
+
+  return CustomerModel.aggregate([
     {
-      sellerId: member.id,
-      createdAt: {
-        $gte, $lte
+      $match: {
+        "pageAccounts.memberId": new ObjectId(member.id)
       }
     },
-  );
+    {
+      $lookup: {
+        from: "collaborators",
+        localField: "_id",
+        foreignField: "customerId",
+        as: "collaborators",
+      },
+    },
+    {
+      $match
+    },
+  ]);
+}
+
+const getOrdersStats = async (member: any, $gte: any, $lte: any, addressDeliverys: IAddressDelivery[], addressStorehouses: IAddressStorehouse[]) => {
+
+  const $match:any ={
+    sellerId: member.id,
+  }
+
+
+  if($gte && $lte){
+    $match.createdAt ={
+      $gte, $lte
+    }
+  }
+
+  const orders = await OrderModel.find($match);
 
   const allIncomeStats = getAllIncomeStats(orders);
   // const noneIncomeStats = getNoneIncomeOrderStats(orders);
@@ -320,6 +363,7 @@ const getOrdersStats = async (member: any, $gte: any, $lte: any, addressDelivery
     allCommissionStats
   }
 }
+
 // nhan hang tai bc
 const getAllIncomeStats = (orders: IOrder[]) => {
 
@@ -343,7 +387,6 @@ const getAllIncomeStats = (orders: IOrder[]) => {
     canceledOrders,
   }
 }
-
 
 // nhan hang tai bc
 const getNoneIncomeOrderStats = async (orders: IOrder[]) => {
@@ -414,8 +457,6 @@ const getCommissionStats = (orders: IOrder[], addressDeliverys: IAddressDelivery
   }
 }
 
-
-
 const getCommission1FromOrder = (orders: IOrder[]) => {
   return orders.reduce((total: number, o: IOrder) => total += o.commission1, 0);
 }
@@ -449,13 +490,3 @@ const getCommission3FromOrder = (orders: IOrder[], addressDeliverys: IAddressDel
 
   return memberOrders.reduce((total: number, o: IOrder) => total += o.commission3 ? o.commission3 : 0, 0);
 }
-
-// (async () => {
-//   const currentTime = new Date();
-//   let fromDate = `2021-03-01T00:00:00+07:00`; //2021-04-30
-//   let toDate = moment(currentTime).format("YYYY-MM-DD") + "T23:59:59+07:00"; //2021-04-30
-//   let $gte = new Date(fromDate);
-//   let $lte = new Date(toDate);
-//   const member = await MemberModel.findOne({ username: "test@gmail.com" })
-//   await getOrdersStats(member, $gte, $lte);
-// })();

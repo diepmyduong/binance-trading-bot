@@ -108,10 +108,10 @@ export class ReportHelper {
 
   static getMembers = (member: any, $gte: any, $lte: any) => {
 
-    const $match: any = { type: MemberType.BRANCH }
+    const $match: any = {};
 
     if (member) {
-      $match.id = member.id
+      $match._id = new ObjectId(member.id);
     }
 
     if ($gte && $lte) {
@@ -119,8 +119,9 @@ export class ReportHelper {
         $gte, $lte
       }
     }
-
-    return MemberModel.find($match)
+    
+    // console.log("member", $match);
+    return MemberModel.aggregate([{$match}])
   }
 
   static getCommissionLogs = (member: any, $gte: any, $lte: any) => {

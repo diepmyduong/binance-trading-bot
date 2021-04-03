@@ -183,6 +183,7 @@ class LuckyWheelRoute extends BaseRoute {
       ]);
     });
 
+    UtilsHelper.setThemeExcelWorkBook(sheet);
 
     return UtilsHelper.responseExcel(res, workbook, `danh_sach_trung_thuong_vong_quay_${luckyWheel.code}`);
   }

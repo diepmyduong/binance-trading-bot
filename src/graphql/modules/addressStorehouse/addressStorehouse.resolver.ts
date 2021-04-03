@@ -26,7 +26,7 @@ const Query = {
 const Mutation = {
   createAddressStorehouse: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-    const data: IAddressStorehouse = args.data;
+    const { data } = args;
     const { email } = data;
 
     if (email && !UtilsHelper.isEmail(email))
@@ -37,6 +37,13 @@ const Mutation = {
     );
 
     helper.addressStorehouse.code = data.code || (await AddressStorehouseHelper.generateCode());
+
+    const location = {
+      coordinates: [data ? data.longitude : 0, data ? data.latitude : 0],
+      type: "Point",
+    };
+
+    helper.addressStorehouse.location = location;
 
     await Promise.all([
       AddressHelper.setProvinceName(helper.addressStorehouse),
@@ -49,8 +56,7 @@ const Mutation = {
 
   updateAddressStorehouse: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-    const { id } = args;
-    const data: IAddressStorehouse = args.data;
+    const { id, data } = args;
     const { email } = data;
 
     const existedStorehouse = await AddressStorehouseModel.findById(id);
@@ -68,6 +74,14 @@ const Mutation = {
           AddressHelper.setDistrictName(helper.addressStorehouse),
           AddressHelper.setWardName(helper.addressStorehouse),
         ]);
+
+        const location = {
+          coordinates: [data ? data.longitude : 0, data ? data.latitude : 0],
+          type: "Point",
+        };
+
+        helper.addressStorehouse.location = location;
+
         return await helper.addressStorehouse.save();
       });
   },
@@ -79,12 +93,12 @@ const Mutation = {
   ) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     const { id } = args;
-    const existedMembersbyAddress = await MemberModel.find({ addressStorehouseIds :{$in:[id] }});
+    const existedMembersbyAddress = await MemberModel.find({ addressStorehouseIds: { $in: [id] } });
     // console.log('existedMembersbyAddress',existedMembersbyAddress);
-    if(existedMembersbyAddress.length > 0){
+    if (existedMembersbyAddress.length > 0) {
       throw ErrorHelper.requestDataInvalid(". Kho này đang được sử dụng");
     }
-    
+
     return await addressStorehouseService.deleteOne(id);
   },
 };
@@ -95,11 +109,11 @@ const AddressStorehouse = {
   },
 
   longitude: (root: IAddressStorehouse, args: any, context: Context) => {
-    return root.location.coordinates[0];
+    return root?.location?.coordinates[0];
   },
-  
+
   latitude: (root: IAddressStorehouse, args: any, context: Context) => {
-    return root.location.coordinates[1];
+    return root?.location?.coordinates[1];
   },
 };
 

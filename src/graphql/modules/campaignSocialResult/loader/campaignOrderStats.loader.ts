@@ -14,7 +14,7 @@ export class CampaignOrderStats {
     if (!this.loaders[id]) {
       this.loaders[id] = new DataLoader<string, CampaignOrderStats>(
         async (ids) => {
-          console.log("id", id);
+          // console.log("id", id);
           return await CampaignSocialResultModel.aggregate([
             { $match: { _id: new Types.ObjectId(id) } },
             {

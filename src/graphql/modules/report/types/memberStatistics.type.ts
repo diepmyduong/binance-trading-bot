@@ -1,9 +1,16 @@
-export type MemberStatistics = {
-  fromDate: string
-  toDate: string
-  income: number
-  collaboratorsCount: number
-  realCommission: number
-  estimatedCommission: number
-  estimatedIncome: number
+export type IMemberStatistics = {
+  customersCount: number,
+  collaboratorsCount: number,
+  customersAsCollaboratorCount: number,
+  ordersCount: number,
+  pendingCount: number,
+  confirmedCount: number,
+  deliveringCount: number,
+  completedCount: number,
+  failureCount: number,
+  canceledCount: number,
+  estimatedCommission: number,
+  realCommission: number,
+  estimatedIncome: number,
+  income: number,
 };

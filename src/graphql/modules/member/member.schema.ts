@@ -173,6 +173,10 @@ const schema = gql`
 
     "Đường dẩn cửa hàng"
     shopUrl: String
+    "Số lượng đơn hàng"
+    ordersCount: Int
+    "Số lượng đơn hàng chuyển giao"
+    toMemberOrdersCount: Int
   }
 
   type MemberPageData {

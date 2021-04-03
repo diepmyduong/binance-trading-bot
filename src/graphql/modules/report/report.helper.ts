@@ -154,23 +154,17 @@ export class ReportHelper {
       }
     }
 
-    console.log("=-=-=-=-=>$match", $match);
-
     const orders = await OrderModel.find($match);
-
-    console.log("=-=-=-=-=>$orders", orders);
 
     const allIncomeStats = ReportHelper.getAllIncomeStats(orders);
     // const noneIncomeStats = getNoneIncomeOrderStats(orders);
     // const postIncomeStats = getPostIncomeOrderStats(orders);
     // const vnportIncomeStats = getVNPORTIncomeOrderStats(orders);
 
-
     const allCommissionStats = ReportHelper.getAllCommissionStats(orders, addressDeliverys, addressStorehouses);
     // const noneIncomeStats = getNoneIncomeOrderStats(orders);
     // const postIncomeStats = getPostIncomeOrderStats(orders);
     // const vnportIncomeStats = getVNPORTIncomeOrderStats(orders);
-
 
     return {
       allIncomeStats,

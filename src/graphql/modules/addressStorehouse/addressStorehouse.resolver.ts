@@ -38,13 +38,15 @@ const Mutation = {
 
     helper.addressStorehouse.code = data.code || (await AddressStorehouseHelper.generateCode());
 
-    const location = {
-      coordinates: [data ? data.longitude : 0, data ? data.latitude : 0],
-      type: "Point",
-    };
+    if(data.longitude && data.latitude){
+      const location = {
+        coordinates: [data ? data.longitude : 0, data ? data.latitude : 0],
+        type: "Point",
+      };
 
-    helper.addressStorehouse.location = location;
-
+      helper.addressStorehouse.location = location;
+    }
+    
     await Promise.all([
       AddressHelper.setProvinceName(helper.addressStorehouse),
       AddressHelper.setDistrictName(helper.addressStorehouse),
@@ -74,14 +76,14 @@ const Mutation = {
           AddressHelper.setDistrictName(helper.addressStorehouse),
           AddressHelper.setWardName(helper.addressStorehouse),
         ]);
-
-        const location = {
-          coordinates: [data ? data.longitude : 0, data ? data.latitude : 0],
-          type: "Point",
-        };
-
-        helper.addressStorehouse.location = location;
-
+        if(data.longitude && data.latitude){
+          const location = {
+            coordinates: [data ? data.longitude : 0, data ? data.latitude : 0],
+            type: "Point",
+          };
+  
+          helper.addressStorehouse.location = location;
+        }
         return await helper.addressStorehouse.save();
       });
   },

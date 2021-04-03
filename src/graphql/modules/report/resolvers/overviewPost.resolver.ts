@@ -28,6 +28,8 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
     member = { id: context.id };
   }
 
+  console.log("member",member);
+
   const [
     addressDeliverys,
     addressStorehouses,

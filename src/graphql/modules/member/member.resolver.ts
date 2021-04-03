@@ -17,6 +17,7 @@ import {
 } from "../addressDelivery/addressDelivery.model";
 import { AddressStorehouseLoader } from "../addressStorehouse/addressStorehouse.model";
 import { BranchLoader } from "../branch/branch.model";
+import { OrderModel } from "../order/order.model";
 import { PositionLoader } from "../position/position.model";
 import { SettingHelper } from "../setting/setting.helper";
 import { MemberHelper } from "./member.helper";
@@ -134,9 +135,10 @@ const Member = {
     const host = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN);
     // return `${host}?pageId=${root.fanpageId}`;
     return `${host}?code=${root.code}`;
-  }
+  },
+  ordersCount: async (root: IMember, args: any, context: Context) => await OrderModel.count({sellerId: root.id}),
+  toMemberOrdersCount: async (root: IMember, args: any, context: Context) => await OrderModel.count({toMemberId: root.id}),
 };
-
 
 export default {
   Query,

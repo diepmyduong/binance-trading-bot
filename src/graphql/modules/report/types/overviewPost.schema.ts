@@ -1,10 +1,9 @@
 import { gql } from "apollo-server-express";
-import { MemberType } from "../../member/member.model";
 
 const schema = gql`
   extend type Query {
     getPostReports(q: QueryGetListInput): OverviewPostPageData 
-    getPostReportsOverview(fromDate: String!, toDate: String!): OverviewPostsReport 
+    getPostReportsOverview(fromDate: String!, toDate: String!, memberId: ID): OverviewPostsReport 
     # Add Query
   }
 
@@ -13,14 +12,35 @@ const schema = gql`
     fromDate: String
     "Đến ngày"
     toDate: String
-    "Doanh thu"
-    income: Float
-    "Số lượng CTV"
+    "Số lượng khách hàng"
+    customersCount: Int
+    "Số lượng cộng tác viên"
     collaboratorsCount: Int
-    "Hoa hồng đã nhận"
-    realCommission: Float
-    "Hoa hồng sẽ nhận"
+    "Số lượng khách hàng CTV"
+    customersAsCollaboratorCount: Int
+    "Số lượng đơn hàng"
+    ordersCount: Int
+    "Số lượng Đơn hàng chờ"
+    pendingCount: Int
+    "Số lượng Đơn hàng xác nhận"
+    confirmedCount: Int
+    "Số lượng Đơn hàng giao"
+    deliveringCount: Int
+    "Số lượng Đơn hàng thành công"
+    completedCount: Int
+    "Số lượng Đơn hàng không thành công"
+    failureCount: Int
+    "Số lượng Đơn hàng bị huỷ"
+    canceledCount: Int
+    "Tổng hoa hồng dự kiến"
     estimatedCommission: Float
+    "Tổng hoa hồng thực nhận"
+    realCommission: Float
+    "Doanh thu dự kiến"
+    estimatedIncome: Float
+    "Doanh thu thực nhận"
+    income: Float,
+    
   }
 
   type OverviewPostsReport {
@@ -68,7 +88,10 @@ const schema = gql`
     income: Float
     "Hoa hồng"
     commission: Float
-
+    "Từ ngày"
+    fromDate: String
+    "Đến ngày"
+    toDate: String
     memberStatistics: MemberStatistics
   }
 

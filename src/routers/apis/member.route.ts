@@ -6,28 +6,14 @@ import {
 } from "../../base/baseRoute";
 import { ROLES } from "../../constants/role.const";
 import { Context } from "../../graphql/context";
-
 import { auth } from "../../middleware/auth";
 import Excel from "exceljs";
 import { UtilsHelper } from "../../helpers";
-import {
-  CollaboratorModel,
-  ICollaborator,
-} from "../../graphql/modules/collaborator/collaborator.model";
-import {
-  CollaboratorImportingLogModel,
-  ICollaboratorImportingLog,
-} from "../../graphql/modules/collaboratorImportingLog/collaboratorImportingLog.model";
-import { CustomerModel } from "../../graphql/modules/customer/customer.model";
-import { Gender, IMember, MemberLoader, MemberModel, MemberType } from "../../graphql/modules/member/member.model";
-import { CustomerCommissionLogModel } from "../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
+import { MemberModel, MemberType } from "../../graphql/modules/member/member.model";
 import { ObjectId } from "mongodb";
-import moment from "moment";
-import { IOrder, OrderModel, OrderStatus, ShipMethod } from "../../graphql/modules/order/order.model";
-import { CommissionLogModel, ICommissionLog } from "../../graphql/modules/commissionLog/commissionLog.model";
-import { set } from "lodash";
-import { AddressDeliveryLoader, AddressDeliveryModel, IAddressDelivery } from "../../graphql/modules/addressDelivery/addressDelivery.model";
-import { AddressStorehouseModel, IAddressStorehouse } from "../../graphql/modules/addressStorehouse/addressStorehouse.model";
+import { ICommissionLog } from "../../graphql/modules/commissionLog/commissionLog.model";
+import { AddressDeliveryModel } from "../../graphql/modules/addressDelivery/addressDelivery.model";
+import { AddressStorehouseModel } from "../../graphql/modules/addressStorehouse/addressStorehouse.model";
 import { BranchModel } from "../../graphql/modules/branch/branch.model";
 import { isValidObjectId } from "mongoose";
 import { ErrorHelper } from "../../base/error";
@@ -45,7 +31,6 @@ const RESULT_FILE_NAME = "danh_sach_cong_tac_vien";
 const SHEET_NAME = "Sheet1";
 
 const POST_FILE_NAME = "bao_cao_buu_cuc";
-const POSTS_SHEET_NAME = "Danh sách Bưu cục";
 
 
 class MemberRoute extends BaseRoute {
@@ -102,7 +87,6 @@ class MemberRoute extends BaseRoute {
     const context = (req as any).context as Context;
     context.auth(ROLES.ADMIN_EDITOR_MEMBER);
 
-    let data: any = [];
 
     let fromDate: string = req.query.fromDate
       ? req.query.fromDate.toString()
@@ -112,7 +96,7 @@ class MemberRoute extends BaseRoute {
       ? req.query.memberId.toString()
       : null;
 
-    if(!isValidObjectId(memberId)){
+    if (!isValidObjectId(memberId)) {
       throw ErrorHelper.requestDataInvalid("Mã bưu cục");
     }
 
@@ -132,12 +116,18 @@ class MemberRoute extends BaseRoute {
       memberParams._id = new ObjectId(memberId);
     }
 
-    const [members,branches,addressDeliverys,addressStorehouses] = await Promise.all([
+    if (context.isMember()) {
+      memberParams._id = new ObjectId(context.id);
+    }
+
+    const [members, branches, addressDeliverys, addressStorehouses] = await Promise.all([
       MemberModel.find(memberParams),
       BranchModel.find(),
       AddressDeliveryModel.find(),
       AddressStorehouseModel.find()
     ]);
+
+    let data: any = [];
 
     for (let i = 0; i < members.length; i++) {
       const member: any = members[i];
@@ -173,6 +163,7 @@ class MemberRoute extends BaseRoute {
         ward: member.ward,
         district: member.district,
         province: member.province,
+        branchCode: branch?.code,
         branchName: branch?.name,
         customersCount,
         collaboratorsCount,
@@ -194,61 +185,112 @@ class MemberRoute extends BaseRoute {
       data.push(params);
     }
 
-    // console.log('data', data);
-
     const workbook = new Excel.Workbook();
-    const sheet = workbook.addWorksheet(POSTS_SHEET_NAME);
-    const excelHeaders = [
-      STT,
-      "Mã bưu cục",
-      "Bưu cục",
-      "Địa chỉ",
-      "Phường / Xã",
-      "Quận / Huyện",
-      "Tỉnh / Thành",
-      "Chi nhánh",
-      "Số lượng CTV",
-      "Số lượng đơn hàng",
-      "Đơn chờ",
-      "Đơn xác nhận",
-      "Đơn giao",
-      "Đơn thành công",
-      "Đơn thất bại",
-      "Đơn đã huỷ",
-      "Hoa hồng dự kiến",
-      "Hoa hồng thực nhận",
-      "Doanh thu dự kiến",
-      "Doanh thu thực nhận",
-    ];
 
-    sheet.addRow(excelHeaders);
-
-    data.forEach((d: any, i: number) => {
-      const dataRow = [
-        i + 1,
-        d.code,
-        d.shopName,
-        d.address,
-        d.ward,
-        d.district,
-        d.province,
-        d.branchName,
-        d.customersAsCollaboratorCount,
-        d.ordersCount,
-        d.pendingCount,
-        d.confirmedCount,
-        d.deliveringCount,
-        d.completedCount,
-        d.failureCount,
-        d.canceledCount,
-        d.estimatedCommission,
-        d.realCommission,
-        d.estimatedIncome,
-        d.income,
-        d.totalIncome
+    const createSheetData = (data: [], name: string) => {
+      const sheet = workbook.addWorksheet(name);
+      const excelHeaders = [
+        STT,
+        "Mã bưu cục",
+        "Bưu cục",
+        "Địa chỉ",
+        "Phường / Xã",
+        "Quận / Huyện",
+        "Tỉnh / Thành",
+        "Chi nhánh",
+        "Số lượng CTV",
+        "Số lượng đơn hàng",
+        "Đơn chờ",
+        "Đơn xác nhận",
+        "Đơn giao",
+        "Đơn thành công",
+        "Đơn thất bại",
+        "Đơn đã huỷ",
+        "Hoa hồng dự kiến",
+        "Hoa hồng thực nhận",
+        "Doanh thu dự kiến",
+        "Doanh thu thực nhận",
       ];
-      sheet.addRow(dataRow);
-    });
+      sheet.addRow(excelHeaders);
+      
+      data.forEach((d: any, i: number) => {
+        const dataRow = [
+          i + 1,
+          d.code,
+          d.shopName,
+          d.address,
+          d.ward,
+          d.district,
+          d.province,
+          d.branchName,
+          d.customersAsCollaboratorCount,
+          d.ordersCount,
+          d.pendingCount,
+          d.confirmedCount,
+          d.deliveringCount,
+          d.completedCount,
+          d.failureCount,
+          d.canceledCount,
+          d.estimatedCommission,
+          d.realCommission,
+          d.estimatedIncome,
+          d.income,
+          d.totalIncome
+        ];
+        sheet.addRow(dataRow);
+      });
+
+      UtilsHelper.setThemeExcelWorkBook(sheet);
+    }
+
+    const POSTS_SHEET_NAME = "Danh sách Bưu cục";
+    createSheetData(data, POSTS_SHEET_NAME);
+
+    if (!context.isMember()) {
+      const q10_q11 = ["Quận 10", "Quận 11"];
+      const q10_q11_data = data.filter((m: any) => q10_q11.includes(m.district));
+      createSheetData(q10_q11_data, q10_q11.join("-"));
+
+      const q12_hocmon = ["Quận 12", "Hóc Môn"];
+      const q12_hocmon_data = data.filter((m: any) => q12_hocmon.includes(m.district));
+      createSheetData(q12_hocmon_data, q12_hocmon.join("-"));
+
+      const gv_bt_pn = ["Gò Vấp", "Bình Thạnh", "Phú Nhuận"];
+      const gv_bt_pn_data = data.filter((m: any) => gv_bt_pn.includes(m.district));
+      createSheetData(gv_bt_pn_data, gv_bt_pn.join("-"));
+
+      const tb_tp = ["Tân Bình", "Tân Phú"];
+      const tb_tp_data = data.filter((m: any) => tb_tp.includes(m.district));
+      createSheetData(tb_tp_data, tb_tp.join("-"));
+
+      const q1_q2_q3 = ["Quận 1", "Quận 2", "Quận 3"];
+      const q1_q2_q3_data = data.filter((m: any) => q1_q2_q3.includes(m.district));
+      createSheetData(q1_q2_q3_data, q1_q2_q3.join("-"));
+
+      const bt_bc = ["Bình Tân", "Bình Chánh"];
+      const bt_bc_data = data.filter((m: any) => bt_bc.includes(m.district));
+      createSheetData(bt_bc_data, bt_bc.join("-"));
+
+      const q4_q7 = ["Quận 4", "Quận 7"];
+      const q4_q7_data = data.filter((m: any) => q4_q7.includes(m.district));
+      createSheetData(q4_q7_data, q4_q7.join("-"));
+
+      const nb_cg = ["Nhà Bè", "Cần Giờ"];
+      const nb_cg_data = data.filter((m: any) => nb_cg.includes(m.district));
+      createSheetData(nb_cg_data, nb_cg.join("-"));
+
+      const td_q9 = ["Thủ Đức", "Quận 9"];
+      const td_q9_data = data.filter((m: any) => td_q9.includes(m.district));
+      createSheetData(td_q9_data, td_q9.join("-"));
+
+      const q5_q6_q8 = ["Quận 5", "Quận 6", "Quận 8"];
+      const q5_q6_q8_data = data.filter((m: any) => q5_q6_q8.includes(m.district));
+      createSheetData(q5_q6_q8_data, q5_q6_q8.join("-"));
+
+      const cc = ["Củ Chi"];
+      const cc_data = data.filter((m: any) => cc.includes(m.district));
+      createSheetData(cc_data, cc[0]);
+    }
 
     return UtilsHelper.responseExcel(res, workbook, POST_FILE_NAME);
   }

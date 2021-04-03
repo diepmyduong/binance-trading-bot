@@ -13,6 +13,36 @@ import { AddressModel } from "../graphql/modules/address/address.model";
 export class UtilsHelper {
   constructor() { }
 
+  static setThemeExcelWorkBook = (sheet: any) =>{
+    for (let i = 0; i < sheet.columns.length; i += 1) {
+      let dataMax = 0;
+      const column = sheet.columns[i];
+      for (let j = 1; j < column.values.length; j += 1) {
+        const rowValue = column.values[j];
+        const columnLength = rowValue ? rowValue.toString().length : 0;
+        if (columnLength > dataMax) {
+          dataMax = columnLength;
+        }
+        column.worksheet.getRow(j).border = {
+          top: {style:'thin', color: {argb:'000000'}},
+          left: {style:'thin', color: {argb:'000000'}},
+          bottom: {style:'thin', color: {argb:'000000'}},
+          right: {style:'thin', color: {argb:'000000'}}
+        }
+      }
+      column.width = dataMax < 10 ? 10 : dataMax;
+      column.worksheet.getRow(1).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFD100' },
+        bgColor: { argb: 'FFD100' },
+      };
+      column.worksheet.getRow(1).font = {
+        bold: true,
+      }
+    }
+  }
+
   static responseExcel(res: Response, workBook: Workbook, filename = "baocao") {
     res.status(200);
     res.setHeader(

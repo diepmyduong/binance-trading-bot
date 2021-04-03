@@ -51,7 +51,6 @@ class EVoucherRoute extends BaseRoute {
 
     sheet.addRow(excelHeaders);
 
-
     data.forEach((d: any, i) => {
       const dataRow = [
         i + 1,
@@ -65,6 +64,8 @@ class EVoucherRoute extends BaseRoute {
 
       sheet.addRow(dataRow);
     });
+
+    UtilsHelper.setThemeExcelWorkBook(sheet);
 
     return UtilsHelper.responseExcel(res, workbook, `danh_sach_ket_qua_import_evoucher`);
   }
@@ -142,6 +143,8 @@ class EVoucherRoute extends BaseRoute {
 
       sheet.addRow(dataRow);
     });
+    
+    UtilsHelper.setThemeExcelWorkBook(sheet);
 
     return UtilsHelper.responseExcel(res, workbook, `danh_sach_evoucher`);
   }

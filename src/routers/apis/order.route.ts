@@ -33,6 +33,7 @@ import moment from "moment";
 import { AddressStorehouseModel } from "../../graphql/modules/addressStorehouse/addressStorehouse.model";
 import { AddressModel } from "../../graphql/modules/address/address.model";
 import { BranchModel } from "../../graphql/modules/branch/branch.model";
+import { isValidObjectId } from "mongoose";
 
 class OrderRoute extends BaseRoute {
   constructor() {
@@ -138,11 +139,12 @@ class OrderRoute extends BaseRoute {
       ? req.query.memberId.toString()
       : null;
 
+    if (!isValidObjectId(memberId)) {
+      throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+    }
 
     let $gte: Date = null,
       $lte: Date = null;
-
-    const currentMonth = moment().month() + 1;
 
     if (fromDate && toDate) {
       fromDate = fromDate + "T00:00:00+07:00";
@@ -150,22 +152,15 @@ class OrderRoute extends BaseRoute {
       $gte = new Date(fromDate);
       $lte = new Date(toDate);
     }
-    else {
-      const currentTime = new Date();
-      fromDate = `2021-${currentMonth}-01T00:00:00+07:00`; //2021-04-30
-      toDate = moment(currentTime).format("YYYY-MM-DD") + "T23:59:59+07:00"; //2021-04-30
-      $gte = new Date(fromDate);
-      $lte = new Date(toDate);
-    }
 
-    const params: any = {
-      createdAt: {
-        $gte, $lte
-      },
-    };
+    const params: any = { type: MemberType.BRANCH };
 
     if (memberId) {
       params.sellerId = new ObjectId(memberId);
+    }
+
+    if (context.isMember()) {
+      params.sellerId = new ObjectId(context.id);
     }
 
     const [orders, addressDeliverys, addressStorehouses, sellers, branches] = await Promise.all([
@@ -301,6 +296,8 @@ class OrderRoute extends BaseRoute {
       ];
       sheet.addRow(dataRow);
     });
+
+    UtilsHelper.setThemeExcelWorkBook(sheet);
 
     return UtilsHelper.responseExcel(res, workbook, "danh_sach_don_hang");
   }

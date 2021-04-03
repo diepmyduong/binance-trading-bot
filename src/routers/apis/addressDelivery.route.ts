@@ -140,6 +140,7 @@ class AddressDeliveryRoute extends BaseRoute {
 
       sheet.addRow(dataRow);
     });
+    UtilsHelper.setThemeExcelWorkBook(sheet);
 
     return UtilsHelper.responseExcel(res, workbook, RESULT_FILE_NAME);
   }

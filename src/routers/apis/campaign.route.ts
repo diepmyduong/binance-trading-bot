@@ -306,6 +306,8 @@ class CampaignRoute extends BaseRoute {
 
       sheet.addRow(dataRow);
     });
+    
+    UtilsHelper.setThemeExcelWorkBook(sheet);
 
     return UtilsHelper.responseExcel(res, workbook, `danh_sach_chien_dich_${campaign.code}`);
   }

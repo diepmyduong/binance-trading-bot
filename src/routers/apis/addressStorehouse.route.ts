@@ -82,6 +82,8 @@ class AddressStorehouseRoute extends BaseRoute {
       sheet.addRow(dataRow);
     });
 
+    UtilsHelper.setThemeExcelWorkBook(sheet);
+    
     return UtilsHelper.responseExcel(res, workbook, RESULT_IMPORT_FILE_NAME);
   }
 
@@ -125,6 +127,8 @@ class AddressStorehouseRoute extends BaseRoute {
 
       sheet.addRow(dataRow);
     });
+
+    UtilsHelper.setThemeExcelWorkBook(sheet);
 
     return UtilsHelper.responseExcel(res, workbook, RESULT_FILE_NAME);
   }

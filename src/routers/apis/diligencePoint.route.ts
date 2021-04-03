@@ -58,6 +58,8 @@ class DiligencePointRoute extends BaseRoute {
       sheet.addRow(dataRow);
     });
 
+    UtilsHelper.setThemeExcelWorkBook(sheet);
+
     return UtilsHelper.responseExcel(res, workbook, `ket_qua_import_diem_chuyen_can`);
   }
 

@@ -76,6 +76,8 @@ class SMSRoute extends BaseRoute {
       sheet.addRow(dataRow);
     });
 
+    UtilsHelper.setThemeExcelWorkBook(sheet);
+
     return UtilsHelper.responseExcel(res, workbook, `ket_qua_import_duyet_dang_ky_sms`);
   }
 

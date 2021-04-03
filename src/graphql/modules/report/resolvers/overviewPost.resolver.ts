@@ -11,7 +11,7 @@ import { ReportHelper } from "../report.helper";
 
 const getPostReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  let { fromDate, toDate } = args;
+  let { fromDate, toDate, memberId } = args;
 
   let $gte: Date = null,
     $lte: Date = null,
@@ -24,11 +24,15 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
     $lte = new Date(toDate);
   }
 
+  if(memberId){
+    member = { id: memberId };
+  }
+
   if (context.isMember()) {
     member = { id: context.id };
   }
 
-  console.log("member",member);
+  // console.log("member",member);
 
   const [
     addressDeliverys,
@@ -78,6 +82,10 @@ const getPostReports = async (
 
   delete args.q.filter.fromDate;
   delete args.q.filter.toDate;
+
+  if (context.isMember()) {
+    args.q.filter._id = context.id;
+  }
 
   const result = await memberService.fetch(args.q);
   const members = result.data;

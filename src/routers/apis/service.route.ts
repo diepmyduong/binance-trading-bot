@@ -57,6 +57,8 @@ class ServiceRoute extends BaseRoute {
       sheet.addRow(dataRow);
     });
 
+    UtilsHelper.setThemeExcelWorkBook(sheet);
+
     return UtilsHelper.responseExcel(res, workbook, `ket_qua_import_duyet_dang_ky_dich_vu`);
   }
 

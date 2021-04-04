@@ -17,12 +17,16 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
     $lte: Date = null,
     member = null;
 
-  if (fromDate && toDate) {
+  if (fromDate) {
     fromDate = fromDate + "T00:00:00+07:00";
-    toDate = toDate + "T24:00:00+07:00";
     $gte = new Date(fromDate);
+  }
+
+  if (toDate) {
+    toDate = toDate + "T24:00:00+07:00";
     $lte = new Date(toDate);
   }
+
 
   if(memberId){
     member = { id: memberId };

@@ -3,7 +3,7 @@ import { gql } from "apollo-server-express";
 const schema = gql`
   extend type Query {
     getPostReports(q: QueryGetListInput): OverviewPostPageData 
-    getPostReportsOverview(fromDate: String!, toDate: String!, memberId: ID): OverviewPostsReport 
+    getPostReportsOverview(fromDate: String, toDate: String, memberId: ID): OverviewPostsReport 
     # Add Query
   }
 

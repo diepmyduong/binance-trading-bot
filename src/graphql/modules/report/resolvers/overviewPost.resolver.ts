@@ -4,31 +4,35 @@ import { Context } from "../../../context";
 import { ICommissionLog } from "../../commissionLog/commissionLog.model";
 import { MemberStatistics } from "./../loaders/memberStatistics.loader";
 import { memberService } from "../../member/member.service";
-import { set } from "lodash";
+import { isEmpty, isNull, set } from "lodash";
 import { AddressDeliveryModel } from "../../addressDelivery/addressDelivery.model";
 import { AddressStorehouseModel } from "../../addressStorehouse/addressStorehouse.model";
 import { ReportHelper } from "../report.helper";
 
 const getPostReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  let { fromDate, toDate, memberId } = args;
+  let { fromDate, toDate, memberId }: { fromDate: string, toDate: string, memberId: string } = args;
 
   let $gte: Date = null,
     $lte: Date = null,
     member = null;
 
-  if (fromDate) {
+  fromDate = fromDate ? fromDate.replace("null", "") :  "";
+  toDate = toDate ? toDate.replace("null",  "") :  "";
+  memberId = memberId ? memberId.replace("null",  "") :  "";
+
+  if (!isEmpty(fromDate)) {
     fromDate = fromDate + "T00:00:00+07:00";
     $gte = new Date(fromDate);
   }
 
-  if (toDate) {
+  if (!isEmpty(toDate)) {
     toDate = toDate + "T24:00:00+07:00";
     $lte = new Date(toDate);
   }
 
 
-  if(memberId){
+  if (!isEmpty(memberId)) {
     member = { id: memberId };
   }
 
@@ -81,9 +85,12 @@ const getPostReports = async (
 ) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
 
-  const fromDate = args.q.filter.fromDate ? `${args.q.filter.fromDate}` : null;
-  const toDate = args.q.filter.toDate ? `${args.q.filter.toDate}` : null;
+  let fromDate = args.q.filter.fromDate ? `${args.q.filter.fromDate}` : null;
+  let toDate = args.q.filter.toDate ? `${args.q.filter.toDate}` : null;
 
+  fromDate = fromDate ? fromDate.replace("null", "") :  "";
+  toDate = toDate ? toDate.replace("null",  "") :  "";
+  
   delete args.q.filter.fromDate;
   delete args.q.filter.toDate;
 

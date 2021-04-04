@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import _ from "lodash";
+import _, { set } from "lodash";
 import path from "path";
 import { ListReports, Report } from "../../../helpers/report/report";
 import { UtilsHelper } from "../../../helpers/utils.helper";
@@ -40,13 +40,15 @@ export class ReportHelper {
     const $match: any = {}
 
     if (member) {
-      $match["pageAccounts.memberId"] = member.id
+      set($match, "pageAccounts.memberId", member.id);
     }
 
-    if ($gte && $lte) {
-      $match.createdAt = {
-        $gte, $lte
-      }
+    if ($gte) {
+      set($match, "createdAt.$gte", $gte);
+    }
+
+    if ($lte) {
+      set($match, "createdAt.$lte", $lte);
     }
 
     return CustomerModel.find($match);
@@ -57,13 +59,15 @@ export class ReportHelper {
     const $match: any = {}
 
     if (member) {
-      $match.memberId = member.id
+      set($match, "memberId", member.id);
     }
 
-    if ($gte && $lte) {
-      $match.createdAt = {
-        $gte, $lte
-      }
+    if ($gte) {
+      set($match, "createdAt.$gte", $gte);
+    }
+
+    if ($lte) {
+      set($match, "createdAt.$lte", $lte);
     }
 
     return CollaboratorModel.find($match);
@@ -76,14 +80,16 @@ export class ReportHelper {
 
 
     if (member) {
-      $match["collaborators.memberId"] = new ObjectId(member.id);
-      $matchMember["pageAccounts.memberId"] = new ObjectId(member.id);
+      set($match, "collaborators.memberId", new ObjectId(member.id));
+      set($matchMember, "pageAccounts.memberId", new ObjectId(member.id));
     }
 
-    if ($gte && $lte) {
-      $match.createdAt = {
-        $gte, $lte
-      }
+    if ($gte) {
+      set($match, "createdAt.$gte", $gte);
+    }
+
+    if ($lte) {
+      set($match, "createdAt.$lte", $lte);
     }
 
     return CustomerModel.aggregate([
@@ -111,17 +117,19 @@ export class ReportHelper {
     const $match: any = {};
 
     if (member) {
-      $match._id = new ObjectId(member.id);
+      set($match, "_id", new ObjectId(member.id));
     }
 
-    if ($gte && $lte) {
-      $match.createdAt = {
-        $gte, $lte
-      }
+    if ($gte) {
+      set($match, "createdAt.$gte", $gte);
     }
-    
+
+    if ($lte) {
+      set($match, "createdAt.$lte", $lte);
+    }
+
     // console.log("member", $match);
-    return MemberModel.aggregate([{$match}])
+    return MemberModel.aggregate([{ $match }])
   }
 
   static getCommissionLogs = (member: any, $gte: any, $lte: any) => {
@@ -129,13 +137,15 @@ export class ReportHelper {
     const $match: any = {}
 
     if (member) {
-      $match.memberId = member.id
+      set($match, "memberId", member.id);
     }
 
-    if ($gte && $lte) {
-      $match.createdAt = {
-        $gte, $lte
-      }
+    if ($gte) {
+      set($match, "createdAt.$gte", $gte);
+    }
+
+    if ($lte) {
+      set($match, "createdAt.$lte", $lte);
     }
 
     return CommissionLogModel.find($match)
@@ -146,14 +156,18 @@ export class ReportHelper {
     const $match: any = {}
 
     if (member) {
-      $match.sellerId = member.id;
+      set($match, "sellerId", member.id);
     }
 
-    if ($gte && $lte) {
-      $match.createdAt = {
-        $gte, $lte
-      }
+    if ($gte) {
+      set($match, "createdAt.$gte", $gte);
     }
+
+    if ($lte) {
+      set($match, "createdAt.$lte", $lte);
+    }
+
+    // console.log("$match",$match);
 
     const orders = await OrderModel.find($match);
 

@@ -279,7 +279,6 @@ class MemberRoute extends BaseRoute {
           d.realCommission,
           d.estimatedIncome,
           d.income,
-          d.totalIncome
         ];
         sheet.addRow(dataRow);
       });

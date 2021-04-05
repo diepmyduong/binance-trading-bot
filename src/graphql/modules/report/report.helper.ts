@@ -10,6 +10,7 @@ import { CustomerModel } from "../customer/customer.model";
 import { IOrder, OrderModel, OrderStatus, ShipMethod } from "../order/order.model";
 import { CommissionLogModel } from "../commissionLog/commissionLog.model";
 import { MemberModel, MemberType } from "../member/member.model";
+import { OrderLogModel } from "../orderLog/orderLog.model";
 
 export class ReportHelper {
 
@@ -73,43 +74,21 @@ export class ReportHelper {
     return CollaboratorModel.find($match);
   }
 
-  static getCustomersAsCollaborator = (member: any, $gte: any, $lte: any) => {
+  static getCustomersAsCollaborator = async (member: any, $gte: any, $lte: any) => {
 
-    const $match: any = {}
-    const $matchMember: any = {};
+    // const $match: any = {}
+    // const $matchMember: any = {};
 
-
-    if (member) {
-      set($match, "collaborators.memberId", new ObjectId(member.id));
-      set($matchMember, "pageAccounts.memberId", new ObjectId(member.id));
-    }
-
-    // if ($gte) {
-    //   set($match, "createdAt.$gte", $gte);
+    // if (member) {
+    //   set($match, "memberId", member.id);
+    //   set($matchMember, "pageAccounts.memberId", new ObjectId(member.id));
     // }
 
-    // if ($lte) {
-    //   set($match, "createdAt.$lte", $lte);
-    // }
+    const result = await CollaboratorModel.find({ memberId: member.id, customerId: { $exists: true } });
 
-    return CustomerModel.aggregate([
-      {
-        $match: {
-          ...$matchMember
-        }
-      },
-      {
-        $lookup: {
-          from: "collaborators",
-          localField: "_id",
-          foreignField: "customerId",
-          as: "collaborators",
-        },
-      },
-      {
-        $match
-      },
-    ]);
+    // console.log('result',result.length);
+
+    return result;
   }
 
   static getMembers = (member: any, $gte: any, $lte: any) => {
@@ -148,28 +127,40 @@ export class ReportHelper {
       set($match, "createdAt.$lte", $lte);
     }
 
+    // console.log("$match", $match);
+
     return CommissionLogModel.find($match)
   }
 
   static getOrdersStats = async (member: any, $gte: any, $lte: any, addressDeliverys: IAddressDelivery[], addressStorehouses: IAddressStorehouse[]) => {
 
     const $match: any = {}
+    const $logMatch: any = {}
 
     if (member) {
       set($match, "sellerId", member.id);
+      set($logMatch, "memberId", member.id);
     }
 
     if ($gte) {
       set($match, "createdAt.$gte", $gte);
+      set($logMatch, "createdAt.$gte", $gte);
     }
 
     if ($lte) {
       set($match, "createdAt.$lte", $lte);
+      set($logMatch, "createdAt.$lte", $lte);
     }
 
-    // console.log("$match",$match);
+    // console.log("getOrdersStats $match", $match);
+    // console.log("getOrdersStats $logMatch", $logMatch);
 
-    const orders = await OrderModel.find($match);
+    const orderLogs = await OrderLogModel.find($logMatch);
+    const orderIds = orderLogs.map(o => new ObjectId(o.orderId));
+    // console.log("orderIds", orderIds);
+
+    const orders = await OrderModel.find({ _id: { $in: orderIds } });
+    // console.log("orders", orders);
 
     const allIncomeStats = ReportHelper.getAllIncomeStats(orders);
     // const noneIncomeStats = getNoneIncomeOrderStats(orders);

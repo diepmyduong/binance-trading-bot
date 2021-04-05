@@ -10,6 +10,8 @@ import {
 import { FirebaseHelper, firebaseHelper, VietnamPostHelper } from "../../helpers";
 import { OrderModel, OrderStatus } from "../../graphql/modules/order/order.model";
 import { CommissionLogModel } from "../../graphql/modules/commissionLog/commissionLog.model";
+import { CollaboratorModel } from "../../graphql/modules/collaborator/collaborator.model";
+import { CustomerModel } from "../../graphql/modules/customer/customer.model";
 // import { ObjectId } from "mongodb";
 // import khongdau from "khong-dau";
 
@@ -242,7 +244,7 @@ class TestRoute extends BaseRoute {
         newShopName = `PSHOP BC ${shopNamePart[1]}`;
       }
 
-      console.log("newShopName", newShopName);
+      // console.log("newShopName", newShopName);
 
       // await MemberModel.findByIdAndUpdate(member.id, { $set: { shopName: "" } }, { new: true });
     }
@@ -252,24 +254,35 @@ class TestRoute extends BaseRoute {
 
 export default new TestRoute().router;
 
-// (async () => {
-//   const bdgd = await MemberModel.findOne({username:"pshop.pkdbdttgd@gmail.com"});
-//   const commissionLog = await CommissionLogModel.find({memberId: bdgd.id});
-//   console.log("bdgd",bdgd.id);
+(async () => {
 
-//   console.log("commissionLogaaa",commissionLog.length);
+  // cap nhat ten chu shop
+  // const bdgd = await MemberModel.findOne({username:"pshop.pkdbdttgd@gmail.com"});
+  // const commissionLog = await CommissionLogModel.find({memberId: bdgd.id});
+  // console.log("bdgd",bdgd.id);
 
-//   console.log('commissionLog',commissionLog.reduce((total: number, m: any) => {
-//     console.log(m.value);
-//     return total += m.value;
-//   }, 0));
+  // console.log("commissionLogaaa",commissionLog.length);
 
-//   const orders = await OrderModel.find({ sellerId: bdgd.id, status: OrderStatus.COMPLETED });
-//   console.log('orders.length',orders.length);
-//   console.log('orders.length',orders.reduce((total: number, m: any) => {
-//     console.log(m.amount);
-//     return total += m.amount;
-//   }, 0));
+  // console.log('commissionLog',commissionLog.reduce((total: number, m: any) => {
+  //   console.log(m.value);
+  //   return total += m.value;
+  // }, 0));
 
-//   // console.log('bdgd',bdgd);
-// })()
+  // const orders = await OrderModel.find({ sellerId: bdgd.id, status: OrderStatus.COMPLETED });
+  // console.log('orders.length',orders.length);
+  // console.log('orders.length',orders.reduce((total: number, m: any) => {
+  //   console.log(m.amount);
+  //   return total += m.amount;
+  // }, 0));
+  // console.log('bdgd',bdgd);
+
+
+  // cap nhat ten khách hàng
+  // const collaborators = await CollaboratorModel.find({});
+  // for (const collaborator of collaborators) {
+  //   await CustomerModel.findByIdAndUpdate(collaborator.customerId, { $set: {
+  //     name: collaborator.name
+  //   } }, { new: true });
+  // }
+
+})()

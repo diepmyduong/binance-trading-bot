@@ -18,6 +18,7 @@ import { BranchModel } from "../../graphql/modules/branch/branch.model";
 import { isValidObjectId } from "mongoose";
 import { ErrorHelper } from "../../base/error";
 import { ReportHelper } from "../../graphql/modules/report/report.helper";
+import { isEmpty } from "lodash";
 const STT = "STT";
 const NAME = "Tên";
 const PHONE = "Số điện thoại";
@@ -93,17 +94,27 @@ class MemberRoute extends BaseRoute {
     let toDate: string = req.query.toDate ? req.query.toDate.toString() : null;
     const memberId: string = req.query.memberId
       ? req.query.memberId.toString()
-      : null;
+      : "";
 
-    if (!isValidObjectId(memberId)) {
-      throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+    if (!isEmpty(memberId)) {
+      if (!isValidObjectId(memberId)) {
+        throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+      }
     }
 
     let $gte: Date = null,
       $lte: Date = null;
 
+    //2.4.2021-17h00
+    //4.4.2021-24h00
+
+    // fromDate = "2021-04-02T17:00:00+07:00";
+    // toDate = "2021-04-04T24:00:00+07:00";
+    // $gte = new Date(fromDate);
+    // $lte = new Date(toDate);
+
     if (fromDate && toDate) {
-      fromDate = fromDate + "T00:00:00+07:00";
+      fromDate = fromDate + "T17:00:00+07:00";
       toDate = toDate + "T24:00:00+07:00";
       $gte = new Date(fromDate);
       $lte = new Date(toDate);
@@ -145,6 +156,8 @@ class MemberRoute extends BaseRoute {
         ReportHelper.getCommissionLogs(member, $gte, $lte),
         ReportHelper.getOrdersStats(member, $gte, $lte, addressDeliverys, addressStorehouses)
       ]);
+
+      // console.log('allMemberCommission',allMemberCommission);
 
       const customersCount = customers.length;
       const collaboratorsCount = collaborators.length;
@@ -214,16 +227,17 @@ class MemberRoute extends BaseRoute {
       sheet.addRow(excelHeaders);
 
       data.forEach((d: any, i: number) => {
+        // console.log('d.customersAsCollaboratorCount',d.customersAsCollaboratorCount);
         const dataRow = [
-          i + 1,
-          d.code,
-          d.shopName,
-          d.address,
-          d.ward,
-          d.district,
-          d.province,
-          d.branchName,
-          d.customersAsCollaboratorCount,
+          i + 1,//STT
+          d.code,//"Mã bưu cục",
+          d.shopName,// "Bưu cục",
+          d.address,//"Địa chỉ",
+          d.ward,//"Phường / Xã",
+          d.district,//"Quận / Huyện",
+          d.province,//"Tỉnh / Thành",
+          d.branchName,//"Chi nhánh",
+          d.customersAsCollaboratorCount,//  "Số lượng CTV",
           d.ordersCount,
           d.pendingCount,
           d.confirmedCount,
@@ -307,9 +321,7 @@ class MemberRoute extends BaseRoute {
       }
     }
 
-    const sheets = [];
-
-    if (!context.isMember()) {
+    if (!context.isMember() && isEmpty(memberId)) {
 
       const q10_q11_name = "Bưu điện TT Phú Thọ"
       const q10_q11 = ["Quận 10", "Quận 11"];

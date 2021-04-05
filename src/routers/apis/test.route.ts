@@ -8,7 +8,8 @@ import {
   NextFunction,
 } from "../../base/baseRoute";
 import { FirebaseHelper, firebaseHelper, VietnamPostHelper } from "../../helpers";
-import { OrderModel } from "../../graphql/modules/order/order.model";
+import { OrderModel, OrderStatus } from "../../graphql/modules/order/order.model";
+import { CommissionLogModel } from "../../graphql/modules/commissionLog/commissionLog.model";
 // import { ObjectId } from "mongodb";
 // import khongdau from "khong-dau";
 
@@ -234,14 +235,14 @@ class TestRoute extends BaseRoute {
     const members = await MemberModel.find({});
 
     for (const member of members) {
-      const {shopName} = member;
+      const { shopName } = member;
       const shopNamePart = shopName.split("-");
       let newShopName = "";
-      if(shopNamePart.length > 1 ){
+      if (shopNamePart.length > 1) {
         newShopName = `PSHOP BC ${shopNamePart[1]}`;
       }
 
-      console.log("newShopName",newShopName);
+      console.log("newShopName", newShopName);
 
       // await MemberModel.findByIdAndUpdate(member.id, { $set: { shopName: "" } }, { new: true });
     }
@@ -250,3 +251,25 @@ class TestRoute extends BaseRoute {
 }
 
 export default new TestRoute().router;
+
+// (async () => {
+//   const bdgd = await MemberModel.findOne({username:"pshop.pkdbdttgd@gmail.com"});
+//   const commissionLog = await CommissionLogModel.find({memberId: bdgd.id});
+//   console.log("bdgd",bdgd.id);
+
+//   console.log("commissionLogaaa",commissionLog.length);
+
+//   console.log('commissionLog',commissionLog.reduce((total: number, m: any) => {
+//     console.log(m.value);
+//     return total += m.value;
+//   }, 0));
+
+//   const orders = await OrderModel.find({ sellerId: bdgd.id, status: OrderStatus.COMPLETED });
+//   console.log('orders.length',orders.length);
+//   console.log('orders.length',orders.reduce((total: number, m: any) => {
+//     console.log(m.amount);
+//     return total += m.amount;
+//   }, 0));
+
+//   // console.log('bdgd',bdgd);
+// })()

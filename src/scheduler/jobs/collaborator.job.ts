@@ -31,6 +31,8 @@ const updateCustomerId = async () => {
     $or: [{ customerId: { $exists: false } }, { customerId: null }],
   }).limit(1000);
 
+  
+
   // console.log('collaborators',collaborators);
 
   const collaboratorPhones = collaborators.map((col) => col.phone);
@@ -45,7 +47,6 @@ const updateCustomerId = async () => {
       (col) => col.phone === customer.phone
     );
     if (collaborator) {
-
       if(!collaborator.customerId){
         await CollaboratorModel.findByIdAndUpdate(
           collaborator.id,
@@ -56,6 +57,11 @@ const updateCustomerId = async () => {
           },
           { new: true }
         );
+        if(customer.name === "Khách vãng lai"){
+          await CustomerModel.findByIdAndUpdate(collaborator.customerId, { $set: {
+            name: collaborator.name
+          } }, { new: true });
+        }
       }
 
       if(!collaborator.shortUrl){

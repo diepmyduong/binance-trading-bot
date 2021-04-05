@@ -62,13 +62,13 @@ export class ReportHelper {
       set($match, "memberId", member.id);
     }
 
-    if ($gte) {
-      set($match, "createdAt.$gte", $gte);
-    }
+    // if ($gte) {
+    //   set($match, "createdAt.$gte", $gte);
+    // }
 
-    if ($lte) {
-      set($match, "createdAt.$lte", $lte);
-    }
+    // if ($lte) {
+    //   set($match, "createdAt.$lte", $lte);
+    // }
 
     return CollaboratorModel.find($match);
   }

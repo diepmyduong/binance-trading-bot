@@ -43,13 +43,13 @@ export class ReportHelper {
       set($match, "pageAccounts.memberId", member.id);
     }
 
-    if ($gte) {
-      set($match, "createdAt.$gte", $gte);
-    }
+    // if ($gte) {
+    //   set($match, "createdAt.$gte", $gte);
+    // }
 
-    if ($lte) {
-      set($match, "createdAt.$lte", $lte);
-    }
+    // if ($lte) {
+    //   set($match, "createdAt.$lte", $lte);
+    // }
 
     return CustomerModel.find($match);
   }
@@ -62,13 +62,13 @@ export class ReportHelper {
       set($match, "memberId", member.id);
     }
 
-    if ($gte) {
-      set($match, "createdAt.$gte", $gte);
-    }
+    // if ($gte) {
+    //   set($match, "createdAt.$gte", $gte);
+    // }
 
-    if ($lte) {
-      set($match, "createdAt.$lte", $lte);
-    }
+    // if ($lte) {
+    //   set($match, "createdAt.$lte", $lte);
+    // }
 
     return CollaboratorModel.find($match);
   }
@@ -84,13 +84,13 @@ export class ReportHelper {
       set($matchMember, "pageAccounts.memberId", new ObjectId(member.id));
     }
 
-    if ($gte) {
-      set($match, "createdAt.$gte", $gte);
-    }
+    // if ($gte) {
+    //   set($match, "createdAt.$gte", $gte);
+    // }
 
-    if ($lte) {
-      set($match, "createdAt.$lte", $lte);
-    }
+    // if ($lte) {
+    //   set($match, "createdAt.$lte", $lte);
+    // }
 
     return CustomerModel.aggregate([
       {
@@ -120,13 +120,13 @@ export class ReportHelper {
       set($match, "_id", new ObjectId(member.id));
     }
 
-    if ($gte) {
-      set($match, "createdAt.$gte", $gte);
-    }
+    // if ($gte) {
+    //   set($match, "createdAt.$gte", $gte);
+    // }
 
-    if ($lte) {
-      set($match, "createdAt.$lte", $lte);
-    }
+    // if ($lte) {
+    //   set($match, "createdAt.$lte", $lte);
+    // }
 
     // console.log("member", $match);
     return MemberModel.aggregate([{ $match }])

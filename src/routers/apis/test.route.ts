@@ -18,7 +18,7 @@ class TestRoute extends BaseRoute {
   }
 
   customRouting() {
-    this.router.get("/", this.route(this.updateOrders));
+    this.router.get("/", this.route(this.updateNameMembers));
   }
 
   async test(req: Request, res: Response) {
@@ -228,6 +228,23 @@ class TestRoute extends BaseRoute {
     }
 
     res.sendStatus(200);
+  }
+
+  async updateNameMembers(req: Request, res: Response) {
+    const members = await MemberModel.find({});
+
+    for (const member of members) {
+      const {shopName} = member;
+      const shopNamePart = shopName.split("-");
+      let newShopName = "";
+      if(shopNamePart.length > 1 ){
+        newShopName = `PSHOP BC ${shopNamePart[1]}`;
+      }
+
+      console.log("newShopName",newShopName);
+
+      // await MemberModel.findByIdAndUpdate(member.id, { $set: { shopName: "" } }, { new: true });
+    }
   }
 
 }

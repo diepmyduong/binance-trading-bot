@@ -180,7 +180,17 @@ const orderSchema = new Schema(
   { timestamps: true }
 );
 
-orderSchema.index({ code: "text" }, { weights: { code: 2 } });
+orderSchema.index({
+  code: "text",
+  buyerName: "text",
+  buyerPhone: "text",
+}, {
+  weights: {
+    code: 2,
+    buyerName: 3,
+    buyerPhone: 3
+  }
+});
 orderSchema.index({ sellerId: 1 });
 orderSchema.index({ isPrimary: 1 });
 orderSchema.index({ buyerId: 1 });

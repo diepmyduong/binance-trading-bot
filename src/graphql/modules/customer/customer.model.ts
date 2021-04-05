@@ -39,7 +39,6 @@ export type ICustomer = BaseDocument & {
   cumulativePoint?: number; // Điểm tích lũy
   commission: number; // Hoa hồng cộng tác viên
   pageAccounts?: CustomerPageAccount[]; // Danh sách account facebook của người dùng
-
   latitude: number;
   longitude: number;
 };

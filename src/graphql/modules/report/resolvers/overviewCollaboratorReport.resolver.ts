@@ -22,7 +22,7 @@ const getOverviewCollaboratorReport = async (
 
 
   let $gte: Date = null,
-    $lte: Date = null, $match = {};
+    $lte: Date = null, $match = {},collaboratorMatch={};
 
   if (fromDate) {
     fromDate = fromDate + "T00:00:00+07:00";
@@ -49,9 +49,10 @@ const getOverviewCollaboratorReport = async (
 
   if(memberId){
     set($match, "memberId", memberId);
+    set(collaboratorMatch, "memberId", memberId);
   }
 
-  const collaborators = await CollaboratorModel.find($match);
+  const collaborators = await CollaboratorModel.find(collaboratorMatch);
   const collaboratorCount = collaborators.length;
 
   const customerCommissionLog = await CustomerCommissionLogModel.find($match);
@@ -83,6 +84,8 @@ const getFilteredCollaborators = async (
     args.q.filter.memberId = context.id;
   }
 
+  console.log('args.q',args.q);
+
   const result = await collaboratorService.fetch(args.q);
   const collaborators = result.data;
   for (let i = 0; i < collaborators.length; i++) {
@@ -107,9 +110,13 @@ const FilteredCollaborator = {
     return members.map(m => m.id);
   },
   customer: async (root: ICollaborator, args: any, context: Context) => {
+    const member = await MemberModel.findById(root.memberId);
     let customer: any = await CustomerModel.findById(root.customerId);
 
-    if (!customer) {
+    if (customer){
+      customer.name = customer.name + " - " + member.shopName;
+    } 
+    else {
       customer = {
         code: root.code,
         name: root.name,

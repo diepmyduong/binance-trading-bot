@@ -40,6 +40,8 @@ const schema = gql`
     memberId: ID
     "Mã khách hàng"
     customerId: ID
+    "Mã cộng tác viên"
+    collaboratorId: ID
     "Giá trị"
     value: String
     "Loại sự kiện ${Object.values(CustomerCommissionLogType).join('|')}"
@@ -58,6 +60,7 @@ const schema = gql`
     regisService: RegisService
     member: Member
     customer: Customer
+    collaborator: Collaborator
 
     returnMemberId : ID
   }

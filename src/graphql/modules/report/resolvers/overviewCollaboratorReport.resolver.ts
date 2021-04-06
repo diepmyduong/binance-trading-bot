@@ -22,7 +22,7 @@ const getOverviewCollaboratorReport = async (
 
 
   let $gte: Date = null,
-    $lte: Date = null, $match = {},collaboratorMatch={};
+    $lte: Date = null, $match = {}, collaboratorMatch = {};
 
   if (fromDate) {
     fromDate = fromDate + "T00:00:00+07:00";
@@ -47,7 +47,7 @@ const getOverviewCollaboratorReport = async (
     memberId = context.id;
   }
 
-  if(memberId){
+  if (memberId) {
     set($match, "memberId", memberId);
     set(collaboratorMatch, "memberId", memberId);
   }
@@ -59,7 +59,7 @@ const getOverviewCollaboratorReport = async (
   const count = customerCommissionLog.length;
 
   return {
-    commission:  count > 0 ? customerCommissionLog.reduce((total: number, o: ICustomerCommissionLog) => total += o.value, 0) : 0,
+    commission: count > 0 ? customerCommissionLog.reduce((total: number, o: ICustomerCommissionLog) => total += o.value, 0) : 0,
     collaboratorCount,
   };
 };
@@ -84,7 +84,7 @@ const getFilteredCollaborators = async (
     args.q.filter.memberId = context.id;
   }
 
-  console.log('args.q',args.q);
+  console.log('args.q', args.q);
 
   const result = await collaboratorService.fetch(args.q);
   const collaborators = result.data;
@@ -100,54 +100,63 @@ const getFilteredCollaborators = async (
 
 const FilteredCollaborator = {
   members: async (root: ICollaborator, args: any, context: Context) => {
-    const members = await MemberModel.find({ _id: new ObjectId(root.memberId) });
-    // console.log('members', members);
-    return members;
+    if (root.memberId) {
+      const members = await MemberModel.find({ _id: new ObjectId(root.memberId) });
+      // console.log('members', members);
+      return members;
+    }
+    return null
   },
   memberIds: async (root: ICollaborator, args: any, context: Context) => {
-    const members = await MemberModel.find({ _id: new ObjectId(root.memberId) });
-    // console.log('members', members);
-    return members.map(m => m.id);
+    if (root.memberId) {
+      const members = await MemberModel.find({ _id: new ObjectId(root.memberId) });
+      // console.log('members', members);
+      return members.map(m => m.id);
+    }
+    return null
   },
   customer: async (root: ICollaborator, args: any, context: Context) => {
-    const member = await MemberModel.findById(root.memberId);
-    let customer: any = await CustomerModel.findById(root.customerId);
+    if (root.memberId) {
+      const member = await MemberModel.findById(root.memberId);
+      let customer: any = await CustomerModel.findById(root.customerId);
 
-    if (customer){
-      customer.name = customer.name + " - " + member.shopName;
-    } 
-    else {
-      customer = {
-        code: root.code,
-        name: root.name,
-        facebookName: root.name,
-        uid: root.code,
-        phone: root.phone,
-        password: "1234",
-        avatar: "1234",
-        gender: Gender.OTHER, // Giới tính
-        birthday: new Date(), // Ngày sinh
-        address: "test", // Địa chỉ
-        province: "test",  // Tỉnh / thành
-        district: "test", // Quận / huyện
-        ward: "test", // Phường / xã
-        provinceId: "test",  // Mã Tỉnh / thành
-        districtId: "test",// Mã Quận / huyện
-        wardId: "test",// Mã Phường / xã
-        cumulativePoint: 0,// Điểm tích lũy
-        commission: 0,// Hoa hồng cộng tác viên
-        pageAccounts: [],// Danh sách account facebook của người dùng
-        latitude: 0,
-        longitude: 0
+      if (customer) {
+        customer.name = customer.name + " - " + member.shopName;
       }
-    }
+      else {
+        customer = {
+          code: root.code,
+          name: root.name + " - Chưa có Bưu cục",
+          facebookName: root.name,
+          uid: root.code,
+          phone: root.phone,
+          password: "1234",
+          avatar: "1234",
+          gender: Gender.OTHER, // Giới tính
+          birthday: new Date(), // Ngày sinh
+          address: "test", // Địa chỉ
+          province: "test",  // Tỉnh / thành
+          district: "test", // Quận / huyện
+          ward: "test", // Phường / xã
+          provinceId: "test",  // Mã Tỉnh / thành
+          districtId: "test",// Mã Quận / huyện
+          wardId: "test",// Mã Phường / xã
+          cumulativePoint: 0,// Điểm tích lũy
+          commission: 0,// Hoa hồng cộng tác viên
+          pageAccounts: [],// Danh sách account facebook của người dùng
+          latitude: 0,
+          longitude: 0
+        }
+      }
 
-    return customer;
+      return customer;
+    }
+    return null;
   },
 
   total: async (root: ICollaborator, args: any, context: Context) => {
 
-    let { customerId, fromDate, toDate } = root;
+    let { id, fromDate, toDate } = root;
 
     let $match = {};
 
@@ -167,9 +176,7 @@ const FilteredCollaborator = {
       $lte = new Date(toDate);
     }
 
-    if (customerId) {
-      set($match, "customerId", customerId);
-    }
+    set($match, "collaboratorId", id);
 
     if ($gte) {
       set($match, "createdAt.$gte", $gte);

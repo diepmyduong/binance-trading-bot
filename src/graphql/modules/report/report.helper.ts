@@ -128,33 +128,32 @@ export class ReportHelper {
 
   static getOrdersStats = async (member: any, $gte: any, $lte: any, addressDeliverys: IAddressDelivery[], addressStorehouses: IAddressStorehouse[]) => {
 
-    const $match: any = {}
     const $logMatch: any = {}
 
     if (member) {
-      set($match, "sellerId", member.id);
-      set($logMatch, "memberId", member.id);
+      set($logMatch, "memberId", new ObjectId(member.id));
     }
 
     if ($gte) {
-      set($match, "createdAt.$gte", $gte);
       set($logMatch, "createdAt.$gte", $gte);
     }
 
     if ($lte) {
-      set($match, "createdAt.$lte", $lte);
       set($logMatch, "createdAt.$lte", $lte);
     }
 
-    console.log("getOrdersStats $match", $match);
-    console.log("getOrdersStats $logMatch", $logMatch);
+    // console.log("getOrdersStats $match", $match);
+    // console.log("getOrdersStats $logMatch", $logMatch);
 
-    const orderLogs = await OrderLogModel.find($logMatch);
+    // lay ra cac lich su don hang co trong ngay do
+    const orderLogs = await OrderLogModel.aggregate([{ $match: $logMatch }]);
+    // console.log('orderLogs', orderLogs.length);
     const allIncomeStats = await ReportHelper.getAllIncomeStats(orderLogs);
     // const noneIncomeStats = getNoneIncomeOrderStats(orders);
     // const postIncomeStats = getPostIncomeOrderStats(orders);
     // const vnportIncomeStats = getVNPORTIncomeOrderStats(orders);
 
+    //
     const allCommissionStats = await ReportHelper.getAllCommissionStats(orderLogs, addressDeliverys, addressStorehouses);
     // const noneIncomeStats = getNoneIncomeOrderStats(orders);
     // const postIncomeStats = getPostIncomeOrderStats(orders);
@@ -220,7 +219,7 @@ export class ReportHelper {
     const orderIds = orderLogs.length > 0 ? orderLogs.map(o => new ObjectId(o.orderId)) : [];
     // console.log("orderIds", orderIds);
     const orders = await OrderModel.find({ _id: { $in: orderIds } });
-    // console.log("orders", orders.length);
+    // console.log("getCommissionStats orders", orders.length);
     const count = orders.length;
     const sum = count > 0 ? orders.reduce((total: number, o: IOrder) => total += o.amount, 0) : 0;
     return {
@@ -277,6 +276,7 @@ export class ReportHelper {
     const orderIds = orderLogs.map(o => new ObjectId(o.orderId));
     // console.log("orderIds", orderIds);
     const orders = await OrderModel.find({ _id: { $in: orderIds } });
+    // console.log("getCommissionStats orders", orders.length);
 
     const count = orderIds.length;
 

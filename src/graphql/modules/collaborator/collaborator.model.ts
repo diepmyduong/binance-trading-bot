@@ -16,6 +16,8 @@ export type ICollaborator = BaseDocument & {
   likeCount?: number;
   shareCount?: number;
   commentCount?: number;
+  fromDate: string;
+  toDate: string;
 };
 
 const collaboratorSchema = new Schema(

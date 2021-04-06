@@ -130,12 +130,17 @@ class MemberRoute extends BaseRoute {
       memberParams._id = new ObjectId(context.id);
     }
 
+
+    console.log('memberParams',memberParams);
+
     const [members, branches, addressDeliverys, addressStorehouses] = await Promise.all([
       MemberModel.find(memberParams),
       BranchModel.find(),
       AddressDeliveryModel.find(),
       AddressStorehouseModel.find()
     ]);
+
+    console.log('members',members);
 
     let data: any = [];
     let staticsticData: any = [];
@@ -157,7 +162,7 @@ class MemberRoute extends BaseRoute {
         ReportHelper.getOrdersStats(member, $gte, $lte, addressDeliverys, addressStorehouses)
       ]);
 
-      // console.log('allMemberCommission',allMemberCommission);
+      console.log('allMemberCommission',allMemberCommission.length);
 
       const customersCount = customers.length;
       const collaboratorsCount = collaborators.length;
@@ -238,7 +243,7 @@ class MemberRoute extends BaseRoute {
           d.province,//"Tỉnh / Thành",
           d.branchName,//"Chi nhánh",
           d.customersAsCollaboratorCount,//  "Số lượng CTV",
-          d.ordersCount,
+          d.ordersCount, //
           d.pendingCount,
           d.confirmedCount,
           d.deliveringCount,
@@ -255,7 +260,6 @@ class MemberRoute extends BaseRoute {
 
       UtilsHelper.setThemeExcelWorkBook(sheet);
     }
-
 
     const createStatisticSheetData = (data: [], name: string) => {
       const sheet = workbook.addWorksheet(name);

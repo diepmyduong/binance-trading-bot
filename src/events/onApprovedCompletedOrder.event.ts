@@ -1,6 +1,4 @@
 import { Subject } from "rxjs";
-import { CustomerCommissionLogModel, CustomerCommissionLogType } from "../graphql/modules/customerCommissionLog/customerCommissionLog.model";
-
 import { SettingKey } from "../configs/settingData";
 import { CommissionLogType } from "../graphql/modules/commissionLog/commissionLog.model";
 import { CommissionMobifoneLogType } from "../graphql/modules/commissionMobifoneLog/commissionMobifoneLog.model";
@@ -260,6 +258,7 @@ onApprovedCompletedOrder.subscribe(async (order) => {
           memberId: sellerId,
           commission: commission2,
           currentCommission: customerPresenter.commission,
+          collaboratorId,
           id
         });
       }

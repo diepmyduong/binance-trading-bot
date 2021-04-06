@@ -50,12 +50,14 @@ export class EventHelper {
     memberId,
     currentCommission,
     commission,
+    collaboratorId,
     id,
   }: any) => {
     const commissionLoging = customerCommissionLogService.payCustomerCommission({
       customerId,
       memberId,
       commission,
+      collaboratorId,
       id,
     });
 

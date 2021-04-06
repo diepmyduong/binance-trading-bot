@@ -75,19 +75,13 @@ export class ReportHelper {
   }
 
   static getCustomersAsCollaborator = async (member: any, $gte: any, $lte: any) => {
+    const $match: any = { customerId: { $exists: true } }
 
-    // const $match: any = {}
-    // const $matchMember: any = {};
+    if (member) {
+      set($match, "memberId", member.id);
+    }
 
-    // if (member) {
-    //   set($match, "memberId", member.id);
-    //   set($matchMember, "pageAccounts.memberId", new ObjectId(member.id));
-    // }
-
-    const result = await CollaboratorModel.find({ memberId: member.id, customerId: { $exists: true } });
-
-    // console.log('result',result.length);
-
+    const result = await CollaboratorModel.find($match);
     return result;
   }
 

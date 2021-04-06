@@ -488,7 +488,7 @@ export class OrderHelper {
           isPackageViewable: false,
           pickupType: PickupType.DROP_OFF,
 
-          senderFullname: member.shopName, // tên người gửi *
+          senderFullname: member.shopName ? member.shopName : member.name, // tên người gửi *
           senderTel: cheapestService.storehouse.phone, // Số điện thoại người gửi * (maxlength: 50)
           senderAddress: cheapestService.storehouse.address, // địa chỉ gửi *
           senderWardId: cheapestService.storehouse.wardId, // mã phường người gửi *

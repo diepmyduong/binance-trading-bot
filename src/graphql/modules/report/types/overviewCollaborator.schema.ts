@@ -15,6 +15,7 @@ const schema = gql`
 
   type FilteredCollaborator {
     code: String
+    name: String
     phone: String
     memberIds: [ID]
     customerId: ID

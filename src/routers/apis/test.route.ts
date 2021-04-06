@@ -14,6 +14,7 @@ import { CollaboratorModel } from "../../graphql/modules/collaborator/collaborat
 import { CustomerModel } from "../../graphql/modules/customer/customer.model";
 import { OrderLogModel } from "../../graphql/modules/orderLog/orderLog.model";
 import { ObjectId } from "bson";
+import { CustomerCommissionLogModel } from "../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
 // import { ObjectId } from "mongodb";
 // import khongdau from "khong-dau";
 
@@ -258,30 +259,46 @@ export default new TestRoute().router;
 
 // (async () => {
 
-//   // cap nhat ten chu shop
-//   const member = await MemberModel.findOne({ code: "PKDBDTTGD" });
-//   console.log("member",member);
-
-
-
-//   const orderLogs = await OrderLogModel.find({ memberId: member.id });
-//   const orderIds = orderLogs.map(o => new ObjectId(o.orderId));
-//   // console.log("orderIds", orderIds);
-
-//   const orders = await OrderModel.find({ _id: { $in: orderIds } });
-//   const completedOrders = orders.filter((o: IOrder) => o.status === OrderStatus.COMPLETED);
-
-//   console.log("orders",completedOrders.length);
-
-//   const commissionLog = await CommissionLogModel.find({
-//     memberId: member.id, createdAt: {
-//       $gte: new Date("2021-04-02T00:00:00+07:00"),
-//       $lte: new Date("2021-04-04T24:00:00+07:00")
+//   const customerCommissionLogs = await CustomerCommissionLogModel.find({});
+//   for (const commission of customerCommissionLogs) {
+//     if (commission.collaboratorId) {
+//       const order = await OrderModel.findById(commission.orderId);
+//       if (order) {
+//         if (order.collaboratorId) {
+//           await CustomerCommissionLogModel.findByIdAndUpdate(commission.id, {
+//             $set: {
+//               collaboratorId: order.collaboratorId
+//             }
+//           }, { new: true })
+//         }
+//       }
 //     }
-//   });
-//   console.log("member", member.id);
+//   }
 
-//   console.log("commissionLogaaa", commissionLog.length);
+//   // // cap nhat ten chu shop
+//   // const member = await MemberModel.findOne({ code: "PKDBDTTGD" });
+//   // console.log("member",member);
+
+
+
+//   // const orderLogs = await OrderLogModel.find({ memberId: member.id });
+//   // const orderIds = orderLogs.map(o => new ObjectId(o.orderId));
+//   // // console.log("orderIds", orderIds);
+
+//   // const orders = await OrderModel.find({ _id: { $in: orderIds } });
+//   // const completedOrders = orders.filter((o: IOrder) => o.status === OrderStatus.COMPLETED);
+
+//   // console.log("orders",completedOrders.length);
+
+//   // const commissionLog = await CommissionLogModel.find({
+//   //   memberId: member.id, createdAt: {
+//   //     $gte: new Date("2021-04-02T00:00:00+07:00"),
+//   //     $lte: new Date("2021-04-04T24:00:00+07:00")
+//   //   }
+//   // });
+//   // console.log("member", member.id);
+
+//   // console.log("commissionLogaaa", commissionLog.length);
 
 //   // console.log('commissionLog',commissionLog.reduce((total: number, m: any) => {
 //   //   console.log(m.value);

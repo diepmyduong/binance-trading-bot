@@ -13,6 +13,7 @@ export type ICustomerCommissionLog = BaseDocument & {
   value?: number; // Giá trị
   type?: CustomerCommissionLogType; // Loại sự kiện
   orderId: string; // Mã đơn hàng
+  collaboratorId: string; // Mã cộng tác viên
 };
 
 const customerCommissionLogSchema = new Schema(
@@ -22,6 +23,7 @@ const customerCommissionLogSchema = new Schema(
     value: { type: Number, required: true },
     type: { type: String },
     orderId: { type: Schema.Types.ObjectId, ref: "Order" },
+    collaboratorId: { type: Schema.Types.ObjectId, ref: "Collaborator" },
   },
   { timestamps: true }
 );

@@ -60,7 +60,6 @@ const schema = gql`
     totalOrdersCount: Int
   }
 
-
   type OverviewPost {
     id: String
 

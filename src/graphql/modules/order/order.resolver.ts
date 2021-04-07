@@ -70,7 +70,6 @@ const Order = {
   seller: GraphQLHelper.loadById(MemberLoader, "sellerId"),
   fromMember: GraphQLHelper.loadById(MemberLoader, "fromMemberId"),
   toMember: GraphQLHelper.loadById(MemberLoader, "toMemberId"),
-  updatedByUser: GraphQLHelper.loadById(UserLoader, "updatedByUserId"),
   buyer: GraphQLHelper.loadById(CustomerLoader, "buyerId"),
   collaborator: async (root: IOrder, args: any, context: Context) => {
     const collaborator = await CollaboratorModel.findById(root.collaboratorId);
@@ -162,19 +161,6 @@ const Order = {
     }
   },
 
-  // paymentStatusText: async (root: IOrder, args: any, context: Context) => {
-  //   switch (root.paymentStatus) {
-  //     case PaymentStatus.PENDING:
-  //       return `Đang chờ thanh toán`;
-  //     case PaymentStatus.PAID:
-  //       return `Đã thanh toán`;
-  //     case PaymentStatus.CANCELED:
-  //       return `Đã huỷ thanh toán`;
-  //     default:
-  //       return root.paymentStatus;
-  //   }
-  // },
-
   shipMethodText: async (root: IOrder, args: any, context: Context) => {
     const shipMethods = await getShipMethods();
     const shipMethod = shipMethods.find(
@@ -203,6 +189,19 @@ const Order = {
         return root.status;
     }
   },
+
+  // paymentStatusText: async (root: IOrder, args: any, context: Context) => {
+  //   switch (root.paymentStatus) {
+  //     case PaymentStatus.PENDING:
+  //       return `Đang chờ thanh toán`;
+  //     case PaymentStatus.PAID:
+  //       return `Đã thanh toán`;
+  //     case PaymentStatus.CANCELED:
+  //       return `Đã huỷ thanh toán`;
+  //     default:
+  //       return root.paymentStatus;
+  //   }
+  // },
 };
 
 export default {

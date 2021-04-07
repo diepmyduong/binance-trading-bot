@@ -19,6 +19,7 @@ const schema = gql`
     toMemberId: ID
     customerId: ID
     note: String
+    statusText: String
 
     order: Order
     member: Member

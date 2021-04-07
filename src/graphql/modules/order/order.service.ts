@@ -1,4 +1,4 @@
-import _, { sumBy } from "lodash";
+import _, { set, sumBy } from "lodash";
 import { CrudService } from "../../../base/crudService";
 import { ErrorHelper } from "../../../base/error";
 import { SettingKey } from "../../../configs/settingData";
@@ -9,10 +9,11 @@ import {
 } from "../campaignSocialResult/campaignSocialResult.model";
 import { CrossSaleModel } from "../crossSale/crossSale.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
+import { OrderLogModel } from "../orderLog/orderLog.model";
 import { IProduct, ProductModel, ProductType } from "../product/product.model";
 import { SettingHelper } from "../setting/setting.helper";
 import { OrderHelper } from "./order.helper";
-import { OrderModel } from "./order.model";
+import { IOrder, OrderModel, OrderStatus } from "./order.model";
 class OrderService extends CrudService<typeof OrderModel> {
   constructor() {
     super(OrderModel);
@@ -204,10 +205,10 @@ class OrderService extends CrudService<typeof OrderModel> {
     const campaignSocialResultBulk = CampaignSocialResultModel.collection.initializeUnorderedBulkOp();
     const campaignSocialResults = campaign
       ? await CampaignSocialResultModel.find({
-          memberId: sellerId,
-          campaignId: campaign.id,
-          productId: productIds,
-        })
+        memberId: sellerId,
+        campaignId: campaign.id,
+        productId: productIds,
+      })
       : null;
 
     //create OrderItem
@@ -312,6 +313,23 @@ class OrderService extends CrudService<typeof OrderModel> {
       return res[0];
     });
   };
+
+  updateLogToOrder = async ({ order, log }: any) => {
+    const orderLogs = await OrderLogModel.find({ orderId: order.id }).sort({ createdAt: -1 });
+    if (orderLogs.length > 0) {
+      const orderLogIds = orderLogs.map(log => log.id);
+      const loggedAt = log.createdAt;
+      const params = { orderLogIds, loggedAt };
+      // console.log('params',params);
+      if ([OrderStatus.COMPLETED, OrderStatus.CANCELED, OrderStatus.FAILURE].includes(order.status)) {
+        const orderlog = orderLogs.find(log => log.orderStatus === order.status);
+        if (orderlog) {
+          set(params, "finishedAt", orderlog.createdAt);
+        }
+      }
+      await OrderModel.findByIdAndUpdate(order.id, { $set: params }, { new: true })
+    }
+  }
 }
 
 const orderService = new OrderService();

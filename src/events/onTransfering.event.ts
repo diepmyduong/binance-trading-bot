@@ -2,6 +2,7 @@ import { Subject } from "rxjs";
 import {
   IOrder,
 } from "../graphql/modules/order/order.model";
+import { orderService } from "../graphql/modules/order/order.service";
 import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
 import { OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 
@@ -34,5 +35,5 @@ onTransfering.subscribe(async (order) => {
     orderStatus: status,
   });
 
-  await log.save();
+  await log.save().then(log => { orderService.updateLogToOrder({order, log}) });
 });

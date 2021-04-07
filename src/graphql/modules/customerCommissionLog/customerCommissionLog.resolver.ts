@@ -35,6 +35,7 @@ const CustomerCommissionLog = {
   regisService: GraphQLHelper.loadById(RegisServiceLoader, "regisServiceId"),
   member: GraphQLHelper.loadById(MemberLoader, "memberId"),
   customer: GraphQLHelper.loadById(CustomerLoader, "customerId"),
+  collaboratorId: GraphQLHelper.loadById(CustomerLoader, "collaboratorId"),
 
   note: async (root: ICustomerCommissionLog, args: any, context: Context) => {
 

@@ -10,6 +10,7 @@ import { OrderItemLoader } from "../graphql/modules/orderItem/orderItem.model";
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { UserModel } from "../graphql/modules/user/user.model";
 import { onSendChatBotText } from "./onSendToChatbot.event";
+import { orderService } from "../graphql/modules/order/order.service";
 
 export const onCanceledOrder = new Subject<IOrder>();
 
@@ -115,5 +116,5 @@ onCanceledOrder.subscribe(async (order: IOrder) => {
     log.toMemberId = toMemberId;
   }
 
-  await log.save();
+  await log.save().then(log => { orderService.updateLogToOrder({order, log}) });
 });

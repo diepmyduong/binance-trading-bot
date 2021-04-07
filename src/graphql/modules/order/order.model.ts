@@ -63,7 +63,6 @@ export type IOrder = BaseDocument & {
   sellerCode: string; // Mã chủ shop bán
   sellerName: string; // Chủ shop bán
   status?: OrderStatus; // Trạng thái
-  updatedByUserId?: string; // Người cập nhật
   commission0?: number; // Hoa hồng Mobifone
   commission1?: number; // Hoa hồng điểm bán
   commission2?: number; // Hoa hồng giới thiệu
@@ -103,6 +102,10 @@ export type IOrder = BaseDocument & {
   toMemberId: string; // Bưu cục được chuyển đơn
   longitude: string;
   latitude: string;
+  orderLogIds: string[];
+  isLate: boolean; // Đơn Mobifone
+  finishedAt: Date;
+  loggedAt: Date;
 };
 
 const orderSchema = new Schema(
@@ -124,7 +127,6 @@ const orderSchema = new Schema(
       enum: Object.values(OrderStatus),
       default: OrderStatus.PENDING,
     },
-    updatedByUserId: { type: Schema.Types.ObjectId, ref: "User" },
     commission0: { type: Number, default: 0, min: 0 },
     commission1: { type: Number, default: 0, min: 0 },
     commission2: { type: Number, default: 0, min: 0 },
@@ -176,6 +178,12 @@ const orderSchema = new Schema(
     toMemberId: { type: Schema.Types.ObjectId, ref: "Member" },
     longitude: { type: Schema.Types.String },
     latitude: { type: Schema.Types.String },
+    orderLogIds: {
+      type: [{ type: Schema.Types.ObjectId, ref: "OrderLog" }],
+    },
+    isLate: { type: Boolean },
+    finishedAt: { type: Schema.Types.Date },
+    loggedAt: { type: Schema.Types.Date }
   },
   { timestamps: true }
 );

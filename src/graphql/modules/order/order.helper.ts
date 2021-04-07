@@ -223,7 +223,7 @@ export class OrderHelper {
 
     order.collaboratorId = collaborator ? collaborator.id : null;
     order.sellerCode = member.code;
-    order.sellerName = member.shopName;
+    order.sellerName = member.shopName ? member.shopName : member.name;
 
     const helper = new OrderHelper(order);
     switch (order.shipMethod) {
@@ -488,7 +488,7 @@ export class OrderHelper {
           isPackageViewable: false,
           pickupType: PickupType.DROP_OFF,
 
-          senderFullname: member.shopName, // tên người gửi *
+          senderFullname: member.shopName ? member.shopName : member.name, // tên người gửi *
           senderTel: cheapestService.storehouse.phone, // Số điện thoại người gửi * (maxlength: 50)
           senderAddress: cheapestService.storehouse.address, // địa chỉ gửi *
           senderWardId: cheapestService.storehouse.wardId, // mã phường người gửi *

@@ -9,13 +9,14 @@ class CustomerCommissionLogService extends CrudService<typeof CustomerCommission
     super(CustomerCommissionLogModel);
   }
 
-  payCustomerCommission = async ({ customerId, memberId, id, commission }: any) => {
+  payCustomerCommission = async ({ customerId, memberId, id, commission , collaboratorId }: any) => {
     const params: any = {
       customerId,
       memberId,
       type: CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER,
       value: commission,
-      orderId: id
+      orderId: id,
+      collaboratorId
     };
     const commissionLog = new CustomerCommissionLogModel(params);
     return await commissionLog.save();

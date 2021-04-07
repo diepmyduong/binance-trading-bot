@@ -2,7 +2,7 @@ import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { Context } from "../../context";
-import { OrderLoader } from "../order/order.model";
+import { OrderLoader, OrderStatus } from "../order/order.model";
 import { orderLogService } from "./orderLog.service";
 import { IOrderLog, OrderLogType } from "./orderLog.model";
 import { MemberLoader, MemberModel } from "../member/member.model";
@@ -86,6 +86,27 @@ const OrderLog = {
 
       default:
         return "";
+    }
+  },
+
+  statusText: async (root: IOrderLog, args: any, context: Context) => {
+    switch (root.orderStatus) {
+      case OrderStatus.PENDING:
+        return `Đang xử lý`;
+      case OrderStatus.CONFIRMED:
+        return `Đã xác nhận`;
+      case OrderStatus.DELIVERING:
+        return `Đang giao hàng`;
+      case OrderStatus.COMPLETED:
+        return `Hoàn tất`;
+      case OrderStatus.FAILURE:
+        return `Thất bại`;
+      case OrderStatus.CANCELED:
+        return `Đã huỷ`;
+      case OrderStatus.RETURNED:
+        return `Đã hoàn hàng`;
+      default:
+        return root.orderStatus;
     }
   },
 };

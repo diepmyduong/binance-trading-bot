@@ -1,5 +1,6 @@
 import { Subject } from "rxjs";
 import { IOrder, ShipMethod } from "../graphql/modules/order/order.model";
+import { orderService } from "../graphql/modules/order/order.service";
 import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
 import { OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 
@@ -37,5 +38,5 @@ onConfirmedOrder.subscribe(async (order: IOrder) => {
     log.toMemberId = toMemberId;
   }
 
-  await log.save();
+  await log.save().then(log => { orderService.updateLogToOrder({order, log}) });
 });

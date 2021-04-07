@@ -27,6 +27,7 @@ import {
   PaymentMethod,
 } from "../graphql/modules/order/order.model";
 import { OrderLogModel, OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
+import { orderService } from "../graphql/modules/order/order.service";
 
 export const onMemberDelivering = new Subject<IOrder>();
 
@@ -38,7 +39,7 @@ onMemberDelivering.subscribe(async (order: IOrder) => {
     status,
     toMemberId
   } = order;
-  
+
   const log = new OrderLogModel({
     orderId: id,
     type: OrderLogType.MEMBER_DELIVERING,
@@ -47,10 +48,10 @@ onMemberDelivering.subscribe(async (order: IOrder) => {
     orderStatus: status,
   });
 
-  if(toMemberId){
+  if (toMemberId) {
     log.toMemberId = toMemberId;
     log.type = OrderLogType.MEMBER_DELIVERING;
   }
 
-  await log.save();
+  await log.save().then(log => { orderService.updateLogToOrder({order, log}) });
 });

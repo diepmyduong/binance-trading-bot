@@ -143,8 +143,6 @@ const schema = gql`
     fromMemberId: ID
     "Trạng thái ${Object.values(OrderStatus).join('|')}"
     status: String
-    "Người cập nhật"
-    updatedByUserId: ID 
     "Hoa hồng VNPOST"
     commission0: Float
     "Hoa hồng điểm bán"
@@ -182,37 +180,37 @@ const schema = gql`
     "Địa điểm nhận hàng"
     addressDeliveryId: ID
 
-    items: [OrderItem]
-    seller: Member
-    fromMember: Member
-    updatedByUser: User
-    buyer: Customer
-
     paymentMethodText: String
     shipMethodText: String
     statusText: String
-    "Thông tin vận đơn"
-    deliveryInfo: DeliveryInfo
     "Mã Cộng tác viên"
     collaboratorId: ID
-    "Cộng tác viên"
-    collaborator: CustomerCollaborator
     "Là nội thành"
     isUrbanDelivery: Boolean
     "Bưu cục được chuyển đơn"
     toMemberId: ID
     "Ghi chú chuyển đơn"
     toMemberNote: String
-    addressStorehouse: AddressStorehouse
-    addressDelivery: AddressDelivery
+
+    "Có chuyển kho không ?"
+    mustTransfer: Boolean
 
     latitude: Float
     longitude: Float
-    
+    items: [OrderItem]
+
+    seller: Member
+    fromMember: Member
+    updatedByUser: User
+    buyer: Customer
     deliveringMember: Member
     toMember: Member
-    "Có chuyển kho không ?"
-    mustTransfer: Boolean
+    addressStorehouse: AddressStorehouse
+    addressDelivery: AddressDelivery
+    "Cộng tác viên"
+    collaborator: CustomerCollaborator
+    "Thông tin vận đơn"
+    deliveryInfo: DeliveryInfo
   }
 
   type CustomerCollaborator {

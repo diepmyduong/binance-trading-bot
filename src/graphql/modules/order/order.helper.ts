@@ -223,7 +223,7 @@ export class OrderHelper {
 
     order.collaboratorId = collaborator ? collaborator.id : null;
     order.sellerCode = member.code;
-    order.sellerName = member.shopName;
+    order.sellerName = member.shopName ? member.shopName : member.name;
 
     const helper = new OrderHelper(order);
     switch (order.shipMethod) {

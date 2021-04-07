@@ -15,6 +15,7 @@ import { CustomerModel } from "../../graphql/modules/customer/customer.model";
 import { OrderLogModel } from "../../graphql/modules/orderLog/orderLog.model";
 import { ObjectId } from "bson";
 import { CustomerCommissionLogModel } from "../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
+import { orderService } from "../../graphql/modules/order/order.service";
 // import { ObjectId } from "mongodb";
 // import khongdau from "khong-dau";
 
@@ -24,7 +25,7 @@ class TestRoute extends BaseRoute {
   }
 
   customRouting() {
-    this.router.get("/", this.route(this.updateNameMembers));
+    this.router.get("/", this.route(this.updateOrders));
   }
 
   async test(req: Request, res: Response) {
@@ -229,8 +230,32 @@ class TestRoute extends BaseRoute {
   async updateOrders(req: Request, res: Response) {
     const orders = await OrderModel.find({});
     for (const order of orders) {
-      const member = await MemberModel.findById(order.sellerId);
-      await OrderModel.findByIdAndUpdate(order.id, { $set: { sellerCode: member.code, sellerName: member.shopName } }, { new: true })
+      // const member = await MemberModel.findById(order.sellerId);
+      // if(!order.sellerCode){
+      //   await OrderModel.findByIdAndUpdate(order.id, { 
+      //     $set: { 
+      //       sellerCode: member.code ? member.code : "", 
+      //       sellerName: member.shopName ? member.shopName : member.name, 
+      //     } 
+      //   }, { new: true })
+      // }
+      console.log('order',order.id);
+      
+      await orderService.updateLogToOrder({order, log:null});
+
+      // const orderLog = await OrderLogModel.findOne({ 
+      //   orderId: order.id , 
+      //   orderStatus:{$in:[ 
+      //     OrderStatus.CANCELED,
+      //     OrderStatus.COMPLETED,
+      //     OrderStatus.FAILURE,
+      //   ]}});
+      // if(orderLog){
+      //   // console.log('orderLog',orderLog.createdAt);
+      //   await OrderModel.findByIdAndUpdate(order.id , {$set:{
+      //     finishedAt: orderLog.createdAt
+      //   }}, {new: true})
+      // }
     }
 
     res.sendStatus(200);

@@ -30,6 +30,7 @@ import { StoreHouseCommissionLogModel } from "../graphql/modules/storeHouseCommi
 import { CollaboratorModel } from "../graphql/modules/collaborator/collaborator.model";
 import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
 import { OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
+import { orderService } from "../graphql/modules/order/order.service";
 
 export const onApprovedCompletedOrder = new Subject<IOrder>();
 
@@ -302,13 +303,13 @@ onApprovedCompletedOrder.subscribe(async (order) => {
 // Tính chiết khấu dành cho kho giao hàng  - f3 - commission3
 // Gửi mess cho người giới thiệu
 onApprovedCompletedOrder.subscribe(async (order) => {
-  const { commission3, id, toMemberId, sellerId , code } = order;
+  const { commission3, id, toMemberId, sellerId, code } = order;
   const shopper = await MemberLoader.load(sellerId);
   if (!shopper) throw ErrorHelper.mgRecoredNotFound("chủ shop");
   if (commission3 > 0) {
     let member = await MemberModel.findById(toMemberId);
 
-    if(!member)
+    if (!member)
       member = await MemberModel.findById(sellerId);
 
     const commissionResult = await EventHelper.payCommission({
@@ -362,6 +363,6 @@ onApprovedCompletedOrder.subscribe(async (order: IOrder) => {
       log.type = OrderLogType.TO_MEMBER_COMPLETED;
     }
 
-    await log.save();
+    await log.save().then(log => { orderService.updateLogToOrder({order, log}) });
   }
 });

@@ -13,14 +13,16 @@ import { orderService } from "../../order/order.service";
 import { OrderItemLoader } from "../../orderItem/orderItem.model";
 import { CollaboratorModel } from "../../collaborator/collaborator.model";
 import { set } from "lodash";
+import { type } from "os";
+import { Types } from "mongoose";
 
 const getOrderReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  let { fromDate, toDate, sellerIds , isLate } = args;
+  let { fromDate, toDate, sellerIds, isLate } = args;
 
   let $gte: Date = null,
     $lte: Date = null;
-  
+
 
   if (fromDate) {
     fromDate = fromDate + "T00:00:00+07:00";
@@ -47,15 +49,18 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
   }
   else {
     if (sellerIds) {
-      set(params, "sellerId.$in", sellerIds.map((id: string) => new ObjectId(id)));
+      if (sellerIds.length > 0) {
+        set(params, "sellerId.$in", sellerIds.map(Types.ObjectId));
+      }
     }
   }
+  
+  console.log('params',params);
 
-  if(isLate === true){
+  if (isLate === true) {
     set(params, "isLate", isLate);
   }
 
-  // console.log('params',params);
 
   const [
     allOrdersCount, [allOrderSum],
@@ -211,7 +216,6 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
 };
 
 const getOrderReports = async (root: any, args: any, context: Context) => {
-  // console.time("getOrderReports");
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const queryInput = args.q;
   let { fromDate, toDate, sellerIds } = queryInput.filter;

@@ -211,6 +211,7 @@ const schema = gql`
     collaborator: CustomerCollaborator
     "Thông tin vận đơn"
     deliveryInfo: DeliveryInfo
+    updatedByUserId: ID
   }
 
   type CustomerCollaborator {

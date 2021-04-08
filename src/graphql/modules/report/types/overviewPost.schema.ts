@@ -58,8 +58,8 @@ const schema = gql`
     totalIncome: Float
     "Tổng số CTV"
     totalCollaboratorsCount: Int
-    "Số lượng CTV theo ngày"
-    newCollaboratorsCount:Int
+    "Số lượng CTV là khách hàng"
+    collaboratorsAsCustomerCount:Int
     "Tổng hoa hồng đã nhận"
     totalRealCommission: Float
     "Tổng số bưu cục"

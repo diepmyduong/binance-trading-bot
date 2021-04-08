@@ -54,13 +54,6 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
     }
   };
 
-  const $allCollaboratorMatch = {
-    createdAt: {
-      // $gte,
-      $lte
-    }
-  };
-
   const $memberMatch = {}
 
 
@@ -80,9 +73,12 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
     ...$memberMatch
   });
 
-  const newCollaboratorsCount = await CollaboratorModel.count($collaboratorMatch);
+  const totalCollaboratorsCount = await CollaboratorModel.count($collaboratorMatch);
 
-  const totalCollaboratorsCount = await CollaboratorModel.count($allCollaboratorMatch);
+  const collaboratorsAsCustomerCount = await CollaboratorModel.count({
+    ...$collaboratorMatch,
+    customerId: { $exists: true }
+  });
 
   // console.log('$match', $match);
 
@@ -140,7 +136,7 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
 
   return {
     totalCollaboratorsCount,
-    newCollaboratorsCount,
+    collaboratorsAsCustomerCount,
     totalMembersCount,
     totalOrdersCount: orderStats[0].totalOrderCount,
     totalRealCommission: orderStats[0].completeCommission,

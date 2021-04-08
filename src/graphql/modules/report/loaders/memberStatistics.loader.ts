@@ -1,17 +1,10 @@
-import { ObjectId } from "mongodb";
-import { AddressDeliveryModel, IAddressDelivery } from "../../addressDelivery/addressDelivery.model";
-import { AddressStorehouseModel, IAddressStorehouse } from "../../addressStorehouse/addressStorehouse.model";
-import { CustomerModel } from "../../customer/customer.model";
-import { IOrder, OrderModel, OrderStatus, ShipMethod } from "../../order/order.model";
-import { IMember } from "../../member/member.model";
-import { CommissionLogModel, ICommissionLog } from "../../commissionLog/commissionLog.model";
-import { CollaboratorModel } from "../../collaborator/collaborator.model";
-import { ReportHelper } from "../report.helper";
+import { OrderLogModel } from "../../orderLog/orderLog.model";
+import DataLoader from "dataloader";
+import { get, keyBy } from "lodash";
+import { Types } from "mongoose";
 
 
 export class MemberStatistics {
-  fromDate: string
-  toDate: string
   customersCount: number = 0;
   collaboratorsCount: number = 0;
   customersAsCollaboratorCount: number = 0;
@@ -26,59 +19,92 @@ export class MemberStatistics {
   realCommission: number = 0;
   estimatedIncome: number = 0;
   income: number = 0;
+  static loaders: { [x: string]: DataLoader<string, MemberStatistics> } = {};
 
-  static async getLoader(member: IMember) {
-    let { id, fromDate, toDate } = member;
-
+  static getLoader(fromDate: string, toDate: string) {
+    const loaderId = fromDate + toDate;
     let $gte: Date = null,
       $lte: Date = null;
 
-    if (fromDate && toDate) {
+    if (fromDate) {
       fromDate = fromDate + "T00:00:00+07:00";
-      toDate = toDate + "T24:00:00+07:00";
       $gte = new Date(fromDate);
+    }
+
+    if (toDate) {
+      toDate = toDate + "T00:00:00+07:00";
       $lte = new Date(toDate);
     }
 
-    const [
-      addressDeliverys,
-      addressStorehouses,
-      customers,
-      collaborators,
-      customersAsCollaborator,
-      allMemberCommission
-    ] = await Promise.all([
-      AddressDeliveryModel.find(),
-      AddressStorehouseModel.find(),
-      ReportHelper.getCustomers(member, $gte, $lte),
-      ReportHelper.getCollaborators(member, $gte, $lte),
-      ReportHelper.getCustomersAsCollaborator(member, $gte, $lte),
-      ReportHelper.getCommissionLogs(member, $gte, $lte),
-    ]);
-
-    const { allIncomeStats, allCommissionStats } = await ReportHelper.getOrdersStats(member, $gte, $lte, addressDeliverys, addressStorehouses);
-    const customersCount = customers.length;
-    const collaboratorsCount = collaborators.length;
-    const customersAsCollaboratorCount = customersAsCollaborator.length;
-    const totalCommission = allMemberCommission.reduce((total: number, log: ICommissionLog) => total += log.value, 0);
-
-    return {
-      fromDate,
-      toDate,
-      customersCount,
-      collaboratorsCount,
-      customersAsCollaboratorCount,
-      ordersCount: allIncomeStats.allOrders.count,
-      pendingCount: allIncomeStats.pendingOrders.count,
-      confirmedCount: allIncomeStats.confirmedOrders.count,
-      deliveringCount: allIncomeStats.deliveringOrders.count,
-      completedCount: allIncomeStats.completedOrders.count,
-      failureCount: allIncomeStats.failureOrders.count,
-      canceledCount: allIncomeStats.canceledOrders.count,
-      estimatedCommission: allCommissionStats.estimatedOrders.totalCommission,
-      realCommission: totalCommission,
-      estimatedIncome: allIncomeStats.estimatedOrders.sum,
-      income: allIncomeStats.completedOrders.sum,
+    if (!this.loaders[loaderId]) {
+      this.loaders[loaderId] = new DataLoader<string, MemberStatistics>(
+        async (ids) => {
+          const objectIds = ids.map(Types.ObjectId);
+          
+          return await OrderLogModel.aggregate([
+            {
+              $match: {
+                memberId: { $in: objectIds },
+                createdAt: {
+                  $gte, 
+                  $lte,
+                },
+              }
+            },
+            {
+              $group: {
+                _id: "$orderId",
+                memberId: { $first: "$memberId" },
+                log: { $last: "$$ROOT" }
+              }
+            },
+            {
+              $lookup: {
+                from: 'orders',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'order'
+              }
+            },
+            { $unwind: '$order' },
+            {
+              $group: {
+                _id: "$memberId",
+                ordersCount: { $sum: 1 },
+                pendingCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, 1, 0] } },
+                confirmedCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, 1, 0] } },
+                completedCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, 1, 0] } },
+                deliveringCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, 1, 0] } },
+                canceledCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, 1, 0] } },
+                failureCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, 1, 0] } },
+      
+                pendingAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, "$order.amount", 0] } },
+                confirmedAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, "$order.amount", 0] } },
+                deliveringAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, "$order.amount", 0] } },
+                canceledAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, "$order.amount", 0] } },
+                failureAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, "$order.amount", 0] } },
+                estimatedIncome: { $sum: { $cond: [{ $in: ["$log.orderStatus", ["CANCELED", "FAILURE", "COMPLETED"]] }, 0, "$order.amount"] } },
+                income: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, "$order.amount", 0] } },
+      
+                pendingCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+                confirmedCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+                deliveringCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+                canceledCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+                failureCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+                estimatedCommission: { $sum: { $cond: [{ $in: ["$log.orderStatus", ["CANCELED", "FAILURE", "COMPLETED"]] }, 0, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }] } },
+                realCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+              }
+            },
+          ]).then((list) => {
+            const listKeyBy = keyBy(list, "_id");
+            return ids.map((id) =>
+              get(listKeyBy, id, new MemberStatistics())
+            );
+          });
+        },
+        { cache: false } // Bỏ cache
+      );
     }
+    return this.loaders[loaderId];
   }
 }

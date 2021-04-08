@@ -7,11 +7,21 @@ const schema = gql`
     # Add Query
   }
 
+  
+  type CustomerStats{
+    "Số lượng khách hàng"
+    customersCount: Int
+  }
+
+
+  type CollaboratorStats{
+    "Số lượng cộng tác viên"
+    collaboratorsCount: Int
+    "Số lượng khách hàng CTV"
+    customersAsCollaboratorCount: Int
+  }
+
   type MemberStatistics{
-    "Từ ngày"
-    fromDate: String
-    "Đến ngày"
-    toDate: String
     "Số lượng khách hàng"
     customersCount: Int
     "Số lượng cộng tác viên"
@@ -44,14 +54,12 @@ const schema = gql`
   }
 
   type OverviewPostsReport {
-    "Từ ngày"
-    fromDate: String
-    "Đến ngày"
-    toDate: String
     "Tổng doanh thu"
     totalIncome: Float
     "Tổng số CTV"
     totalCollaboratorsCount: Int
+    "Số lượng CTV theo ngày"
+    newCollaboratorsCount:Int
     "Tổng hoa hồng đã nhận"
     totalRealCommission: Float
     "Tổng số bưu cục"
@@ -91,7 +99,9 @@ const schema = gql`
     fromDate: String
     "Đến ngày"
     toDate: String
-    memberStatistics: MemberStatistics
+    memberStatistics(fromDate: String, toDate: String): MemberStatistics
+    collaboratorStats(fromDate: String, toDate: String): CollaboratorStats
+    customerStats(fromDate: String, toDate: String): CustomerStats 
   }
 
   type OverviewPostPageData {

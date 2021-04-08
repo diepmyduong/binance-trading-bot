@@ -1,80 +1,150 @@
 import { ROLES } from "../../../../constants/role.const";
-import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../../helpers";
+import { AuthHelper } from "../../../../helpers";
 import { Context } from "../../../context";
-import { ICommissionLog } from "../../commissionLog/commissionLog.model";
 import { MemberStatistics } from "./../loaders/memberStatistics.loader";
 import { memberService } from "../../member/member.service";
 import { isEmpty, isNull, set } from "lodash";
-import { AddressDeliveryModel } from "../../addressDelivery/addressDelivery.model";
-import { AddressStorehouseModel } from "../../addressStorehouse/addressStorehouse.model";
-import { ReportHelper } from "../report.helper";
+import { OrderLogModel } from "../../orderLog/orderLog.model";
+import moment from "moment-timezone";
+import { CollaboratorStats } from "../loaders/collaboratorStats.loader";
+import { CustomerModel } from "../../customer/customer.model";
+import { IMember, MemberModel } from "../../member/member.model";
+import { ObjectId } from "mongodb";
+import { CollaboratorModel } from "../../collaborator/collaborator.model";
 
 const getPostReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  let { fromDate, toDate, memberId }: { fromDate: string, toDate: string, memberId: string } = args;
+  let {
+    fromDate,
+    toDate,
+    memberId
+  } = args;
 
-  let $gte: Date = null,
-    $lte: Date = null,
-    member = null;
+  // console.log("fromDate", fromDate)
+  // console.log("toDate", toDate)
 
-  fromDate = fromDate ? fromDate.replace("null", "") :  "";
-  toDate = toDate ? toDate.replace("null",  "") :  "";
-  memberId = memberId ? memberId.replace("null",  "") :  "";
+  let $gte: Date = new Date(moment().startOf('month').format('YYYY-MM-DD') + "T00:00:00+07:00"),
+    $lte: Date = new Date(moment().endOf('month').format('YYYY-MM-DD') + "T00:00:00+07:00");
 
-  if (!isEmpty(fromDate)) {
+  // console.log("gte", $gte);
+  // console.log("lte", $lte);
+
+  if (fromDate) {
     fromDate = fromDate + "T00:00:00+07:00";
     $gte = new Date(fromDate);
   }
 
-  if (!isEmpty(toDate)) {
-    toDate = toDate + "T24:00:00+07:00";
+  if (toDate) {
+    toDate = toDate + "T23:59:59+07:00";
     $lte = new Date(toDate);
   }
 
 
+  const $match = {
+    createdAt: {
+      $gte,
+      $lte
+    }
+  };
+
+  const $collaboratorMatch = {
+    createdAt: {
+      $gte,
+      $lte
+    }
+  };
+
+  const $allCollaboratorMatch = {
+    createdAt: {
+      // $gte,
+      $lte
+    }
+  };
+
+  const $memberMatch = {}
+
+
   if (!isEmpty(memberId)) {
-    member = { id: memberId };
+    set($match, "memberId", new ObjectId(memberId));
+    set($collaboratorMatch, "memberId", new ObjectId(memberId));
+    set($memberMatch, "_id", new ObjectId(memberId));
   }
 
   if (context.isMember()) {
-    member = { id: context.id };
+    set($match, "memberId", new ObjectId(context.id))
+    set($collaboratorMatch, "memberId", new ObjectId(context.id));
+    set($memberMatch, "_id", new ObjectId(context.id));
   }
 
-  // console.log("member",member);
+  const totalMembersCount = await MemberModel.count({
+    ...$memberMatch
+  });
 
-  const [
-    addressDeliverys,
-    addressStorehouses,
-    // customers,
-    // collaborators,
-    customersAsCollaborator,
-    allMemberCommission,
-    allMembers,
-  ] = await Promise.all([
-    AddressDeliveryModel.find(),
-    AddressStorehouseModel.find(),
-    // ReportHelper.getCustomers(member, $gte, $lte),
-    // ReportHelper.getCollaborators(member, $gte, $lte),
-    ReportHelper.getCustomersAsCollaborator(member, $gte, $lte),
-    ReportHelper.getCommissionLogs(member, $gte, $lte),
-    ReportHelper.getMembers(member, $gte, $lte),
+  const newCollaboratorsCount = await CollaboratorModel.count($collaboratorMatch);
+
+  const totalCollaboratorsCount = await CollaboratorModel.count($allCollaboratorMatch);
+
+  // console.log('$match', $match);
+
+  const orderStats = await OrderLogModel.aggregate([
+    {
+      $match
+    },
+    {
+      $group: {
+        _id: "$orderId",
+        log: { $last: "$$ROOT" }
+      }
+    },
+    {
+      $lookup: {
+        from: 'orders',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'order'
+      }
+    },
+    { $unwind: '$order' },
+    {
+      $group: {
+        _id: null,
+        totalOrderCount: { $sum: 1 },
+        pendingCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, 1, 0] } },
+        confirmedCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, 1, 0] } },
+        completeCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, 1, 0] } },
+        deliveringCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, 1, 0] } },
+        canceledCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, 1, 0] } },
+        failureCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, 1, 0] } },
+
+        pendingAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, "$order.amount", 0] } },
+        confirmedAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, "$order.amount", 0] } },
+        deliveringAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, "$order.amount", 0] } },
+        canceledAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, "$order.amount", 0] } },
+        failureAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, "$order.amount", 0] } },
+        estimatedAmount: { $sum: { $cond: [{ $in: ["$log.orderStatus", ["CANCELED", "FAILURE", "COMPLETED"]] }, 0, "$order.amount"] } },
+        completeAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, "$order.amount", 0] } },
+
+
+        pendingCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+        confirmedCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+        deliveringCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+        canceledCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+        failureCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+        estimatedCommission: { $sum: { $cond: [{ $in: ["$log.orderStatus", ["CANCELED", "FAILURE", "COMPLETED"]] }, 0, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }] } },
+        completeCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+      }
+    }
   ]);
 
-  const { allIncomeStats, allCommissionStats } = await ReportHelper.getOrdersStats(member, $gte, $lte, addressDeliverys, addressStorehouses);
-  // const customersCount = customers.length;
-  // const collaboratorsCount = collaborators.length;
-  const totalCollaboratorsCount = customersAsCollaborator.length;
-  const totalRealCommission = allMemberCommission.reduce((total: number, log: ICommissionLog) => total += log.value, 0);
-  const totalMembersCount = allMembers.length;
+  // console.log('orderStats', orderStats);
 
   return {
-    fromDate,
-    toDate,
-    totalIncome: allIncomeStats.completedOrders.sum,
     totalCollaboratorsCount,
-    totalRealCommission,
+    newCollaboratorsCount,
     totalMembersCount,
-    totalOrdersCount: allIncomeStats.allOrders.count,
+    totalOrdersCount: orderStats[0].totalOrderCount,
+    totalRealCommission: orderStats[0].completeCommission,
+    totalIncome: orderStats[0].completeAmount,
   }
 };
 
@@ -83,34 +153,54 @@ const getPostReports = async (
   args: any,
   context: Context
 ) => {
+  // console.time("getPostReports");
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-
-  let fromDate = args.q.filter.fromDate ? `${args.q.filter.fromDate}` : null;
-  let toDate = args.q.filter.toDate ? `${args.q.filter.toDate}` : null;
-
-  fromDate = fromDate ? fromDate.replace("null", "") :  "";
-  toDate = toDate ? toDate.replace("null",  "") :  "";
-  
-  delete args.q.filter.fromDate;
-  delete args.q.filter.toDate;
-
   if (context.isMember()) {
     args.q.filter._id = context.id;
   }
-
-  const result = await memberService.fetch(args.q);
-  const members = result.data;
-
-  for (let i = 0; i < members.length; i++) {
-    set(members[i], "fromDate", fromDate);
-    set(members[i], "toDate", toDate);
-  }
-  result.data = members;
-  return result;
+  return await memberService.fetch(args.q, '-addressStorehouseIds -addressDeliveryIds').then(res => {
+    // console.timeEnd("getPostReports");
+    return res;
+  });
 };
 
 const OverviewPost = {
-  memberStatistics: async (root: any, args: any, context: Context) => await MemberStatistics.getLoader(root)
+  memberStatistics: async (root: IMember, args: any, context: Context) => {
+    const { fromDate = moment().startOf('month').format('YYYY-MM-DD'), toDate = moment().endOf('month').format("YYYY-MM-DD") } = args;
+    return MemberStatistics.getLoader(fromDate, toDate).load(root.id);
+  },
+  collaboratorStats: async (root: IMember, args: any, context: Context) => {
+    const { fromDate = moment().startOf('month').format('YYYY-MM-DD'), toDate = moment().endOf('month').format("YYYY-MM-DD") } = args;
+    return CollaboratorStats.getLoader(fromDate, toDate).load(root.id);
+  },
+  customerStats: async (root: IMember, args: any, context: Context) => {
+    let {
+      fromDate = moment().startOf('month').format('YYYY-MM-DD'),
+      toDate = moment().endOf('month').format("YYYY-MM-DD")
+    } = args;
+    let $gte: Date = null,
+      $lte: Date = null;
+
+    fromDate = fromDate + "T00:00:00+07:00";
+    $gte = new Date(fromDate);
+
+    toDate = toDate + "T00:00:00+07:00";
+    $lte = new Date(toDate);
+
+    const customersCount = await CustomerModel.count({
+      createdAt: {
+        $lte
+      },
+      "pageAccounts": {
+        $elemMatch: {
+          memberId: root.id
+        }
+      }
+    })
+    return {
+      customersCount
+    }
+  }
 }
 
 const Query = {

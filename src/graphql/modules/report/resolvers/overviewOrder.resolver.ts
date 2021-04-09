@@ -1,5 +1,5 @@
 import { ROLES } from "../../../../constants/role.const";
-import { AuthHelper } from "../../../../helpers";
+import { AuthHelper, UtilsHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { AddressDeliveryLoader, AddressDeliveryModel } from "../../addressDelivery/addressDelivery.model";
 import { AddressStorehouseLoader, AddressStorehouseModel } from "../../addressStorehouse/addressStorehouse.model";
@@ -20,19 +20,7 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   let { fromDate, toDate, sellerIds, isLate } = args;
 
-  let $gte: Date = null,
-    $lte: Date = null;
-
-
-  if (fromDate) {
-    fromDate = fromDate + "T00:00:00+07:00";
-    $gte = new Date(fromDate);
-  }
-
-  if (toDate) {
-    toDate = toDate + "T24:00:00+07:00";
-    $lte = new Date(toDate);
-  }
+  const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
   const params = {};
 
@@ -220,19 +208,7 @@ const getOrderReports = async (root: any, args: any, context: Context) => {
   const queryInput = args.q;
   let { fromDate, toDate, sellerIds } = queryInput.filter;
 
-
-  let $gte: Date = null,
-    $lte: Date = null;
-
-  if (fromDate) {
-    fromDate = fromDate + "T00:00:00+07:00";
-    $gte = new Date(fromDate);
-  }
-  if (toDate) {
-    toDate = toDate + "T23:59:59+07:00";
-    $gte = new Date(fromDate);
-  }
-
+  const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
   if ($gte) {
     set(args, "q.filter.createdAt.$gte", $gte);

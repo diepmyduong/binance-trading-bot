@@ -18,7 +18,7 @@ import { BranchModel } from "../../graphql/modules/branch/branch.model";
 import { isValidObjectId, Types } from "mongoose";
 import { ErrorHelper } from "../../base/error";
 import { ReportHelper } from "../../graphql/modules/report/report.helper";
-import { get, isEmpty, keyBy } from "lodash";
+import { get, isEmpty, keyBy, set } from "lodash";
 import { OrderLogModel } from "../../graphql/modules/orderLog/orderLog.model";
 import { MemberStatistics } from "../../graphql/modules/report/loaders/memberStatistics.loader";
 import { CollaboratorModel } from "../../graphql/modules/collaborator/collaborator.model";
@@ -106,38 +106,32 @@ class MemberRoute extends BaseRoute {
       }
     }
 
-    let $gte: Date = null,
-      $lte: Date = null;
+    const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
-    //2.4.2021-17h00
-    //4.4.2021-24h00
+    const $match: any = { };
+    const $memberMatch: any = { type: MemberType.BRANCH };
 
-    // fromDate = "2021-04-02T17:00:00+07:00";
-    // toDate = "2021-04-04T24:00:00+07:00";
-    // $gte = new Date(fromDate);
-    // $lte = new Date(toDate);
-
-    if (fromDate) {
-      fromDate = fromDate + "T00:00:00+07:00";
-      $gte = new Date(fromDate);
-    }
-    if (toDate) {
-      toDate = toDate + "T23:59:59+07:00";
-      $gte = new Date(fromDate);
+    if ($gte) {
+      set($match, "createdAt.$gte", $gte);
     }
 
-    const $match: any = { type: MemberType.BRANCH };
+    if ($lte) {
+      set($match, "createdAt.$lte", $lte);
+    }
+
 
     if (memberId) {
-      $match._id = new ObjectId(memberId);
+      set($memberMatch, "_id", new ObjectId(memberId));
     }
 
     if (context.isMember()) {
-      $match._id = new ObjectId(context.id);
+      set($memberMatch, "_id", new ObjectId(memberId));
     }
 
     const members = await MemberModel.aggregate([
-      { $match },
+      { $match:{
+        ...$memberMatch
+      } },
       {
         $lookup: {
           from: 'branches',
@@ -172,10 +166,7 @@ class MemberRoute extends BaseRoute {
         {
           $match: {
             memberId: { $in: memberIds },
-            createdAt: {
-              $gte,
-              $lte,
-            },
+            ...$match
           }
         },
         {

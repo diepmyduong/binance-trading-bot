@@ -1,5 +1,5 @@
 import { ROLES } from "../../../../constants/role.const";
-import { AuthHelper } from "../../../../helpers";
+import { AuthHelper, UtilsHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { MemberStatistics } from "./../loaders/memberStatistics.loader";
 import { memberService } from "../../member/member.service";
@@ -20,25 +20,7 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
     memberId
   } = args;
 
-  // console.log("fromDate", fromDate)
-  // console.log("toDate", toDate)
-
-  let $gte: Date = new Date(moment().startOf('month').format('YYYY-MM-DD') + "T00:00:00+07:00"),
-    $lte: Date = new Date(moment().endOf('month').format('YYYY-MM-DD') + "T00:00:00+07:00");
-
-  // console.log("gte", $gte);
-  // console.log("lte", $lte);
-
-  if (fromDate) {
-    fromDate = fromDate + "T00:00:00+07:00";
-    $gte = new Date(fromDate);
-  }
-
-  if (toDate) {
-    toDate = toDate + "T23:59:59+07:00";
-    $lte = new Date(toDate);
-  }
-
+  const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
   const $match = {
     createdAt: {
@@ -174,18 +156,8 @@ const OverviewPost = {
       fromDate = moment().startOf('month').format('YYYY-MM-DD'),
       toDate = moment().endOf('month').format("YYYY-MM-DD")
     } = args;
-    let $gte: Date = null,
-      $lte: Date = null;
-      
-    if (fromDate) {
-      fromDate = fromDate + "T00:00:00+07:00";
-      $gte = new Date(fromDate);
-    }
-    if (toDate) {
-      toDate = toDate + "T23:59:59+07:00";
-      $gte = new Date(fromDate);
-    }
 
+    const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
     const customersCount = await CustomerModel.count({
       createdAt: {

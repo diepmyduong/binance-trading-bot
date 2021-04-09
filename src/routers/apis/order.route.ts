@@ -10,7 +10,7 @@ import { Context } from "../../graphql/context";
 
 import { auth } from "../../middleware/auth";
 
-import _, { reverse, set, sortBy } from "lodash";
+import _, { isEmpty, reverse, set, sortBy } from "lodash";
 import numeral from "numeral";
 import { PrinterHelper } from "../../helpers/printerHelper";
 import {
@@ -130,6 +130,7 @@ class OrderRoute extends BaseRoute {
     context.auth(ROLES.ADMIN_EDITOR_MEMBER);
 
     let data: any = [];
+    let staticsticData: any = [];
 
     let fromDate: string = req.query.fromDate
       ? req.query.fromDate.toString()
@@ -145,7 +146,7 @@ class OrderRoute extends BaseRoute {
 
     const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
-    const params: any = { type: MemberType.BRANCH };
+    const params: any = {};
 
     if ($gte) {
       set(params, "createdAt.$gte", $gte);
@@ -163,6 +164,8 @@ class OrderRoute extends BaseRoute {
     if (context.isMember()) {
       set(params, "sellerId", new ObjectId(context.id));
     }
+
+    // console.log('params', params);
 
     const [orders, addressDeliverys, addressStorehouses, sellers, branches] = await Promise.all([
       OrderModel.find(params),
@@ -204,6 +207,13 @@ class OrderRoute extends BaseRoute {
       const storehouseAddress = addressStorehouse ? `${addressStorehouse.name} - ${addressStorehouse.address}` : null;
       const buyerAddress = order.buyerAddress;
       const branch = branches.find(br => br.id.toString() === seller.branchId.toString());
+      const createdDate = moment(order.createdAt);
+      const finishedDate = order.finishedAt ? moment(order.finishedAt) : null;
+      const toDate = moment(new Date());
+      const orderDuration = order.isLate ? [OrderStatus.COMPLETED, OrderStatus.CANCELED, OrderStatus.FAILURE].includes(order.status) ? moment.duration(finishedDate.diff(createdDate)) : moment.duration(toDate.diff(createdDate)) : null;
+      const remainTime = orderDuration ? `${orderDuration.days() - 1} Ngày ${orderDuration.hours()} Giờ` : "";
+      const remainDays = orderDuration ? orderDuration.days() - 1 : 0;
+      const remainHours = orderDuration ? orderDuration.hours() : 0;
       const params = {
         code: order.code,
         shopName: seller.shopName,
@@ -224,7 +234,14 @@ class OrderRoute extends BaseRoute {
         subTotal: order.subtotal,
         shipfee: order?.shipfee,
         amount: order.amount,
-        status: statusText(order)
+        status: statusText(order),
+        createdDate: moment(order.createdAt).format('DD/MM/YYYY HH:mm:ss zz'),
+        finishedDate: order.finishedAt ? moment(order.finishedAt).format('DD/MM/YYYY HH:mm:ss zz') : "",
+        logDate: moment(order.loggedAt).format('DD/MM/YYYY HH:mm:ss zz'),
+        late: order.isLate ? "Trể" : "",
+        remainTime: order.isLate ? remainTime : "",
+        remainDays: order.isLate ? remainDays : "",
+        remainHours: order.isLate ? remainHours : ""
       }
       // console.log('count', i);
       data.push(params);
@@ -233,72 +250,157 @@ class OrderRoute extends BaseRoute {
     // console.log('data', data);
 
     const workbook = new Excel.Workbook();
-    const sheet = workbook.addWorksheet("Sheet1");
-    const excelHeaders = [
-      "STT",
-      "Mã đơn",
 
-      "Bưu cục",
-      "Mã bưu cục",
-      "Quận / Huyện",
-      "Chi nhánh",
+    const createSheetData = (data: [], name: string) => {
+      const sheet = workbook.addWorksheet(name);
+      const excelHeaders = [
+        "STT",
+        "Mã đơn",
 
-      "Người mua",
-      "Địa chỉ người mua",
-      "SĐT",
+        "Bưu cục",
+        "Mã bưu cục",
+        "Quận / Huyện",
+        "Chi nhánh",
 
-      "PTVC",
-      "Địa chỉ bưu cục nhận",
-      "Địa chỉ bưu cục giao",
+        "Người mua",
+        "Địa chỉ người mua",
+        "SĐT",
 
-      "Ghi chú",
-      "HH điểm bán",
-      "HH CTV",
-      "HH giao hàng",
+        "PTVC",
+        "Địa chỉ bưu cục nhận",
+        "Địa chỉ bưu cục giao",
 
-      "Thành tiền",
-      "Phí ship",
-      "Tổng cộng",
+        "Ghi chú",
+        "HH điểm bán",
+        "HH CTV",
+        "HH giao hàng",
 
-      "Tình trạng",
-    ];
+        "Thành tiền",
+        "Phí ship",
+        "Tổng cộng",
 
-    sheet.addRow(excelHeaders);
-
-    data.forEach((d: any, i: number) => {
-      const dataRow = [
-        i + 1,
-        d.code,
-
-        d.shopName,
-        d.shopCode,
-        d.shopDistrict,
-        d.branchName,
-
-        d.buyer,
-        d.buyerAddress,
-        d.buyerPhone,
-
-        d.shipMethod,
-        d.deliveryAddress,
-        d.storehouseAddress,
-
-        d.note,
-
-        d.commission1,
-        d.commission2,
-        d.commission3,
-
-        d.subTotal,
-        d.shipfee,
-        d.amount,
-
-        d.status,
+        "Ngày đặt hàng",
+        "Ngày hoàn tất",
+        "Ngày xử lý gần nhất",
+        "Tình trạng",
+        "Trể",
+        "Thời gian bị trể",
+        "Số ngày trể",
+        "Số giờ trể"
       ];
-      sheet.addRow(dataRow);
-    });
 
-    UtilsHelper.setThemeExcelWorkBook(sheet);
+      sheet.addRow(excelHeaders);
+
+      data.forEach((d: any, i: number) => {
+        const dataRow = [
+          i + 1,
+          d.code,
+
+          d.shopName,
+          d.shopCode,
+          d.shopDistrict,
+          d.branchName,
+
+          d.buyer,
+          d.buyerAddress,
+          d.buyerPhone,
+
+          d.shipMethod,
+          d.deliveryAddress,
+          d.storehouseAddress,
+
+          d.note,
+
+          d.commission1,
+          d.commission2,
+          d.commission3,
+
+          d.subTotal,
+          d.shipfee,
+          d.amount,
+
+          d.createdDate,
+          d.finishedDate,
+          d.logDate,
+          d.status,
+          d.late,
+
+          d.remainTime,
+          d.remainDays,
+          d.remainHours,
+        ];
+        sheet.addRow(dataRow);
+      });
+
+      UtilsHelper.setThemeExcelWorkBook(sheet);
+    }
+
+    const POSTS_SHEET_NAME = "Danh sách đơn hàng";
+    createSheetData(data, POSTS_SHEET_NAME);
+
+    if (!context.isMember() && isEmpty(memberId)) {
+
+      const q10_q11_name = "Bưu điện TT Phú Thọ"
+      const q10_q11 = ["Quận 10", "Quận 11"];
+      const q10_q11_data = data.filter((m: any) => q10_q11.includes(m.shopDistrict));
+
+      const q12_hm_name = "Bưu điện Hóc Môn"
+      const q12_hocmon = ["Quận 12", "Hóc Môn"];
+      const q12_hocmon_data = data.filter((m: any) => q12_hocmon.includes(m.shopDistrict));
+
+      const gv_bt_pn_name = "Bưu điện TT Gia Định"
+      const gv_bt_pn = ["Gò Vấp", "Bình Thạnh", "Phú Nhuận"];
+      const gv_bt_pn_data = data.filter((m: any) => gv_bt_pn.includes(m.shopDistrict));
+
+      const tb_tp_name = "Bưu điện TT Tân Bình Tân Phú"
+      const tb_tp = ["Tân Bình", "Tân Phú"];
+      const tb_tp_data = data.filter((m: any) => tb_tp.includes(m.shopDistrict));
+
+      const q1_q2_q3_name = "Bưu điện TT Sài gòn"
+      const q1_q2_q3 = ["Quận 1", "Quận 2", "Quận 3"];
+      const q1_q2_q3_data = data.filter((m: any) => q1_q2_q3.includes(m.shopDistrict) && m.shopCode !== "PKDBDHCM");
+
+      const pkd_name = "Phòng KD Bưu điện HCM"
+      const pkd_data = data.filter((m: any) => m.shopCode === "PKDBDHCM");
+
+      const bt_bc_name = "Bưu điện Bình Chánh"
+      const bt_bc = ["Bình Tân", "Bình Chánh"];
+      const bt_bc_data = data.filter((m: any) => bt_bc.includes(m.shopDistrict));
+
+      const q4_q7_name = "Bưu điện TT Phú Mỹ Hưng"
+      const q4_q7 = ["Quận 4", "Quận 7"];
+      const q4_q7_data = data.filter((m: any) => q4_q7.includes(m.shopDistrict));
+
+      const nb_cg_name = "Bưu điện TT Nam Sài Gòn"
+      const nb_cg = ["Nhà Bè", "Cần Giờ"];
+      const nb_cg_data = data.filter((m: any) => nb_cg.includes(m.shopDistrict));
+
+      const td_q9_name = "Bưu điện TT Thủ Đức"
+      const td_q9 = ["Thủ Đức", "Quận 9"];
+      const td_q9_data = data.filter((m: any) => td_q9.includes(m.shopDistrict));
+
+      const q5_q6_q8_name = "Bưu điện TT Chợ Lớn"
+      const q5_q6_q8 = ["Quận 5", "Quận 6", "Quận 8"];
+      const q5_q6_q8_data = data.filter((m: any) => q5_q6_q8.includes(m.shopDistrict));
+
+      const cc_name = "Bưu điện Củ Chi"
+      const cc = ["Củ Chi"];
+      const cc_data = data.filter((m: any) => cc.includes(m.shopDistrict));
+
+
+      createSheetData(pkd_data, pkd_name);
+      createSheetData(q10_q11_data, q10_q11_name);
+      createSheetData(q12_hocmon_data, q12_hm_name);
+      createSheetData(gv_bt_pn_data, gv_bt_pn_name);
+      createSheetData(tb_tp_data, tb_tp_name);
+      createSheetData(q1_q2_q3_data, q1_q2_q3_name);
+      createSheetData(bt_bc_data, bt_bc_name);
+      createSheetData(q4_q7_data, q4_q7_name);
+      createSheetData(nb_cg_data, nb_cg_name);
+      createSheetData(td_q9_data, td_q9_name);
+      createSheetData(q5_q6_q8_data, q5_q6_q8_name);
+      createSheetData(cc_data, cc_name);
+    }
 
     return UtilsHelper.responseExcel(res, workbook, "danh_sach_don_hang");
   }

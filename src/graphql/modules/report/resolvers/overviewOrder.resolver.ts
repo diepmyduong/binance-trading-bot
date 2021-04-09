@@ -179,7 +179,7 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
 
   const completedOrders = {
     count: completedOrdersCount,
-    sum: completedOrderSum?.total ? allOrderSum?.total : 0,
+    sum: completedOrderSum?.total ? completedOrderSum?.total : 0,
   }
 
   const failureOrders = {

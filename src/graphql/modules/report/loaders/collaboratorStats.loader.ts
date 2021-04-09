@@ -1,6 +1,7 @@
 import DataLoader from "dataloader";
 import { get, keyBy } from "lodash";
 import { Types } from "mongoose";
+import { UtilsHelper } from "../../../../helpers";
 import { CollaboratorModel } from "../../collaborator/collaborator.model";
 
 
@@ -10,19 +11,10 @@ export class CollaboratorStats {
   static loaders: { [x: string]: DataLoader<string, CollaboratorStats> } = {};
 
   static getLoader(fromDate: string, toDate: string) {
+
     const loaderId = fromDate + toDate;
-    let $gte: Date = null,
-      $lte: Date = null;
 
-    if (fromDate) {
-      fromDate = fromDate + "T00:00:00+07:00";
-      $gte = new Date(fromDate);
-    }
-
-    if (toDate) {
-      toDate = toDate + "T00:00:00+07:00";
-      $lte = new Date(toDate);
-    }
+    const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
     if (!this.loaders[loaderId]) {
       this.loaders[loaderId] = new DataLoader<string, CollaboratorStats>(

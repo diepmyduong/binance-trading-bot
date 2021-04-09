@@ -22,6 +22,7 @@ import { CustomerModel } from "../../graphql/modules/customer/customer.model";
 import { Gender, MemberModel } from "../../graphql/modules/member/member.model";
 import { CustomerCommissionLogModel } from "../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
 import { ObjectId } from "mongodb";
+import { set } from "lodash";
 
 const STT = "STT";
 const NAME = "Tên";
@@ -144,21 +145,21 @@ class CollaboratorRoute extends BaseRoute {
 
     let data: any = [];
 
-    let $gte = null,
-      $lte = null;
-
     const $match: any = {};
 
-    if (fromDate && toDate) {
-      fromDate = fromDate + "T00:00:00+07:00";
-      toDate = toDate + "T24:00:00+07:00";
-      $gte = new Date(fromDate);
-      $lte = new Date(toDate);
-      $match.createdAt = { $gte, $lte };
+    const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
+
+    if ($gte) {
+      set($match, "createdAt.$gte", $gte);
     }
 
+    if ($lte) {
+      set($match, "createdAt.$lte", $lte);
+    }
+
+
     if (memberId) {
-      $match.memberId = new ObjectId(memberId);
+      set($match, "memberId", new ObjectId(memberId));
     }
 
     //customerId:ObjectId("603b6ea20c5de11eaca05606"),

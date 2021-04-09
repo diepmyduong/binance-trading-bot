@@ -238,7 +238,7 @@ class OrderRoute extends BaseRoute {
         createdDate: moment(order.createdAt).format('DD/MM/YYYY HH:mm:ss zz'),
         finishedDate: order.finishedAt ? moment(order.finishedAt).format('DD/MM/YYYY HH:mm:ss zz') : "",
         logDate: moment(order.loggedAt).format('DD/MM/YYYY HH:mm:ss zz'),
-        late: order.isLate ? "Trể" : "",
+        late: order.isLate ? "Trễ" : "",
         remainTime: order.isLate ? remainTime : "",
         remainDays: order.isLate ? remainDays : "",
         remainHours: order.isLate ? remainHours : ""
@@ -283,10 +283,10 @@ class OrderRoute extends BaseRoute {
         "Ngày hoàn tất",
         "Ngày xử lý gần nhất",
         "Tình trạng",
-        "Trể",
-        "Thời gian bị trể",
-        "Số ngày trể",
-        "Số giờ trể"
+        "Trễ",
+        "Thời gian bị Trễ",
+        "Số ngày Trễ",
+        "Số giờ Trễ"
       ];
 
       sheet.addRow(excelHeaders);

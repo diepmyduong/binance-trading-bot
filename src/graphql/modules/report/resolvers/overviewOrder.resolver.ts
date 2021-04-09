@@ -1,5 +1,5 @@
 import { ROLES } from "../../../../constants/role.const";
-import { AuthHelper } from "../../../../helpers";
+import { AuthHelper, UtilsHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { AddressDeliveryLoader, AddressDeliveryModel } from "../../addressDelivery/addressDelivery.model";
 import { AddressStorehouseLoader, AddressStorehouseModel } from "../../addressStorehouse/addressStorehouse.model";
@@ -20,19 +20,7 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   let { fromDate, toDate, sellerIds, isLate } = args;
 
-  let $gte: Date = null,
-    $lte: Date = null;
-
-
-  if (fromDate) {
-    fromDate = fromDate + "T00:00:00+07:00";
-    $gte = new Date(fromDate);
-  }
-
-  if (toDate) {
-    toDate = toDate + "T24:00:00+07:00";
-    $lte = new Date(toDate);
-  }
+  const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
   const params = {};
 
@@ -55,7 +43,7 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
     }
   }
 
-  console.log('params',params);
+  console.log('params', params);
 
   if (isLate === true) {
     set(params, "isLate", isLate);
@@ -220,19 +208,7 @@ const getOrderReports = async (root: any, args: any, context: Context) => {
   const queryInput = args.q;
   let { fromDate, toDate, sellerIds } = queryInput.filter;
 
-
-  let $gte: Date = null,
-    $lte: Date = null;
-
-  if (fromDate) {
-    fromDate = fromDate + "T00:00:00+07:00";
-    $gte = new Date(fromDate);
-  }
-
-  if (toDate) {
-    toDate = toDate + "T24:00:00+07:00";
-    $lte = new Date(toDate);
-  }
+  const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
   if ($gte) {
     set(args, "q.filter.createdAt.$gte", $gte);
@@ -248,18 +224,19 @@ const getOrderReports = async (root: any, args: any, context: Context) => {
   else {
     if (sellerIds) {
       if (sellerIds.length > 0) {
-        set(args, "sellerId.$in", sellerIds.map(Types.ObjectId));
+        set(args, "q.filter.sellerId.$in", sellerIds.map(Types.ObjectId));
       }
-      else{
+      else {
         delete args.q.filter.sellerIds;
       }
     }
   }
 
+  delete args.q.filter.sellerIds;
   delete args.q.filter.fromDate;
   delete args.q.filter.toDate;
 
-  // console.log('args',args);
+  console.log('args', args);
 
   return orderService.fetch(args.q);
 };

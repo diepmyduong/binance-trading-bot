@@ -15,10 +15,14 @@ import { ICommissionLog } from "../../graphql/modules/commissionLog/commissionLo
 import { AddressDeliveryModel } from "../../graphql/modules/addressDelivery/addressDelivery.model";
 import { AddressStorehouseModel } from "../../graphql/modules/addressStorehouse/addressStorehouse.model";
 import { BranchModel } from "../../graphql/modules/branch/branch.model";
-import { isValidObjectId } from "mongoose";
+import { isValidObjectId, Types } from "mongoose";
 import { ErrorHelper } from "../../base/error";
 import { ReportHelper } from "../../graphql/modules/report/report.helper";
-import { isEmpty } from "lodash";
+import { get, isEmpty, keyBy, set } from "lodash";
+import { OrderLogModel } from "../../graphql/modules/orderLog/orderLog.model";
+import { MemberStatistics } from "../../graphql/modules/report/loaders/memberStatistics.loader";
+import { CollaboratorModel } from "../../graphql/modules/collaborator/collaborator.model";
+import { CustomerModel } from "../../graphql/modules/customer/customer.model";
 const STT = "STT";
 const NAME = "Tên";
 const PHONE = "Số điện thoại";
@@ -102,101 +106,168 @@ class MemberRoute extends BaseRoute {
       }
     }
 
-    let $gte: Date = null,
-      $lte: Date = null;
+    const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
-    //2.4.2021-17h00
-    //4.4.2021-24h00
+    const $match: any = { };
+    const $memberMatch: any = { type: MemberType.BRANCH };
 
-    // fromDate = "2021-04-02T17:00:00+07:00";
-    // toDate = "2021-04-04T24:00:00+07:00";
-    // $gte = new Date(fromDate);
-    // $lte = new Date(toDate);
-
-    if (fromDate && toDate) {
-      fromDate = fromDate + "T17:00:00+07:00";
-      toDate = toDate + "T24:00:00+07:00";
-      $gte = new Date(fromDate);
-      $lte = new Date(toDate);
+    if ($gte) {
+      set($match, "createdAt.$gte", $gte);
     }
 
-    const memberParams: any = { type: MemberType.BRANCH };
+    if ($lte) {
+      set($match, "createdAt.$lte", $lte);
+    }
+
 
     if (memberId) {
-      memberParams._id = new ObjectId(memberId);
+      set($memberMatch, "_id", new ObjectId(memberId));
     }
 
     if (context.isMember()) {
-      memberParams._id = new ObjectId(context.id);
+      set($memberMatch, "_id", new ObjectId(memberId));
     }
 
-
-    console.log('memberParams',memberParams);
-
-    const [members, branches, addressDeliverys, addressStorehouses] = await Promise.all([
-      MemberModel.find(memberParams),
-      BranchModel.find(),
-      AddressDeliveryModel.find(),
-      AddressStorehouseModel.find()
+    const members = await MemberModel.aggregate([
+      { $match:{
+        ...$memberMatch
+      } },
+      {
+        $lookup: {
+          from: 'branches',
+          localField: 'branchId',
+          foreignField: '_id',
+          as: 'branch'
+        }
+      },
+      { $unwind: '$branch' },
+      {
+        $project: {
+          _id: 1,
+          code: 1,
+          shopName: 1,
+          district: 1,
+          branchCode: "$branch.code",
+          branchName: "$branch.name",
+        }
+      }
     ]);
 
-    console.log('members',members);
+    // console.log('members', members);
+
+    const memberIds = members.map(member => member._id);
 
     let data: any = [];
     let staticsticData: any = [];
 
+
+    const [orderStats, collaboratorsStats] = await Promise.all([
+      OrderLogModel.aggregate([
+        {
+          $match: {
+            memberId: { $in: memberIds },
+            ...$match
+          }
+        },
+        {
+          $group: {
+            _id: "$orderId",
+            memberId: { $first: "$memberId" },
+            log: { $last: "$$ROOT" }
+          }
+        },
+        {
+          $lookup: {
+            from: 'orders',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'order'
+          }
+        },
+        { $unwind: '$order' },
+        {
+          $group: {
+            _id: "$memberId",
+            ordersCount: { $sum: 1 },
+            pendingCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, 1, 0] } },
+            confirmedCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, 1, 0] } },
+            completedCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, 1, 0] } },
+            deliveringCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, 1, 0] } },
+            canceledCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, 1, 0] } },
+            failureCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, 1, 0] } },
+
+            pendingAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, "$order.amount", 0] } },
+            confirmedAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, "$order.amount", 0] } },
+            deliveringAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, "$order.amount", 0] } },
+            canceledAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, "$order.amount", 0] } },
+            failureAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, "$order.amount", 0] } },
+            estimatedIncome: { $sum: { $cond: [{ $in: ["$log.orderStatus", ["CANCELED", "FAILURE", "COMPLETED"]] }, 0, "$order.amount"] } },
+            income: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, "$order.amount", 0] } },
+
+            pendingCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+            confirmedCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+            deliveringCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+            canceledCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+            failureCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+            estimatedCommission: { $sum: { $cond: [{ $in: ["$log.orderStatus", ["CANCELED", "FAILURE", "COMPLETED"]] }, 0, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }] } },
+            realCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+          }
+        },
+      ])
+      , CollaboratorModel.aggregate([
+        {
+          $match: {
+            memberId: { $in: memberIds },
+            createdAt: {
+              $lte
+            },
+          }
+        },
+        {
+          $group: {
+            _id: "$memberId",
+            collaboratorsCount: { $sum: 1 },
+            customersAsCollaboratorCount: { $sum: { $cond: [{ $ne: ["$customerId", undefined] }, 1, 0] } }
+          }
+        }
+      ])
+    ])
+
     for (let i = 0; i < members.length; i++) {
       const member: any = members[i];
-
-      const [
-        customers,
-        collaborators,
-        customersAsCollaborator,
-        allMemberCommission,
-        orderStats
-      ] = await Promise.all([
-        ReportHelper.getCustomers(member, $gte, $lte),
-        ReportHelper.getCollaborators(member, $gte, $lte),
-        ReportHelper.getCustomersAsCollaborator(member, $gte, $lte),
-        ReportHelper.getCommissionLogs(member, $gte, $lte),
-        ReportHelper.getOrdersStats(member, $gte, $lte, addressDeliverys, addressStorehouses)
-      ]);
-
-      console.log('allMemberCommission',allMemberCommission.length);
-
-      const customersCount = customers.length;
-      const collaboratorsCount = collaborators.length;
-      const customersAsCollaboratorCount = customersAsCollaborator.length;
-
-      const { allIncomeStats, allCommissionStats } = orderStats;
-
-      const branch = branches.find(br => br.id.toString() === member.branchId.toString());
-
-      const totalCommission = allMemberCommission.reduce((total: number, log: ICommissionLog) => total += log.value, 0);
-
+      const orderStat = orderStats.find(stats => stats._id.toString() === member._id.toString());
+      const collaboratorStat = collaboratorsStats.find(stats => stats._id.toString() === member._id.toString());
+      const customersCount = await CustomerModel.count({
+        createdAt: {
+          $lte
+        },
+        "pageAccounts": {
+          $elemMatch: {
+            memberId: member._id
+          }
+        }
+      })
+      // console.log('orderStat',orderStat);
       const params = {
         code: member.code,
         shopName: member.shopName,
-        address: member.address,
-        ward: member.ward,
         district: member.district,
-        province: member.province,
-        branchCode: branch?.code,
-        branchName: branch?.name,
+        branchCode: member.branchCode,
+        branchName: member.branchName,
         customersCount,
-        collaboratorsCount,
-        customersAsCollaboratorCount,
-        ordersCount: allIncomeStats.allOrders.count,
-        pendingCount: allIncomeStats.pendingOrders.count,
-        confirmedCount: allIncomeStats.confirmedOrders.count,
-        deliveringCount: allIncomeStats.deliveringOrders.count,
-        completedCount: allIncomeStats.completedOrders.count,
-        failureCount: allIncomeStats.failureOrders.count,
-        canceledCount: allIncomeStats.canceledOrders.count,
-        estimatedCommission: allCommissionStats.estimatedOrders.totalCommission,
-        realCommission: totalCommission,
-        estimatedIncome: allIncomeStats.estimatedOrders.sum,
-        income: allIncomeStats.completedOrders.sum,
+        collaboratorsCount: collaboratorStat ? collaboratorStat.collaboratorsCount : 0,
+        customersAsCollaboratorCount: collaboratorStat ? collaboratorStat.customersAsCollaboratorCount : 0,
+        ordersCount: orderStat ? orderStat.ordersCount : 0,
+        pendingCount: orderStat ? orderStat.pendingCount : 0,
+        confirmedCount: orderStat ? orderStat.confirmedCount : 0,
+        deliveringCount: orderStat ? orderStat.deliveringCount : 0,
+        completedCount: orderStat ? orderStat.completedCount : 0,
+        failureCount: orderStat ? orderStat.failureCount : 0,
+        canceledCount: orderStat ? orderStat.canceledCount : 0,
+        estimatedCommission: orderStat ? orderStat.estimatedCommission : 0,
+        realCommission: orderStat ? orderStat.realCommission : 0,
+        estimatedIncome: orderStat ? orderStat.estimatedIncome : 0,
+        income: orderStat ? orderStat.income : 0,
       }
 
       // console.log('count', i);
@@ -211,12 +282,11 @@ class MemberRoute extends BaseRoute {
         STT,
         "Mã bưu cục",
         "Bưu cục",
-        "Địa chỉ",
-        "Phường / Xã",
         "Quận / Huyện",
-        "Tỉnh / Thành",
         "Chi nhánh",
+        "Số lượng Khách hàng",
         "Số lượng CTV",
+        "Số lượng CTV - khách hàng",
         "Số lượng đơn hàng",
         "Đơn chờ",
         "Đơn xác nhận",
@@ -237,12 +307,11 @@ class MemberRoute extends BaseRoute {
           i + 1,//STT
           d.code,//"Mã bưu cục",
           d.shopName,// "Bưu cục",
-          d.address,//"Địa chỉ",
-          d.ward,//"Phường / Xã",
           d.district,//"Quận / Huyện",
-          d.province,//"Tỉnh / Thành",
           d.branchName,//"Chi nhánh",
-          d.customersAsCollaboratorCount,//  "Số lượng CTV",
+          d.customersCount,
+          d.collaboratorsCount,
+          d.customersAsCollaboratorCount,
           d.ordersCount, //
           d.pendingCount,
           d.confirmedCount,
@@ -266,7 +335,9 @@ class MemberRoute extends BaseRoute {
       const excelHeaders = [
         STT,
         "Bưu cục",
+        "Số lượng Khách hàng",
         "Số lượng CTV",
+        "Số lượng CTV - khách hàng",
         "Số lượng đơn hàng",
         "Đơn chờ",
         "Đơn xác nhận",
@@ -285,6 +356,8 @@ class MemberRoute extends BaseRoute {
         const dataRow = [
           i + 1,
           d.name,
+          d.customersCount,
+          d.collaboratorsCount,
           d.customersAsCollaboratorCount,
           d.ordersCount,
           d.pendingCount,

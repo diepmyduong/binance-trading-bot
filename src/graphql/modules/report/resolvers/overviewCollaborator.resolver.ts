@@ -21,23 +21,13 @@ const getOverviewCollaboratorReport = async (
   let { fromDate, toDate, memberId } = queryInput.filter;
 
 
-  let $gte: Date = null,
-    $lte: Date = null, $match = {}, collaboratorMatch = {};
-  
-  if(isEmpty(memberId)){
+  let $match = {}, collaboratorMatch = {};
+
+  if (isEmpty(memberId)) {
     delete args.q.filter.memberId;
   }
 
-  if (fromDate) {
-    fromDate = fromDate + "T00:00:00+07:00";
-    $gte = new Date(fromDate);
-  }
-
-  if (toDate) {
-    toDate = toDate + "T24:00:00+07:00";
-    $lte = new Date(toDate);
-  }
-
+  const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
   if ($gte) {
     set($match, "createdAt.$gte", $gte);
@@ -83,8 +73,8 @@ const getFilteredCollaborators = async (
 
   delete args.q.filter.fromDate;
   delete args.q.filter.toDate;
-  
-  if(args.q.filter.memberId === ""){
+
+  if (args.q.filter.memberId === "") {
     delete args.q.filter.memberId
   }
 
@@ -168,23 +158,7 @@ const FilteredCollaborator = {
 
     let $match = {};
 
-    // console.log("fromDate", fromDate);
-    // console.log("toDate", toDate);
-
-    let $gte: Date = null,
-      $lte: Date = null;
-
-    if (fromDate) {
-      fromDate = fromDate + "T00:00:00+07:00";
-      $gte = new Date(fromDate);
-    }
-
-    if (toDate) {
-      toDate = toDate + "T24:00:00+07:00";
-      $lte = new Date(toDate);
-    }
-
-    set($match, "collaboratorId", id);
+    const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
     if ($gte) {
       set($match, "createdAt.$gte", $gte);
@@ -194,6 +168,7 @@ const FilteredCollaborator = {
       set($match, "createdAt.$lte", $lte);
     }
 
+    set($match, "collaboratorId", id);
 
     const customerCommissionLog = await CustomerCommissionLogModel.find($match);
     const count = customerCommissionLog.length;

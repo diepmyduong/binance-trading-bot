@@ -9,11 +9,33 @@ import nlp from "wink-nlp-utils";
 import KhongDau from "khong-dau";
 
 import { AddressModel } from "../graphql/modules/address/address.model";
+import moment from "moment";
+
+const START_MONTH = moment().startOf('month').format('YYYY-MM-DD') + "T00:00:00+07:00";
+const END_MONTH = moment().startOf('month').format('YYYY-MM-DD') + "T00:00:00+07:00";
 
 export class UtilsHelper {
   constructor() { }
 
-  static setThemeExcelWorkBook = (sheet: any) =>{
+  static getDatesWithComparing = (fromDate: string = START_MONTH, toDate: string = END_MONTH) => {
+    let $gte: Date = null,
+      $lte: Date = null;
+      
+    if (fromDate) {
+      fromDate = fromDate + "T00:00:00+07:00";
+      $gte = new Date(fromDate);
+    }
+
+    if (toDate) {
+      toDate = toDate + "T23:59:59+07:00";
+      $lte = new Date(toDate);
+    }
+    return {
+      $gte, $lte
+    }
+  }
+
+  static setThemeExcelWorkBook = (sheet: any) => {
     for (let i = 0; i < sheet.columns.length; i += 1) {
       let dataMax = 0;
       const column = sheet.columns[i];
@@ -24,10 +46,10 @@ export class UtilsHelper {
           dataMax = columnLength;
         }
         column.worksheet.getRow(j).border = {
-          top: {style:'thin', color: {argb:'000000'}},
-          left: {style:'thin', color: {argb:'000000'}},
-          bottom: {style:'thin', color: {argb:'000000'}},
-          right: {style:'thin', color: {argb:'000000'}}
+          top: { style: 'thin', color: { argb: '000000' } },
+          left: { style: 'thin', color: { argb: '000000' } },
+          bottom: { style: 'thin', color: { argb: '000000' } },
+          right: { style: 'thin', color: { argb: '000000' } }
         }
       }
       column.width = dataMax < 10 ? 10 : dataMax;

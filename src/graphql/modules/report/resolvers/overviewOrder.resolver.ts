@@ -55,7 +55,7 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
     }
   }
 
-  console.log('params',params);
+  console.log('params', params);
 
   if (isLate === true) {
     set(params, "isLate", isLate);
@@ -228,11 +228,11 @@ const getOrderReports = async (root: any, args: any, context: Context) => {
     fromDate = fromDate + "T00:00:00+07:00";
     $gte = new Date(fromDate);
   }
-
   if (toDate) {
-    toDate = toDate + "T24:00:00+07:00";
-    $lte = new Date(toDate);
+    toDate = toDate + "T23:59:59+07:00";
+    $gte = new Date(fromDate);
   }
+
 
   if ($gte) {
     set(args, "q.filter.createdAt.$gte", $gte);
@@ -248,18 +248,19 @@ const getOrderReports = async (root: any, args: any, context: Context) => {
   else {
     if (sellerIds) {
       if (sellerIds.length > 0) {
-        set(args, "sellerId.$in", sellerIds.map(Types.ObjectId));
+        set(args, "q.filter.sellerId.$in", sellerIds.map(Types.ObjectId));
       }
-      else{
+      else {
         delete args.q.filter.sellerIds;
       }
     }
   }
 
+  delete args.q.filter.sellerIds;
   delete args.q.filter.fromDate;
   delete args.q.filter.toDate;
 
-  // console.log('args',args);
+  console.log('args', args);
 
   return orderService.fetch(args.q);
 };

@@ -176,12 +176,16 @@ const OverviewPost = {
     } = args;
     let $gte: Date = null,
       $lte: Date = null;
+      
+    if (fromDate) {
+      fromDate = fromDate + "T00:00:00+07:00";
+      $gte = new Date(fromDate);
+    }
+    if (toDate) {
+      toDate = toDate + "T23:59:59+07:00";
+      $gte = new Date(fromDate);
+    }
 
-    fromDate = fromDate + "T00:00:00+07:00";
-    $gte = new Date(fromDate);
-
-    toDate = toDate + "T00:00:00+07:00";
-    $lte = new Date(toDate);
 
     const customersCount = await CustomerModel.count({
       createdAt: {

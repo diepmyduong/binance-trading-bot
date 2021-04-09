@@ -64,7 +64,7 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
 
   // console.log('$match', $match);
 
-  const orderStats = await OrderLogModel.aggregate([
+  const [orderStats] = await OrderLogModel.aggregate([
     {
       $match
     },
@@ -114,15 +114,14 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
     }
   ]);
 
-  // console.log('orderStats', orderStats);
 
   return {
     totalCollaboratorsCount,
     collaboratorsAsCustomerCount,
     totalMembersCount,
-    totalOrdersCount: orderStats[0].totalOrderCount,
-    totalRealCommission: orderStats[0].completeCommission,
-    totalIncome: orderStats[0].completeAmount,
+    totalOrdersCount: orderStats ? orderStats.totalOrderCount : 0,
+    totalRealCommission: orderStats ? orderStats.completeCommission : 0,
+    totalIncome: orderStats ? orderStats.completeAmount : 0,
   }
 };
 

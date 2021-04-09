@@ -7,7 +7,7 @@ import { Context } from "../../../context";
 import { CustomerCommissionLogModel, ICustomerCommissionLog } from "../../customerCommissionLog/customerCommissionLog.model";
 import { Gender, MemberLoader, MemberModel } from "../../member/member.model";
 import { CustomerLoader, CustomerModel, ICustomer } from "../../customer/customer.model";
-import { CollaboratorModel, ICollaborator } from "../../collaborator/collaborator.model";
+import { CollaboratorLoader, CollaboratorModel, ICollaborator } from "../../collaborator/collaborator.model";
 import { collaboratorService } from "../../collaborator/collaborator.service";
 import { isEmpty, set } from "lodash";
 
@@ -97,6 +97,7 @@ const getFilteredCollaborators = async (
 
 
 const FilteredCollaborator = {
+  member: GraphQLHelper.loadById(CollaboratorLoader, "memberId"),
   members: async (root: ICollaborator, args: any, context: Context) => {
     if (root.memberId) {
       const members = await MemberModel.find({ _id: new ObjectId(root.memberId) });

@@ -10,7 +10,7 @@ import { Context } from "../../graphql/context";
 
 import { auth } from "../../middleware/auth";
 
-import _, { reverse, sortBy } from "lodash";
+import _, { reverse, set, sortBy } from "lodash";
 import numeral from "numeral";
 import { PrinterHelper } from "../../helpers/printerHelper";
 import {
@@ -143,24 +143,25 @@ class OrderRoute extends BaseRoute {
       throw ErrorHelper.requestDataInvalid("Mã bưu cục");
     }
 
-    let $gte: Date = null,
-      $lte: Date = null;
-
-    if (fromDate && toDate) {
-      fromDate = fromDate + "T00:00:00+07:00";
-      toDate = toDate + "T24:00:00+07:00";
-      $gte = new Date(fromDate);
-      $lte = new Date(toDate);
-    }
+    const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
     const params: any = { type: MemberType.BRANCH };
 
+    if ($gte) {
+      set(params, "createdAt.$gte", $gte);
+    }
+
+    if ($lte) {
+      set(params, "createdAt.$lte", $lte);
+    }
+
+
     if (memberId) {
-      params.sellerId = new ObjectId(memberId);
+      set(params, "sellerId", new ObjectId(memberId));
     }
 
     if (context.isMember()) {
-      params.sellerId = new ObjectId(context.id);
+      set(params, "sellerId", new ObjectId(context.id));
     }
 
     const [orders, addressDeliverys, addressStorehouses, sellers, branches] = await Promise.all([

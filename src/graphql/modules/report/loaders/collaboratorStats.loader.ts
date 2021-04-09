@@ -26,6 +26,7 @@ export class CollaboratorStats {
               $match: {
                 memberId: { $in: objectIds },
                 createdAt: {
+                  $gte,
                   $lte
                 },
               }
@@ -34,7 +35,7 @@ export class CollaboratorStats {
               $group: {
                 _id: "$memberId",
                 collaboratorsCount: { $sum: 1 },
-                customersAsCollaboratorCount: { $sum: { $cond: [{ $ne: ["$customerId", undefined] }, 1, 0] } }
+                customersAsCollaboratorCount: { $sum: { $cond: [{ $not: ["$customerId"] }, 0, 1] } }
               }
             }
           ]).then((list) => {

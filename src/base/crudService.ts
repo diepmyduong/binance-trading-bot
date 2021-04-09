@@ -17,7 +17,7 @@ export abstract class CrudService<M extends Model<Document, {}>> extends BaseSer
     this.model = model;
   }
 
-  async fetch(queryInput: any) {
+  async fetch(queryInput: any, select?: string) {
     queryInput = { ...queryInput };
     const limit = queryInput.limit || configs.query.limit;
     const skip = queryInput.offset || (queryInput.page - 1) * limit || 0;
@@ -56,8 +56,18 @@ export abstract class CrudService<M extends Model<Document, {}>> extends BaseSer
     const countQuery = this.model.find().merge(query);
     query.limit(limit);
     query.skip(skip);
-
-    return await Promise.all([query.exec(), countQuery.count()]).then((res) => {
+    // console.time("Fetch");
+    // console.time("Count");
+    if (select) {
+      query.select(select);
+    }
+    return await Promise.all([query.exec().then(res => {
+      // console.timeEnd("Fetch");
+      return res;
+    }), countQuery.count().then(res => {
+      // console.timeEnd("Count");
+      return res;
+    })]).then((res) => {
       return {
         data: res[0],
         total: res[1],

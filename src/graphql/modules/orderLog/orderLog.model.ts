@@ -42,7 +42,7 @@ const orderLogSchema = new Schema(
   },
   { timestamps: true }
 );
-
+orderLogSchema.index({ memberId: 1, createdAt: 1 });
 // orderLogSchema.index({ name: "text" }, { weights: { name: 2 } });
 
 export const OrderLogHook = new ModelHook<IOrderLog>(orderLogSchema);

@@ -9,7 +9,7 @@ import { Gender, MemberLoader, MemberModel } from "../../member/member.model";
 import { CustomerLoader, CustomerModel, ICustomer } from "../../customer/customer.model";
 import { CollaboratorModel, ICollaborator } from "../../collaborator/collaborator.model";
 import { collaboratorService } from "../../collaborator/collaborator.service";
-import { set } from "lodash";
+import { isEmpty, set } from "lodash";
 
 const getOverviewCollaboratorReport = async (
   root: any,
@@ -23,6 +23,10 @@ const getOverviewCollaboratorReport = async (
 
   let $gte: Date = null,
     $lte: Date = null, $match = {}, collaboratorMatch = {};
+  
+  if(isEmpty(memberId)){
+    delete args.q.filter.memberId;
+  }
 
   if (fromDate) {
     fromDate = fromDate + "T00:00:00+07:00";
@@ -79,6 +83,10 @@ const getFilteredCollaborators = async (
 
   delete args.q.filter.fromDate;
   delete args.q.filter.toDate;
+  
+  if(args.q.filter.memberId === ""){
+    delete args.q.filter.memberId
+  }
 
   if (context.isMember()) {
     args.q.filter.memberId = context.id;

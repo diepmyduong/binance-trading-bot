@@ -54,7 +54,7 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
       }
     }
   }
-  
+
   console.log('params',params);
 
   if (isLate === true) {
@@ -247,11 +247,15 @@ const getOrderReports = async (root: any, args: any, context: Context) => {
   }
   else {
     if (sellerIds) {
-      set(args, "q.filter.sellerId.$in", sellerIds);
+      if (sellerIds.length > 0) {
+        set(args, "sellerId.$in", sellerIds.map(Types.ObjectId));
+      }
+      else{
+        delete args.q.filter.sellerIds;
+      }
     }
   }
 
-  delete args.q.filter.sellerIds;
   delete args.q.filter.fromDate;
   delete args.q.filter.toDate;
 

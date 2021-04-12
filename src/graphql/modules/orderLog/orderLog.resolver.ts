@@ -92,13 +92,13 @@ const OrderLog = {
   statusText: async (root: IOrderLog, args: any, context: Context) => {
     switch (root.orderStatus) {
       case OrderStatus.PENDING:
-        return `Đang xử lý`;
+        return `Chờ duyệt`;
       case OrderStatus.CONFIRMED:
-        return `Đã xác nhận`;
+        return `Xác nhận`;
       case OrderStatus.DELIVERING:
-        return `Đang giao hàng`;
+        return `Đang giao`;
       case OrderStatus.COMPLETED:
-        return `Hoàn tất`;
+        return `Hoàn thành`;
       case OrderStatus.FAILURE:
         return `Thất bại`;
       case OrderStatus.CANCELED:

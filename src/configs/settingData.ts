@@ -16,6 +16,7 @@ export enum SettingKey {
   UNIT_PRICE = "UNIT_PRICE",
   CHATBOT_API_KEY = "CHATBOT_API_KEY",
   DEFAULT_SHOP_CODE = "DEFAULT_SHOP_CODE",
+  MAINTENANCE = "MAINTENANCE",
   
   // THONG_BAO_CHATBOT
   REGIS_SERVICE_COMMISSION_MSG = "REGIS_SERVICE_COMMISSION_MSG",
@@ -187,6 +188,15 @@ export const SETTING_DATA = [
         name: "Bưu cục mặc định",
         key: SettingKey.DEFAULT_SHOP_CODE,
         value: "PKDBDHCM",
+        isActive: true,
+        isPrivate: false,
+        readOnly: false,
+      },
+      {
+        type: SettingType.boolean,
+        name: "Bảo trì hệ thống",
+        key: SettingKey.MAINTENANCE,
+        value: false,
         isActive: true,
         isPrivate: false,
         readOnly: false,

@@ -108,7 +108,7 @@ class MemberRoute extends BaseRoute {
 
     const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
-    const $match: any = { };
+    const $match: any = {};
     const $memberMatch: any = { type: MemberType.BRANCH };
 
     if ($gte) {
@@ -129,9 +129,12 @@ class MemberRoute extends BaseRoute {
     }
 
     const members = await MemberModel.aggregate([
-      { $match:{
-        ...$memberMatch
-      } },
+      {
+        $match: {
+          ...$memberMatch,
+          activated: true
+        }
+      },
       {
         $lookup: {
           from: 'branches',
@@ -159,9 +162,10 @@ class MemberRoute extends BaseRoute {
 
     let data: any = [];
     let staticsticData: any = [];
+    const branchesData = [];
 
 
-    const [orderStats, collaboratorsStats] = await Promise.all([
+    const [orderStats, collaboratorsStats, branches] = await Promise.all([
       OrderLogModel.aggregate([
         {
           $match: {
@@ -230,8 +234,9 @@ class MemberRoute extends BaseRoute {
             customersAsCollaboratorCount: { $sum: { $cond: [{ $ne: ["$customerId", undefined] }, 1, 0] } }
           }
         }
-      ])
-    ])
+      ]),
+      BranchModel.find({})
+    ]);
 
     for (let i = 0; i < members.length; i++) {
       const member: any = members[i];
@@ -246,7 +251,7 @@ class MemberRoute extends BaseRoute {
             memberId: member._id
           }
         }
-      })
+      });
       // console.log('orderStat',orderStat);
       const params = {
         code: member.code,
@@ -376,10 +381,7 @@ class MemberRoute extends BaseRoute {
 
       UtilsHelper.setThemeExcelWorkBook(sheet);
     }
-
-    const POSTS_SHEET_NAME = "Danh sách Bưu cục";
-    createSheetData(data, POSTS_SHEET_NAME);
-
+    
     const sumAllData = (name: string, data: any[]) => {
       return {
         name: name,
@@ -398,82 +400,26 @@ class MemberRoute extends BaseRoute {
       }
     }
 
+
+    const POSTS_SHEET_NAME = "Danh sách Bưu cục";
+    createSheetData(data, POSTS_SHEET_NAME);
+
+
     if (!context.isMember() && isEmpty(memberId)) {
+      for (const branch of branches) {
+        const branchData = data.filter((m: any) => m.branchCode === branch.code);
+        staticsticData.push(sumAllData(branch.name, branchData));
+        branchesData.push({ name: branch.name, data: branchData });
+      }
+    }
 
-      const q10_q11_name = "Bưu điện TT Phú Thọ"
-      const q10_q11 = ["Quận 10", "Quận 11"];
-      const q10_q11_data = data.filter((m: any) => q10_q11.includes(m.district));
-      staticsticData.push(sumAllData(q10_q11_name, q10_q11_data));
-
-      const q12_hm_name = "Bưu điện Hóc Môn"
-      const q12_hocmon = ["Quận 12", "Hóc Môn"];
-      const q12_hocmon_data = data.filter((m: any) => q12_hocmon.includes(m.district));
-      staticsticData.push(sumAllData(q12_hm_name, q12_hocmon_data));
-
-      const gv_bt_pn_name = "Bưu điện TT Gia Định"
-      const gv_bt_pn = ["Gò Vấp", "Bình Thạnh", "Phú Nhuận"];
-      const gv_bt_pn_data = data.filter((m: any) => gv_bt_pn.includes(m.district));
-      staticsticData.push(sumAllData(gv_bt_pn_name, gv_bt_pn_data));
-
-      const tb_tp_name = "Bưu điện TT Tân Bình Tân Phú"
-      const tb_tp = ["Tân Bình", "Tân Phú"];
-      const tb_tp_data = data.filter((m: any) => tb_tp.includes(m.district));
-      staticsticData.push(sumAllData(tb_tp_name, tb_tp_data));
-
-      const q1_q2_q3_name = "Bưu điện TT Sài gòn"
-      const q1_q2_q3 = ["Quận 1", "Quận 2", "Quận 3"];
-      const q1_q2_q3_data = data.filter((m: any) => q1_q2_q3.includes(m.district) && m.code !== "PKDBDHCM");
-      staticsticData.push(sumAllData(q1_q2_q3_name, q1_q2_q3_data));
-
-      const pkd_name = "Phòng KD Bưu điện HCM"
-      const pkd_data = data.filter((m: any) => m.code === "PKDBDHCM");
-      staticsticData.push(sumAllData(pkd_name, pkd_data));
-
-      const bt_bc_name = "Bưu điện Bình Chánh"
-      const bt_bc = ["Bình Tân", "Bình Chánh"];
-      const bt_bc_data = data.filter((m: any) => bt_bc.includes(m.district));
-      staticsticData.push(sumAllData(bt_bc_name, bt_bc_data));
-
-      const q4_q7_name = "Bưu điện TT Phú Mỹ Hưng"
-      const q4_q7 = ["Quận 4", "Quận 7"];
-      const q4_q7_data = data.filter((m: any) => q4_q7.includes(m.district));
-      staticsticData.push(sumAllData(q4_q7_name, q4_q7_data));
-
-      const nb_cg_name = "Bưu điện TT Nam Sài Gòn"
-      const nb_cg = ["Nhà Bè", "Cần Giờ"];
-      const nb_cg_data = data.filter((m: any) => nb_cg.includes(m.district));
-      staticsticData.push(sumAllData(nb_cg_name, nb_cg_data));
-
-      const td_q9_name = "Bưu điện TT Thủ Đức"
-      const td_q9 = ["Thủ Đức", "Quận 9"];
-      const td_q9_data = data.filter((m: any) => td_q9.includes(m.district));
-      staticsticData.push(sumAllData(td_q9_name, td_q9_data));
-
-      const q5_q6_q8_name = "Bưu điện TT Chợ Lớn"
-      const q5_q6_q8 = ["Quận 5", "Quận 6", "Quận 8"];
-      const q5_q6_q8_data = data.filter((m: any) => q5_q6_q8.includes(m.district));
-      staticsticData.push(sumAllData(q5_q6_q8_name, q5_q6_q8_data));
-
-      const cc_name = "Bưu điện Củ Chi"
-      const cc = ["Củ Chi"];
-      const cc_data = data.filter((m: any) => cc.includes(m.district));
-
-      staticsticData.push(sumAllData(cc_name, cc_data));
+    if (!context.isMember() && isEmpty(memberId)) {
       staticsticData.push(sumAllData("Tổng", data));
-
       createStatisticSheetData(staticsticData, "TH");
-      createSheetData(pkd_data, pkd_name);
-      createSheetData(q10_q11_data, q10_q11_name);
-      createSheetData(q12_hocmon_data, q12_hm_name);
-      createSheetData(gv_bt_pn_data, gv_bt_pn_name);
-      createSheetData(tb_tp_data, tb_tp_name);
-      createSheetData(q1_q2_q3_data, q1_q2_q3_name);
-      createSheetData(bt_bc_data, bt_bc_name);
-      createSheetData(q4_q7_data, q4_q7_name);
-      createSheetData(nb_cg_data, nb_cg_name);
-      createSheetData(td_q9_data, td_q9_name);
-      createSheetData(q5_q6_q8_data, q5_q6_q8_name);
-      createSheetData(cc_data, cc_name);
+
+      for (const branchData of branchesData) {
+        createSheetData(branchData.data, branchData.name);
+      }
     }
 
     return UtilsHelper.responseExcel(res, workbook, POST_FILE_NAME);

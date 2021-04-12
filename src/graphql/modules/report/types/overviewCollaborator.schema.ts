@@ -21,7 +21,7 @@ const schema = gql`
     customerId: ID
     customer: Customer
     members: [Member]
-    memberId: String
+    memberId: ID
     member: Member
     total:Float
   }

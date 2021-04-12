@@ -167,11 +167,17 @@ class OrderRoute extends BaseRoute {
 
     // console.log('params', params);
 
-    const [orders, addressDeliverys, addressStorehouses, sellers, branches] = await Promise.all([
+    const [
+      orders, 
+      addressDeliverys, 
+      addressStorehouses, 
+      sellers, 
+      branches
+    ] = await Promise.all([
       OrderModel.find(params),
       AddressDeliveryModel.find({}),
       AddressStorehouseModel.find({}),
-      MemberModel.find({}),
+      MemberModel.find({ activated: true }).select('-addressStorehouseIds -addressDeliveryIds -fanpageImage -fanpageName'),
       BranchModel.find({})
     ]);
 
@@ -219,6 +225,7 @@ class OrderRoute extends BaseRoute {
         shopName: seller.shopName,
         shopCode: seller.code,
         shopDistrict: seller.district,
+        branchCode: branch.code,
         branchName: branch.name,
         buyer: order.buyerName,
         buyerPhone: order.buyerPhone,
@@ -248,6 +255,7 @@ class OrderRoute extends BaseRoute {
     }
 
     // console.log('data', data);
+    const branchesData = [];
 
     const workbook = new Excel.Workbook();
 
@@ -332,67 +340,16 @@ class OrderRoute extends BaseRoute {
     createSheetData(data, POSTS_SHEET_NAME);
 
     if (!context.isMember() && isEmpty(memberId)) {
+      for (const branch of branches) {
+        const branchData = data.filter((m: any) => m.branchCode === branch.code);
+        branchesData.push({ name: branch.name, data: branchData });
+      }
+    }
 
-      const q10_q11_name = "Bưu điện TT Phú Thọ"
-      const q10_q11 = ["Quận 10", "Quận 11"];
-      const q10_q11_data = data.filter((m: any) => q10_q11.includes(m.shopDistrict));
-
-      const q12_hm_name = "Bưu điện Hóc Môn"
-      const q12_hocmon = ["Quận 12", "Hóc Môn"];
-      const q12_hocmon_data = data.filter((m: any) => q12_hocmon.includes(m.shopDistrict));
-
-      const gv_bt_pn_name = "Bưu điện TT Gia Định"
-      const gv_bt_pn = ["Gò Vấp", "Bình Thạnh", "Phú Nhuận"];
-      const gv_bt_pn_data = data.filter((m: any) => gv_bt_pn.includes(m.shopDistrict));
-
-      const tb_tp_name = "Bưu điện TT Tân Bình Tân Phú"
-      const tb_tp = ["Tân Bình", "Tân Phú"];
-      const tb_tp_data = data.filter((m: any) => tb_tp.includes(m.shopDistrict));
-
-      const q1_q2_q3_name = "Bưu điện TT Sài gòn"
-      const q1_q2_q3 = ["Quận 1", "Quận 2", "Quận 3"];
-      const q1_q2_q3_data = data.filter((m: any) => q1_q2_q3.includes(m.shopDistrict) && m.shopCode !== "PKDBDHCM");
-
-      const pkd_name = "Phòng KD Bưu điện HCM"
-      const pkd_data = data.filter((m: any) => m.shopCode === "PKDBDHCM");
-
-      const bt_bc_name = "Bưu điện Bình Chánh"
-      const bt_bc = ["Bình Tân", "Bình Chánh"];
-      const bt_bc_data = data.filter((m: any) => bt_bc.includes(m.shopDistrict));
-
-      const q4_q7_name = "Bưu điện TT Phú Mỹ Hưng"
-      const q4_q7 = ["Quận 4", "Quận 7"];
-      const q4_q7_data = data.filter((m: any) => q4_q7.includes(m.shopDistrict));
-
-      const nb_cg_name = "Bưu điện TT Nam Sài Gòn"
-      const nb_cg = ["Nhà Bè", "Cần Giờ"];
-      const nb_cg_data = data.filter((m: any) => nb_cg.includes(m.shopDistrict));
-
-      const td_q9_name = "Bưu điện TT Thủ Đức"
-      const td_q9 = ["Thủ Đức", "Quận 9"];
-      const td_q9_data = data.filter((m: any) => td_q9.includes(m.shopDistrict));
-
-      const q5_q6_q8_name = "Bưu điện TT Chợ Lớn"
-      const q5_q6_q8 = ["Quận 5", "Quận 6", "Quận 8"];
-      const q5_q6_q8_data = data.filter((m: any) => q5_q6_q8.includes(m.shopDistrict));
-
-      const cc_name = "Bưu điện Củ Chi"
-      const cc = ["Củ Chi"];
-      const cc_data = data.filter((m: any) => cc.includes(m.shopDistrict));
-
-
-      createSheetData(pkd_data, pkd_name);
-      createSheetData(q10_q11_data, q10_q11_name);
-      createSheetData(q12_hocmon_data, q12_hm_name);
-      createSheetData(gv_bt_pn_data, gv_bt_pn_name);
-      createSheetData(tb_tp_data, tb_tp_name);
-      createSheetData(q1_q2_q3_data, q1_q2_q3_name);
-      createSheetData(bt_bc_data, bt_bc_name);
-      createSheetData(q4_q7_data, q4_q7_name);
-      createSheetData(nb_cg_data, nb_cg_name);
-      createSheetData(td_q9_data, td_q9_name);
-      createSheetData(q5_q6_q8_data, q5_q6_q8_name);
-      createSheetData(cc_data, cc_name);
+    if (!context.isMember() && isEmpty(memberId)) {
+      for (const branchData of branchesData) {
+        createSheetData(branchData.data, branchData.name);
+      }
     }
 
     return UtilsHelper.responseExcel(res, workbook, "danh_sach_don_hang");

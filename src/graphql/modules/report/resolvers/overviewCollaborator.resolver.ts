@@ -97,7 +97,7 @@ const getFilteredCollaborators = async (
 
 
 const FilteredCollaborator = {
-  member: GraphQLHelper.loadById(CollaboratorLoader, "memberId"),
+  member: GraphQLHelper.loadById(MemberLoader, "memberId"),
   members: async (root: ICollaborator, args: any, context: Context) => {
     if (root.memberId) {
       const members = await MemberModel.find({ _id: new ObjectId(root.memberId) });

@@ -53,7 +53,8 @@ export class EventHelper {
     collaboratorId,
     id,
   }: any) => {
-    const commissionLoging = customerCommissionLogService.payCustomerCommission({
+
+    const commissionLoging = await customerCommissionLogService.payCustomerCommission({
       customerId,
       memberId,
       commission,
@@ -61,14 +62,14 @@ export class EventHelper {
       id,
     });
 
-    const customerUpdating = customerService.increaseCommissions({
+    const customerUpdating = await customerService.increaseCommissions({
       customerId,
       commission,
       currentCommission,
     });
 
     // làm cùng lúc log và cập nhật số dư
-    return await Promise.all([commissionLoging, customerUpdating]);
+    return [commissionLoging, customerUpdating];
   };
 
   static payCustomerPoint = async ({

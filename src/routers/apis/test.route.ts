@@ -9,13 +9,15 @@ import {
 } from "../../base/baseRoute";
 import { FirebaseHelper, firebaseHelper, VietnamPostHelper } from "../../helpers";
 import { IOrder, OrderModel, OrderStatus } from "../../graphql/modules/order/order.model";
-import { CommissionLogModel } from "../../graphql/modules/commissionLog/commissionLog.model";
+import { CommissionLogModel, CommissionLogType } from "../../graphql/modules/commissionLog/commissionLog.model";
 import { CollaboratorModel } from "../../graphql/modules/collaborator/collaborator.model";
 import { CustomerModel } from "../../graphql/modules/customer/customer.model";
 import { OrderLogModel } from "../../graphql/modules/orderLog/orderLog.model";
 import { ObjectId } from "bson";
-import { CustomerCommissionLogModel } from "../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
+import { CustomerCommissionLogModel, CustomerCommissionLogType } from "../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
 import { orderService } from "../../graphql/modules/order/order.service";
+import { ProductModel } from "../../graphql/modules/product/product.model";
+import { OrderItemModel } from "../../graphql/modules/orderItem/orderItem.model";
 // import { ObjectId } from "mongodb";
 // import khongdau from "khong-dau";
 
@@ -25,7 +27,7 @@ class TestRoute extends BaseRoute {
   }
 
   customRouting() {
-    this.router.get("/", this.route(this.updateOrders));
+    this.router.get("/", this.route(this.test));
   }
 
   async test(req: Request, res: Response) {
@@ -239,9 +241,9 @@ class TestRoute extends BaseRoute {
       //     } 
       //   }, { new: true })
       // }
-      console.log('order',order.id);
-      
-      await orderService.updateLogToOrder({order, log:null});
+      console.log('order', order.id);
+
+      await orderService.updateLogToOrder({ order, log: null });
 
       // const orderLog = await OrderLogModel.findOne({ 
       //   orderId: order.id , 
@@ -277,6 +279,135 @@ class TestRoute extends BaseRoute {
       // await MemberModel.findByIdAndUpdate(member.id, { $set: { shopName: "" } }, { new: true });
     }
   }
+
+  //b1: chinh sua commission trong product
+  async changeProduction(req: Request, res: Response) {
+    const products = await ProductModel.find({});
+    for (const product of products) {
+      const hhCTV = product.commission1;
+      const hhDiemban = product.commission2;
+      console.log('product', product.id);
+      await ProductModel.findByIdAndUpdate(product.id, { $set: { commission1: hhDiemban, commission2: hhCTV } }, { new: true });
+    }
+    res.sendStatus(200);
+  }
+
+  //b2: chinh sua commission trong order;
+  async changeOrder(req: Request, res: Response) {
+    const orders = await OrderModel.find({});
+    for (const order of orders) {
+      console.log('orderId', order.id);
+      const orderItems = await OrderItemModel.find({ orderId: order.id });
+      for (const orderItem of orderItems) {
+        const hhCTV = orderItem.commission1;
+        const hhDiemban = orderItem.commission2;
+        console.log('orderItem', orderItem.id);
+        await OrderItemModel.findByIdAndUpdate(orderItem.id, { $set: { commission1: hhDiemban, commission2: hhCTV } }, { new: true });
+      }
+      const hhCTV = order.commission1;
+      const hhDiemban = order.commission2;
+      await OrderModel.findByIdAndUpdate(order.id, { $set: { commission1: hhDiemban, commission2: hhCTV } }, { new: true });
+    }
+    res.sendStatus(200);
+  }
+
+  async compareOrder(req: Request, res: Response) {
+    const orders = await OrderModel.find({});
+    for (const order of orders) {
+      console.log('orderId', order.id);
+      const orderItems = await OrderItemModel.find({ orderId: order.id });
+      for (const orderItem of orderItems) {
+        if (orderItem.commission1 > orderItem.commission2) {
+          console.log('orderId', orderItem.id, "Chua doi");
+        }
+      }
+      if (order.commission1 > order.commission2) {
+        console.log('orderId', order.id, "Chua doi");
+      }
+    }
+    res.sendStatus(200);
+  }
+
+  async updateCommissionLog(req: Request, res: Response) {
+    const orders = await OrderModel.find({});
+    const commissions = await CommissionLogModel.find({});
+    for (const commission of commissions) {
+
+      const order = orders.find(o => o.id.toString() === commission.orderId.toString());
+      console.log('order', order);
+      if (order) {
+        if (commission.type === CommissionLogType.RECEIVE_COMMISSION_1_FROM_ORDER) {
+          await CommissionLogModel.findByIdAndUpdate(commission.id, { $set: { value: order.commission1 } }, { new: true });
+        }
+
+        if (commission.type === CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR) {
+          await CommissionLogModel.findByIdAndUpdate(commission.id, { $set: { value: order.commission2 } }, { new: true });
+        }
+      }
+    }
+    res.sendStatus(200);
+  }
+
+  async updateCustomerCommissionLog(req: Request, res: Response) {
+    const orders = await OrderModel.find({});
+    const commissions = await CustomerCommissionLogModel.find({});
+    for (const commission of commissions) {
+
+      const order = orders.find(o => o.id.toString() === commission.orderId.toString());
+      // console.log('order', order);
+      if (order) {
+        if (commission.type === CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER) {
+          await CustomerCommissionLogModel.findByIdAndUpdate(commission.id, { $set: { value: order.commission2 } }, { new: true });
+        }
+      }
+    }
+    res.sendStatus(200);
+  }
+
+  async modifyCustomerCommissionLog(req: Request, res: Response) {
+    const orders = await OrderModel.find({});
+
+    for (const order of orders) {
+      if (order.collaboratorId && order.status === OrderStatus.COMPLETED) {
+        const collaborator = await CollaboratorModel.findById(order.collaboratorId);
+        if (collaborator) {
+          const customer = await CustomerModel.findById(collaborator.customerId);
+          if (customer) {
+            const customerCommissionLog = await CustomerCommissionLogModel.findOne({ customerId: customer.id, orderId: order.id });
+            if (customerCommissionLog) {
+              if(!customerCommissionLog.collaboratorId){
+                console.log('em no ko co collaboratorId', order.collaboratorId);
+                await CustomerCommissionLogModel.findByIdAndUpdate(customerCommissionLog.id, { $set: { collaboratorId: order.collaboratorId } }, { new: true });
+              }
+            }
+            else {
+              console.log('em bi dinh chuong may thang', order.id);
+              await CustomerCommissionLogModel.create({
+                customerId: customer.id,
+                memberId: order.sellerId,  // mã shop
+                value: order.commission2, // Giá trị
+                type: CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER, // Loại sự kiện
+                orderId: order.id, // Mã đơn hàng
+                collaboratorId: order.collaboratorId // Mã cộng tác viên
+              });
+            }
+          }
+          else {
+            console.log('co collaborator nhung ko thay customer', order.id);
+          }
+        }
+        else {
+          console.log('co collaboratorId trong don nhung ko co collaborator', order.id);
+        }
+      }
+    }
+
+    const commission = await CustomerCommissionLogModel.find({});
+
+
+
+  }
+
 
 }
 

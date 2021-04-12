@@ -81,20 +81,8 @@ const getFilteredCollaborators = async (
   if (context.isMember()) {
     args.q.filter.memberId = context.id;
   }
-
-  // console.log('args.q', args.q);
-
-  const result = await collaboratorService.fetch(args.q);
-  const collaborators = result.data;
-  for (let i = 0; i < collaborators.length; i++) {
-    set(collaborators[i], "fromDate", fromDate);
-    set(collaborators[i], "toDate", toDate);
-  }
-  result.data = collaborators;
-
-  console.log('result',result);
-
-  return result;
+  
+  return await collaboratorService.fetch(args.q);;
 };
 
 

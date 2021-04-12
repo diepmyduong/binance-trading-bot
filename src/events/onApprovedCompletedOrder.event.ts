@@ -249,11 +249,6 @@ onApprovedCompletedOrder.subscribe(async (order) => {
       const collaborator = await CollaboratorModel.findById(collaboratorId);
       if (collaborator) {
         const customerPresenter = await CustomerModel.findById(collaborator.customerId);
-        //     customerId,
-        // memberId,
-        // currentCommission,
-        // commission,
-        // id,
         await EventHelper.payCollaboratorCommission({
           customerId: customerPresenter.id,
           memberId: sellerId,

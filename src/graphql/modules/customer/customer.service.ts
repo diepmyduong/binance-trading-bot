@@ -30,6 +30,7 @@ class CustomerService extends CrudService<typeof CustomerModel> {
       }
     );
   }
+  
   increaseCommissions({ customerId, currentCommission, commission }: any) {
     // tự cộng dồn hoa hồng
     let updateField: any = {

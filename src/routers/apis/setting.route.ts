@@ -7,14 +7,14 @@ class SettingRoute extends BaseRoute {
   }
 
   customRouting() {
-    // this.router.get("/getText/:key", this.route(this.getText));
+    this.router.get("/gettext/:key", this.route(this.getText));
     this.router.get("/redirect/:key", this.route(this.redirect));
   }
 
-  // async getText(req: Request, res: Response) {
-  //   const setting = await SettingHelper.load(req.params["key"] as any, { secure: false });
-  //   return res.send(setting);
-  // }
+  async getText(req: Request, res: Response) {
+    const setting = await SettingHelper.load(req.params["key"] as any, { secure: false });
+    return res.send(setting);
+  }
 
   async redirect(req: Request, res: Response) {
     const redirect = await SettingHelper.load(req.params["key"] as any, { secure: true });

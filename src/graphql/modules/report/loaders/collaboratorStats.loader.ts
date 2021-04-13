@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import { get, keyBy } from "lodash";
+import { get, keyBy, set } from "lodash";
 import { Types } from "mongoose";
 import { UtilsHelper } from "../../../../helpers";
 import { CollaboratorModel } from "../../collaborator/collaborator.model";
@@ -10,7 +10,8 @@ export class CollaboratorStats {
   customersAsCollaboratorCount: number = 0;
   static loaders: { [x: string]: DataLoader<string, CollaboratorStats> } = {};
 
-  static getLoader(fromDate: string, toDate: string) {
+  static getLoader(args: any) {
+    const { fromDate, toDate } = args;
 
     const loaderId = fromDate + toDate;
 
@@ -20,16 +21,22 @@ export class CollaboratorStats {
       this.loaders[loaderId] = new DataLoader<string, CollaboratorStats>(
         async (ids) => {
           const objectIds = ids.map(Types.ObjectId);
+          
+          const $match: any = {};
+
+          if ($gte) {
+            set($match, "createdAt.$gte", $gte);
+          }
+      
+          if ($lte) {
+            set($match, "createdAt.$lte", $lte);
+          }
+      
+          set($match, "memberId.$in", objectIds);
 
           return await CollaboratorModel.aggregate([
             {
-              $match: {
-                memberId: { $in: objectIds },
-                createdAt: {
-                  $gte,
-                  $lte
-                },
-              }
+              $match,
             },
             {
               $group: {

@@ -95,7 +95,7 @@ const schema = gql`
     "Hoa hồng"
     commission: Float
     "Lần đăng nhập gần nhất"
-    lastLoginDate: DateTime
+    lastLoginDate: Mixed
     memberStatistics(fromDate: String, toDate: String): MemberStatistics
     collaboratorStats(fromDate: String, toDate: String): CollaboratorStats
     customerStats(fromDate: String, toDate: String): CustomerStats 

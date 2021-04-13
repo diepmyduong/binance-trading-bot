@@ -125,16 +125,13 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
   }
 };
 
-const getPostReports = async (
-  root: any,
-  args: any,
-  context: Context
-) => {
+const getPostReports = async (root: any,args: any,context: Context) => {
   // console.time("getPostReports");
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   if (context.isMember()) {
     args.q.filter._id = context.id;
   }
+  
   return await memberService.fetch(args.q, '-addressStorehouseIds -addressDeliveryIds').then(res => {
     // console.timeEnd("getPostReports");
     return res;

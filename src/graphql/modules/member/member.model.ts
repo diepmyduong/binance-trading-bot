@@ -57,8 +57,6 @@ export type IMember = BaseDocument & {
   facebookAccessToken: string;
   xToken: string;
   lastLoginDate: Date;
-  fromDate:string;
-  toDate:string;
 };
 
 const memberSchema = new Schema(

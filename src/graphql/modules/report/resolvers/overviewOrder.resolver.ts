@@ -7,7 +7,7 @@ import { GraphQLHelper } from "../../../../helpers/graphql.helper";
 import { MemberLoader, MemberModel } from "../../member/member.model";
 import { CustomerLoader, CustomerModel } from "../../customer/customer.model";
 import { getShipMethods, IOrder, OrderLoader, OrderModel, OrderStatus, PaymentMethod, ShipMethod } from "../../order/order.model";
-import { ObjectId } from "bson";
+import { ObjectId } from "mongodb";
 import { OrderLogLoader } from "../../orderLog/orderLog.model";
 import { orderService } from "../../order/order.service";
 import { OrderItemLoader } from "../../orderItem/orderItem.model";
@@ -43,7 +43,7 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
     }
   }
 
-  console.log('params', params);
+  // console.log('params', params);
 
   if (isLate === true) {
     set(params, "isLate", isLate);
@@ -367,41 +367,7 @@ const OverviewOrder = {
     }
   },
 
-  commission: async (root: IOrder, args: any, context: Context) => {
-    return root.commission1 + root.commission2 + root.commission3;
-    // console.time('commission' + root.id);
-    // const member = await MemberLoader.load(root.sellerId)
-    // let total = root.commission1;
-    // if (!root.collaboratorId) {
-    //   total += root.commission2;
-    // }
-
-    // // kiem tra ko co chuyen don
-    // if (!root.toMemberId) {
-    //   // neu don hoan thanh -> + comm3 cho chu shop
-    //   if (root.status === OrderStatus.COMPLETED) {
-    //     total += root.commission3;
-    //   }
-    //   else {
-    //     // neu don ko hoan thanh ->
-    //     if (root.shipMethod === ShipMethod.POST) {
-    //       const address = await AddressDeliveryLoader.load(root.addressDeliveryId);
-    //       if (address.code === member.code) {
-    //         total += root.commission3;
-    //       }
-    //     }
-    //     if (root.shipMethod === ShipMethod.VNPOST) {
-    //       const address = await AddressStorehouseLoader.load(root.addressStorehouseId);
-    //       if (address.code === member.code) {
-    //         total += root.commission3;
-    //       }
-    //     }
-
-    //   }
-    // }
-    // console.timeEnd("commission" + root.id);
-    // return total;
-  }
+  commission: async ({ commission1, commission2, commission3 }: IOrder, args: any, context: Context) => commission1 + commission2 + commission3
 
 }
 

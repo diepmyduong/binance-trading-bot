@@ -140,12 +140,10 @@ const getPostReports = async (root: any,args: any,context: Context) => {
 
 const OverviewPost = {
   memberStatistics: async (root: IMember, args: any, context: Context) => {
-    const { fromDate = moment().startOf('month').format('YYYY-MM-DD'), toDate = moment().endOf('month').format("YYYY-MM-DD") } = args;
-    return MemberStatistics.getLoader(fromDate, toDate).load(root.id);
+    return MemberStatistics.getLoader(args).load(root.id);
   },
   collaboratorStats: async (root: IMember, args: any, context: Context) => {
-    const { fromDate = moment().startOf('month').format('YYYY-MM-DD'), toDate = moment().endOf('month').format("YYYY-MM-DD") } = args;
-    return CollaboratorStats.getLoader(fromDate, toDate).load(root.id);
+    return CollaboratorStats.getLoader(args).load(root.id);
   },
   customerStats: async (root: IMember, args: any, context: Context) => {
     let {

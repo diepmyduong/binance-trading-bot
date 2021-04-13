@@ -49,7 +49,7 @@ const schema = gql`
     "Doanh thu dự kiến"
     estimatedIncome: Float
     "Doanh thu thực nhận"
-    income: Float,
+    income: Float
     
   }
 
@@ -70,7 +70,6 @@ const schema = gql`
 
   type OverviewPost {
     id: String
-
     "Mã bưu cục"
     code: String
     "Hình Fanpage"
@@ -95,10 +94,8 @@ const schema = gql`
     income: Float
     "Hoa hồng"
     commission: Float
-    "Từ ngày"
-    fromDate: String
-    "Đến ngày"
-    toDate: String
+    "Lần đăng nhập gần nhất"
+    lastLoginDate: DateTime
     memberStatistics(fromDate: String, toDate: String): MemberStatistics
     collaboratorStats(fromDate: String, toDate: String): CollaboratorStats
     customerStats(fromDate: String, toDate: String): CustomerStats 

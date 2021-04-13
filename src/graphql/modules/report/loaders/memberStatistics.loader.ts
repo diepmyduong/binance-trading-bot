@@ -1,6 +1,6 @@
 import { OrderLogModel } from "../../orderLog/orderLog.model";
 import DataLoader from "dataloader";
-import { get, keyBy } from "lodash";
+import { get, keyBy, set } from "lodash";
 import { Types } from "mongoose";
 import { UtilsHelper } from "../../../../helpers";
 
@@ -22,7 +22,9 @@ export class MemberStatistics {
   income: number = 0;
   static loaders: { [x: string]: DataLoader<string, MemberStatistics> } = {};
 
-  static getLoader(fromDate: string, toDate: string) {
+  static getLoader(args: any) {
+    const { fromDate, toDate } = args;
+
     const loaderId = fromDate + toDate;
 
     const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
@@ -31,16 +33,23 @@ export class MemberStatistics {
       this.loaders[loaderId] = new DataLoader<string, MemberStatistics>(
         async (ids) => {
           const objectIds = ids.map(Types.ObjectId);
-          
+                    
+          const $match: any = {};
+
+          if ($gte) {
+            set($match, "createdAt.$gte", $gte);
+          }
+      
+          if ($lte) {
+            set($match, "createdAt.$lte", $lte);
+          }
+      
+          set($match, "memberId.$in", objectIds);
+
+
           return await OrderLogModel.aggregate([
             {
-              $match: {
-                memberId: { $in: objectIds },
-                createdAt: {
-                  $gte, 
-                  $lte,
-                },
-              }
+              $match
             },
             {
               $group: {
@@ -68,7 +77,7 @@ export class MemberStatistics {
                 deliveringCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, 1, 0] } },
                 canceledCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, 1, 0] } },
                 failureCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, 1, 0] } },
-      
+
                 pendingAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, "$order.amount", 0] } },
                 confirmedAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, "$order.amount", 0] } },
                 deliveringAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, "$order.amount", 0] } },
@@ -76,7 +85,7 @@ export class MemberStatistics {
                 failureAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, "$order.amount", 0] } },
                 estimatedIncome: { $sum: { $cond: [{ $in: ["$log.orderStatus", ["CANCELED", "FAILURE", "COMPLETED"]] }, 0, "$order.amount"] } },
                 income: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, "$order.amount", 0] } },
-      
+
                 pendingCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
                 confirmedCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
                 deliveringCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },

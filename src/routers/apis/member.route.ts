@@ -152,6 +152,7 @@ class MemberRoute extends BaseRoute {
           district: 1,
           branchCode: "$branch.code",
           branchName: "$branch.name",
+          lastLoginDate: 1
         }
       }
     ]);
@@ -273,6 +274,7 @@ class MemberRoute extends BaseRoute {
         realCommission: orderStat ? orderStat.realCommission : 0,
         estimatedIncome: orderStat ? orderStat.estimatedIncome : 0,
         income: orderStat ? orderStat.income : 0,
+        lastLoginDate: member.lastLoginDate ? member.lastLoginDate : "Chưa đăng nhập"
       }
 
       // console.log('count', i);
@@ -303,6 +305,7 @@ class MemberRoute extends BaseRoute {
         "Hoa hồng thực nhận",
         "Doanh thu dự kiến",
         "Doanh thu thực nhận",
+        "Thời gian đăng nhập",
       ];
       sheet.addRow(excelHeaders);
 
@@ -328,6 +331,7 @@ class MemberRoute extends BaseRoute {
           d.realCommission,
           d.estimatedIncome,
           d.income,
+          d.lastLoginDate
         ];
         sheet.addRow(dataRow);
       });

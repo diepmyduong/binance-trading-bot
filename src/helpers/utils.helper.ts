@@ -11,8 +11,8 @@ import KhongDau from "khong-dau";
 import { AddressModel } from "../graphql/modules/address/address.model";
 import moment from "moment";
 
-const START_MONTH = moment().startOf('month').format('YYYY-MM-DD') + "T00:00:00+07:00";
-const END_MONTH = moment().startOf('month').format('YYYY-MM-DD') + "T00:00:00+07:00";
+const START_MONTH = moment().startOf('month').format('YYYY-MM-DD');
+const END_MONTH = moment().endOf('month').format('YYYY-MM-DD');
 
 export class UtilsHelper {
   constructor() { }
@@ -20,6 +20,8 @@ export class UtilsHelper {
   static getDatesWithComparing = (fromDate: string = START_MONTH, toDate: string = END_MONTH) => {
     let $gte: Date = null,
       $lte: Date = null;
+    // console.log('fromDate',fromDate);
+    // console.log('toDate',toDate);
       
     if (fromDate) {
       fromDate = fromDate + "T00:00:00+07:00";

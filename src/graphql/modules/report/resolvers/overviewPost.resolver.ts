@@ -11,6 +11,7 @@ import { CustomerModel } from "../../customer/customer.model";
 import { IMember, MemberModel } from "../../member/member.model";
 import { ObjectId } from "mongodb";
 import { CollaboratorModel } from "../../collaborator/collaborator.model";
+import { OrderStatus } from "../../order/order.model";
 
 const getPostReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
@@ -22,21 +23,19 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
 
   const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
-  const $match = {
-    createdAt: {
-      $gte,
-      $lte
-    }
-  };
+  const $match = { orderStatus: OrderStatus.COMPLETED },
+    $collaboratorMatch = {},
+    $memberMatch = {};
 
-  const $collaboratorMatch = {
-    createdAt: {
-      $gte,
-      $lte
-    }
-  };
+  if ($gte) {
+    set($match, "createdAt.$gte", $gte);
+    set($collaboratorMatch, "createdAt.$gte", $gte);
+  }
 
-  const $memberMatch = {}
+  if ($lte) {
+    set($match, "createdAt.$lte", $lte);
+    set($collaboratorMatch, "createdAt.$lte", $lte);
+  }
 
 
   if (!isEmpty(memberId)) {
@@ -50,6 +49,10 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
     set($collaboratorMatch, "memberId", new ObjectId(context.id));
     set($memberMatch, "_id", new ObjectId(context.id));
   }
+
+  // console.log('$match',$match)
+  // console.log('$collaboratorMatch',$collaboratorMatch)
+  // console.log('$memberMatch',$memberMatch)
 
   const totalMembersCount = await MemberModel.count({
     ...$memberMatch
@@ -84,54 +87,40 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
     },
     { $unwind: '$order' },
     {
+      $lookup: {
+        from: 'commissionlogs',
+        localField: '_id',
+        foreignField: 'orderId',
+        as: 'commissionlogs'
+      }
+    },
+    {
       $group: {
         _id: null,
-        totalOrderCount: { $sum: 1 },
-        pendingCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, 1, 0] } },
-        confirmedCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, 1, 0] } },
         completeCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, 1, 0] } },
-        deliveringCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, 1, 0] } },
-        canceledCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, 1, 0] } },
-        failureCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, 1, 0] } },
-
-        pendingAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, "$order.amount", 0] } },
-        confirmedAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, "$order.amount", 0] } },
-        deliveringAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, "$order.amount", 0] } },
-        canceledAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, "$order.amount", 0] } },
-        failureAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, "$order.amount", 0] } },
-        estimatedAmount: { $sum: { $cond: [{ $in: ["$log.orderStatus", ["CANCELED", "FAILURE", "COMPLETED"]] }, 0, "$order.amount"] } },
         completeAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, "$order.amount", 0] } },
-
-
-        pendingCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
-        confirmedCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CONFIRMED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
-        deliveringCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
-        canceledCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
-        failureCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
-        estimatedCommission: { $sum: { $cond: [{ $in: ["$log.orderStatus", ["CANCELED", "FAILURE", "COMPLETED"]] }, 0, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }] } },
-        completeCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
+        commissionAmount: { $sum: { $sum: "$commissionlogs.value" } },
       }
     }
   ]);
-
 
   return {
     totalCollaboratorsCount,
     collaboratorsAsCustomerCount,
     totalMembersCount,
-    totalOrdersCount: orderStats ? orderStats.totalOrderCount : 0,
-    totalRealCommission: orderStats ? orderStats.completeCommission : 0,
+    totalOrdersCount: orderStats ? orderStats.completeCount : 0,
+    totalRealCommission: orderStats ? orderStats.commissionAmount : 0,
     totalIncome: orderStats ? orderStats.completeAmount : 0,
   }
 };
 
-const getPostReports = async (root: any,args: any,context: Context) => {
+const getPostReports = async (root: any, args: any, context: Context) => {
   // console.time("getPostReports");
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   if (context.isMember()) {
     args.q.filter._id = context.id;
   }
-  
+
   return await memberService.fetch(args.q, '-addressStorehouseIds -addressDeliveryIds').then(res => {
     // console.timeEnd("getPostReports");
     // console.log('res',res);
@@ -179,3 +168,10 @@ export default {
   Query,
   OverviewPost
 };
+// {
+//   $group: {
+//     _id: null,
+//     completeCount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, 1, 0] } },
+//     completeAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, "$order.amount", 0] } },
+//   }
+// }

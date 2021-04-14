@@ -10,11 +10,11 @@ import delivery from "./delivery.route";
 import collaborator from "./collaborator.route";
 import diligencePointRoute from "./diligencePoint.route";
 import testRoute from "./test.route";
-import orderRoute from "./order.route";
 import serviceRoute from "./service.route";
 import commonRoute from "./common.route";
-import memberRoute from "./member.route";
 import settingRoute from "./setting.route";
+import memberRoute from "./member.route";
+import orderRoute from "./order.route";
 
 const router = express.Router();
 router.use("/evoucher", evoucherRoute);

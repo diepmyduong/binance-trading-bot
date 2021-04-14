@@ -22,7 +22,7 @@ export class UtilsHelper {
       $lte: Date = null;
     // console.log('fromDate',fromDate);
     // console.log('toDate',toDate);
-      
+
     if (fromDate) {
       fromDate = fromDate + "T00:00:00+07:00";
       $gte = new Date(fromDate);
@@ -37,9 +37,16 @@ export class UtilsHelper {
     }
   }
 
+  static setTitleExcelWorkBook = (sheet:any , title:string)=>{
+    sheet.insertRow(1, [title]);
+    sheet.mergeCells(`A1:I1`);
+    sheet.getRow(1).font = { bold: true, size: 18 }
+  }
+
   static setThemeExcelWorkBook = (sheet: any) => {
     for (let i = 0; i < sheet.columns.length; i += 1) {
       let dataMax = 0;
+      const headerIndex = 1;
       const column = sheet.columns[i];
       for (let j = 1; j < column.values.length; j += 1) {
         const rowValue = column.values[j];
@@ -55,13 +62,13 @@ export class UtilsHelper {
         }
       }
       column.width = dataMax < 10 ? 10 : dataMax;
-      column.worksheet.getRow(1).fill = {
+      column.worksheet.getRow(headerIndex).fill = {
         type: 'pattern',
         pattern: 'solid',
         fgColor: { argb: 'FFD100' },
         bgColor: { argb: 'FFD100' },
       };
-      column.worksheet.getRow(1).font = {
+      column.worksheet.getRow(headerIndex).font = {
         bold: true,
       }
     }

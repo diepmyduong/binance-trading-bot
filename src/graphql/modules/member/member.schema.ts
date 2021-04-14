@@ -184,9 +184,6 @@ const schema = gql`
     total: Int
     pagination: Pagination
   }
-  
 `;
 
 export default schema;
-
-// aeon tan phu

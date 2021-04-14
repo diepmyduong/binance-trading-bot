@@ -206,7 +206,7 @@ class MemberRoute extends BaseRoute {
             deliveringAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, "$order.amount", 0] } },
             canceledAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, "$order.amount", 0] } },
             failureAmount: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, "$order.amount", 0] } },
-            estimatedIncome: { $sum: { $cond: [{ $in: ["$log.orderStatus", ["CANCELED", "FAILURE", "COMPLETED"]] }, 0, "$order.amount"] } },
+            // estimatedIncome: { $sum: { $cond: [{ $in: ["$log.orderStatus", ["CANCELED", "FAILURE", "COMPLETED"]] }, 0, "$order.amount"] } },
             income: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, "$order.amount", 0] } },
 
             pendingCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "PENDING"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
@@ -214,7 +214,7 @@ class MemberRoute extends BaseRoute {
             deliveringCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "DELIVERING"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
             canceledCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "CANCELED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
             failureCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "FAILURE"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
-            estimatedCommission: { $sum: { $cond: [{ $in: ["$log.orderStatus", ["CANCELED", "FAILURE", "COMPLETED"]] }, 0, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }] } },
+            // estimatedCommission: { $sum: { $cond: [{ $in: ["$log.orderStatus", ["CANCELED", "FAILURE", "COMPLETED"]] }, 0, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }] } },
             realCommission: { $sum: { $cond: [{ $eq: ["$log.orderStatus", "COMPLETED"] }, { $sum: ["$order.commission1", "$order.commission2", "$order.commission3"] }, 0] } },
           }
         },
@@ -270,9 +270,7 @@ class MemberRoute extends BaseRoute {
         completedCount: orderStat ? orderStat.completedCount : 0,
         failureCount: orderStat ? orderStat.failureCount : 0,
         canceledCount: orderStat ? orderStat.canceledCount : 0,
-        estimatedCommission: orderStat ? orderStat.estimatedCommission : 0,
         realCommission: orderStat ? orderStat.realCommission : 0,
-        estimatedIncome: orderStat ? orderStat.estimatedIncome : 0,
         income: orderStat ? orderStat.income : 0,
         lastLoginDate: member.lastLoginDate ? member.lastLoginDate : "Chưa đăng nhập"
       }
@@ -301,9 +299,7 @@ class MemberRoute extends BaseRoute {
         "Đơn thành công",
         "Đơn thất bại",
         "Đơn đã huỷ",
-        "Hoa hồng dự kiến",
         "Hoa hồng thực nhận",
-        "Doanh thu dự kiến",
         "Doanh thu thực nhận",
         "Thời gian đăng nhập",
       ];
@@ -327,9 +323,7 @@ class MemberRoute extends BaseRoute {
           d.completedCount,
           d.failureCount,
           d.canceledCount,
-          d.estimatedCommission,
           d.realCommission,
-          d.estimatedIncome,
           d.income,
           d.lastLoginDate
         ];

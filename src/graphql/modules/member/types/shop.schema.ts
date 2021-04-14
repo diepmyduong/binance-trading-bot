@@ -56,10 +56,6 @@ const schema = gql`
     mainAddressStorehouseId: ID
     mainAddressStorehouse: AddressStorehouse
   }
-
-  
 `;
 
 export default schema;
-
-// aeon tan phu

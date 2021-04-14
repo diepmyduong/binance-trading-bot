@@ -95,7 +95,7 @@ const schema = gql`
     "Hoa hồng"
     commission: Float
     "Lần đăng nhập gần nhất"
-    lastLoginDate: Mixed
+    lastLoginDate: DateTime
     memberStatistics(fromDate: String, toDate: String): MemberStatistics
     collaboratorStats(fromDate: String, toDate: String): CollaboratorStats
     customerStats(fromDate: String, toDate: String): CustomerStats 
@@ -110,5 +110,3 @@ const schema = gql`
 `;
 
 export default schema;
-
-// aeon tan phu

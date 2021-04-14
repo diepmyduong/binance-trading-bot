@@ -134,6 +134,7 @@ const getPostReports = async (root: any,args: any,context: Context) => {
   
   return await memberService.fetch(args.q, '-addressStorehouseIds -addressDeliveryIds').then(res => {
     // console.timeEnd("getPostReports");
+    // console.log('res',res);
     return res;
   });
 };

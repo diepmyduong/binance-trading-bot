@@ -125,7 +125,6 @@ const memberSchema = new Schema(
     },
     lastLoginDate: {
       type: Date,
-      default: Date.now
     },
   },
   { timestamps: true }

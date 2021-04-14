@@ -131,5 +131,3 @@ const schema = gql`
 `;
 
 export default schema;
-
-// aeon tan phu

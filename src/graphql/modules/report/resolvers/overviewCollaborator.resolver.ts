@@ -1,13 +1,12 @@
 import { ObjectId } from "mongodb";
 import { GraphQLHelper } from "../../../../helpers/graphql.helper";
-import { configs } from "../../../../configs";
 import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { CustomerCommissionLogModel, ICustomerCommissionLog } from "../../customerCommissionLog/customerCommissionLog.model";
 import { Gender, MemberLoader, MemberModel } from "../../member/member.model";
-import { CustomerLoader, CustomerModel, ICustomer } from "../../customer/customer.model";
-import { CollaboratorLoader, CollaboratorModel, ICollaborator } from "../../collaborator/collaborator.model";
+import { CustomerModel } from "../../customer/customer.model";
+import { CollaboratorModel, ICollaborator } from "../../collaborator/collaborator.model";
 import { collaboratorService } from "../../collaborator/collaborator.service";
 import { isEmpty, set } from "lodash";
 

@@ -57,6 +57,8 @@ const updateCustomerId = async () => {
           },
           { new: true }
         );
+      }
+      else{
         if(customer.name === "Khách vãng lai"){
           await CustomerModel.findByIdAndUpdate(collaborator.customerId, { $set: {
             name: collaborator.name

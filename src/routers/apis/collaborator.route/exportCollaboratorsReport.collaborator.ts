@@ -64,7 +64,7 @@ export const exportCollaboratorsReport = async (req: Request, res: Response) => 
   }
 
   if (context.isMember()) {
-    set($match, "memberId", new ObjectId(memberId));
+    set($match, "memberId", new ObjectId(context.id));
   }
 
   // console.log('$match',$match);

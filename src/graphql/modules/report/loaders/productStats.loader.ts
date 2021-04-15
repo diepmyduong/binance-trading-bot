@@ -69,7 +69,7 @@ export class ProductStats {
           }
 
           // console.log('$match',$match)
-          console.log('match2',match2)
+          // console.log('match2',match2)
 
           return await OrderItemModel.aggregate([
             {

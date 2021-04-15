@@ -44,7 +44,6 @@ const getProductReportsOverview = async (root: any, args: any, context: Context)
 const getProductReports = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const queryInput = args.q;
-  let { sellerIds } = queryInput.filter;
   return productService.fetch(args.q);
 };
 

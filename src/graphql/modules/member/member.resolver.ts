@@ -15,7 +15,7 @@ import {
   AddressDeliveryLoader,
   AddressDeliveryModel,
 } from "../addressDelivery/addressDelivery.model";
-import { AddressStorehouseLoader } from "../addressStorehouse/addressStorehouse.model";
+import { AddressStorehouseLoader, AddressStorehouseModel } from "../addressStorehouse/addressStorehouse.model";
 import { BranchLoader } from "../branch/branch.model";
 import { OrderModel } from "../order/order.model";
 import { PositionLoader } from "../position/position.model";
@@ -78,14 +78,43 @@ const Mutation = {
           AddressHelper.setWardName(helper.member),
         ]);
         helper.setActivedAt();
-        return await helper.member.save();
+        return await helper.member.save().then(async (member) => {
+          await Promise.all([
+            AddressDeliveryModel.findOneAndUpdate({ code: member.code }, {
+              $set: {
+                phone: member.phone,
+                address: member.address,
+                district: member.district,
+                districtId: member.districtId,
+                ward: member.ward,
+                wardId: member.wardId,
+                province: member.province,
+                provinceId: member.provinceId,
+                name: member.shopName,
+              }
+            }, { new: true }),
+            AddressStorehouseModel.findOneAndUpdate({ code: member.code }, {
+              $set: {
+                phone: member.phone,
+                address: member.address,
+                district: member.district,
+                districtId: member.districtId,
+                ward: member.ward,
+                wardId: member.wardId,
+                province: member.province,
+                provinceId: member.provinceId,
+                name: member.shopName,
+              }
+            }, { new: true })
+          ]);
+        });
       });
   },
   deleteOneMember: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR);
     const { id } = args;
     return await memberService.deleteOne(id).then((m: IMember) => {
-      firebaseHelper.deleteUser(m.uid).catch((err) => {});
+      firebaseHelper.deleteUser(m.uid).catch((err) => { });
       return m;
     });
   },
@@ -117,7 +146,7 @@ const Member = {
   addressDelivery: async (root: IMember, args: any, context: Context) => {
     const address = await AddressDeliveryModel.findOne({ code: root.code });
     const noExistedAddress = root.addressDeliveryIds.findIndex(addr => addr.toString() === address.id.toString()) === -1;
-    if(noExistedAddress) 
+    if (noExistedAddress)
       return null;
     return address;
   },
@@ -131,13 +160,13 @@ const Member = {
     return root.fanpageId ? `https://m.me/${root.fanpageId}?ref=story.${ref}` : null;
   },
 
-  shopUrl : async (root: IMember, args: any, context: Context) => {
+  shopUrl: async (root: IMember, args: any, context: Context) => {
     const host = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN);
     // return `${host}?pageId=${root.fanpageId}`;
     return `${host}?code=${root.code}`;
   },
-  ordersCount: async (root: IMember, args: any, context: Context) => await OrderModel.count({sellerId: root.id}),
-  toMemberOrdersCount: async (root: IMember, args: any, context: Context) => await OrderModel.count({toMemberId: root.id}),
+  ordersCount: async (root: IMember, args: any, context: Context) => await OrderModel.count({ sellerId: root.id }),
+  toMemberOrdersCount: async (root: IMember, args: any, context: Context) => await OrderModel.count({ toMemberId: root.id }),
 };
 
 export default {

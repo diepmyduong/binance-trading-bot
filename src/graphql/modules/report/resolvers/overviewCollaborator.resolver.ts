@@ -105,14 +105,7 @@ const FilteredCollaborator = {
     }
     return null
   },
-  memberIds: async (root: ICollaborator, args: any, context: Context) => {
-    if (root.memberId) {
-      const members = await MemberModel.find({ _id: new ObjectId(root.memberId) });
-      // console.log('members', members);
-      return members.map(m => m.id);
-    }
-    return null
-  },
+  
   customer: async (root: ICollaborator, args: any, context: Context) => {
     if (root.memberId) {
       const member = await MemberModel.findById(root.memberId);

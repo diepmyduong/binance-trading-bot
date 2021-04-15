@@ -47,7 +47,14 @@ const updateCustomerId = async () => {
       (col) => col.phone === customer.phone
     );
     if (collaborator) {
-      if(!collaborator.customerId){
+      if(collaborator.customerId){
+        if(customer.name === "Khách vãng lai"){
+          await CustomerModel.findByIdAndUpdate(collaborator.customerId, { $set: {
+            name: collaborator.name
+          } }, { new: true });
+        }
+      }
+      else{
         await CollaboratorModel.findByIdAndUpdate(
           collaborator.id,
           {
@@ -57,13 +64,6 @@ const updateCustomerId = async () => {
           },
           { new: true }
         );
-      }
-      else{
-        if(customer.name === "Khách vãng lai"){
-          await CustomerModel.findByIdAndUpdate(collaborator.customerId, { $set: {
-            name: collaborator.name
-          } }, { new: true });
-        }
       }
 
       if(!collaborator.shortUrl){

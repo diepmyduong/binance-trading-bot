@@ -33,7 +33,7 @@ import moment from "moment";
 import { AddressStorehouseModel } from "../../../graphql/modules/addressStorehouse/addressStorehouse.model";
 import { AddressModel } from "../../../graphql/modules/address/address.model";
 import { BranchModel } from "../../../graphql/modules/branch/branch.model";
-import { isValidObjectId } from "mongoose";
+import { isValidObjectId, Types } from "mongoose";
 
 
 export const exportOrdersReport = async (req: Request, res: Response) => {
@@ -43,16 +43,33 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
   let data: any = [];
   let staticsticData: any = [];
 
-  let fromDate: string = req.query.fromDate
-    ? req.query.fromDate.toString()
-    : null;
+  let fromDate: string = req.query.fromDate ? req.query.fromDate.toString() : null;
   let toDate: string = req.query.toDate ? req.query.toDate.toString() : null;
-  const memberId: string = req.query.memberId
-    ? req.query.memberId.toString()
-    : null;
+  const memberId: string = req.query.memberId ? req.query.memberId.toString() : null;
+  const status: any = req.query.status ? req.query.status.toString() : null;
 
-  // const memberIdsString = req.query.memberIds ? req.query.memberIds.toString() : null;
-  // const memberIds = 
+  if (status) {
+    if (![OrderStatus.PENDING, OrderStatus.FAILURE, OrderStatus.DELIVERING, OrderStatus.CONFIRMED, OrderStatus.COMPLETED, OrderStatus.CANCELED, OrderStatus.RETURNED].includes(status)) {
+      throw ErrorHelper.requestDataInvalid("Trạng thái đơn hàng");
+    }
+  }
+
+
+  const memberIdsString = req.query.memberIds ? req.query.memberIds.toString() : null;
+  let memberIds: any = null;
+  if (memberIdsString) {
+    memberIds = memberIdsString.split("|");
+    if (memberIds.length < 0)
+      throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+
+    memberIds.map((m: string) => {
+      if (!isValidObjectId(m)) {
+        throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+      }
+    });
+
+    memberIds = memberIds.map(Types.ObjectId);
+  }
 
 
   if (!isValidObjectId(memberId)) {
@@ -72,12 +89,22 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
   }
 
 
-  if (memberId) {
-    set(params, "sellerId", new ObjectId(memberId));
+  if (memberIds) {
+    set(params, "sellerId.$in", memberIds);
+  }
+  else {
+    if (memberId) {
+      set(params, "sellerId", new ObjectId(memberId));
+    }
   }
 
   if (context.isMember()) {
     set(params, "sellerId", new ObjectId(context.id));
+  }
+
+
+  if (status) {
+    set(params, "status", status);
   }
 
   // console.log('params', params);

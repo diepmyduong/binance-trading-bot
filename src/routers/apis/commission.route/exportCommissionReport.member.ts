@@ -243,7 +243,7 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
     data.forEach((d: any, i: number) => {
       const dataRow = [
         i + 1,//STT
-        d.code,//"Mã bưu cục",
+        d.memberCode,//"Mã bưu cục",
         d.shopName,// "Bưu cục",
         d.collaboratorCode,
         d.collaboratorName,

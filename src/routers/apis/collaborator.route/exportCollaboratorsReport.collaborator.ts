@@ -172,7 +172,7 @@ export const exportCollaboratorsReport = async (req: Request, res: Response) => 
       "Bưu cục",
       "Quận / Huyện",
       "Chi nhánh",
-      "Hoa hồng điểm bán",
+      "Hoa hồng cộng tác viên",
     ];
 
     sheet.addRow(excelHeaders);

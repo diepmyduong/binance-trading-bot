@@ -4,7 +4,7 @@ import {
 import { auth } from "../../../middleware/auth";
 import { exportImportedMembersResultToExcel } from "./exportImportedMembersResultToExcel.member";
 import { exportPortReport } from "./exportPortReport.member";
-import { exportPortCommissionReport } from "./exportPortCommissionReport.member";
+import { exportPortCommissionReport } from "../commission.route/exportCommissionReport.member";
 
 class MemberRoute extends BaseRoute {
   constructor() {

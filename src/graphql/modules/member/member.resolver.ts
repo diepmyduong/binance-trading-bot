@@ -78,36 +78,7 @@ const Mutation = {
           AddressHelper.setWardName(helper.member),
         ]);
         helper.setActivedAt();
-        return await helper.member.save().then(async (member) => {
-          await Promise.all([
-            AddressDeliveryModel.findOneAndUpdate({ code: member.code }, {
-              $set: {
-                phone: member.phone,
-                address: member.address,
-                district: member.district,
-                districtId: member.districtId,
-                ward: member.ward,
-                wardId: member.wardId,
-                province: member.province,
-                provinceId: member.provinceId,
-                name: member.shopName,
-              }
-            }, { new: true }),
-            AddressStorehouseModel.findOneAndUpdate({ code: member.code }, {
-              $set: {
-                phone: member.phone,
-                address: member.address,
-                district: member.district,
-                districtId: member.districtId,
-                ward: member.ward,
-                wardId: member.wardId,
-                province: member.province,
-                provinceId: member.provinceId,
-                name: member.shopName,
-              }
-            }, { new: true })
-          ]);
-        });
+        return await helper.member.save();
       });
   },
   deleteOneMember: async (root: any, args: any, context: Context) => {
@@ -142,7 +113,6 @@ const Member = {
     AddressDeliveryLoader,
     "addressDeliveryIds"
   ),
-
   addressDelivery: async (root: IMember, args: any, context: Context) => {
     const address = await AddressDeliveryModel.findOne({ code: root.code });
     const noExistedAddress = root.addressDeliveryIds.findIndex(addr => addr.toString() === address.id.toString()) === -1;
@@ -150,7 +120,6 @@ const Member = {
       return null;
     return address;
   },
-
   subscribers: async (root: IMember, args: any, context: Context) => {
     return new MemberHelper(root).getSubscribers();
   },

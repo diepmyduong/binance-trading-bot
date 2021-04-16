@@ -20,12 +20,13 @@ import { OrderLogModel } from "../../../graphql/modules/orderLog/orderLog.model"
 import { CollaboratorModel } from "../../../graphql/modules/collaborator/collaborator.model";
 import { CustomerModel } from "../../../graphql/modules/customer/customer.model";
 import moment from "moment";
+import { CustomerCommissionLogModel } from "../../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
 
 const STT = "STT";
 const RESULT_IMPORT_FILE_NAME = "ket_qua_import_buu_cuc";
 const SHEET_NAME = "Sheet1";
 
-export const  exportPortCommissionReport = async(req: Request, res: Response) => {
+export const exportPortCommissionReport = async (req: Request, res: Response) => {
   const context = (req as any).context as Context;
   context.auth(ROLES.ADMIN_EDITOR_MEMBER);
 
@@ -101,7 +102,7 @@ export const  exportPortCommissionReport = async(req: Request, res: Response) =>
   const memberIds = members.map(member => member._id).map(Types.ObjectId);
   set($match, "memberId.$in", memberIds);
 
-  const [orderCommissionStats, branches] = await Promise.all([
+  const [memberCommissionStats, collaboratorCommissionStats ,branches] = await Promise.all([
     CommissionLogModel.aggregate([
       {
         $match
@@ -116,30 +117,106 @@ export const  exportPortCommissionReport = async(req: Request, res: Response) =>
         }
       }
     ]),
+    CustomerCommissionLogModel.aggregate([
+      {
+        $match,
+      },
+      {
+        $group: {
+          _id: {
+            customerId: "$customerId",
+            memberId: "$memberId",
+            collaboratorId: "$collaboratorId"
+          },
+          commission: { $sum: "$value" },
+        }
+      },
+      {
+        $project: {
+          _id: "$_id.customerId",
+          collaboratorId: "$_id.collaboratorId",
+          memberId: "$_id.memberId",
+          commission: 1
+        }
+      },
+      {
+        $sort: {
+          commission: -1
+        }
+      },
+      {
+        $lookup: {
+          from: 'collaborators',
+          localField: 'collaboratorId',
+          foreignField: '_id',
+          as: 'collaborator'
+        }
+      },
+      { $unwind: '$collaborator' },
+      {
+        $project: {
+          _id: "$collaborator._id",
+          code: "$collaborator.code",
+          name: "$collaborator.name",
+          memberId: 1,
+          commission: 1
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          code: 1,
+          name: 1,
+          memberId: 1,
+          commission: 1
+        }
+      }
+    ]),
     BranchModel.find({})
   ]);
 
-  // console.log('orderStats',orderCommissionStats);
+  // console.log('orderStats',memberCommissionStats);
 
   let data: any = [];
   let staticsticData: any = [];
   const branchesData = [];
 
+ 
   for (let i = 0; i < members.length; i++) {
     const member: any = members[i];
-    const orderCommissionStat = orderCommissionStats.find(stats => stats._id.toString() === member._id.toString());
+    const memberCommissionStat = memberCommissionStats.find(stats => stats._id.toString() === member._id.toString());
     const params = {
-      code: member.code,
+      memberCode: member.code,
       shopName: member.shopName,
       district: member.district,
       branchCode: member.branchCode,
       branchName: member.branchName,
-      commission1 : orderCommissionStat ? orderCommissionStat.commission1 : 0,
-      commission2: orderCommissionStat ? orderCommissionStat.commission2 : 0,
-      commission3: orderCommissionStat ? orderCommissionStat.commission3 : 0,
-      commission: orderCommissionStat ? orderCommissionStat.commission : 0,
+      type: "Bưu cục",
+      commission1: memberCommissionStat ? memberCommissionStat.commission1 : 0,
+      commission2: memberCommissionStat ? memberCommissionStat.commission2 : 0,
+      commission3: memberCommissionStat ? memberCommissionStat.commission3 : 0,
+      commission: memberCommissionStat ? memberCommissionStat.commission : 0,
     }
     data.push(params);
+    
+    const collaborators = collaboratorCommissionStats.filter(stats => stats.memberId.toString() === member._id.toString());
+    for (const collaborator of collaborators) {
+      const params = {
+        collaboratorCode: collaborator.code,
+        collaboratorName: collaborator.name,
+        memberCode: member.code,
+        shopName: member.shopName,
+        district: member.district,
+        branchCode: member.branchCode,
+        branchName: member.branchName,
+        type: "Cộng tác viên",
+        commission1: 0,
+        commission2: collaborator ? collaborator.commission : 0,
+        commission3: 0,
+        commission: collaborator ? collaborator.commission : 0,
+      }
+      data.push(params);
+    }
   }
 
   const workbook = new Excel.Workbook();
@@ -150,6 +227,9 @@ export const  exportPortCommissionReport = async(req: Request, res: Response) =>
       STT,
       "Mã bưu cục",
       "Bưu cục",
+      "Mã cộng tác viên",
+      "Cộng tác viên",
+      "Loại",
       "Quận / Huyện",
       "Chi nhánh",
       "Hoa hồng điểm bán",
@@ -165,6 +245,9 @@ export const  exportPortCommissionReport = async(req: Request, res: Response) =>
         i + 1,//STT
         d.code,//"Mã bưu cục",
         d.shopName,// "Bưu cục",
+        d.collaboratorCode,
+        d.collaboratorName,
+        d.type,
         d.district,//"Quận / Huyện",
         d.branchName,//"Chi nhánh",
         d.commission1,
@@ -221,7 +304,7 @@ export const  exportPortCommissionReport = async(req: Request, res: Response) =>
   }
 
 
-  const POSTS_SHEET_NAME = "Danh sách Bưu cục";
+  const POSTS_SHEET_NAME = "Danh sách Hoa hồng Bưu cục";
   createSheetData(data, POSTS_SHEET_NAME);
 
 
@@ -244,7 +327,7 @@ export const  exportPortCommissionReport = async(req: Request, res: Response) =>
 
   const vnFromDate = moment(fromDate).format("DD.MM.YYYY");
   const vnToDate = moment(toDate).format("DD.MM.YYYY");
-  const fileName = `bao_cao_hoa_hong_buu_cuc_${vnFromDate}_${vnToDate}`;
+  const fileName = `bao_cao_hoa_hong_${vnFromDate}_${vnToDate}`;
   return UtilsHelper.responseExcel(res, workbook, fileName);
 }
 

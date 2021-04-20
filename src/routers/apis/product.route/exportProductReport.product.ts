@@ -31,7 +31,7 @@ import { BranchModel } from "../../../graphql/modules/branch/branch.model";
 import { isValidObjectId, Types } from "mongoose";
 import { CollaboratorModel } from "../../../graphql/modules/collaborator/collaborator.model";
 
-//http://localhost:5555/api/commission/exportCommissionReport?fromDate=2021-04-01&toDate=2021-04-06&branchId=603717300ec1da6449646ac3&sellerIds=6038ba30ab0f5a2cfe0f4ab6|6038b74cab0f5a2cfe0f48ad&x-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU4iLCJfaWQiOiI2MDExMmJmYTRlMTI1YTI4MjQzZjc4NmQiLCJ1c2VybmFtZSI6IlBLRCAtIELEkFRQIiwiaWF0IjoxNjE3NjEyNzU3LCJleHAiOjE2MjAyMDQ3NTd9.of8nz5oPteaLjZqlgNreGD-mBl6TFlWNK05yjvyhwO4
+//http://localhost:5555/api/product/exportProductReport?fromDate=2021-04-01&toDate=2021-04-06&branchId=603717300ec1da6449646ac3&sellerIds=6038ba30ab0f5a2cfe0f4ab6|6038b74cab0f5a2cfe0f48ad&x-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU4iLCJfaWQiOiI2MDExMmJmYTRlMTI1YTI4MjQzZjc4NmQiLCJ1c2VybmFtZSI6IlBLRCAtIELEkFRQIiwiaWF0IjoxNjE3NjEyNzU3LCJleHAiOjE2MjAyMDQ3NTd9.of8nz5oPteaLjZqlgNreGD-mBl6TFlWNK05yjvyhwO4
 
 export const exportProductReport = async (req: Request, res: Response) => {
   const context = (req as any).context as Context;

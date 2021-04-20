@@ -41,6 +41,8 @@ export type IProduct = BaseDocument & {
   length: number; // chiều dài
   height: number; // chiều cao
   weight: number; // cân nặng
+
+  viewCount: number;
 };
 
 const productSchema = new Schema(
@@ -80,6 +82,9 @@ const productSchema = new Schema(
     length: { type: Number, default: 0 }, // chiều dài
     height: { type: Number, default: 0 }, // chiều cao
     weight: { type: Number, default: 1 }, // cân nặng
+
+    viewCount: { type: Number }, // cân nặng
+
   },
   { timestamps: true }
 );

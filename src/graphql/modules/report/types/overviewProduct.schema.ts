@@ -71,6 +71,8 @@ const schema = gql`
     mostCommissionProducts: [TopProduct]
     "Top 5 sản phẩm được xem nhiều nhất"
     mostViewProducts: [TopProduct]
+    "Top 5 sản phẩm được share nhiều nhất"
+    mostSharingProducts: [TopProduct]
   }
 
   type OverviewProduct {

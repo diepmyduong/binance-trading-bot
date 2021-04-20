@@ -18,7 +18,7 @@ import { Types } from "mongoose";
 
 const getCommissionReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  let { fromDate, toDate, sellerIds, branchId, collaboratorId, orderStatus } = args;
+  let { fromDate, toDate, sellerIds, branchId, collaboratorId } = args;
 
   const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
@@ -53,24 +53,8 @@ const getCommissionReportsOverview = async (root: any, args: any, context: Conte
 
   //theo ctv nao
   if (collaboratorId) {
-    set(args, "q.filter.collaboratorId", new ObjectId(collaboratorId));
+    set(params, "q.filter.collaboratorId", new ObjectId(collaboratorId));
   }
-
-  //theo du kien
-  if (orderStatus) {
-    switch (orderStatus) {
-      case "COMPLETED":
-        set(args, "q.filter.status", [OrderStatus.COMPLETED]);
-        break;
-      case "UNCOMPLETED":
-        set(args, "q.filter.status", [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING]);
-        break;
-      default:
-        set(args, "q.filter.status", [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING, OrderStatus.COMPLETED]);
-        break;
-    }
-  }
-
 
   const [order] = await OrderModel.aggregate([
     {

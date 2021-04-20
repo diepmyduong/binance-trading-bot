@@ -8,6 +8,10 @@ import { productService } from "../../product/product.service";
 import { ProductStats } from "../loaders/productStats.loader";
 import { IProduct, ProductModel } from "../../product/product.model";
 import { OrderItemModel } from "../../orderItem/orderItem.model";
+import { UserModel } from "../../user/user.model";
+import { CollaboratorProductModel } from "../../collaboratorProduct/collaboratorProduct.model";
+import { FacebookHelper } from "../../../../helpers/facebook.helper";
+import { ErrorHelper } from "../../../../base/error";
 
 const getProductReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
@@ -120,6 +124,45 @@ const getProductReports = async (root: any, args: any, context: Context) => {
   const queryInput = args.q;
   return productService.fetch(args.q);
 };
+
+const syncFacebookReport = async (root: any, args: any, context: Context) => {
+  AuthHelper.acceptRoles(context, [ROLES.ADMIN]);
+  const accessToken = args.accessToken;
+
+  const user = await UserModel.findById(context.id);
+  if (accessToken) {
+    user.facebookAccessToken = accessToken;
+    await user.save();
+  }
+  const collaboratorProducts = await CollaboratorProductModel.find({});
+
+  if (collaboratorProducts.length > 0) {
+
+    const validFirstResult = await FacebookHelper.getEngagement(collaboratorProducts[0].shortUrl, user.facebookAccessToken);
+    if (!validFirstResult.success) {
+      throw ErrorHelper.tokenExpired();
+    }
+
+    for (const product of collaboratorProducts) {
+      const engagement = await FacebookHelper.getEngagement(product.shortUrl, user.facebookAccessToken);
+      if (engagement.success) {
+        const { likeCount, shareCount, commentCount } = engagement;
+        await CollaboratorProductModel.findByIdAndUpdate(
+          product.id,
+          {
+            $set: {
+              likeCount,
+              shareCount,
+              commentCount
+            }
+          },
+          { new: true }
+        );
+      }
+    }
+  }
+  return true;
+}
 
 const OverviewProduct = {
   productStats: async (root: IProduct, args: any, context: Context) => {

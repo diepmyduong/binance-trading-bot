@@ -4,7 +4,8 @@ import { ProductType } from "../../product/product.model";
 const schema = gql`
   extend type Query {
     getProductReports(q: QueryGetListInput): OverviewProductPageData 
-    getProductReportsOverview(fromDate: String, toDate: String, memberId: ID): OverviewProductReport 
+    getProductReportsOverview(fromDate: String, toDate: String, memberId: ID): OverviewProductReport
+    syncFacebookReport(accessToken: String) : Boolean
     # Add Query
   }
 

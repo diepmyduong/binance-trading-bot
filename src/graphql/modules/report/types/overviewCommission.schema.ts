@@ -3,27 +3,44 @@ import { OrderStatus, PaymentMethod, ShipMethod } from "../../order/order.model"
 
 const schema = gql`
   extend type Query {
-    getOrderReports(q: QueryGetListInput): OverviewOrderPageData 
-    getOrderReportsOverview(fromDate: String, toDate: String, sellerIds: [ID], isLate: Boolean): OverviewOrdersReport 
+    getCommissionReports(q: QueryGetListInput): OverviewCommissionPageData 
+    getCommissionReportsOverview(fromDate: String, toDate: String, sellerIds: [ID], branchId: ID, collaboratorId: ID, orderStatus: String): OverviewCommissionReport 
     # Add Query
   }
 
-  type OrderStats{
-    count: Int
-    sum: Float
+  type OverviewCommissionReport {
+    "Tổng hoa hồng thực nhận"
+    totalCommission: Float
+    "Tổng hoa hồng dự kiến"
+    totalUnCompletedCommission: Float
+
+    "Hoa hồng bưu cục"
+    commission1:Float
+    "Hoa hồng CTV"
+    commission2:Float
+    "Hoa hồng giao hàng"
+    commission3:Float
+
+    "Hoa hồng bưu cục dự kiến"
+    unCompletedCommission1:Float
+    "Hoa hồng CTV dự kiến"
+    unCompletedcommission2:Float
+    "Hoa hồng giao hàng dự kiến"
+    unCompletedcommission3:Float
   }
 
-  type OverviewOrdersReport {
-    allOrders: OrderStats
-    pendingOrders: OrderStats
-    confirmedOrders: OrderStats
-    deliveringOrders: OrderStats
-    completedOrders: OrderStats
-    failureOrders: OrderStats
-    canceledOrders: OrderStats
+  type CommissionDetail{
+    "Mã"
+    code: String,
+    "Tên"
+    name: String,
+    "Loại"
+    type: String,
+    "Hoa hồng"
+    value: Float
   }
 
-  type OverviewOrder {
+  type OverviewCommission {
     id: String
     updatedAt: DateTime
     
@@ -134,10 +151,16 @@ const schema = gql`
 
     "Hoa hồng"
     commission: Float
+    "Chi tiết hoa hồng điểm bán"
+    commission1Details: CommissionDetail
+    "Chi tiết hoa hồng CTV"
+    commission2Details: CommissionDetail
+    "Chi tiết hoa hồng giao hàng"
+    commission3Details: CommissionDetail
   }
 
-  type OverviewOrderPageData {
-    data: [OverviewOrder]
+  type OverviewCommissionPageData {
+    data: [OverviewCommission]
     total: Int
     pagination: Pagination
   }

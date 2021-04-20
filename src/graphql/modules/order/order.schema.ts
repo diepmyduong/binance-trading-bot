@@ -208,21 +208,12 @@ const schema = gql`
     addressStorehouse: AddressStorehouse
     addressDelivery: AddressDelivery
     "Cộng tác viên"
-    collaborator: CustomerCollaborator
+    collaborator: Collaborator
     "Thông tin vận đơn"
     deliveryInfo: DeliveryInfo
     updatedByUserId: ID
   }
 
-  type CustomerCollaborator {
-    id: ID
-    name: String
-    phone: String
-    customerId: ID
-    memberId: ID
-    member: Member
-    customer: Customer
-  }
 
   type OrderPageData {
     data: [Order]

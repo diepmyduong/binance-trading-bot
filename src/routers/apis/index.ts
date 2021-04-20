@@ -15,6 +15,7 @@ import commonRoute from "./common.route";
 import settingRoute from "./setting.route";
 import memberRoute from "./member.route";
 import orderRoute from "./order.route";
+import commissionRoute from "./commission.route";
 
 const router = express.Router();
 router.use("/evoucher", evoucherRoute);
@@ -31,6 +32,7 @@ router.use("/collaborator", collaborator);
 router.use("/test", testRoute);
 router.use("/order", orderRoute);
 router.use("/member", memberRoute);
+router.use("/commission", commissionRoute);
 router.use("/common", commonRoute);
 router.use("/setting", settingRoute);
 export default router;

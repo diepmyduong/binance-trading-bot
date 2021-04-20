@@ -4,7 +4,8 @@ import { ProductType } from "../../product/product.model";
 const schema = gql`
   extend type Query {
     getProductReports(q: QueryGetListInput): OverviewProductPageData 
-    getProductReportsOverview(fromDate: String, toDate: String, memberId: ID): OverviewProductReport 
+    getProductReportsOverview(fromDate: String, toDate: String, memberId: ID): OverviewProductReport
+    syncFacebookReport(accessToken: String) : Boolean
     # Add Query
   }
 
@@ -56,10 +57,23 @@ const schema = gql`
     canceledAmount: Float
   }
 
-  type OverviewProductReport {
-    "Tổng doanh thu"
-    totalIncome: Float
+  type TopProduct{
+    name: String
+    value: String
+    unit: String
+  }
 
+  type OverviewProductReport {
+    "Top 5 sản phẩm đựợc mua nhiều nhất"
+    mostInterestedProducts: [TopProduct]
+    "Top 5 sản phẩm doanh thu nhiều nhất"
+    mostIncomeProducts: [TopProduct]
+    "Top 5 sản phẩm hoa hồng nhiều nhất"
+    mostCommissionProducts: [TopProduct]
+    "Top 5 sản phẩm được xem nhiều nhất"
+    mostViewProducts: [TopProduct]
+    "Top 5 sản phẩm được share nhiều nhất"
+    mostSharingProducts: [TopProduct]
   }
 
   type OverviewProduct {

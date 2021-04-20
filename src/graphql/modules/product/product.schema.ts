@@ -17,6 +17,7 @@ const schema = gql`
     deleteOneProduct(id: ID!): Product
     deleteManyProduct(ids: [ID]): Int
     importProducts(file: Upload!): String
+    increaseViewCount(productId: ID!): Product
   }
 
   input CloneProductinput {

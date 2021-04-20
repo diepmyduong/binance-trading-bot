@@ -56,10 +56,21 @@ const schema = gql`
     canceledAmount: Float
   }
 
-  type OverviewProductReport {
-    "Tổng doanh thu"
-    totalIncome: Float
+  type TopProduct{
+    name: String
+    value: String
+    unit: String
+  }
 
+  type OverviewProductReport {
+    "Top 5 sản phẩm đựợc mua nhiều nhất"
+    mostInterestedProducts: [TopProduct]
+    "Top 5 sản phẩm doanh thu nhiều nhất"
+    mostIncomeProducts: [TopProduct]
+    "Top 5 sản phẩm hoa hồng nhiều nhất"
+    mostCommissionProducts: [TopProduct]
+    "Top 5 sản phẩm được xem nhiều nhất"
+    mostViewProducts: [TopProduct]
   }
 
   type OverviewProduct {

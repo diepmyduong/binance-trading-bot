@@ -12,14 +12,35 @@ import { UserModel } from "../../user/user.model";
 import { CollaboratorProductModel } from "../../collaboratorProduct/collaboratorProduct.model";
 import { FacebookHelper } from "../../../../helpers/facebook.helper";
 import { ErrorHelper } from "../../../../base/error";
+import { MemberModel } from "../../member/member.model";
 
 const getProductReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  let { fromDate, toDate, sellerIds } = args;
+  let { fromDate, toDate, sellerIds , branchId } = args;
 
   const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
   const $match = {};
+  const match2 :any = {};
+  if (context.isMember()) {
+    set(match2, "sellerId.$in", [context.id]);
+  }
+  else {
+    if (branchId) {
+      const memberIds = await MemberModel.find({ branchId }).select("_id");
+      const sellerIds = memberIds.map(m => m.id);
+      set(match2, "sellerId.$in", sellerIds.map(Types.ObjectId));
+    }
+    else {
+      if (sellerIds) {
+        if (sellerIds.length > 0) {
+          set(match2, "sellerId.$in", sellerIds);
+        }
+      }
+    }
+  }
+
+  // console.log("match2",match2);
 
   if ($gte) {
     set($match, "createdAt.$gte", $gte);
@@ -56,6 +77,11 @@ const getProductReportsOverview = async (root: any, args: any, context: Context)
         commission1: 1,
         commission2: 1,
         commission3: 1
+      }
+    },
+    {
+      $match:{
+        ...match2
       }
     },
     {
@@ -166,19 +192,26 @@ const syncFacebookReport = async (root: any, args: any, context: Context) => {
 
 const OverviewProduct = {
   productStats: async (root: IProduct, args: any, context: Context) => {
-    const { memberIds } = args;
+    const { sellerIds , branchId} = args;
 
     if (context.isMember()) {
-      set(args, "sellerId.$in", [new ObjectId(context.id)]);
+      set(args, "sellerId.$in", [context.id]);
     }
     else {
-      if (memberIds) {
-        if (memberIds.length > 0) {
-          set(args, "sellerId.$in", memberIds.map(Types.ObjectId));
+      if (branchId) {
+        const memberIds = await MemberModel.find({ branchId }).select("_id");
+        const sellerIds = memberIds.map(m => m.id);
+        set(args, "sellerId.$in", sellerIds.map(Types.ObjectId));
+      }
+      else {
+        if (sellerIds) {
+          if (sellerIds.length > 0) {
+            set(args, "sellerId.$in", sellerIds);
+          }
         }
       }
     }
-
+  
     return ProductStats.getLoader(args).load(root.id);
   },
 }

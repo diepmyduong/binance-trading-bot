@@ -59,7 +59,7 @@ const schema = gql`
 
   type TopProduct{
     name: String
-    value: String
+    value: Float
     unit: String
   }
 

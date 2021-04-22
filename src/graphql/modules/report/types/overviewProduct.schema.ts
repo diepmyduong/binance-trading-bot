@@ -3,8 +3,8 @@ import { ProductType } from "../../product/product.model";
 
 const schema = gql`
   extend type Query {
-    getProductReports(q: QueryGetListInput): OverviewProductPageData 
-    getProductReportsOverview(fromDate: String, toDate: String, memberId: ID): OverviewProductReport
+    getProductReports(q: QueryGetListInput): OverviewProductPageData
+    getProductReportsOverview(fromDate: String, toDate: String, sellerIds: [ID], branchId:ID): OverviewProductReport
     syncFacebookReport(accessToken: String) : Boolean
     # Add Query
   }
@@ -132,7 +132,7 @@ const schema = gql`
     "Cân nặng"
     weight: Int
     "Thống kê Sản phẩm"
-    productStats(fromDate: String, toDate: String, memberIds: [ID]):ProductStats
+    productStats(fromDate: String, toDate: String, sellerIds: [ID], branchId:ID):ProductStats
     category: Category
   }
 

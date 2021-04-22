@@ -16,6 +16,14 @@ import { CollaboratorLoader, CollaboratorModel } from "../../collaborator/collab
 import { set } from "lodash";
 import { Types } from "mongoose";
 
+const resolveArgs = (args: any) => {
+  delete args.q.filter.sellerIds;
+  delete args.q.filter.fromDate;
+  delete args.q.filter.toDate;
+  delete args.q.filter.orderStatus;
+  delete args.q.filter.branchId;
+}
+
 const getCommissionReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   let { fromDate, toDate, sellerIds, branchId, collaboratorId } = args;
@@ -76,21 +84,27 @@ const getCommissionReportsOverview = async (root: any, args: any, context: Conte
     }
   ]);
 
-  return {
-    ...order,
-    totalCommission: order.commission1 + order.commission2 + order.commission3,
-    totalUnCompletedCommission: order.unCompletedCommission1 + order.unCompletedcommission2 + order.unCompletedcommission3
+  let result = {
+    commission1 : 0,
+    commission2 : 0,
+    commission3 : 0,
+    unCompletedCommission1 : 0,
+    unCompletedcommission2 : 0,
+    unCompletedcommission3 : 0,
+    totalCommission: 0,
+    totalUnCompletedCommission:0,
   }
-};
 
-const resolveArgs = (args: any) => {
-  delete args.q.filter.sellerIds;
-  delete args.q.filter.fromDate;
-  delete args.q.filter.toDate;
-  delete args.q.filter.orderStatus;
-  delete args.q.filter.branchId;
-  // return args;
-}
+  if(order){
+    result = {
+      ...order,
+      totalCommission: order.commission1 + order.commission2 + order.commission3,
+      totalUnCompletedCommission: order.unCompletedCommission1 + order.unCompletedcommission2 + order.unCompletedcommission3
+    }
+  }
+
+  return result;
+};
 
 const getCommissionReports = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);

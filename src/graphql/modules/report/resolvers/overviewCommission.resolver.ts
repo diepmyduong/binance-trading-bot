@@ -61,8 +61,10 @@ const getCommissionReportsOverview = async (root: any, args: any, context: Conte
 
   //theo ctv nao
   if (collaboratorId) {
-    set(params, "q.filter.collaboratorId", new ObjectId(collaboratorId));
+    set(params, "collaboratorId", new ObjectId(collaboratorId));
   }
+
+  // console.log('params',params);
 
   const [order] = await OrderModel.aggregate([
     {

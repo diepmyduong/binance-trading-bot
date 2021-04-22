@@ -48,9 +48,7 @@ export class ProductStats {
           const objectIds = ids.map(Types.ObjectId);
                     
           const $match: any = {};
-          const match2 : any= {
-            
-          }
+          const match2 : any= {}
 
           if ($gte) {
             set($match, "createdAt.$gte", $gte);
@@ -62,7 +60,7 @@ export class ProductStats {
 
           set($match, "productId.$in", objectIds);
           
-          console.log("sellerId",sellerId);
+          // console.log("---------->  sellerId",sellerId);
 
           if(sellerId){
             set(match2, "sellerId", sellerId);

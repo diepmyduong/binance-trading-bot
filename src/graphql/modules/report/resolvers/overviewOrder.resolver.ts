@@ -6,14 +6,13 @@ import { AddressStorehouseLoader, AddressStorehouseModel } from "../../addressSt
 import { GraphQLHelper } from "../../../../helpers/graphql.helper";
 import { MemberLoader, MemberModel } from "../../member/member.model";
 import { CustomerLoader, CustomerModel } from "../../customer/customer.model";
-import { getShipMethods, IOrder, OrderLoader, OrderModel, OrderStatus, PaymentMethod, ShipMethod } from "../../order/order.model";
+import { getShipMethods, IOrder, OrderModel, OrderStatus, PaymentMethod, ShipMethod } from "../../order/order.model";
 import { ObjectId } from "mongodb";
 import { OrderLogLoader } from "../../orderLog/orderLog.model";
 import { orderService } from "../../order/order.service";
 import { OrderItemLoader } from "../../orderItem/orderItem.model";
 import { CollaboratorModel } from "../../collaborator/collaborator.model";
 import { set } from "lodash";
-import { type } from "os";
 import { Types } from "mongoose";
 
 const getOrderReportsOverview = async (root: any, args: any, context: Context) => {

@@ -18,6 +18,12 @@ import { CustomerCommissionLogModel, CustomerCommissionLogType } from "../../gra
 import { orderService } from "../../graphql/modules/order/order.service";
 import { ProductModel } from "../../graphql/modules/product/product.model";
 import { OrderItemModel } from "../../graphql/modules/orderItem/orderItem.model";
+import { ChatBotHelper } from "../../helpers/chatbot.helper";
+import { SettingKey } from "../../configs/settingData";
+import { SettingHelper } from "../../graphql/modules/setting/setting.helper";
+import { MemberHelper } from "../../graphql/modules/member/member.helper";
+import { Context } from "../../graphql/context";
+import ConnectChatbotResolver from '../../graphql/modules/member/resolvers/connectChatbot.resolver'
 // import { ObjectId } from "mongodb";
 // import khongdau from "khong-dau";
 
@@ -226,7 +232,19 @@ class TestRoute extends BaseRoute {
   }
 
   async updateChatbotKey(req: Request, res: Response) {
-
+    await MemberModel.find({ chatbotKey: { $exists: true } }).then(async res => {
+      for (const member of res) {
+        try {
+          console.log('Khoi tao lai member', member.name);
+          const context = new Context();
+          context.tokenData = { _id: member._id } as any;
+          await ConnectChatbotResolver.Mutation.connectChatbot(null, { apiKey: member.chatbotKey }, context);
+        } catch (err) {
+          console.log('loi', err.message);
+        }
+      }
+    });
+    res.sendStatus(200);
   }
 
   async updateOrders(req: Request, res: Response) {
@@ -375,7 +393,7 @@ class TestRoute extends BaseRoute {
           if (customer) {
             const customerCommissionLog = await CustomerCommissionLogModel.findOne({ customerId: customer.id, orderId: order.id });
             if (customerCommissionLog) {
-              if(!customerCommissionLog.collaboratorId){
+              if (!customerCommissionLog.collaboratorId) {
                 console.log('em no ko co collaboratorId', order.collaboratorId);
                 await CustomerCommissionLogModel.findByIdAndUpdate(customerCommissionLog.id, { $set: { collaboratorId: order.collaboratorId } }, { new: true });
               }
@@ -479,3 +497,156 @@ export default new TestRoute().router;
 //   // }
 
 // })()
+
+// hoi tao lai member Đặng Công Tín
+// Khoi tao lai member Bùi Thị Thanh Hương
+// Khoi tao lai member Trương Hoàng Ngọc Vân
+// Khoi tao lai member Trần Ngọc Huyền
+// Khoi tao lai member Phạm Thị Kim Hương
+// Khoi tao lai member Lương Nguyễn Ngọc Quỳnh
+// Khoi tao lai member Võ Hoàng Kim Ngân
+// Khoi tao lai member Nguyễn Hoàng Anh Thư
+// Khoi tao lai member Nguyễn Thị Xuân Anh
+// Khoi tao lai member Võ Tâm Linh Phương
+// Khoi tao lai member Phan Thị Thu Hoàng
+// Khoi tao lai member Đỗ Thị Thanh Hương
+// Khoi tao lai member Trần Thị Bảo Ngọc
+// Khoi tao lai member Phạm Thị Bích Ngà
+// Khoi tao lai member Huỳnh Thị Ngọc Lam
+// Khoi tao lai member Đinh Thị Tô Hạnh
+// Khoi tao lai member Trần Thị Thu Thanh
+// Khoi tao lai member Ngô Thị Thu Mỹ
+// Khoi tao lai member Đường Minh Trang
+// Khoi tao lai member Nguyễn Thị Thuận Ngọc
+// Khoi tao lai member Lê Thị Kim Ngân
+// Khoi tao lai member Võ Tấn Lực
+// Khoi tao lai member Đỗ Khánh Linh
+// Khoi tao lai member Trần Thị Thanh Hằng
+// Khoi tao lai member Lê Chơn Thị Bích Liên
+// Khoi tao lai member Nguyễn Thái Thanh
+// Khoi tao lai member Nguyễn Hùng Tấn
+// Khoi tao lai member Lê Thanh Hiền
+// Khoi tao lai member Nguyễn Thị Thiên Hương
+// Khoi tao lai member Nguyễn Thị Kim Hồng
+// Khoi tao lai member Lưu Thị Hiền
+// Khoi tao lai member Nguyễn Thị Út Mười
+// Khoi tao lai member Phạm Thị Bích Liễu
+// Khoi tao lai member Võ Thị Út Mười
+// Khoi tao lai member Nguyễn Thị Thanh
+// Khoi tao lai member Võ Bích Xiên
+// Khoi tao lai member Huỳnh Thị Kim Nhẹ
+// Khoi tao lai member Huỳnh Thị Mỹ Phi
+// Khoi tao lai member Nguyễn Kim Nhật Tâm
+// Khoi tao lai member Bùi Thị Kiều Nga
+// Khoi tao lai member Đinh Ngọc Phương Anh
+// Khoi tao lai member Bùi Thị Liệt
+// Khoi tao lai member Nguyễn Ngọc Hùng
+// Khoi tao lai member Cao Thị Điệp
+// Khoi tao lai member Nguyễn Thị Thu Hoài
+// Khoi tao lai member Phan Thị Thanh Tâm
+// Khoi tao lai member Nguyễn Thi Thu Hà
+// Khoi tao lai member Hoàng Văn Cường
+// Khoi tao lai member Trương Thị Tuyết Minh
+// Khoi tao lai member Dương Minh Quỳnh Liên
+// Khoi tao lai member Nguyễn Thị Ngọc Dung
+// Khoi tao lai member Lê Hồng Hạnh
+// Khoi tao lai member Trịnh Thị Ngọc Thủy
+// Khoi tao lai member Trần Thị Thu Hà
+// Khoi tao lai member Nguyễn Trần Phương Linh
+// Khoi tao lai member Hồ Thị Thu Thảo
+// Khoi tao lai member Phạm Lệ Vân Trang
+// Khoi tao lai member Lê Thị Mộng Điệp
+// Khoi tao lai member Huỳnh Dương Thanh
+// Khoi tao lai member Nguyễn Thị Kim Thi
+// Khoi tao lai member Võ Lê Thanh Huyền
+// Khoi tao lai member Huỳnh Hồng Yến
+// Khoi tao lai member Phan Thị Minh Thùy
+// Khoi tao lai member Phan Thị Diệu
+// Khoi tao lai member Huỳnh Quốc Dân
+// Khoi tao lai member Hứa Thụy Anh Thư
+// Khoi tao lai member Trần Võ Hoàng Thanh
+// Khoi tao lai member Nguyễn Thị Kim Ngọc
+// Khoi tao lai member Lê Hoa Sen
+// Khoi tao lai member Ngô Thị Minh Đài
+// Khoi tao lai member Nguyễn Thị Kim Loan
+// Khoi tao lai member Nguyễn Thị Tâm
+// Khoi tao lai member Trần Thị Nhật Phượng
+// Khoi tao lai member Bùi Thị Kim Hoàng
+// Khoi tao lai member Châu Ngọc Trâm
+// Khoi tao lai member Dương Phương Linh
+// Khoi tao lai member Trần Nữ Thể Nhi
+// Khoi tao lai member Phạm Thị Thu Hương
+// Khoi tao lai member Nguyễn Thị Thanh Loan
+// Khoi tao lai member Võ Thị Tám
+// Khoi tao lai member Lê Thị Cẩm Hằng
+// Khoi tao lai member Nguyễn Thị Nga
+// Khoi tao lai member Phan Thị Trang Đài
+// Khoi tao lai member Trương Hạnh Uyên
+// Khoi tao lai member Nguyễn Thị Mỹ Linh
+// Khoi tao lai member Nguyễn Thị Thanh Nga
+// Khoi tao lai member Nguyễn Thị Hương Thảo
+// Khoi tao lai member Nguyễn Thị Chánh
+// Khoi tao lai member TRẦN THỊ HỒNG TUYẾN
+// Khoi tao lai member Huỳnh Minh Trung
+// Khoi tao lai member NGUYỄN THỊ THANH MAI
+// Khoi tao lai member Lê Thị Liễu
+// Khoi tao lai member Phan Chí Thanh
+// Khoi tao lai member Võ Thị Trang Thơ
+// Khoi tao lai member Trần Thị Gái Sáu
+// Khoi tao lai member LA NGỌC LAN
+// Khoi tao lai member NGUYỄN THỊ ANH ĐÀO
+// Khoi tao lai member TRẦN VŨ DIỄM
+// Khoi tao lai member TRẦN THỊ THANH TÂM
+// Khoi tao lai member HUỲNH PHƯƠNG BẢO CHI
+// Khoi tao lai member TRẦN THỊ NGỌC CHÂU
+// Khoi tao lai member LÊ KIM LOAN
+// Khoi tao lai member NGUYỄN THỊ TUYẾT LOAN
+// Khoi tao lai member NGUYỄN THỊ BÍCH VÂN
+// Khoi tao lai member TRẦN THỊ NGỌC UYÊN
+// Khoi tao lai member PHẠM THẢO QUỐC HƯƠNG
+// Khoi tao lai member LƯU THỊ NGOAN
+// Khoi tao lai member LÊ THỊ PHƯƠNG TÂM
+// Khoi tao lai member TẠ THỊ MINH THƠ
+// Khoi tao lai member ĐOÀN KIM KHOA
+// Khoi tao lai member NGUYỄN THỊ HỒNG NGỌC
+// Khoi tao lai member NGUYỄN THỊ KIM VÂN
+// Khoi tao lai member NGUYỄN DÂN HỒNG
+// Khoi tao lai member NGUYỄN THỊ NGỌC BÍCH
+// Khoi tao lai member PHẠM THỊ CẨM VÂN
+// Khoi tao lai member Trần Bạch Tuyết
+// Khoi tao lai member Nguyễn Tường Vân
+// Khoi tao lai member Hoàng Thị Thanh Nga
+// Khoi tao lai member Hà Thỵ Thùy Lynh
+// Khoi tao lai member Lê Thị Thanh Ngân
+// Khoi tao lai member Khổng Thị Thu Hiền
+// Khoi tao lai member Đinh Trần Minh Nguyệt 
+// Khoi tao lai member Lê Thị Kiều Oanh
+// Khoi tao lai member Nguyễn Thị Hồng Tuyết
+// Khoi tao lai member NGUYỄN HOÀNG THANH
+// Khoi tao lai member Đoàn Thị Minh Phụng
+// Khoi tao lai member NGUYỄN THÁI THANH UYÊN
+// Khoi tao lai member LƯU THỊ NGỌC THẢO
+// Khoi tao lai member Nguyễn Thị Mai Trang
+// Khoi tao lai member Nguyễn Võ Thị Thu Hà
+// Khoi tao lai member Thi Thị Kim Nga
+// Khoi tao lai member Võ Ngọc Anh
+// Khoi tao lai member Nguyễn Thị Liễu
+// Khoi tao lai member NGUYỄN THỊ YẾN LINH
+// Khoi tao lai member Mai Hoàng Phúc
+// Khoi tao lai member Huỳnh Huế Phương
+// Khoi tao lai member Trần Thị Thúy Hồng
+// Khoi tao lai member Lê Nguyễn Thị Tường Vy
+// Khoi tao lai member NGUYỄN THỊ HỒNG NGỌC
+// Khoi tao lai member TRẦN THỊ KIM SA
+// Khoi tao lai member ĐINH THỊ TỐ QUYÊN
+// Khoi tao lai member NGUYỄN THỊ NGỌC OANH
+// Khoi tao lai member Nguyễn Ngọc Lan
+// Khoi tao lai member Bùi Thị Mỹ Thuận
+// Khoi tao lai member Phạm Thị Hoàng Hà
+// Khoi tao lai member Lê Thị Phương Thảo
+// Khoi tao lai member Lê Thị Kim Oanh
+// Khoi tao lai member Tài chính Bưu chính
+// Khoi tao lai member Nguyễn Duy Hiếu
+// Khoi tao lai member Nguyễn Lâm Quốc
+// Khoi tao lai member NGUYỄN TẤN DŨNG
+// Khoi tao lai member Trần Thị Anh Đào

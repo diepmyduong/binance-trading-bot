@@ -8,22 +8,31 @@ import { memberService } from "../member.service";
 
 const Query = {
   getShopData: async (root: any, args: any, context: Context) => {
-    const { pageId, memberCode } = context;
+    const { pageId, memberCode, xPageId } = context;
+
 
     const params: any = {};
 
-    if (!pageId && !memberCode)
-      throw ErrorHelper.requestDataInvalid("");
+    if (!pageId && !xPageId && !memberCode)
+      throw ErrorHelper.requestDataInvalid("Lỗi pageId");
 
-    // console.log('pageId',pageId);
-    // console.log('memberCode',memberCode);
+    // console.log('pageId', pageId);
+    // console.log('xPageId', xPageId);
+    // console.log('memberCode', memberCode);
 
-    if (memberCode) {
-      params.code = memberCode;
-    }
-    else {
+    if (pageId) {
       params.fanpageId = pageId;
     }
+    else if (xPageId) {
+      params.fanpageId = xPageId;
+    }
+    else {
+      if (memberCode) {
+        params.code = memberCode;
+      }
+    }
+
+    // console.log('params', params);
 
     const member = memberService.findOne(params);
 

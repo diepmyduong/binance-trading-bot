@@ -29,6 +29,7 @@ export class Context {
     public memberCode: string = null,
     public campaignCode: string = null,
     public collaboratorId: string = null,
+    public xPageId : string = null,
     public tokenData?: TokenData,
     public token: string = null,
     public messengerSignPayload?: MessengerTokenDecoded
@@ -99,6 +100,9 @@ export class Context {
         psid = _.get(req, "headers.x-psid") || _.get(req, "query.x-psid");
         pageId = _.get(req, "headers.x-page-id") || _.get(req, "query.x-page-id");
       }
+
+      // console.log('parseSig',pageId);
+
       if (connection && connection.context) {
         sig = connection.context["x-sig"];
         psid = connection.context["x-psid"];
@@ -132,11 +136,12 @@ export class Context {
   parseHeader = (params: any) => {
     try {
       const { req } = params;
-      let campaignCode, collaboratorId, memberCode;
+      let campaignCode, collaboratorId, memberCode, pageId;
 
       if (req) {
         campaignCode = _.get(req, "headers.x-campaign-code");
         collaboratorId = _.get(req, "headers.x-collaborator-id");
+        pageId = _.get(req, "headers.x-page-id");
         memberCode = _.get(req, "headers.x-code") || _.get(req, "query.x-code");
       }
 
@@ -148,7 +153,7 @@ export class Context {
       this.collaboratorId = ObjectId.isValid(collaboratorId) ? collaboratorId : null;
       this.collaboratorId = collaboratorId;
       this.campaignCode = campaignCode;
-
+      this.xPageId = pageId;
       this.memberCode = memberCode;
 
     } catch (err) {
@@ -165,8 +170,8 @@ export class Context {
   modifyMemberCode = async () => {
     try {
       const code = await SettingHelper.load(SettingKey.DEFAULT_SHOP_CODE);
-      if(!this.memberCode && !this.pageId){
-        this.memberCode =  code;
+      if (!this.memberCode && !this.pageId) {
+        this.memberCode = code;
       }
       // console.log("this.memberCode",this.memberCode);
     } catch (err) {

@@ -48,7 +48,7 @@ export const exportPortReport = async (req: Request, res: Response) => {
   const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
   const $match: any = {};
-  const $memberMatch: any = { type: MemberType.BRANCH, activated: false };
+  const $memberMatch: any = { type: MemberType.BRANCH, activated: true };
 
   if ($gte) {
     set($match, "createdAt.$gte", $gte);

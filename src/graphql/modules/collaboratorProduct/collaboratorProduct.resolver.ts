@@ -8,6 +8,7 @@ import { set } from "lodash";
 import { CollaboratorLoader, CollaboratorModel } from "../collaborator/collaborator.model";
 import { SettingHelper } from "../setting/setting.helper";
 import { SettingKey } from "../../../configs/settingData";
+import { CollaboratorProductModel } from "./collaboratorProduct.model";
 
 const Query = {
   getAllCollaboratorProduct: async (root: any, args: any, context: Context) => {
@@ -33,14 +34,16 @@ const Mutation = {
     const { collaboratorId, productId } = data;
 
     const host = await SettingHelper.load(SettingKey.APP_DOMAIN);
-
-
     const secret = `${collaboratorId}-${productId}`;
 
     let shortCode = KeycodeHelper.alpha(secret, 6);
     let shortUrl = `${host}/san-pham/${shortCode}`;
 
-    console.log('collaboratorId', collaboratorId);
+    const collaboratorProduct = CollaboratorProductModel.find({ collaboratorId, productId });
+    if(collaboratorProduct){
+      throw ErrorHelper.mgQueryFailed("Link sản phẩm đã tồn tại");
+    }
+    // console.log('collaboratorId', collaboratorId);
     const collaborator = await CollaboratorModel.findById(collaboratorId);
     // console.log('collaborator', collaborator);
 

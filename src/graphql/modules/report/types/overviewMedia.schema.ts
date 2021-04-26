@@ -4,19 +4,55 @@ const schema = gql`
   extend type Query{
     getCollaboratorsMediaReports(q: QueryGetListInput): MediaCollaboratorPageData
     getProductsMediaReports(q: QueryGetListInput): MediaProductPageData
+
+    getOverviewAllCollaboratorProducts(fromDate: String, toDate: String): OverviewMediaProductStats
+    getOverviewAllCollaborators(fromDate: String, toDate: String): OverviewMediaCollaboratorStats
     # Add Query
   }
 
-  type MediaProductStats{
-    unCompletedCount: Int
-    completedCount: Int
+  type OverviewMediaProductStats{
+    shareCount: Int
+    likeCount: Int
+    commentCount: Int
+    completedQty: Int
   }
 
-  type ProductMediaStats{
-    likeCount: Int
+  type OverviewMediaCollaboratorStats{
     shareCount: Int
+    likeCount: Int
     commentCount: Int
-    productCount: Int
+    collaboratorCount: Int
+  }
+
+  type MediaProductsStats{
+    "Số lần SP trong đơn chưa đặt"
+    unCompletedProductsCount: Int
+    "Tổng lượng SP chưa đặt"
+    unCompletedProductsQty: Int
+    "Số lần SP trong đơn thành công"
+    completedProductsCount: Int
+    "Tổng lượng SP chưa đặt"
+    completedProductsQty: Int
+  }
+
+  type MediaProductStats{
+    "Số lượng SP chưa đặt"
+    unCompletedQty: Int
+    "Số lượng SP thành công"
+    completedQty: Int
+  }
+
+  type MediaCollaboratorStats{
+    "Tổng lượt xem SP"
+    productsViewCount: Int
+    "Tổng lượt like SP"
+    productsLikeCount: Int
+    "Tổng lượt share SP"
+    productsShareCount: Int
+    "Tổng lượt comment SP"
+    productsCommentCount: Int
+    "Tổng link SP"
+    productLinksCount: Int
   }
 
   type MediaCollaborator {
@@ -27,13 +63,23 @@ const schema = gql`
     code: String
     name: String
     phone: String
+
+    "Link giới thiệu"
+    shortUrl: String
+    clickCount: Int
+    likeCount: Int
+    shareCount: Int
+    commentCount: Int
+
     customerId: ID
     memberId: ID
 
     customer: Customer
     member: Member
     total:Float
-    allProductMediaStats: ProductMediaStats
+    mediaCollaboratorStats: MediaCollaboratorStats
+
+    allMediaProductsStats(fromDate: String, toDate: String): MediaProductsStats
   }
 
   type MediaCollaboratorPageData {
@@ -66,7 +112,7 @@ const schema = gql`
 
     collaborator: Collaborator
     product: Product
-    mediaProductStats: MediaProductStats
+    mediaProductStats(fromDate: String, toDate: String): MediaProductStats
   }
 
   type MediaProductPageData {

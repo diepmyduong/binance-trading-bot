@@ -13,11 +13,7 @@ import {
 import { SettingHelper } from "../../setting/setting.helper";
 import { SettingKey } from "../../../../configs/settingData";
 import { MemberImportingLogModel } from "../../memberImportingLog/memberImportingLog.model";
-import moment from "moment";
-import { MemberHelper } from "../member.helper";
 import { Gender, MemberModel, MemberType } from "../member.model";
-import { AddressHelper } from "../../address/address.helper";
-import { BranchModel } from "../../branch/branch.model";
 
 const STT = "STT";
 const SHOP_NAME = "Tên bưu cục";

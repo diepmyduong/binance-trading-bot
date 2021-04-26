@@ -1,24 +1,112 @@
 import { ObjectId } from "mongodb";
 import { GraphQLHelper } from "../../../../helpers/graphql.helper";
 import { ROLES } from "../../../../constants/role.const";
-import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../../helpers";
+import { AuthHelper, UtilsHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { CustomerCommissionLogModel, ICustomerCommissionLog } from "../../customerCommissionLog/customerCommissionLog.model";
 import { Gender, MemberLoader, MemberModel } from "../../member/member.model";
 import { CustomerModel } from "../../customer/customer.model";
-import { CollaboratorLoader, CollaboratorModel, ICollaborator } from "../../collaborator/collaborator.model";
+import { CollaboratorLoader, ICollaborator } from "../../collaborator/collaborator.model";
 import { collaboratorService } from "../../collaborator/collaborator.service";
 import { isEmpty, set } from "lodash";
 import { Types } from "mongoose";
 import { collaboratorProductService } from "../../collaboratorProduct/collaboratorProduct.service";
 import { ProductLoader } from "../../product/product.model";
 import { ICollaboratorProduct } from "../../collaboratorProduct/collaboratorProduct.model";
-import { MediaProductStats, AllProductMediaStats } from "../loaders/mediaProductStats.loader";
+import { MediaProductStats } from "../loaders/mediaProductStats.loader";
+import { MediaCollaboratorStats } from "../loaders/mediaCollaboratorStats.loader";
+import { AllMediaProductsStats } from "../loaders/AllMediaProductsStats.loader";
 
 
 const resolveArgs = (args: any) => {
   delete args.q.filter.branchId;
 }
+
+const getOverviewAllCollaboratorProducts = async (
+  root: any,
+  args: any,
+  context: Context
+) => {
+  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+  
+  //Tổng lượt share - like - comment - click - tổng số lượng sp đặt hàng thành công
+
+
+  return {
+    shareCount: 0,
+    likeCount:0,
+    commentCount:0,
+    completedQty: 0,
+  }
+};
+
+
+const getOverviewAllCollaborators = async (
+  root: any,
+  args: any,
+  context: Context
+) => {
+  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+  
+  //CTV : Tổng lượt share - like - comment - click - tổng lượng ctv
+
+
+  return {
+    shareCount: 0,
+    likeCount:0,
+    commentCount:0,
+    collaboratorCount:0
+  }
+};
+
+
+const getTopMediaCollaboratorProducts = async (
+  root: any,
+  args: any,
+  context: Context
+) => {
+  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+  
+  //CTV : Tổng lượt share - like - comment - click - tổng lượng ctv
+
+  const mostLikeProducts:any = [];
+  const mostShareProducts:any = [];
+  const mostCommentProducts:any = [];
+  const mostViewProducts:any = [];
+
+  return {
+    mostLikeProducts,
+    mostShareProducts,
+    mostCommentProducts,
+    mostViewProducts,
+  }
+};
+
+
+const getTopMediaCollaborators = async (
+  root: any,
+  args: any,
+  context: Context
+) => {
+  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+  
+  //CTV : Tổng lượt share - like - comment - click - tổng lượng ctv
+
+  const mostLikeCollaborators:any = [];
+  const mostShareCollaborators:any = [];
+  const mostCommentCollaborators:any = [];
+  const mostViewCollaborators:any = [];
+
+  return {
+    mostLikeCollaborators,
+    mostShareCollaborators,
+    mostCommentCollaborators,
+    mostViewCollaborators,
+  }
+};
+
+
+
 //CTV - đường link - lựợt click - lượt like - lượt share - lượt comment - tổng like SP - Tổng share SP - Tổng coment SP - tổng SP - tổng lượng sp đặt hàng thành công
 const getCollaboratorsMediaReports = async (root: any,args: any,context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
@@ -126,15 +214,24 @@ const MediaCollaborator = {
     return count > 0 ? customerCommissionLog.reduce((total: number, o: ICustomerCommissionLog) => total += o.value, 0) : 0;
   },
 
-  allProductMediaStats: async (root: ICollaborator, args: any, context: Context) => {
-    return AllProductMediaStats.getLoader(args).load(root.id);
+  mediaCollaboratorStats: async (root: ICollaborator, args: any, context: Context) => {
+    return MediaCollaboratorStats.getLoader(args).load(root.id);
+  },
+
+  allMediaProductsStats: async (root: ICollaborator, args: any, context: Context) => {
+    return AllMediaProductsStats.getLoader(args).load(root.id);
   }
 
 };
 
 const Query = {
   getCollaboratorsMediaReports,
-  getProductsMediaReports
+  getProductsMediaReports,
+  
+  getOverviewAllCollaboratorProducts,
+  getOverviewAllCollaborators,
+  // getTopMediaCollaboratorProducts,
+  // getTopMediaCollaborators
 };
 
 export default { 

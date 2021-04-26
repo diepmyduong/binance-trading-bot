@@ -148,6 +148,7 @@ export class Context {
       if (campaignCode === 'null') campaignCode = null;
       if (collaboratorId === 'null') collaboratorId = null;
       if (memberCode === 'null') memberCode = null;
+      if (pageId === 'null') pageId = null;
 
 
       this.collaboratorId = ObjectId.isValid(collaboratorId) ? collaboratorId : null;

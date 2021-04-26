@@ -20,18 +20,13 @@ import {
   ShipMethod,
 } from "../../../graphql/modules/order/order.model";
 import { OrderModel } from "../../../graphql/modules/order/order.model";
-import { OrderItemModel } from "../../../graphql/modules/orderItem/orderItem.model";
 import { AddressDeliveryModel } from "../../../graphql/modules/addressDelivery/addressDelivery.model";
 import { MemberModel, MemberType } from "../../../graphql/modules/member/member.model";
-import { SettingHelper } from "../../../graphql/modules/setting/setting.helper";
-import { SettingKey } from "../../../configs/settingData";
-import { createCanvas, loadImage } from 'canvas';
 import { UtilsHelper } from "../../../helpers";
 import Excel from "exceljs";
 import { ObjectId } from "bson";
 import moment from "moment";
 import { AddressStorehouseModel } from "../../../graphql/modules/addressStorehouse/addressStorehouse.model";
-import { AddressModel } from "../../../graphql/modules/address/address.model";
 import { BranchModel } from "../../../graphql/modules/branch/branch.model";
 import { isValidObjectId, Types } from "mongoose";
 
@@ -151,8 +146,14 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
     const addressDelivery = order.addressDeliveryId ? addressDeliverys.find(addr => addr.id.toString() === order.addressDeliveryId.toString()) : null;
     const addressStorehouse = order.addressStorehouseId ? addressStorehouses.find(addr => addr.id.toString() === order.addressStorehouseId.toString()) : null;
 
-    const deliveryAddress = addressDelivery ? `${addressDelivery.name} - ${addressDelivery.address}` : null;
-    const storehouseAddress = addressStorehouse ? `${addressStorehouse.name} - ${addressStorehouse.address}` : null;
+    const deliveryAddressCode = addressDelivery ? addressDelivery.code : null;
+    const deliveryAddressName = addressDelivery ? addressDelivery.name : null;
+    const deliveryAddress = addressDelivery ? addressDelivery.address : null;
+
+    const storehouseAddressCode = addressStorehouse ? addressStorehouse.code : null;
+    const storehouseAddressName = addressStorehouse ? addressStorehouse.name : null;
+    const storehouseAddress = addressStorehouse ? addressStorehouse.address : null;
+
     const buyerAddress = order.buyerAddress;
     const branch = branches.find(br => br.id.toString() === seller.branchId.toString());
     const createdDate = moment(order.createdAt);
@@ -172,8 +173,15 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
       buyer: order.buyerName,
       buyerPhone: order.buyerPhone,
       shipMethod,
+      
+      deliveryAddressCode: order.shipMethod === ShipMethod.POST ? deliveryAddressCode : null,
+      deliveryAddressName: order.shipMethod === ShipMethod.POST ? deliveryAddressName : null,
       deliveryAddress: order.shipMethod === ShipMethod.POST ? deliveryAddress : null,
+
+      storehouseAddressCode: order.shipMethod === ShipMethod.VNPOST ? storehouseAddressCode : null,
+      storehouseAddressName: order.shipMethod === ShipMethod.VNPOST ? storehouseAddressName : null,
       storehouseAddress: order.shipMethod === ShipMethod.VNPOST ? storehouseAddress : null,
+
       buyerAddress,
       district: seller.district,
       note: order.note,
@@ -217,7 +225,13 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
       "SĐT",
 
       "PTVC",
+
+      "Mã bưu cục nhận",
+      "Tên bưu cục nhận",
       "Địa chỉ bưu cục nhận",
+
+      "Mã bưu cục giao",
+      "Tên bưu cục giao",
       "Địa chỉ bưu cục giao",
 
       "Ghi chú",
@@ -253,7 +267,13 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
         d.buyerPhone,
 
         d.shipMethod,
+        
+        d.deliveryAddressCode,
+        d.deliveryAddressName,
         d.deliveryAddress,
+
+        d.storehouseAddressCode,
+        d.storehouseAddressName,
         d.storehouseAddress,
 
         d.note,

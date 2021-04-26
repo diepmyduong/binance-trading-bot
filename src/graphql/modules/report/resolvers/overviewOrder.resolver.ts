@@ -205,7 +205,7 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
 const getOrderReports = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const queryInput = args.q;
-  let { fromDate, toDate, sellerIds } = queryInput.filter;
+  let { fromDate, toDate, sellerIds, status } = queryInput.filter;
 
   const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
@@ -231,14 +231,21 @@ const getOrderReports = async (root: any, args: any, context: Context) => {
     }
   }
 
-  delete args.q.filter.sellerIds;
-  delete args.q.filter.fromDate;
-  delete args.q.filter.toDate;
+  if (status === "UNCOMPLETED") {
+    set(args, "args.q.filter.status.$in", [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING]);
+  }
 
-  console.log('args', args);
+  resolveArgs(args);
 
   return orderService.fetch(args.q);
 };
+
+
+const resolveArgs = (args: any) => {
+  delete args.q.filter.sellerIds;
+  delete args.q.filter.fromDate;
+  delete args.q.filter.toDate;
+}
 
 const OverviewOrder = {
   orderLogs: GraphQLHelper.loadManyById(OrderLogLoader, "orderLogIds"),

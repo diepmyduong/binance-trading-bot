@@ -25,7 +25,7 @@ const getPostReportsOverview = async (root: any, args: any, context: Context) =>
 
   const $match = { orderStatus: OrderStatus.COMPLETED },
     $collaboratorMatch = {},
-    $memberMatch = {};
+    $memberMatch = { activated: true };
 
   if ($gte) {
     set($match, "createdAt.$gte", $gte);
@@ -120,6 +120,8 @@ const getPostReports = async (root: any, args: any, context: Context) => {
   if (context.isMember()) {
     args.q.filter._id = context.id;
   }
+
+  args.q.filter.activated = true;
 
   return await memberService.fetch(args.q, '-addressStorehouseIds -addressDeliveryIds').then(res => {
     // console.timeEnd("getPostReports");

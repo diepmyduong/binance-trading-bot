@@ -262,11 +262,8 @@ const OverviewCommission = {
 
       }
     }
-
-
   },
-
-
+  
   mustTransfer: async (root: IOrder, args: any, context: Context) => {
     const member = await MemberModel.findById(root.sellerId);
     if (member) {

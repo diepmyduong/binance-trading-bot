@@ -39,8 +39,8 @@ const Mutation = {
     let shortCode = KeycodeHelper.alpha(secret, 6);
     let shortUrl = `${host}/san-pham/${shortCode}`;
 
-    const collaboratorProduct = CollaboratorProductModel.find({ collaboratorId, productId });
-    if(collaboratorProduct){
+    const collaboratorProduct = await CollaboratorProductModel.find({ collaboratorId, productId });
+    if(collaboratorProduct.length > 0){
       throw ErrorHelper.mgQueryFailed("Link sản phẩm đã tồn tại");
     }
     // console.log('collaboratorId', collaboratorId);

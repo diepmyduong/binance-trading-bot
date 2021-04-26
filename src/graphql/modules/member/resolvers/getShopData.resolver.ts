@@ -32,7 +32,7 @@ const Query = {
       }
     }
 
-    // console.log('params', params);
+    console.log('params', params);
 
     const member = memberService.findOne(params);
 

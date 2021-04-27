@@ -68,7 +68,6 @@ const getTopMediaCollaboratorProducts = async (
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   
   //CTV : Tổng lượt share - like - comment - click - tổng lượng ctv
-
   const mostLikeProducts:any = [];
   const mostShareProducts:any = [];
   const mostCommentProducts:any = [];
@@ -104,8 +103,6 @@ const getTopMediaCollaborators = async (
     mostViewCollaborators,
   }
 };
-
-
 
 //CTV - đường link - lựợt click - lượt like - lượt share - lượt comment - tổng like SP - Tổng share SP - Tổng coment SP - tổng SP - tổng lượng sp đặt hàng thành công
 const getCollaboratorsMediaReports = async (root: any,args: any,context: Context) => {
@@ -230,8 +227,8 @@ const Query = {
   
   getOverviewAllCollaboratorProducts,
   getOverviewAllCollaborators,
-  // getTopMediaCollaboratorProducts,
-  // getTopMediaCollaborators
+  getTopMediaCollaboratorProducts,
+  getTopMediaCollaborators
 };
 
 export default { 

@@ -7,7 +7,28 @@ const schema = gql`
 
     getOverviewAllCollaboratorProducts(fromDate: String, toDate: String): OverviewMediaProductStats
     getOverviewAllCollaborators(fromDate: String, toDate: String): OverviewMediaCollaboratorStats
+    getTopMediaCollaborators(fromDate: String, toDate: String, sellerIds: [ID], branchId: ID, collaboratorId: ID): MediaCollaborators
+    getTopMediaCollaboratorProducts(fromDate: String, toDate: String,sellerIds: [ID], branchId: ID, collaboratorId: ID): MediaCollaboratorProducts
     # Add Query
+  }
+
+  type MediaCollaborators{
+    mostLikeCollaborators: [MediaStats]
+    mostShareCollaborators: [MediaStats]
+    mostCommentCollaborators: [MediaStats]
+    mostViewCollaborators: [MediaStats]
+  }
+
+  type MediaCollaboratorProducts{
+    mostLikeProducts: [MediaStats]
+    mostShareProducts: [MediaStats]
+    mostCommentProducts: [MediaStats]
+    mostViewProducts: [MediaStats]
+  }
+
+  type MediaStats{
+    shortUrl: String
+    count: String
   }
 
   type OverviewMediaProductStats{

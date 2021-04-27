@@ -15,7 +15,7 @@ import { ProductLoader } from "../../product/product.model";
 import { ICollaboratorProduct } from "../../collaboratorProduct/collaboratorProduct.model";
 import { MediaProductStats } from "../loaders/mediaProductStats.loader";
 import { MediaCollaboratorStats } from "../loaders/mediaCollaboratorStats.loader";
-import { AllMediaProductsStats } from "../loaders/AllMediaProductsStats.loader";
+import { MediaProductsStats } from "../loaders/mediaProductsStats.loader";
 
 
 const resolveArgs = (args: any) => {
@@ -216,7 +216,7 @@ const MediaCollaborator = {
   },
 
   allMediaProductsStats: async (root: ICollaborator, args: any, context: Context) => {
-    return AllMediaProductsStats.getLoader(args).load(root.id);
+    return MediaProductsStats.getLoader(args).load(root.id);
   }
 
 };

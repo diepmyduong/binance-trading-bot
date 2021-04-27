@@ -4,13 +4,13 @@ import { Types } from "mongoose";
 import { UtilsHelper } from "../../../../helpers";
 import { CollaboratorModel } from "../../collaborator/collaborator.model";
 
-export class AllMediaProductsStats {
+export class MediaProductsStats {
     unCompletedProductsCount: number = 0;
     unCompletedProductsQty: number = 0;
     completedProductsCount: number = 0;
     completedProductsQty: number = 0;
 
-    static loaders: { [x: string]: DataLoader<string, AllMediaProductsStats> } = {};
+    static loaders: { [x: string]: DataLoader<string, MediaProductsStats> } = {};
 
     static getLoader(args: any) {
         const { fromDate, toDate } = args;
@@ -20,7 +20,7 @@ export class AllMediaProductsStats {
         const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
         if (!this.loaders[loaderId]) {
-            this.loaders[loaderId] = new DataLoader<string, AllMediaProductsStats>(
+            this.loaders[loaderId] = new DataLoader<string, MediaProductsStats>(
                 async (ids) => {
                     //collaborator
                     const objectIds = ids.map(Types.ObjectId);
@@ -80,7 +80,7 @@ export class AllMediaProductsStats {
                         ]).then(list=>{
                         let listKeyBy = keyBy(list, "_id");
                         return ids.map((id) => {
-                            return get(listKeyBy, id, new AllMediaProductsStats())
+                            return get(listKeyBy, id, new MediaProductsStats())
                         })
                     })
                 },

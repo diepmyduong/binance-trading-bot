@@ -2,11 +2,7 @@ import DataLoader from "dataloader";
 import { get, keyBy, set } from "lodash";
 import { Types } from "mongoose";
 import { UtilsHelper } from "../../../../helpers";
-import { CollaboratorModel } from "../../collaborator/collaborator.model";
 import { CollaboratorProductModel } from "../../collaboratorProduct/collaboratorProduct.model";
-import { IOrder, OrderModel } from "../../order/order.model";
-import { IOrderItem } from "../../orderItem/orderItem.model";
-
 
 export class MediaProductStats {
     unCompletedQty: number = 0;

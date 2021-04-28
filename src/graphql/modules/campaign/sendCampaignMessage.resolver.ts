@@ -64,16 +64,23 @@ const sendMessage = async (member: IMember, product: IProduct, campaign: ICampai
     SettingHelper.load(SettingKey.CAMPAIGN_HEADER_MSG_FOR_SHOPPER),
   ]);
 
+  let { chatbotKey ,psids } = member;
+
+  psids = psids.filter( id => id !== null);
+
+  if(psids.length === 0){
+    return { success: false };
+  }
+
   console.log("sendMessage");
   const headerChatParams = {
-    apiKey: member.chatbotKey,
-    psids: member.psids,
+    apiKey: chatbotKey,
+    psids: psids,
     message: headerMsg,
     context: {},
   };
 
   console.log("headerChatParams", headerChatParams);
-
   const headerChat = await chatBotService.sendChatBotMessage(headerChatParams);
 
   console.log("headerChat", headerChat);

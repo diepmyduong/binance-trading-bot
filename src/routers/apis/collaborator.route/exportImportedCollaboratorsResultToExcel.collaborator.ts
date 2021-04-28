@@ -6,23 +6,13 @@ import {
 } from "../../../base/baseRoute";
 import { ROLES } from "../../../constants/role.const";
 import { Context } from "../../../graphql/context";
-
-import { auth } from "../../../middleware/auth";
 import Excel from "exceljs";
 import { UtilsHelper } from "../../../helpers";
-import {
-  CollaboratorModel,
-  ICollaborator,
-} from "../../../graphql/modules/collaborator/collaborator.model";
 import {
   CollaboratorImportingLogModel,
   ICollaboratorImportingLog,
 } from "../../../graphql/modules/collaboratorImportingLog/collaboratorImportingLog.model";
-import { CustomerModel } from "../../../graphql/modules/customer/customer.model";
-import { Gender, MemberModel } from "../../../graphql/modules/member/member.model";
-import { CustomerCommissionLogModel } from "../../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
-import { ObjectId } from "mongodb";
-import { set } from "lodash";
+
 
 const STT = "STT";
 const NAME = "Tên";

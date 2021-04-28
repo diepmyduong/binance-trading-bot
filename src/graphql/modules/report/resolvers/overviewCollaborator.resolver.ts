@@ -99,13 +99,13 @@ const FilteredCollaborator = {
   member: GraphQLHelper.loadById(MemberLoader, "memberId"),
   members: async (root: ICollaborator, args: any, context: Context) => {
     if (root.memberId) {
-      const members = await MemberModel.find({ _id: new ObjectId(root.memberId) });
+      const members = await MemberModel.find({ _id: new ObjectId(root.memberId), activated: true });
       // console.log('members', members);
       return members;
     }
     return null
   },
-  
+
   customer: async (root: ICollaborator, args: any, context: Context) => {
     if (root.memberId) {
       const member = await MemberModel.findById(root.memberId);

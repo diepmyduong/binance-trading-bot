@@ -113,7 +113,7 @@ const getCollaboratorsMediaReports = async (root: any,args: any,context: Context
   }
   else {
     if (branchId) {
-      const members = await MemberModel.find({ branchId });
+      const members = await MemberModel.find({ branchId, activated: true }).select("_id");
       const memberIds = members.map(m => m.id);
       set(args.q.filter, "memberIds.$in", memberIds.map(Types.ObjectId));
     }

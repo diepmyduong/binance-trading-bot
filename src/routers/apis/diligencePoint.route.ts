@@ -62,8 +62,6 @@ class DiligencePointRoute extends BaseRoute {
 
     return UtilsHelper.responseExcel(res, workbook, `ket_qua_import_diem_chuyen_can`);
   }
-
 }
-
 
 export default new DiligencePointRoute().router;

@@ -1,4 +1,3 @@
-import { ROLES } from "../../../constants/role.const";
 import {
   BaseRoute,
   Request,
@@ -7,16 +6,13 @@ import {
 } from "../../../base/baseRoute";
 import { ErrorHelper } from "../../../base/error";
 import { Context } from "../../../graphql/context";
-
-import { auth } from "../../../middleware/auth";
-
-import _, { isEmpty, reverse, set, sortBy } from "lodash";
+import _ from "lodash";
 import numeral from "numeral";
 import { PrinterHelper } from "../../../helpers/printerHelper";
 import { OrderModel, ShipMethod } from "../../../graphql/modules/order/order.model";
 import { OrderItemModel } from "../../../graphql/modules/orderItem/orderItem.model";
 import { AddressDeliveryModel } from "../../../graphql/modules/addressDelivery/addressDelivery.model";
-import { MemberModel, MemberType } from "../../../graphql/modules/member/member.model";
+import { MemberModel } from "../../../graphql/modules/member/member.model";
 import { SettingHelper } from "../../../graphql/modules/setting/setting.helper";
 import { SettingKey } from "../../../configs/settingData";
 import { createCanvas, loadImage } from 'canvas';

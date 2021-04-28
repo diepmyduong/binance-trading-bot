@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 export enum MessageReceivingStatus {
   SENT = "SENT",
   NOTYET = "NOTYET",
+  PENDING = "PENDING",
   ERROR = "ERROR"
 }
 

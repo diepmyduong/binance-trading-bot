@@ -91,7 +91,8 @@ export const exportPortReport = async (req: Request, res: Response) => {
         district: 1,
         branchCode: "$branch.code",
         branchName: "$branch.name",
-        lastLoginDate: 1
+        lastLoginDate: 1,
+        fanpageId:1
       }
     }
   ]);
@@ -211,7 +212,8 @@ export const exportPortReport = async (req: Request, res: Response) => {
       canceledCount: orderStat ? orderStat.canceledCount : 0,
       realCommission: orderStat ? orderStat.realCommission : 0,
       income: orderStat ? orderStat.income : 0,
-      lastLoginDate: member.lastLoginDate ? member.lastLoginDate : "Chưa đăng nhập"
+      lastLoginDate: member.lastLoginDate ? member.lastLoginDate : "Chưa đăng nhập",
+      connectFacebook : member.fanpageId ? "Có kết nối" : "Chưa kết nối"
     }
 
     // console.log('count', i);
@@ -241,6 +243,7 @@ export const exportPortReport = async (req: Request, res: Response) => {
       "Hoa hồng thực nhận",
       "Doanh thu thực nhận",
       "Thời gian đăng nhập",
+      "Kết nối facebook"
     ];
     sheet.addRow(excelHeaders);
 
@@ -264,7 +267,8 @@ export const exportPortReport = async (req: Request, res: Response) => {
         d.canceledCount,
         d.realCommission,
         d.income,
-        d.lastLoginDate
+        d.lastLoginDate,
+        d.connectFacebook
       ];
       sheet.addRow(dataRow);
     });

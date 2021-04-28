@@ -26,9 +26,8 @@ export const exportCollaboratorsReport = async (req: Request, res: Response) => 
     ? req.query.fromDate.toString()
     : null;
   let toDate: string = req.query.toDate ? req.query.toDate.toString() : null;
-  const memberId: string = req.query.memberId
-    ? req.query.memberId.toString()
-    : null;
+  const memberId: string = req.query.memberId? req.query.memberId.toString(): null;
+  
   if (!isEmpty(memberId)) {
     if (!isValidObjectId(memberId)) {
       throw ErrorHelper.requestDataInvalid("Mã bưu cục");

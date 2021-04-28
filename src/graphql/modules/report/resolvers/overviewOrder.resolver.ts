@@ -17,7 +17,7 @@ import { Types } from "mongoose";
 
 const getOrderReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  let { fromDate, toDate, sellerIds, isLate } = args;
+  let { fromDate, toDate, sellerIds, isLate, branchId } = args;
 
   const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
@@ -38,6 +38,24 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
     if (sellerIds) {
       if (sellerIds.length > 0) {
         set(params, "sellerId.$in", sellerIds.map(Types.ObjectId));
+      }
+    }
+  }
+
+  if (context.isMember()) {
+    set(params, "sellerId.$in", [new ObjectId(context.id)]);
+  }
+  else {
+    if (branchId) {
+      const memberIds = await MemberModel.find({ branchId, activated: true }).select("_id");
+      const sellerIds = memberIds.map(m => m.id);
+      set(params, "sellerId.$in", sellerIds.map(Types.ObjectId));
+    }
+    else {
+      if (sellerIds) {
+        if (sellerIds.length > 0) {
+          set(params, "sellerId.$in", sellerIds.map(Types.ObjectId));
+        }
       }
     }
   }
@@ -205,7 +223,7 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
 const getOrderReports = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const queryInput = args.q;
-  let { fromDate, toDate, sellerIds, status } = queryInput.filter;
+  let { fromDate, toDate, sellerIds, status,branchId } = queryInput.filter;
 
   const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
@@ -217,16 +235,24 @@ const getOrderReports = async (root: any, args: any, context: Context) => {
     set(args, "q.filter.loggedAt.$lte", $lte);
   }
 
+  //theo bưu cục nào
   if (context.isMember()) {
-    set(args, "q.filter.sellerId.$in", [context.id]);
+    set(args, "q.filter.sellerId.$in", [new ObjectId(context.id)]);
   }
   else {
-    if (sellerIds) {
-      if (sellerIds.length > 0) {
-        set(args, "q.filter.sellerId.$in", sellerIds.map(Types.ObjectId));
-      }
-      else {
-        delete args.q.filter.sellerIds;
+    if (branchId) {
+      const memberIds = await MemberModel.find({ branchId, activated: true }).select("_id");
+      const sellerIds = memberIds.map(m => m.id);
+      set(args, "q.filter.sellerId.$in", sellerIds.map(Types.ObjectId));
+    }
+    else {
+      if (sellerIds) {
+        if (sellerIds.length > 0) {
+          set(args, "q.filter.sellerId.$in", sellerIds.map(Types.ObjectId));
+        }
+        else {
+          delete args.q.filter.sellerIds;
+        }
       }
     }
   }
@@ -245,6 +271,7 @@ const resolveArgs = (args: any) => {
   delete args.q.filter.sellerIds;
   delete args.q.filter.fromDate;
   delete args.q.filter.toDate;
+  delete args.q.filter.branchId;
 }
 
 const OverviewOrder = {

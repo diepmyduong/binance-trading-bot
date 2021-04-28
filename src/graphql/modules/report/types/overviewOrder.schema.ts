@@ -4,7 +4,7 @@ import { OrderStatus, PaymentMethod, ShipMethod } from "../../order/order.model"
 const schema = gql`
   extend type Query {
     getOrderReports(q: QueryGetListInput): OverviewOrderPageData 
-    getOrderReportsOverview(fromDate: String, toDate: String, sellerIds: [ID], isLate: Boolean): OverviewOrdersReport 
+    getOrderReportsOverview(fromDate: String, toDate: String, sellerIds: [ID], branchId: ID, isLate: Boolean): OverviewOrdersReport 
     # Add Query
   }
 

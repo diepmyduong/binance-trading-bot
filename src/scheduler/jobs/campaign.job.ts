@@ -17,7 +17,7 @@ export class CampaignJob {
   }
   static async execute(job: Job, done: any) {
     console.log("Execute Job " + CampaignJob.jobName, moment().format());
-    // await recordMessenger();
+    await recordMessenger();
     return done();
   }
 }

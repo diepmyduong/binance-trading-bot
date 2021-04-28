@@ -46,7 +46,7 @@ const Mutation = {
         else {
           existedCampaignSocial.messageReceivingStatus = MessageReceivingStatus.ERROR;
         }
-
+        // console.log('existedCampaignSocial', existedCampaignSocial);
         await existedCampaignSocial.save();
       }
     }
@@ -64,6 +64,7 @@ const sendMessage = async (member: IMember, product: IProduct, campaign: ICampai
     SettingHelper.load(SettingKey.CAMPAIGN_HEADER_MSG_FOR_SHOPPER),
   ]);
 
+  console.log("sendMessage");
   const headerChatParams = {
     apiKey: member.chatbotKey,
     psids: member.psids,
@@ -71,8 +72,11 @@ const sendMessage = async (member: IMember, product: IProduct, campaign: ICampai
     context: {},
   };
 
+  console.log("headerChatParams", headerChatParams);
 
   const headerChat = await chatBotService.sendChatBotMessage(headerChatParams);
+
+  console.log("headerChat", headerChat);
   if (!headerChat.success) {
     return { success: false }
   }
@@ -87,7 +91,12 @@ const sendMessage = async (member: IMember, product: IProduct, campaign: ICampai
       },
     };
 
+    console.log("imageParams", imageParams);
+
+
     const imageChat = await chatBotService.sendChatBotImage(imageParams);
+
+    console.log("imageChat", imageChat);
     if (!imageChat.success) {
       return { success: false }
     }
@@ -108,7 +117,12 @@ const sendMessage = async (member: IMember, product: IProduct, campaign: ICampai
     },
   };
 
+
+
+  console.log("contentParams", contentParams);
+
   const contentChat = await chatBotService.sendChatBotMessage(contentParams);
+  console.log("contentChat", contentChat);
 
   return contentChat;
 }

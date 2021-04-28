@@ -64,39 +64,41 @@ const sendMessage = async (member: IMember, product: IProduct, campaign: ICampai
     SettingHelper.load(SettingKey.CAMPAIGN_HEADER_MSG_FOR_SHOPPER),
   ]);
 
-  console.log("sendMessage");
+  let { chatbotKey ,psids } = member;
+
+  psids = psids.filter( id => id !== null);
+
+  if(psids.length === 0){
+    return { success: false };
+  }
+
   const headerChatParams = {
-    apiKey: member.chatbotKey,
-    psids: member.psids,
+    apiKey: chatbotKey,
+    psids: psids,
     message: headerMsg,
     context: {},
   };
 
-  console.log("headerChatParams", headerChatParams);
-
+  // console.log("headerChatParams", headerChatParams);
   const headerChat = await chatBotService.sendChatBotMessage(headerChatParams);
-
-  console.log("headerChat", headerChat);
+  // console.log("headerChat", headerChat);
   if (!headerChat.success) {
     return { success: false }
   }
 
   if (campaign.image) {
     const imageParams = {
-      apiKey: member.chatbotKey,
-      psids: member.psids,
+      apiKey: chatbotKey,
+      psids: psids,
       image: campaign.image,
       context: {
         campaignImage: campaign.image
       },
     };
 
-    console.log("imageParams", imageParams);
-
-
+    // console.log("imageParams", imageParams);
     const imageChat = await chatBotService.sendChatBotImage(imageParams);
-
-    console.log("imageChat", imageChat);
+    // console.log("imageChat", imageChat);
     if (!imageChat.success) {
       return { success: false }
     }
@@ -104,10 +106,9 @@ const sendMessage = async (member: IMember, product: IProduct, campaign: ICampai
 
   const LINK_AFFILIATE = affiliateLink;
   const HASH_TAGS = campaign.hashtags ? campaign.hashtags.map(tag => `#${tag} `).join('') : '';
-
   const contentParams = {
-    apiKey: member.chatbotKey,
-    psids: member.psids,
+    apiKey: chatbotKey,
+    psids: psids,
     message: `${campaign.content}
 
 {{HASH_TAGS}}`,
@@ -119,10 +120,9 @@ const sendMessage = async (member: IMember, product: IProduct, campaign: ICampai
 
 
 
-  console.log("contentParams", contentParams);
-
+  // console.log("contentParams", contentParams);
   const contentChat = await chatBotService.sendChatBotMessage(contentParams);
-  console.log("contentChat", contentChat);
+  // console.log("contentChat", contentChat);
 
   return contentChat;
 }

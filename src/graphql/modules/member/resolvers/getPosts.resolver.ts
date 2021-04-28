@@ -24,9 +24,14 @@ const Query = {
     }
 
     set(args, "q.filter.type", MemberType.BRANCH);
+    resolveArgs(args);
     return memberService.fetch(args.q);
   },
 };
+
+const resolveArgs = (args: any) => {
+  delete args.q.filter.shipMethod;
+}
 
 export default {
   Query,

@@ -63,6 +63,4 @@ class ServiceRoute extends BaseRoute {
   }
 
 }
-
-
 export default new ServiceRoute().router;

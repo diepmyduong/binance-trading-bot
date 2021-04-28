@@ -21,7 +21,7 @@ import {
 } from "../../../graphql/modules/order/order.model";
 import { OrderModel } from "../../../graphql/modules/order/order.model";
 import { AddressDeliveryModel } from "../../../graphql/modules/addressDelivery/addressDelivery.model";
-import { MemberModel, MemberType } from "../../../graphql/modules/member/member.model";
+import { MemberModel } from "../../../graphql/modules/member/member.model";
 import { UtilsHelper } from "../../../helpers";
 import Excel from "exceljs";
 import { ObjectId } from "bson";

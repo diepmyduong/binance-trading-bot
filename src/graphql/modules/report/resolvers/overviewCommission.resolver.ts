@@ -46,7 +46,7 @@ const getCommissionReportsOverview = async (root: any, args: any, context: Conte
   }
   else {
     if (branchId) {
-      const members = await MemberModel.find({ branchId });
+      const members = await MemberModel.find({ branchId, activated: true }).select("_id");;
       const sellerIds = members.map(m => m.id);
       set(params, "sellerId.$in", sellerIds.map(Types.ObjectId));
     }
@@ -129,7 +129,7 @@ const getCommissionReports = async (root: any, args: any, context: Context) => {
   }
   else {
     if (branchId) {
-      const memberIds = await MemberModel.find({ branchId }).select("_id");
+      const memberIds = await MemberModel.find({ branchId, activated: true }).select("_id");
       const sellerIds = memberIds.map(m => m.id);
       set(args, "q.filter.sellerId.$in", sellerIds.map(Types.ObjectId));
     }

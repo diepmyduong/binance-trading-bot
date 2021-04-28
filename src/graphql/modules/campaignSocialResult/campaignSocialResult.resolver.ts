@@ -10,8 +10,6 @@ import { RegisSMSLoader } from "../regisSMS/regisSMS.model";
 import { ICampaignSocialResult, MessageReceivingStatus } from "./campaignSocialResult.model";
 import { campaignSocialResultService } from "./campaignSocialResult.service";
 import { CampaignOrderStats } from "./loader/campaignOrderStats.loader";
-import { CampaignRegisServiceStats } from "./loader/campaignRegisServiceStats.loader";
-import { CampaignRegisSMSStats } from "./loader/campaignRegisSMSStats.loader";
 
 const Query = {
   getAllCampaignSocialResult: async (root: any, args: any, context: Context) => {
@@ -51,12 +49,6 @@ const CampaignSocialResult = {
   orderStats: async (root: ICampaignSocialResult, args: any, context: Context) => {
     return CampaignOrderStats.getLoader(root.id).load(root.id);
   },
-  smsStats: async (root: ICampaignSocialResult, args: any, context: Context) => {
-    return CampaignRegisSMSStats.getLoader(root.id).load(root.id);
-  },
-  serviceStats: async (root: ICampaignSocialResult, args: any, context: Context) => {
-    return CampaignRegisServiceStats.getLoader(root.id).load(root.id);
-  }
 };
 
 export default {

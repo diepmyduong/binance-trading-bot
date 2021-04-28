@@ -100,7 +100,7 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
   }
   else {
     if (branchId) {
-      const memberIds = await MemberModel.find({ branchId }).select("_id");
+      const memberIds = await MemberModel.find({ branchId, activated: true }).select("_id");
       const sellerIds = memberIds.map(m => m.id);
       set(params, "sellerId.$in", sellerIds.map(Types.ObjectId));
     }

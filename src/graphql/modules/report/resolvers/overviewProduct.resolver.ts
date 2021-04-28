@@ -16,18 +16,18 @@ import { MemberModel } from "../../member/member.model";
 
 const getProductReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  let { fromDate, toDate, sellerIds , branchId } = args;
+  let { fromDate, toDate, sellerIds, branchId } = args;
 
   const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
   const $match = {};
-  const match2 :any = {};
+  const match2: any = {};
   if (context.isMember()) {
     set(match2, "sellerId.$in", [context.id]);
   }
   else {
     if (branchId) {
-      const memberIds = await MemberModel.find({ branchId }).select("_id");
+      const memberIds = await MemberModel.find({ branchId, activated: true }).select("_id");
       const sellerIds = memberIds.map(m => m.id);
       set(match2, "sellerId.$in", sellerIds.map(Types.ObjectId));
     }
@@ -80,7 +80,7 @@ const getProductReportsOverview = async (root: any, args: any, context: Context)
       }
     },
     {
-      $match:{
+      $match: {
         ...match2
       }
     },
@@ -192,14 +192,14 @@ const syncFacebookReport = async (root: any, args: any, context: Context) => {
 
 const OverviewProduct = {
   productStats: async (root: IProduct, args: any, context: Context) => {
-    const { sellerIds , branchId} = args;
+    const { sellerIds, branchId } = args;
 
     if (context.isMember()) {
       set(args, "sellerId.$in", [context.id]);
     }
     else {
       if (branchId) {
-        const memberIds = await MemberModel.find({ branchId }).select("_id");
+        const memberIds = await MemberModel.find({ branchId, activated: true }).select("_id");
         const sellerIds = memberIds.map(m => m.id);
         set(args, "sellerId.$in", sellerIds.map(Types.ObjectId));
       }
@@ -211,7 +211,7 @@ const OverviewProduct = {
         }
       }
     }
-  
+
     return ProductStats.getLoader(args).load(root.id);
   },
 }

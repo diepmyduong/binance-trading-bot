@@ -58,7 +58,7 @@ export const exportProductReport = async (req: Request, res: Response) => {
   }
   else {
     if (branchId) {
-      const memberIds = await MemberModel.find({ branchId }).select("_id");
+      const memberIds = await MemberModel.find({ branchId ,activated: true }).select("_id");
       const sellerIds = memberIds.map(m => m.id);
       set(match2, "sellerId.$in", sellerIds.map(Types.ObjectId));
     }

@@ -8,35 +8,19 @@ import {
 import { ErrorHelper } from "../../../base/error";
 import { Context } from "../../../graphql/context";
 
-import { auth } from "../../../middleware/auth";
-
-import _, { isEmpty, reverse, set, sortBy } from "lodash";
+import _ from "lodash";
 import numeral from "numeral";
 import { PrinterHelper } from "../../../helpers/printerHelper";
-import {
-  // getShipMethods,
-  IOrder,
-  OrderStatus,
-  ShipMethod,
-} from "../../../graphql/modules/order/order.model";
+import { ShipMethod } from "../../../graphql/modules/order/order.model";
 import { OrderModel } from "../../../graphql/modules/order/order.model";
 import { OrderItemModel } from "../../../graphql/modules/orderItem/orderItem.model";
 import { AddressDeliveryModel } from "../../../graphql/modules/addressDelivery/addressDelivery.model";
-import { MemberModel, MemberType } from "../../../graphql/modules/member/member.model";
+import { MemberModel } from "../../../graphql/modules/member/member.model";
 import { SettingHelper } from "../../../graphql/modules/setting/setting.helper";
 import { SettingKey } from "../../../configs/settingData";
 import { createCanvas, loadImage } from 'canvas';
-import { UtilsHelper } from "../../../helpers";
-import Excel from "exceljs";
-import { ObjectId } from "bson";
-import moment from "moment";
-import { AddressStorehouseModel } from "../../../graphql/modules/addressStorehouse/addressStorehouse.model";
-import { AddressModel } from "../../../graphql/modules/address/address.model";
-import { BranchModel } from "../../../graphql/modules/branch/branch.model";
-import { isValidObjectId } from "mongoose";
 
-
-export const exportOrderToPdf = async(req: Request, res: Response) => {
+export const exportOrderToPdf = async (req: Request, res: Response) => {
   const context = (req as any).context as Context;
 
   context.auth([ROLES.MEMBER]);

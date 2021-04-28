@@ -30,6 +30,7 @@ export class Context {
     public campaignCode: string = null,
     public collaboratorId: string = null,
     public xPageId : string = null,
+    public xPsId : string = null,
     public tokenData?: TokenData,
     public token: string = null,
     public messengerSignPayload?: MessengerTokenDecoded
@@ -136,12 +137,13 @@ export class Context {
   parseHeader = (params: any) => {
     try {
       const { req } = params;
-      let campaignCode, collaboratorId, memberCode, pageId;
+      let campaignCode, collaboratorId, memberCode, pageId,psid;
 
       if (req) {
         campaignCode = _.get(req, "headers.x-campaign-code");
         collaboratorId = _.get(req, "headers.x-collaborator-id");
         pageId = _.get(req, "headers.x-page-id");
+        psid = _.get(req, "headers.x-psid");
         memberCode = _.get(req, "headers.x-code") || _.get(req, "query.x-code");
       }
 
@@ -149,12 +151,14 @@ export class Context {
       if (collaboratorId === 'null') collaboratorId = null;
       if (memberCode === 'null') memberCode = null;
       if (pageId === 'null') pageId = null;
+      if (psid === 'null') psid = null;
 
 
       this.collaboratorId = ObjectId.isValid(collaboratorId) ? collaboratorId : null;
       this.collaboratorId = collaboratorId;
       this.campaignCode = campaignCode;
       this.xPageId = pageId;
+      this.xPsId = psid;
       this.memberCode = memberCode;
 
     } catch (err) {

@@ -3,12 +3,12 @@ import { GraphQLHelper } from "../../../../helpers/graphql.helper";
 import { Context } from "../../../context";
 import { AddressDeliveryLoader, AddressDeliveryModel } from "../../addressDelivery/addressDelivery.model";
 import { AddressStorehouseLoader } from "../../addressStorehouse/addressStorehouse.model";
-import { IMember } from "../member.model";
+import { IMember, MemberModel } from "../member.model";
 import { memberService } from "../member.service";
 
 const Query = {
   getShopData: async (root: any, args: any, context: Context) => {
-    const { pageId, memberCode, xPageId } = context;
+    const { pageId, memberCode, xPageId , xPsId} = context;
 
 
     const params: any = {};
@@ -19,6 +19,7 @@ const Query = {
     // console.log('pageId', pageId);
     // console.log('xPageId', xPageId);
     // console.log('memberCode', memberCode);
+    console.log('xPsId',xPsId);
 
     if (pageId) {
       params.fanpageId = pageId;
@@ -34,10 +35,14 @@ const Query = {
 
     // console.log('params', params);
 
-    const member = memberService.findOne(params);
+    const member = await memberService.findOne(params);
 
     if (!member)
       throw ErrorHelper.mgRecoredNotFound("Bưu cục");
+  
+    if(xPsId){
+      await MemberModel.findByIdAndUpdate(member.id, {$addToSet:{ psids: xPsId }} )
+    }
 
     return member;
   },

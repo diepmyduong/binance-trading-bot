@@ -5,14 +5,25 @@ import { AuthHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { MemberModel, MemberType } from "../member.model";
 import { memberService } from "../member.service";
+import { ShipMethod } from "../../order/order.model";
+import { AddressStorehouseModel } from "../../addressStorehouse/addressStorehouse.model";
 
 const Query = {
   getAllPosts: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.MEMBER]);
 
-    set(args, "q.filter.type", MemberType.BRANCH);
-    set(args, "q.filter.id", { $ne: new ObjectId(context.id) });
+    const { shipMethod } = args.q.queryInput;
 
+    if(shipMethod === ShipMethod.VNPOST){
+      const addressStorehouses = await AddressStorehouseModel.find({ allowPickup: true, activated: true }).select("code");
+      const addressStorehouseCodes = addressStorehouses.map(addr => addr.code);
+      set(args, "q.filter.code", { $in: addressStorehouseCodes });
+    }
+    else{
+      set(args, "q.filter.id", { $ne: new ObjectId(context.id) });
+    }
+
+    set(args, "q.filter.type", MemberType.BRANCH);
     return memberService.fetch(args.q);
   },
 };

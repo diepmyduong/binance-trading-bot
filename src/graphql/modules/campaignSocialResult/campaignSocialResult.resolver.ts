@@ -49,6 +49,18 @@ const CampaignSocialResult = {
   orderStats: async (root: ICampaignSocialResult, args: any, context: Context) => {
     return CampaignOrderStats.getLoader(root.id).load(root.id);
   },
+  smsStats: {
+    total: 0,
+    completed:0,
+    canceled: 0,
+    pending:0,
+  },
+  serviceStats:  {
+    total: 0,
+    completed:0,
+    canceled: 0,
+    pending:0,
+  }
 };
 
 export default {

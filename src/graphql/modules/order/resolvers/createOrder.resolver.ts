@@ -41,7 +41,7 @@ const Mutation = {
       // console.log('log loi tai day 4',orderHelper.order.code);
       await orderHelper.addCampaign(campaignCode);
 
-      // console.log('orderHelper',orderHelper.order.items);
+      // console.log('orderHelper',orderHelper.order);
 
       await Promise.all([
         orderHelper.order.save(),

@@ -87,17 +87,17 @@ const getCommissionReportsOverview = async (root: any, args: any, context: Conte
   ]);
 
   let result = {
-    commission1 : 0,
-    commission2 : 0,
-    commission3 : 0,
-    unCompletedCommission1 : 0,
-    unCompletedcommission2 : 0,
-    unCompletedcommission3 : 0,
+    commission1: 0,
+    commission2: 0,
+    commission3: 0,
+    unCompletedCommission1: 0,
+    unCompletedcommission2: 0,
+    unCompletedcommission3: 0,
     totalCommission: 0,
-    totalUnCompletedCommission:0,
+    totalUnCompletedCommission: 0,
   }
 
-  if(order){
+  if (order) {
     result = {
       ...order,
       totalCommission: order.commission1 + order.commission2 + order.commission3,
@@ -167,8 +167,8 @@ const getCommissionReports = async (root: any, args: any, context: Context) => {
 
   // theo thuc nhan
   resolveArgs(args);
-
   // console.log('args', args);
+
   return orderService.fetch(args.q, '-sellerBonusPoint -buyerBonusPoint -itemWeight -itemWidth -itemLength -itemHeight -isUrbanDelivery -buyerName -buyerPhone -fromMemberId -orderLogIds');
 };
 
@@ -263,7 +263,7 @@ const OverviewCommission = {
       }
     }
   },
-  
+
   mustTransfer: async (root: IOrder, args: any, context: Context) => {
     const member = await MemberModel.findById(root.sellerId);
     if (member) {

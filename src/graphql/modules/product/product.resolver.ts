@@ -1,4 +1,4 @@
-import { omit, set, isNull, isUndefined } from "lodash";
+import { set, isNull, isUndefined } from "lodash";
 import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
@@ -7,9 +7,9 @@ import { Context } from "../../context";
 import { CategoryLoader } from "../category/category.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { CollaboratorProductModel } from "../collaboratorProduct/collaboratorProduct.model";
-import {  MemberLoader } from "../member/member.model";
+import { MemberLoader } from "../member/member.model";
 import { ProductHelper } from "./product.helper";
-import { IProduct, ProductModel } from "./product.model";
+import { IProduct, ProductModel, ProductType } from "./product.model";
 import { productService } from "./product.service";
 
 const Query = {
@@ -52,21 +52,22 @@ const Mutation = {
   createProduct: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     let data: IProduct = args.data;
-    // spread object
 
     data.code = data.code || (await ProductHelper.generateCode());
-    data.memberId = context.tokenData._id;
 
     if (data.basePrice <= 0) ErrorHelper.requestDataInvalid("giá bán");
 
-    // shopper create a product not primary
     if (context.isMember()) {
-      const product = new ProductModel(data);
-      return product.save();
+      set(data, "isPrimary", false);
+      set(data, "memberId", context.id);
     }
-    //admin create a primary product
+    else {
+      set(data, "isPrimary", true);
+    }
+
+    data.type = data.type || ProductType.RETAIL;
+
     const product = new ProductModel(data);
-    product.isPrimary = true;
     return await product.save();
   },
 
@@ -75,10 +76,12 @@ const Mutation = {
     const { id, data } = args;
     if (context.isMember()) {
       const product = await ProductModel.findById(id);
-      if (product.memberId.toString() != context.tokenData._id) {
+      if (product.memberId.toString() != context.id) {
         throw ErrorHelper.permissionDeny();
       }
-      return product.updateOne({ $set: omit(data, ["isPrimary", ""]) });
+      resolveArgs(data);
+      // bỏ thuộc tính isPrimary , lấy các thuộc tính còn lại
+      return product.updateOne({ $set: data });
     }
     return await productService.updateOne(id, data);
   },
@@ -115,7 +118,7 @@ const Product = {
       const collaborator = await CollaboratorModel.findOne({
         customerId: context.id,
       });
-      if(collaborator){
+      if (collaborator) {
         collaProduct = await CollaboratorProductModel.findOne({
           productId: root.id,
           collaboratorId: collaborator.id,
@@ -125,6 +128,10 @@ const Product = {
     return collaProduct;
   },
 };
+
+const resolveArgs = (data: any) => {
+  delete data.isPrimary;
+}
 
 export default {
   Query,

@@ -1,4 +1,4 @@
-import { chain, isNull, keyBy } from "lodash";
+import { chain, isNull, keyBy, set } from "lodash";
 import {
   ErrorHelper,
   ICalculateAllShipFeeRequest,
@@ -447,7 +447,7 @@ export class OrderHelper {
         const latitude = this.order.latitude ? this.order.latitude : 0;
 
         const addressStorehouse = await AddressStorehouseModel.findOne({
-          allowPickup:true,
+          allowPickup: true,
           location: {
             $near: {
               $geometry: {
@@ -519,22 +519,31 @@ export class OrderHelper {
     const campaign = await CampaignModel.findOne({
       code: campaignCode,
     });
+
+    // console.log("campaign", campaign);
     if (campaign) {
       const campaignSocialResults = await CampaignSocialResultModel.find({
         memberId: this.order.sellerId,
         campaignId: campaign.id,
       });
+      // console.log("campaignSocialResults", campaignSocialResults);
 
-      this.order.items.map((item: IOrderItem) => {
+      const items = this.order.items.map((item: IOrderItem) => {
         const campaignResultByProductId = campaignSocialResults.find(
-          (c: ICampaignSocialResult) => c.productId.toString() == item.productId
+          (c: ICampaignSocialResult) => c.productId.toString() == item.productId.toString()
         );
-        if (campaign.productId.toString() === item.id) {
+        // console.log('campaignResultByProductId', campaignResultByProductId);
+        if (campaignResultByProductId) {
           item.campaignId = campaign._id;
           item.campaignSocialResultId = campaignResultByProductId._id;
         }
         return item;
       });
+
+      // console.log("items", items);
+
+      set(this.order, "items", items);
+      // console.log("items", this.order.items);
     }
   }
 

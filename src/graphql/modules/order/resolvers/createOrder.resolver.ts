@@ -8,7 +8,7 @@ import { OrderItemModel } from "../../orderItem/orderItem.model";
 const Mutation = {
   createOrder: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.CUSTOMER]);
-    const { campaignCode, sellerId, id: buyerId , collaboratorId} = context;
+    const { campaignCode, sellerId, id: buyerId, collaboratorId } = context;
     const data = args.data;
 
     if (context.isCustomer()) {
@@ -16,7 +16,7 @@ const Mutation = {
       data.sellerId = sellerId;
     }
 
-    if(collaboratorId){
+    if (collaboratorId) {
       data.collaboratorId = collaboratorId;
     }
 
@@ -40,6 +40,8 @@ const Mutation = {
 
       // console.log('log loi tai day 4',orderHelper.order.code);
       await orderHelper.addCampaign(campaignCode);
+
+      // console.log('orderHelper',orderHelper.order.items);
 
       await Promise.all([
         orderHelper.order.save(),

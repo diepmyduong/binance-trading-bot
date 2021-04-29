@@ -7,7 +7,6 @@ import { isValidObjectId } from "mongoose";
 
 const Mutation = {
   increaseViewCount: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, [ROLES.CUSTOMER]);
     const { productId } = args;
     if (!productId) {
       throw ErrorHelper.requestDataInvalid("Mã sản phẩm");

@@ -95,7 +95,6 @@ export type IOrder = BaseDocument & {
   oldAddressDeliveryId: string; // Mã điểm nhận cũ
   addressDeliveryId: string; // Mã điểm nhận
   isUrbanDelivery: boolean;
-  campaignCode: string;
   collaboratorId: string;
   note: string;
   toMemberNote: string;
@@ -106,6 +105,7 @@ export type IOrder = BaseDocument & {
   isLate: boolean; // Đơn Mobifone
   finishedAt: Date;
   loggedAt: Date;
+  campaignCode: string;
 };
 
 const orderSchema = new Schema(
@@ -183,7 +183,7 @@ const orderSchema = new Schema(
     },
     isLate: { type: Boolean },
     finishedAt: { type: Schema.Types.Date },
-    loggedAt: { type: Schema.Types.Date }
+    loggedAt: { type: Schema.Types.Date },
   },
   { timestamps: true }
 );

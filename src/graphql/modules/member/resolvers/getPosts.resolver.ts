@@ -12,7 +12,7 @@ const Query = {
   getAllPosts: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.MEMBER]);
 
-    const { shipMethod } = args.q.queryInput;
+    const { shipMethod } = args.q.filter;
 
     if(shipMethod === ShipMethod.VNPOST){
       const addressStorehouses = await AddressStorehouseModel.find({ allowPickup: true, activated: true }).select("code");

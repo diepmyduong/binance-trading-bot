@@ -258,7 +258,7 @@ const getOrderReports = async (root: any, args: any, context: Context) => {
   }
 
   if (status === "UNCOMPLETED") {
-    set(args, "args.q.filter.status.$in", [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING]);
+    set(args, "q.filter.status.$in", [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING]);
   }
 
   resolveArgs(args);

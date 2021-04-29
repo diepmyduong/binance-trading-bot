@@ -52,21 +52,20 @@ const Mutation = {
   createProduct: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     let data: IProduct = args.data;
-    // spread object
 
     data.code = data.code || (await ProductHelper.generateCode());
-    data.memberId = context.tokenData._id;
 
     if (data.basePrice <= 0) ErrorHelper.requestDataInvalid("giá bán");
 
-    // shopper create a product not primary
     if (context.isMember()) {
-      const product = new ProductModel(data);
-      return product.save();
+      set(data, "isPrimary", false);
+      set(data, "memberId", context.id);
     }
-    //admin create a primary product
+    else{
+      set(data, "isPrimary", true);
+    }
+
     const product = new ProductModel(data);
-    product.isPrimary = true;
     return await product.save();
   },
 

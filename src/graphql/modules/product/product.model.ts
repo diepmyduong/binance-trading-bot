@@ -83,7 +83,7 @@ const productSchema = new Schema(
     height: { type: Number, default: 0 }, // chiều cao
     weight: { type: Number, default: 1 }, // cân nặng
 
-    viewCount: { type: Number, default: 0 }, // cân nặng
+    viewCount: { type: Number, default: 0 }, //số lượng người xem
 
   },
   { timestamps: true }

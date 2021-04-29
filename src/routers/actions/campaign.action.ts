@@ -64,7 +64,7 @@ class CampaignAction extends BaseRoute {
     // // //https://mb-ashop-web.web.app/login?psid=3765204193532396&pageId=110641874040900
 
     const shopUri = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN).then((webDomain: String) => {
-      return `${webDomain}/?pageId=${member.fanpageId}&campaignCode=${campaign.code}&productId=${campaign.productId}`
+      return `${webDomain}/?code=${member.code}&campaignCode=${campaign.code}&productId=${campaign.productId}`
     });
 
     // console.log('shopUri', shopUri);

@@ -33,7 +33,7 @@ const Mutation = {
       for (let orderData of ordersData) {
         const orderHelper = await OrderHelper.fromRaw(orderData);
         await orderHelper.generateItemsFromRaw(orderData.products);
-        
+
         // console.log("result generateItemsFromRaw", orderHelper.order);
         // Calculate Shipfee
         await orderHelper.calculateShipfee();
@@ -42,14 +42,14 @@ const Mutation = {
         orderHelper.calculateAmount();
         // console.log("result calculateAmount", orderHelper.order);
 
+        
+        await orderHelper.addCampaign(campaignCode);
 
-      await orderHelper.addCampaign(campaignCode);
-
-      console.log('order',orderHelper.order);
+        // console.log('order',orderHelper.order);s
 
         orders.push(orderHelper.order);
       }
-      
+
 
       const cloneObj = Object.assign({}, orders[0]._doc);
       // orders[1] = {...cloneObj, id: "testId"}

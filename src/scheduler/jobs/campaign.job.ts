@@ -161,7 +161,7 @@ const sendImageMessage = async (chatbotKey: any, psids: any, image: string) => {
   return await chatBotService.sendChatBotImage(imageParams);
 };
 
-(async () => {
-  // console.log("test businessssssssssssssssssssssss");
-  await recordMessenger();
-})();
+// (async () => {
+//   // console.log("test businessssssssssssssssssssssss");
+//   await recordMessenger();
+// })();

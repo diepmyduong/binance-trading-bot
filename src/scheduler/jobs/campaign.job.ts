@@ -41,8 +41,11 @@ export default CampaignJob;
 const recordMessenger = async () => {
   const campaignRecords = await CampaignSocialResultModel.find({
     messageReceivingStatus: MessageReceivingStatus.PENDING,
-  }).limit(100);
-  // console.log("test", campaignRecords);
+  }).limit(1000);
+
+  const chatbotKey = await SettingHelper.load(SettingKey.CHATBOT_API_KEY);
+  // console.log("chatbotKey", chatbotKey);
+  // console.log("campaignRecords.length", campaignRecords.length);
   for (const record of campaignRecords) {
     const [member, campaign] = await Promise.all([
       MemberLoader.load(record.memberId),
@@ -52,7 +55,8 @@ const recordMessenger = async () => {
     const result: any = await sendAllMessages(
       member,
       campaign,
-      record.affiliateLink
+      record.affiliateLink,
+      chatbotKey
     );
     // console.log("result", result);
     const params = {};
@@ -71,10 +75,10 @@ const recordMessenger = async () => {
 const sendAllMessages = async (
   member: IMember,
   campaign: ICampaign,
-  affiliateLink: String
+  affiliateLink: String,
+  chatbotKey: String
 ) => {
   // console.log('sendAllMessages');
-  const chatbotKey = await SettingHelper.load(SettingKey.CHATBOT_API_KEY);
   let {
     // chatbotKey,
     psids,

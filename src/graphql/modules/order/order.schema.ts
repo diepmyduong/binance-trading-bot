@@ -77,9 +77,7 @@ const schema = gql`
 
   input CreateDraftOrderInput {
     items: [OrderItemInput]
-    
     shopItems: [OrderItemInput]
-    
     crossSaleitems: [OrderItemInput]
 
     buyerName: String

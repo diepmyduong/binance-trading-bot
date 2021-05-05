@@ -15,10 +15,17 @@ import { isValidObjectId, Types } from "mongoose";
 import { ErrorHelper } from "../../../base/error";
 import { BranchModel } from "../../../graphql/modules/branch/branch.model";
 import moment from "moment";
+import {
+  OrderModel,
+  OrderStatus,
+} from "../../../graphql/modules/order/order.model";
 
 const STT = "STT";
 
-export const exportCollaboratorsReport = async (req: Request, res: Response) => {
+export const exportCollaboratorsReport = async (
+  req: Request,
+  res: Response
+) => {
   const context = (req as any).context as Context;
   context.auth(ROLES.ADMIN_EDITOR_MEMBER);
 
@@ -26,8 +33,10 @@ export const exportCollaboratorsReport = async (req: Request, res: Response) => 
     ? req.query.fromDate.toString()
     : null;
   let toDate: string = req.query.toDate ? req.query.toDate.toString() : null;
-  const memberId: string = req.query.memberId? req.query.memberId.toString(): null;
-  
+  const memberId: string = req.query.memberId
+    ? req.query.memberId.toString()
+    : null;
+
   if (!isEmpty(memberId)) {
     if (!isValidObjectId(memberId)) {
       throw ErrorHelper.requestDataInvalid("Mã bưu cục");
@@ -56,93 +65,131 @@ export const exportCollaboratorsReport = async (req: Request, res: Response) => 
 
   // console.log('$match',$match);
 
-  const [data, branches] = await Promise.all([
+  const [collaborators, branches] = await Promise.all([
     CustomerCommissionLogModel.aggregate([
       {
-        $match
+        $match,
       },
       {
-          $group: {
-              _id: {
-                  customerId: "$customerId",
-                  memberId: "$memberId",
-                  collaboratorId: "$collaboratorId"
-              },
-              commission: { $sum: "$value" },
-          }
+        $group: {
+          _id: {
+            customerId: "$customerId",
+            memberId: "$memberId",
+            collaboratorId: "$collaboratorId",
+          },
+          commission: { $sum: "$value" },
+        },
       },
       {
-          $project:{
-              _id: "$_id.customerId",
-              collaboratorId: "$_id.collaboratorId",
-              memberId: "$_id.memberId",
-              commission:1
-          }
+        $project: {
+          _id: "$_id.customerId",
+          collaboratorId: "$_id.collaboratorId",
+          memberId: "$_id.memberId",
+          commission: 1,
+        },
       },
       {
-          $sort:{
-              commission: -1
-          }
+        $sort: {
+          commission: -1,
+        },
       },
       {
-          $lookup: {
-              from: 'collaborators',
-              localField: 'collaboratorId',
-              foreignField: '_id',
-              as: 'collaborator'
-          }
+        $lookup: {
+          from: "collaborators",
+          localField: "collaboratorId",
+          foreignField: "_id",
+          as: "collaborator",
+        },
       },
-      { $unwind: '$collaborator'},
+      { $unwind: "$collaborator" },
       {
-          $lookup: {
-              from: 'members',
-              localField: 'memberId',
-              foreignField: '_id',
-              as: 'member'
-          }
+        $lookup: {
+          from: "members",
+          localField: "memberId",
+          foreignField: "_id",
+          as: "member",
+        },
       },
-      { $unwind: '$member'},
+      { $unwind: "$member" },
       {
-          $project:{
-              _id: "$collaborator._id",
-              collaboratorCode: "$collaborator.code",
-              collaboratorName: "$collaborator.name",
-              memberId: "$member.memberId",
-              memberCode: "$member.code",
-              memberShopName: "$member.shopName",
-              memberDistrict: "$member.district",
-              branchId: "$member.branchId",
-              commission:1
-          }
+        $project: {
+          _id: "$collaborator._id",
+          collaboratorCode: "$collaborator.code",
+          collaboratorName: "$collaborator.name",
+          memberId: "$member.memberId",
+          memberCode: "$member.code",
+          memberShopName: "$member.shopName",
+          memberDistrict: "$member.district",
+          branchId: "$member.branchId",
+          commission: 1,
+        },
       },
       {
-          $lookup: {
-              from: 'branches',
-              localField: 'branchId',
-              foreignField: '_id',
-              as: 'branch'
-          }
+        $lookup: {
+          from: "branches",
+          localField: "branchId",
+          foreignField: "_id",
+          as: "branch",
+        },
       },
-      { $unwind: '$branch'},
+      { $unwind: "$branch" },
       {
-          $project:{
-              _id: 1,
-              collaboratorCode: 1,
-              collaboratorName:1,
-              memberId: 1,
-              memberCode: 1,
-              memberShopName: 1,
-              memberDistrict: 1,
-              branchId: 1,
-              branchCode: "$branch.code",
-              branchName: "$branch.name",
-              commission:1
-          }
-      }
+        $project: {
+          _id: 1,
+          collaboratorCode: 1,
+          collaboratorName: 1,
+          memberId: 1,
+          memberCode: 1,
+          memberShopName: 1,
+          memberDistrict: 1,
+          branchId: 1,
+          branchCode: "$branch.code",
+          branchName: "$branch.name",
+          commission: 1,
+        },
+      },
     ]),
-    BranchModel.find({})
+    BranchModel.find({}),
   ]);
 
+  const collaboratorIds = collaborators
+    .map((col) => col._id.toString())
+    .map(Types.ObjectId);
+
+  const orderMatch = {
+    ...$match,
+    fromMemberId: $match.memberId,
+    collaboratorId: { $in: collaboratorIds },
+    status: OrderStatus.COMPLETED,
+  };
+  delete orderMatch.memberId;
+
+  // console.log("orderMatch", orderMatch);
+
+  const orders = await OrderModel.aggregate([
+    {
+      $match: orderMatch,
+    },
+  ]);
+
+  const data: any[] = [];
+
+  for (const collaborator of collaborators) {
+    const ordersCount = orders.filter(
+      (order) => order.collaboratorId.toString() === collaborator._id.toString()
+    ).length;
+    const ordersAmount = orders
+      .filter(
+        (order) =>
+          order.collaboratorId.toString() === collaborator._id.toString()
+      )
+      .reduce((total: number, m: any) => (total += m.amount), 0);
+    data.push({
+      ...collaborator,
+      ordersCount,
+      ordersAmount,
+    });
+  }
 
   let staticsticData: any = [];
   const branchesData = [];
@@ -160,20 +207,24 @@ export const exportCollaboratorsReport = async (req: Request, res: Response) => 
       "Quận / Huyện",
       "Chi nhánh",
       "Hoa hồng cộng tác viên",
+      "Số lượng đơn thành công",
+      "Doanh thu thực nhận",
     ];
 
     sheet.addRow(excelHeaders);
 
     data.forEach((d: any, i: number) => {
       const dataRow = [
-        i + 1,//STT
+        i + 1, //STT
         d.collaboratorCode,
         d.collaboratorName,
-        d.memberCode,//"Mã bưu cục",
-        d.memberShopName,// "Bưu cục",
+        d.memberCode, //"Mã bưu cục",
+        d.memberShopName, // "Bưu cục",
         d.memberDistrict,
-        d.branchName,//"Chi nhánh",
+        d.branchName, //"Chi nhánh",
         d.commission,
+        d.ordersCount,
+        d.ordersAmount,
       ];
       sheet.addRow(dataRow);
     });
@@ -183,11 +234,10 @@ export const exportCollaboratorsReport = async (req: Request, res: Response) => 
     const vnToDate = moment(toDate).format("DD-MM-YYYY");
     const title = `BÁO CÁO HOA HỒNG CỘNG TÁC VIÊN ${vnFromDate} - ${vnToDate}`;
     UtilsHelper.setTitleExcelWorkBook(sheet, title);
-  }
+  };
 
   const POSTS_SHEET_NAME = "Danh sách cộng tác viên";
   createSheetData(data, POSTS_SHEET_NAME);
-
 
   if (!context.isMember() && isEmpty(memberId)) {
     for (const branch of branches) {
@@ -210,4 +260,4 @@ export const exportCollaboratorsReport = async (req: Request, res: Response) => 
   const vnToDate = moment(toDate).format("DD.MM.YYYY");
   const fileName = `bao_cao_hoa_hong_ctv_${vnFromDate}_${vnToDate}`;
   return UtilsHelper.responseExcel(res, workbook, fileName);
-}
+};

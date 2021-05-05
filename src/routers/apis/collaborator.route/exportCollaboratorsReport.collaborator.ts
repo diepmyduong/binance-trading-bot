@@ -45,22 +45,27 @@ export const exportCollaboratorsReport = async (
 
   const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
-  const $match: any = {};
+  const $match: any = {},
+    orderMatch: any = {};
 
   if ($gte) {
     set($match, "createdAt.$gte", $gte);
+    set(orderMatch, "createdAt.$gte", $gte);
   }
 
   if ($lte) {
     set($match, "createdAt.$lte", $lte);
+    set(orderMatch, "createdAt.$lte", $lte);
   }
 
   if (memberId) {
     set($match, "memberId", new ObjectId(memberId));
+    set(orderMatch, "fromMemberId", new ObjectId(memberId));
   }
 
   if (context.isMember()) {
     set($match, "memberId", new ObjectId(context.id));
+    set(orderMatch, "fromMemberId", new ObjectId(context.id));
   }
 
   // console.log('$match',$match);
@@ -156,13 +161,8 @@ export const exportCollaboratorsReport = async (
     .map((col) => col._id.toString())
     .map(Types.ObjectId);
 
-  const orderMatch = {
-    ...$match,
-    fromMemberId: $match.memberId,
-    collaboratorId: { $in: collaboratorIds },
-    status: OrderStatus.COMPLETED,
-  };
-  delete orderMatch.memberId;
+  set(orderMatch, "collaboratorId.$in", collaboratorIds);
+  set(orderMatch, "status", OrderStatus.COMPLETED);
 
   // console.log("orderMatch", orderMatch);
 
@@ -171,6 +171,8 @@ export const exportCollaboratorsReport = async (
       $match: orderMatch,
     },
   ]);
+
+  // console.log("orders", orders);
 
   const data: any[] = [];
 

@@ -9,7 +9,12 @@ import {
 } from "../../../helpers";
 import { AddressModel } from "../address/address.model";
 import { CounterModel } from "../counter/counter.model";
-import { IProduct, ProductModel, ProductType } from "../product/product.model";
+import {
+  IProduct,
+  ProductLoader,
+  ProductModel,
+  ProductType,
+} from "../product/product.model";
 import { IOrder, OrderModel, PaymentMethod, ShipMethod } from "./order.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
 import {
@@ -30,9 +35,10 @@ import { AddressDeliveryModel } from "../addressDelivery/addressDelivery.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { CustomerModel } from "../customer/customer.model";
 import { DeliveryInfo } from "./types/deliveryInfo.type";
+import { Types } from "mongoose";
 
 export class OrderHelper {
-  constructor(public order: IOrder) { }
+  constructor(public order: IOrder) {}
   value() {
     return this.order;
   }
@@ -92,102 +98,91 @@ export class OrderHelper {
   }
 
   static modifyOrders = async (data: any) => {
-    const { items, shopItems, crossSaleitems, sellerId } = data;
+    const { items, sellerId } = data;
 
-    const addQuantitytoProduct = (product: any, items: any) => {
-      product.qty = items.find((p: any) => p.productId === product.id).quantity;
+    // kiểm tra danh sách
+    const itemsLength = Object.keys(items).length;
+    if (itemsLength === 0)
+      throw ErrorHelper.requestDataInvalid(
+        ". Không có sản phẩm trong đơn hàng"
+      );
+
+    const productIds = items.map((i: any) => i.productId).map(Types.ObjectId);
+
+    const orders: any = [];
+
+    const addQuantitytoProduct = (product: IProduct, items: any) => {
+      product.qty = items.find(
+        (item: any) => item.productId === product._id.toString()
+      ).quantity;
+      console.log("product",product.qty);
       return product;
     };
 
-    const getPostProducts = async (items: any) => {
-      const itemsLength = Object.keys(items).length;
-      if (itemsLength === 0)
-        throw ErrorHelper.requestDataInvalid("Danh sách sản phẩm trong đơn hàng");
-
-      const itemIDs = items.map((i: any) => i.productId);
-
-      const products = await ProductModel.find({
-        _id: { $in: itemIDs },
+    const getPostProducts = (products: IProduct[]) => {
+      orders.push({
+        ...data,
         isPrimary: true,
-        allowSale: true,
+        products: products.filter((p) => p.isPrimary),
+        fromMemberId: sellerId,
       });
+    };
 
-      const productsLength = Object.keys(products).length;
-      if (productsLength !== itemsLength)
-        throw ErrorHelper.mgQueryFailed("Danh sách sản phẩm");
-
-      return {
-        ...data,
-        isPrimary: true,
-        products,
-        fromMemberId: sellerId,
-      }
-    }
-
-    const getShopProducts = async (items: any) => {
-      const itemsLength = Object.keys(items).length;
-      if (itemsLength === 0)
-        throw ErrorHelper.requestDataInvalid("Danh sách sản phẩm trong đơn hàng");
-
-      const itemIDs = items.map((i: any) => i.productId);
-
-      const products = await ProductModel.find({
-        _id: { $in: itemIDs },
-        isPrimary: false,
-        isCrossSale: false,
-        allowSale: true,
-      }).then(res => res.map(product => addQuantitytoProduct(product, items)));
-
-      const productsLength = Object.keys(products).length;
-      if (productsLength !== itemsLength)
-        throw ErrorHelper.mgQueryFailed("Danh sách sản phẩm");
-
-      return {
+    const getShopProducts = (products: IProduct[]) => {
+      orders.push({
         ...data,
         isPrimary: false,
-        products,
+        products: products.filter(
+          (p) => p.isPrimary === false && p.isCrossSale === false
+        ),
         fromMemberId: sellerId,
-      };
-    }
+      });
+    };
 
-    const getCrossSaleProducts = async (items: any) => {
-      const itemsLength = Object.keys(items).length;
-      if (itemsLength === 0)
-        throw ErrorHelper.requestDataInvalid("Danh sách sản phẩm trong đơn hàng");
+    const getCrossSaleProducts = (products: IProduct[]) => {
+      products = products.filter(
+        (p) => p.isPrimary === false && p.isCrossSale === true
+      );
+      chain(products)
+        .groupBy("memberId")
+        .map((products, i) => {
+          orders.push({
+            ...data,
+            products,
+            sellerId: i,
+            fromMemberId: sellerId,
+          });
+        });
+    };
 
-      const itemIDs = items.map((i: any) => i.productId);
+    const products = await ProductModel.find({
+      _id: { $in: productIds },
+      allowSale: true,
+    }).then((products) =>
+      products.map((product) => addQuantitytoProduct(product, items))
+    );
+    // console.log("products",products.map(p=>p.qty));
 
-      const products = await ProductModel.find({
-        _id: { $in: itemIDs },
-        isCrossSale: true,
-        allowSale: true,
-      }).then(res => res.map(product => addQuantitytoProduct(product, items)));
+    const productsLength = Object.keys(products).length;
+    if (itemsLength !== productsLength)
+      throw ErrorHelper.requestDataInvalid(
+        ". Sản phẩm trong đơn hàng không tồn tại"
+      );
 
-      const productsLength = Object.keys(products).length;
-      if (productsLength !== itemsLength)
-        throw ErrorHelper.mgQueryFailed("Danh sách sản phẩm");
+    // console.log("products", products);
+    getPostProducts(products);
+    getShopProducts(products);
+    getCrossSaleProducts(products);
 
-      return {
-        ...data,
-        isPrimary: false,
-        isCrossSale: true,
-        products,
-        fromMemberId: sellerId,
-      };
-    }
-
-
-    return [
-      { a: 0 },
-      { b: 1 }
-    ]
+    // console.log("orders", orders);
+    return orders;
   };
 
+  // modify Products
   static orderProducts = async (data: any) => {
     const { items, sellerId } = data;
 
     // console.log('data',data);
-
     // kiểm tra danh sách
     const itemsLength = Object.keys(items).length;
     if (itemsLength === 0)
@@ -622,7 +617,8 @@ export class OrderHelper {
 
       const items = this.order.items.map((item: IOrderItem) => {
         const campaignResultByProductId = campaignSocialResults.find(
-          (c: ICampaignSocialResult) => c.productId.toString() == item.productId.toString()
+          (c: ICampaignSocialResult) =>
+            c.productId.toString() == item.productId.toString()
         );
         // console.log('campaignResultByProductId', campaignResultByProductId);
         if (campaignResultByProductId) {

@@ -18,7 +18,6 @@ const schema = gql`
     createOrder(data: CreateOrderInput!): [Order]
     generateDraftOrder(data: CreateDraftOrderInput!): DraftOrderData
     transferOrder(id:ID!, memberId: ID!, note: String): Order
-    generateDraftDeliveryOrder(data: CreateDraftDeliveryOrderInput!): DraftOrderData
 
     cancelOrder(id: ID!, note: String): Order
 
@@ -76,10 +75,7 @@ const schema = gql`
 
 
   input CreateDraftOrderInput {
-    items: [OrderItemInput]
-    shopItems: [OrderItemInput]
-    crossSaleitems: [OrderItemInput]
-
+    items: [OrderItemInput]!
     buyerName: String
     buyerPhone: String
     buyerAddress: String

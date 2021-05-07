@@ -1,7 +1,9 @@
 import { SettingKey } from "../../../../configs/settingData";
+import { ROLES } from "../../../../constants/role.const";
 import { GraphQLHelper } from "../../../../helpers/graphql.helper";
 import { Context } from "../../../context";
-import { MemberLoader } from "../../member/member.model";
+import { CustomerLoader, CustomerModel } from "../../customer/customer.model";
+import { MemberLoader, MemberModel } from "../../member/member.model";
 import { OrderItemLoader } from "../../orderItem/orderItem.model";
 import { SettingHelper } from "../../setting/setting.helper";
 import { OrderHelper } from "../order.helper";
@@ -18,51 +20,65 @@ type DraftOrderData = {
 };
 
 const Mutation = {
-  generateDraftOrder: async (root: any, args: any, context: OrderContext) => {
+  generateDraftOrder: async (
+    root: any,
+    args: any,
+    context: OrderContext
+  ) => {
     // tech --------------------
     // context.isDraft = true;
-    const { sellerId, id: buyerId , campaignCode , collaboratorId} = context;
+    const { sellerId, id: buyerId, campaignCode, collaboratorId } = context;
     const data = args.data;
     if (context.isCustomer()) {
       data.buyerId = buyerId;
       data.sellerId = sellerId;
     }
     data.collaboratorId = collaboratorId;
-    const [unitPrice, seller] = await Promise.all([
+
+    const [unitPrice, seller,customer] = await Promise.all([
       SettingHelper.load(SettingKey.UNIT_PRICE),
-      await MemberLoader.load(sellerId),
+      MemberLoader.load(sellerId),
+      CustomerLoader.load(buyerId),
     ]);
+
     // console.log('----------------> orderdata',data);
 
     try {
       const ordersData = await OrderHelper.modifyOrders(data);
+      // console.log("ordersData", ordersData.length);
       const orders: any[] = [];
       for (let orderData of ordersData) {
-        const orderHelper = await OrderHelper.fromRaw(orderData);
-        await orderHelper.fromItemsRaw({
-          products:orderData.products,
-          unitPrice,
+        const orderHelper = await OrderHelper.fromRaw({
+          orderData, 
+          customer,
           seller
         });
+        await orderHelper.fromItemsRaw({
+          products: orderData.products,
+          unitPrice,
+          seller,
+        });
+        // console.log("result fromItemsRaw", orderHelper.order);
 
-        // console.log("result generateItemsFromRaw", orderHelper.order);
         // Calculate Shipfee
         await orderHelper.calculateShipfee({
           seller
         });
         // console.log("result calculateShipfee", orderHelper.order);
+
         // Calculate Amount
         orderHelper.calculateAmount();
         // console.log("result calculateAmount", orderHelper.order);
 
-        
+        // Add campaign
         await orderHelper.addCampaign(campaignCode);
+        // console.log('order',orderHelper.order);
 
-        // console.log('order',orderHelper.order);s
-
+        // Push all orders
         orders.push(orderHelper.order);
       }
 
+      // console.log('orders',orders.length);
 
       const cloneObj = Object.assign({}, orders[0]._doc);
       // orders[1] = {...cloneObj, id: "testId"}
@@ -91,7 +107,6 @@ const Mutation = {
     }
   },
 };
-
 const Order = {
   items: async (root: IOrder, args: any, context: OrderContext) => {
     if (context.isDraft) {
@@ -105,5 +120,4 @@ const Order = {
     }
   },
 };
-
 export default { Mutation, Order };

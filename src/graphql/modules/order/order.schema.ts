@@ -212,8 +212,9 @@ const schema = gql`
     collaborator: Collaborator
     "Thông tin vận đơn"
     deliveryInfo: DeliveryInfo
-
+    "Tên loại đơn"
     orderTypeText: String
+    "Loại đơn"
     orderType: String
   }
 

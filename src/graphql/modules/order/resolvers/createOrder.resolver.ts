@@ -30,7 +30,10 @@ const Mutation = {
       CustomerLoader.load(buyerId),
     ]);
 
-    const ordersData = await OrderHelper.modifyOrders(data);
+    const ordersData = await OrderHelper.modifyOrders({
+      data,
+      seller
+    });
 
     // console.log('log loi tai day 1', ordersData);
 
@@ -81,3 +84,6 @@ const Mutation = {
 export default {
   Mutation,
 };
+
+
+

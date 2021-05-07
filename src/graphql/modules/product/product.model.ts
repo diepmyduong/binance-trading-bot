@@ -35,7 +35,6 @@ export type IProduct = BaseDocument & {
   allowSale?: boolean; // Mở bán
   memberId?: string; // Mã thành viên quản lý sản phẩm
   qty: number;
-  outOfStock: boolean; //hết hàng
 
   width: number; // chiều rộng
   length: number; // chiều dài

@@ -15,7 +15,13 @@ import {
   ProductModel,
   ProductType,
 } from "../product/product.model";
-import { IOrder, OrderModel, PaymentMethod, ShipMethod } from "./order.model";
+import {
+  IOrder,
+  OrderModel,
+  OrderType,
+  PaymentMethod,
+  ShipMethod,
+} from "./order.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
 import {
   AddressStorehouseModel,
@@ -97,7 +103,7 @@ export class OrderHelper {
     // return this;
   }
 
-  static modifyOrders = async (data: any) => {
+  static modifyOrders = async ({ data, seller }: any) => {
     const { items, sellerId } = data;
 
     // kiểm tra danh sách
@@ -118,26 +124,42 @@ export class OrderHelper {
       return product;
     };
 
-    const getPostProducts = (products: IProduct[]) => {
+    const getPostProducts = (productsInOrder: IProduct[]) => {
       console.log("getPostProducts");
-      orders.push({
-        ...data,
-        isPrimary: true,
-        products: products.filter((p) => p.isPrimary),
-        fromMemberId: sellerId,
-      });
+      const products = productsInOrder.filter((p) => p.isPrimary);
+      if (products.length > 0) {
+        orders.push({
+          ...data,
+          isPrimary: true,
+          orderType: OrderType.POST,
+          products,
+          fromMemberId: sellerId,
+        });
+      }
     };
 
-    const getShopProducts = (products: IProduct[]) => {
+    const getShopProducts = (productsInOrder: IProduct[]) => {
       console.log("getShopProducts");
-      orders.push({
-        ...data,
-        isPrimary: false,
-        products: products.filter(
-          (p) => p.isPrimary === false && p.isCrossSale === false
-        ),
-        fromMemberId: sellerId,
-      });
+      const products = productsInOrder.filter(
+        (p) => p.isPrimary === false && p.isCrossSale === false
+      );
+      // console.log('seller',seller);
+
+      if (products.length > 0) {
+        if (!seller.allowSale) {
+          throw ErrorHelper.requestDataInvalid(
+            ". Sản phẩm mở rộng chưa được phép mua ở bưu cục này"
+          );
+        }
+
+        orders.push({
+          ...data,
+          isPrimary: false,
+          orderType: OrderType.SHOP,
+          products,
+          fromMemberId: sellerId,
+        });
+      }
     };
 
     const getCrossSaleProducts = async (products: IProduct[]) => {
@@ -183,7 +205,8 @@ export class OrderHelper {
           ...data,
           products,
           isPrimary: false,
-          isCrossSale:true,
+          isCrossSale: true,
+          orderType: OrderType.CROSSSALE,
           sellerId: products[0].memberId,
           fromMemberId: sellerId,
         });
@@ -214,12 +237,7 @@ export class OrderHelper {
     return orders;
   };
 
-
-  static async fromRaw({
-    orderData, 
-    customer,
-    seller
-  }:any) {
+  static async fromRaw({ orderData, customer, seller }: any) {
     console.log("fromRaw");
     const order = new OrderModel(orderData);
 
@@ -263,9 +281,7 @@ export class OrderHelper {
     return helper;
   }
 
-
-  async fromItemsRaw({products, unitPrice, seller}: any) {
-
+  async fromItemsRaw({ products, unitPrice, seller }: any) {
     this.order.subtotal = 0;
     this.order.itemCount = 0;
     this.order.itemIds = [];
@@ -311,6 +327,7 @@ export class OrderHelper {
         commission1: 0,
         commission2: 0,
         commission3: 0,
+        orderType: this.order.orderType,
       };
 
       // kiem tra san pham - hoa hong vnpost > 0
@@ -399,9 +416,7 @@ export class OrderHelper {
     return this.order.items;
   }
 
-  async calculateShipfee({
-    seller
-  }:any) {
+  async calculateShipfee({ seller }: any) {
     // console.log('calculateShipfee----calculateShipfee')
     this.order.shipfee = 0;
 
@@ -424,7 +439,8 @@ export class OrderHelper {
 
         if (
           seller.addressDeliveryIds.findIndex(
-            (id:any) => id.toString() == this.order.addressDeliveryId.toString()
+            (id: any) =>
+              id.toString() == this.order.addressDeliveryId.toString()
           ) === -1
         ) {
           throw ErrorHelper.somethingWentWrong("Mã địa điểm nhận không đúng");

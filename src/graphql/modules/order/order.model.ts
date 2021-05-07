@@ -7,6 +7,12 @@ import { SettingHelper } from "../setting/setting.helper";
 import { SettingKey } from "../../../configs/settingData";
 const Schema = mongoose.Schema;
 
+export enum OrderType {
+  POST = "POST", // Đơn bưu điện,
+  SHOP = "SHOP", // Đơn bưu cục,
+  CROSSSALE = "CROSSALE", // Bán chéo,
+}
+
 export enum OrderStatus {
   PENDING = "PENDING", // Chờ xử lý
   CONFIRMED = "CONFIRMED", // Xác nhận
@@ -54,6 +60,7 @@ export const getShipMethods = async () => {
 export type IOrder = BaseDocument & {
   code?: string; // Mã đơn hàng
   isPrimary?: boolean; // Đơn Mobifone
+  isCrossSale?: boolean;
   itemIds?: string[]; // Danh sách sản phẩm
   items: IOrderItem[]; // danh sách sản phẩm trong đơn
   amount?: number; // Thành tiền
@@ -112,6 +119,7 @@ const orderSchema = new Schema(
   {
     code: { type: String, required: true },
     isPrimary: { type: Boolean, default: false },
+    isCrossSale: { type: Boolean, default: false },
     itemIds: {
       type: [{ type: Schema.Types.ObjectId, ref: "OrderItem" }],
       minlength: 1,

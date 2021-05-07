@@ -15,6 +15,8 @@ const schema = gql`
     updateMember(id: ID!, data: UpdateMemberInput!): Member
     deleteOneMember(id: ID!): Member
     deleteManyMember(ids: [ID]): Int
+
+    # Add Mutation
     loginMember(idToken: String!): MemberLoginData
     updateMemberPassword(memberId: ID!, password: String!): Member
     connectChatbot(apiKey: String!): Member
@@ -24,11 +26,12 @@ const schema = gql`
 
     updateMemberAddressDelivery(id: ID!, addressDeliveryIds: [ID]): Member
     updateMemberAddressStorehouse(id: ID!, addressStorehouseIds: [ID], mainAddressStorehouseId:ID): Member
+
     importMembers(file: Upload!): String
     importUpdateMembers(file: Upload!): String
+
     updateAllAddressDelivery(id: ID!): Member
     updateAllAddressStorehouse(id: ID!): Member
-    # Add Mutation
   }
 
   type MemberLoginData {
@@ -36,8 +39,6 @@ const schema = gql`
     token: String
   }
   
-  
-
   input CreateMemberInput {
     code: String!
     username: String!

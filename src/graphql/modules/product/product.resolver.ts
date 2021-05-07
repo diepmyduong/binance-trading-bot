@@ -7,14 +7,14 @@ import { Context } from "../../context";
 import { CategoryLoader } from "../category/category.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { CollaboratorProductModel } from "../collaboratorProduct/collaboratorProduct.model";
-import { MemberLoader } from "../member/member.model";
+import { MemberLoader, MemberModel } from "../member/member.model";
 import { ProductHelper } from "./product.helper";
 import { IProduct, ProductModel, ProductType } from "./product.model";
 import { productService } from "./product.service";
 
 const Query = {
   getAllProduct: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
+    // AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
     // let seller = null;
     const { q } = args;
     if (context.isMember()) {
@@ -29,13 +29,18 @@ const Query = {
           set(args, "q.filter.memberId", { $ne: context.id });
         }
       }
-      // console.log('q.filter', q.filter);
-    } else if (context.isCustomer()) {
-      set(args, "q.filter.allowSale", true);
-      set(args, "q.filter.isCrossSale", false);
-      const $or = [{ memberId: context.sellerId }, { isPrimary: true }];
-      set(args, "q.filter.$or", $or);
+    } 
+    else{
+      // console.log('context.memberCode ',context.memberCode );
+      const member = await MemberModel.findOne({code: context.memberCode});
+      if(!member){
+        throw ErrorHelper.error("Không có chủ shop này");
+      }
+      if(!member.allowSale){
+        set(args, "q.filter.memberId.$ne", member.id);
+      }
     }
+
     // console.log('role', get(context.tokenData, "role"))
     // console.log('q', q);
     return await productService.fetch(args.q);

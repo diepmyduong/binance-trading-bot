@@ -44,7 +44,10 @@ const Mutation = {
     // console.log('----------------> orderdata',data);
 
     try {
-      const ordersData = await OrderHelper.modifyOrders(data);
+      const ordersData = await OrderHelper.modifyOrders({
+        data,
+        seller
+      });
       // console.log("ordersData", ordersData.length);
       const orders: any[] = [];
       for (let orderData of ordersData) {

@@ -197,7 +197,6 @@ const Order = {
     }
   },
 
-
   orderTypeText: (root: IOrder, args: any, context: Context) => {
     if (root.isPrimary) {
       return "Bưu điện";
@@ -207,29 +206,6 @@ const Order = {
       return "Chủ shop";
     }
   },
-
-  orderType: (root: IOrder, args: any, context: Context) => {
-    if (root.isPrimary) {
-      return OrderType.POST;
-    } else if (root.isCrossSale) {
-      return OrderType.CROSSSALE;
-    } else {
-      return OrderType.SHOP;
-    }
-  },
-
-  // paymentStatusText: async (root: IOrder, args: any, context: Context) => {
-  //   switch (root.paymentStatus) {
-  //     case PaymentStatus.PENDING:
-  //       return `Đang chờ thanh toán`;
-  //     case PaymentStatus.PAID:
-  //       return `Đã thanh toán`;
-  //     case PaymentStatus.CANCELED:
-  //       return `Đã huỷ thanh toán`;
-  //     default:
-  //       return root.paymentStatus;
-  //   }
-  // },
 };
 
 export default {

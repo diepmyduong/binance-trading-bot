@@ -10,7 +10,7 @@ const Schema = mongoose.Schema;
 export enum OrderType {
   POST = "POST", // Đơn bưu điện,
   SHOP = "SHOP", // Đơn bưu cục,
-  CROSSSALE = "CROSSALE", // Bán chéo,
+  CROSSSALE = "CROSSSALE", // Bán chéo,
 }
 
 export enum OrderStatus {
@@ -20,7 +20,7 @@ export enum OrderStatus {
   COMPLETED = "COMPLETED", // Đã thành công
   CANCELED = "CANCELED", // Đã huỷ
   RETURNED = "RETURNED", // Đã hoàn hàng
-  FAILURE = "FAILURE" // Thất bại
+  FAILURE = "FAILURE", // Thất bại
 }
 
 export enum PaymentMethod {
@@ -113,6 +113,7 @@ export type IOrder = BaseDocument & {
   finishedAt: Date;
   loggedAt: Date;
   campaignCode: string;
+  orderType: OrderType;
 };
 
 const orderSchema = new Schema(
@@ -172,10 +173,19 @@ const orderSchema = new Schema(
     subtotal: { type: Number, default: 0, min: 0 },
     itemCount: { type: Number, default: 0, min: 0 },
 
-    oldAddressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse" },
-    addressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse", },
+    oldAddressStorehouseId: {
+      type: Schema.Types.ObjectId,
+      ref: "AddressStorehouse",
+    },
+    addressStorehouseId: {
+      type: Schema.Types.ObjectId,
+      ref: "AddressStorehouse",
+    },
 
-    oldAddressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery" },
+    oldAddressDeliveryId: {
+      type: Schema.Types.ObjectId,
+      ref: "AddressDelivery",
+    },
     addressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery" },
 
     isUrbanDelivery: { type: Boolean, default: false },
@@ -192,21 +202,29 @@ const orderSchema = new Schema(
     isLate: { type: Boolean },
     finishedAt: { type: Schema.Types.Date },
     loggedAt: { type: Schema.Types.Date },
+    orderType: {
+      type: String,
+      enum: Object.values(OrderType),
+      default: OrderType.POST,
+    },
   },
   { timestamps: true }
 );
 
-orderSchema.index({
-  code: "text",
-  buyerName: "text",
-  buyerPhone: "text",
-}, {
-  weights: {
-    code: 2,
-    buyerName: 3,
-    buyerPhone: 3
+orderSchema.index(
+  {
+    code: "text",
+    buyerName: "text",
+    buyerPhone: "text",
+  },
+  {
+    weights: {
+      code: 2,
+      buyerName: 3,
+      buyerPhone: 3,
+    },
   }
-});
+);
 orderSchema.index({ sellerId: 1 });
 orderSchema.index({ isPrimary: 1 });
 orderSchema.index({ buyerId: 1 });

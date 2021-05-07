@@ -79,6 +79,7 @@ const schema = gql`
     type: String
     branchId: ID
     positionId: ID
+    allowSale: Boolean
   }
 
   type Member {
@@ -177,6 +178,8 @@ const schema = gql`
     ordersCount: Int
     "Số lượng đơn hàng chuyển giao"
     toMemberOrdersCount: Int
+    "Cho phép bán sản phẩm mở rộng"
+    allowSale: Boolean
   }
 
   type MemberPageData {

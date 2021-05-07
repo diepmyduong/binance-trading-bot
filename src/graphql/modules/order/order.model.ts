@@ -7,6 +7,12 @@ import { SettingHelper } from "../setting/setting.helper";
 import { SettingKey } from "../../../configs/settingData";
 const Schema = mongoose.Schema;
 
+export enum OrderType {
+  POST = "POST", // Đơn bưu điện,
+  SHOP = "SHOP", // Đơn bưu cục,
+  CROSSSALE = "CROSSALE", // Bán chéo,
+}
+
 export enum OrderStatus {
   PENDING = "PENDING", // Chờ xử lý
   CONFIRMED = "CONFIRMED", // Xác nhận

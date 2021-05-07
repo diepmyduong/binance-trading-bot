@@ -1,6 +1,9 @@
+import { SettingKey } from "../../../../configs/settingData";
 import { GraphQLHelper } from "../../../../helpers/graphql.helper";
 import { Context } from "../../../context";
+import { MemberLoader } from "../../member/member.model";
 import { OrderItemLoader } from "../../orderItem/orderItem.model";
+import { SettingHelper } from "../../setting/setting.helper";
 import { OrderHelper } from "../order.helper";
 import { IOrder } from "../order.model";
 
@@ -25,18 +28,28 @@ const Mutation = {
       data.sellerId = sellerId;
     }
     data.collaboratorId = collaboratorId;
+    const [unitPrice, seller] = await Promise.all([
+      SettingHelper.load(SettingKey.UNIT_PRICE),
+      await MemberLoader.load(sellerId),
+    ]);
     // console.log('----------------> orderdata',data);
 
     try {
-      const ordersData = await OrderHelper.orderProducts(data);
+      const ordersData = await OrderHelper.modifyOrders(data);
       const orders: any[] = [];
       for (let orderData of ordersData) {
         const orderHelper = await OrderHelper.fromRaw(orderData);
-        await orderHelper.generateItemsFromRaw(orderData.products);
+        await orderHelper.fromItemsRaw({
+          products:orderData.products,
+          unitPrice,
+          seller
+        });
 
         // console.log("result generateItemsFromRaw", orderHelper.order);
         // Calculate Shipfee
-        await orderHelper.calculateShipfee();
+        await orderHelper.calculateShipfee({
+          seller
+        });
         // console.log("result calculateShipfee", orderHelper.order);
         // Calculate Amount
         orderHelper.calculateAmount();

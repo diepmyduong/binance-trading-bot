@@ -45,10 +45,8 @@ const Mutation = {
             _id: new ObjectId(productId),
             type: ProductType.RETAIL,
             isCrossSale: true,
-            crossSaleInventory: { $gt: 0 }
           }
         },
-        { $match: { $expr: { $gte: ["$crossSaleInventory", "$crossSaleOrdered"] } } }
       ]
     );
 

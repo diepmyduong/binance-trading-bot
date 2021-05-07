@@ -30,7 +30,7 @@ import {
   CampaignSocialResultModel,
   ICampaignSocialResult,
 } from "../campaignSocialResult/campaignSocialResult.model";
-import { UnorderedBulkOperation } from "mongodb";
+import { ObjectId, UnorderedBulkOperation } from "mongodb";
 import { AddressDeliveryModel } from "../addressDelivery/addressDelivery.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { CustomerModel } from "../customer/customer.model";
@@ -109,17 +109,17 @@ export class OrderHelper {
 
     const productIds = items.map((i: any) => i.productId).map(Types.ObjectId);
 
-    const orders: any = [];
+    let orders: any = [];
 
     const addQuantitytoProduct = (product: IProduct, items: any) => {
       product.qty = items.find(
         (item: any) => item.productId === product._id.toString()
       ).quantity;
-      console.log("product",product.qty);
       return product;
     };
 
     const getPostProducts = (products: IProduct[]) => {
+      console.log("getPostProducts");
       orders.push({
         ...data,
         isPrimary: true,
@@ -129,6 +129,7 @@ export class OrderHelper {
     };
 
     const getShopProducts = (products: IProduct[]) => {
+      console.log("getShopProducts");
       orders.push({
         ...data,
         isPrimary: false,
@@ -139,20 +140,55 @@ export class OrderHelper {
       });
     };
 
-    const getCrossSaleProducts = (products: IProduct[]) => {
-      products = products.filter(
-        (p) => p.isPrimary === false && p.isCrossSale === true
-      );
-      chain(products)
-        .groupBy("memberId")
-        .map((products, i) => {
-          orders.push({
-            ...data,
-            products,
-            sellerId: i,
-            fromMemberId: sellerId,
-          });
+    const getCrossSaleProducts = async (products: IProduct[]) => {
+      console.log("getCrossSaleProducts");
+
+      products = products
+        .filter((p) => p.isPrimary === false && p.isCrossSale === true)
+        .map((product: any) => ({
+          ...product._doc,
+          qty: product.qty,
+          memberId: product.memberId.toString(),
+        }));
+
+      // console.log("products", products);
+
+      const productsLength = Object.values(products).length;
+
+      // kiem tra san pham co trong kho ban cheo cua chu shop do ko ?
+      const productIds = products.map((product) => product._id.toString());
+      // .map(Types.ObjectId);
+      const crossaleParams = {
+        productId: { $in: productIds },
+        sellerId,
+      };
+
+      // console.log("crossaleParams", crossaleParams);
+      const existedProductsLength = await CrossSaleModel.count(crossaleParams);
+
+      if (productsLength !== existedProductsLength) {
+        throw ErrorHelper.requestDataInvalid(". Sản phẩm bán chéo không đúng");
+      }
+
+      // console.log("newProducts", newProducts);
+      const orderedProducts = products.reduce((r: any, a: any) => {
+        // console.log("a", a);
+        // console.log("r", r);
+        r[a.memberId] = [...(r[a.memberId] || []), a];
+        return r;
+      }, {});
+
+      Object.values(orderedProducts).map((products: any) => {
+        orders.push({
+          ...data,
+          products,
+          isPrimary: false,
+          isCrossSale:true,
+          sellerId: products[0].memberId,
+          fromMemberId: sellerId,
         });
+        return products;
+      });
     };
 
     const products = await ProductModel.find({
@@ -172,145 +208,36 @@ export class OrderHelper {
     // console.log("products", products);
     getPostProducts(products);
     getShopProducts(products);
-    getCrossSaleProducts(products);
-
+    await getCrossSaleProducts(products);
     // console.log("orders", orders);
+    // console.log("orders", orders.length);
     return orders;
   };
 
-  // modify Products
-  static orderProducts = async (data: any) => {
-    const { items, sellerId } = data;
 
-    // console.log('data',data);
-    // kiểm tra danh sách
-    const itemsLength = Object.keys(items).length;
-    if (itemsLength === 0)
-      throw ErrorHelper.requestDataInvalid("Danh sách sản phẩm trong đơn hàng");
+  static async fromRaw({
+    orderData, 
+    customer,
+    seller
+  }:any) {
+    console.log("fromRaw");
+    const order = new OrderModel(orderData);
 
-    const itemIDs = items.map((i: any) => i.productId);
-
-    const allProducts = await ProductModel.find({
-      _id: { $in: itemIDs },
-      type: ProductType.RETAIL,
-      allowSale: true,
-    });
-
-    const productsLength = Object.keys(allProducts).length;
-    if (productsLength !== itemsLength)
-      throw ErrorHelper.mgQueryFailed("Danh sách sản phẩm");
-
-    const addQuantitytoProduct = (product: any) => {
-      product.qty = items.find((p: any) => p.productId === product.id).quantity;
-      return product;
-    };
-
-    // console.log("allProducts", allProducts);
-    // console.log('sellerId',sellerId);
-
-    const validDirectShop = (p: IProduct) => {
-      // console.log('p.memberId',p.memberId);
-      // console.log('sellerId',sellerId);
-      const shopConditions = p.memberId == sellerId && p.isCrossSale === false;
-      return shopConditions || p.isPrimary;
-    };
-    // lấy ra danh sách sản phẩm của shop đó bán + sản phẩm chính (hảng bưu điện chuyển về cho bưu cục quản trị)
-    const directShoppingProducts: any = allProducts
-      .filter((p) => validDirectShop(p))
-      .map(addQuantitytoProduct);
-
-    // console.log('directShoppingProducts',directShoppingProducts);
-
-    // lấy ra danh sách sản phẩm của shop bán chéo
-    const crossSaleProducts = allProducts
-      .filter((p) => p.isCrossSale === true)
-      .map(addQuantitytoProduct);
-
-    // shop bán chéo thì phải check số lượng hàng tồn
-    const outOfStockProducts: string[] = [];
-
-    const isOutOfStock = ({
-      id,
-      name,
-      crossSaleInventory: dbInventory,
-      crossSaleOrdered: dbOrdered,
-    }: any) => {
-      const orderItem = items.find((i: any) => i.productId === id);
-      const condition = dbInventory < dbOrdered + orderItem.quantity;
-      condition && outOfStockProducts.push(name);
-      return condition;
-    };
-
-    // console.log('crossSaleProducts.some(isOutOfStock)', crossSaleProducts.some(isOutOfStock));
-    if (crossSaleProducts.some(isOutOfStock)) {
-      throw ErrorHelper.requestDataInvalid(
-        `. Sản phẩm [${outOfStockProducts.join(",")}] hết hàng.`
-      );
-    }
-
-    const orders = [];
-
-    if (directShoppingProducts.length > 0) {
-      orders.push({
-        ...data,
-        // isPrimary:true, // tat ca don hang deu thuoc buu cuc
-        products: directShoppingProducts,
-        fromMemberId: sellerId,
-      });
-    }
-
-    if (crossSaleProducts.length > 0) {
-      const ids = crossSaleProducts.map((p: any) => p._id);
-      // console.log("ids", ids);
-
-      // // lay cac mat hang crossale ra
-      const crossSales = await CrossSaleModel.find({
-        productId: { $in: ids },
-        sellerId,
-      });
-
-      // console.log("crossSales", crossSales);
-      // kiem tra mat hang nay co trong dang ky crossale ko ?
-      if (crossSales.length !== crossSaleProducts.length)
-        throw ErrorHelper.mgQueryFailed("Danh sách sản phẩm bán chéo");
-
-      // tach cac san pham nay ra theo tung chu shop
-      chain(crossSaleProducts)
-        .groupBy("memberId")
-        .map((products, i) => {
-          orders.push({
-            ...data,
-            products,
-            sellerId: i,
-            fromMemberId: sellerId,
-          });
-        });
-
-      // them danh sach order - cong tac vien mua don hang ban cheo
-    }
-
-    return orders;
-  };
-
-  static async fromRaw(data: any) {
-    const order = new OrderModel(data);
-    const customer = await CustomerModel.findById(order.buyerId);
-    const member = await MemberModel.findById(data.sellerId);
-
-    let { collaboratorId } = data;
+    // console.log("order",order);
+    let { collaboratorId } = orderData;
     let collaborator = null;
     if (collaboratorId) {
       collaborator = await CollaboratorModel.findById(collaboratorId);
     } else {
       collaborator = await CollaboratorModel.findOne({
         phone: customer.phone,
-        memberId: data.sellerId,
+        memberId: orderData.sellerId,
       });
     }
 
     order.collaboratorId = collaborator ? collaborator.id : null;
-    order.sellerCode = member.code;
-    order.sellerName = member.shopName ? member.shopName : member.name;
+    order.sellerCode = seller.code;
+    order.sellerName = seller.shopName ? seller.shopName : seller.name;
 
     const helper = new OrderHelper(order);
     switch (order.shipMethod) {
@@ -336,9 +263,8 @@ export class OrderHelper {
     return helper;
   }
 
-  async generateItemsFromRaw(products: any) {
-    const UNIT_PRICE = await SettingHelper.load(SettingKey.UNIT_PRICE);
-    const member = await MemberModel.findById(this.order.sellerId);
+
+  async fromItemsRaw({products, unitPrice, seller}: any) {
 
     this.order.subtotal = 0;
     this.order.itemCount = 0;
@@ -410,7 +336,7 @@ export class OrderHelper {
           orderItem.commission2 = commission2;
         } else {
           // hoa hong chu shop gioi thieu chu shop
-          if (member) {
+          if (seller) {
             orderItem.commission2 = commission2;
           }
         }
@@ -424,7 +350,7 @@ export class OrderHelper {
       }
 
       const getPointFromPrice = (factor: any, price: any) =>
-        Math.round(((price / UNIT_PRICE) * 100) / 100) * factor;
+        Math.round(((price / unitPrice) * 100) / 100) * factor;
       // Điểm thưởng khách hàng
       if (enabledCustomerBonus)
         orderItem.buyerBonusPoint = getPointFromPrice(
@@ -473,12 +399,13 @@ export class OrderHelper {
     return this.order.items;
   }
 
-  async calculateShipfee() {
+  async calculateShipfee({
+    seller
+  }:any) {
     // console.log('calculateShipfee----calculateShipfee')
     this.order.shipfee = 0;
 
-    const member = await MemberModel.findById(this.order.sellerId);
-    const { addressStorehouseIds, mainAddressStorehouseId } = member;
+    const { addressStorehouseIds, mainAddressStorehouseId } = seller;
     const storehouses = await AddressStorehouseModel.find({
       _id: { $in: addressStorehouseIds },
       activated: true,
@@ -496,8 +423,8 @@ export class OrderHelper {
           throw ErrorHelper.somethingWentWrong("Chưa cấu hình chi nhánh kho");
 
         if (
-          member.addressDeliveryIds.findIndex(
-            (id) => id.toString() == this.order.addressDeliveryId.toString()
+          seller.addressDeliveryIds.findIndex(
+            (id:any) => id.toString() == this.order.addressDeliveryId.toString()
           ) === -1
         ) {
           throw ErrorHelper.somethingWentWrong("Mã địa điểm nhận không đúng");
@@ -547,7 +474,7 @@ export class OrderHelper {
 
         const addressStorehouseId = addressStorehouse
           ? addressStorehouse.id
-          : member.mainAddressStorehouseId;
+          : seller.mainAddressStorehouseId;
 
         const cheapestService = await calculateServiceByMainStorehouse(
           addressStorehouseId,
@@ -575,7 +502,7 @@ export class OrderHelper {
           isPackageViewable: false,
           pickupType: PickupType.DROP_OFF,
 
-          senderFullname: member.shopName ? member.shopName : member.name, // tên người gửi *
+          senderFullname: seller.shopName ? seller.shopName : seller.name, // tên người gửi *
           senderTel: cheapestService.storehouse.phone, // Số điện thoại người gửi * (maxlength: 50)
           senderAddress: cheapestService.storehouse.address, // địa chỉ gửi *
           senderWardId: cheapestService.storehouse.wardId, // mã phường người gửi *
@@ -716,3 +643,13 @@ const calculateServiceByMainStorehouse = async (
     productHeight,
   };
 };
+
+// STT
+// Sản phẩm
+// Cộng tác viên
+// Bưu cục
+// Chi nhánh
+// Quận/Huyện
+// Tổng số đơn	thanh cộng
+// Tổng doanh thu
+// Hoa hồng thực nhận

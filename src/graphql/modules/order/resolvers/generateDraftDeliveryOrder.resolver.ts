@@ -1,7 +1,11 @@
+import { SettingKey } from "../../../../configs/settingData";
 import { ROLES } from "../../../../constants/role.const";
 import { GraphQLHelper } from "../../../../helpers/graphql.helper";
 import { Context } from "../../../context";
+import { CustomerLoader, CustomerModel } from "../../customer/customer.model";
+import { MemberLoader, MemberModel } from "../../member/member.model";
 import { OrderItemLoader } from "../../orderItem/orderItem.model";
+import { SettingHelper } from "../../setting/setting.helper";
 import { OrderHelper } from "../order.helper";
 import { IOrder } from "../order.model";
 
@@ -30,46 +34,68 @@ const Mutation = {
       data.sellerId = sellerId;
     }
     data.collaboratorId = collaboratorId;
+
+    const [unitPrice, seller,customer] = await Promise.all([
+      SettingHelper.load(SettingKey.UNIT_PRICE),
+      MemberLoader.load(sellerId),
+      CustomerLoader.load(buyerId),
+    ]);
+
     // console.log('----------------> orderdata',data);
 
     try {
       const ordersData = await OrderHelper.modifyOrders(data);
+      // console.log("ordersData", ordersData.length);
       const orders: any[] = [];
-      // for (let orderData of ordersData) {
-      //   const orderHelper = await OrderHelper.fromRaw(orderData);
-      //   await orderHelper.generateItemsFromRaw(orderData.products);
+      for (let orderData of ordersData) {
+        const orderHelper = await OrderHelper.fromRaw({
+          orderData, 
+          customer,
+          seller
+        });
+        await orderHelper.fromItemsRaw({
+          products: orderData.products,
+          unitPrice,
+          seller,
+        });
+        // console.log("result fromItemsRaw", orderHelper.order);
 
-      //   // console.log("result generateItemsFromRaw", orderHelper.order);
-      //   // Calculate Shipfee
-      //   await orderHelper.calculateShipfee();
-      //   // console.log("result calculateShipfee", orderHelper.order);
-      //   // Calculate Amount
-      //   orderHelper.calculateAmount();
-      //   // console.log("result calculateAmount", orderHelper.order);
+        // Calculate Shipfee
+        await orderHelper.calculateShipfee({
+          seller
+        });
+        // console.log("result calculateShipfee", orderHelper.order);
 
-      //   await orderHelper.addCampaign(campaignCode);
+        // Calculate Amount
+        orderHelper.calculateAmount();
+        // console.log("result calculateAmount", orderHelper.order);
 
-      //   // console.log('order',orderHelper.order);s
+        // Add campaign
+        await orderHelper.addCampaign(campaignCode);
+        // console.log('order',orderHelper.order);
 
-      //   orders.push(orderHelper.order);
-      // }
+        // Push all orders
+        orders.push(orderHelper.order);
+      }
 
-      // const cloneObj = Object.assign({}, orders[0]._doc);
-      // // orders[1] = {...cloneObj, id: "testId"}
-      // const allOrder: IOrder = { ...cloneObj };
-      // for (let i = 1; i <= orders.length; i++) {
-      //   const order: IOrder = orders[i];
-      //   if (order) {
-      //     allOrder.itemCount = allOrder.itemCount + order.itemCount;
-      //     allOrder.shipfee = allOrder.shipfee + order.shipfee;
-      //     allOrder.amount = allOrder.amount + order.amount;
-      //     allOrder.subtotal = allOrder.subtotal + order.subtotal;
-      //   }
-      // }
+      // console.log('orders',orders.length);
+
+      const cloneObj = Object.assign({}, orders[0]._doc);
+      // orders[1] = {...cloneObj, id: "testId"}
+      const allOrder: IOrder = { ...cloneObj };
+      for (let i = 1; i <= orders.length; i++) {
+        const order: IOrder = orders[i];
+        if (order) {
+          allOrder.itemCount = allOrder.itemCount + order.itemCount;
+          allOrder.shipfee = allOrder.shipfee + order.shipfee;
+          allOrder.amount = allOrder.amount + order.amount;
+          allOrder.subtotal = allOrder.subtotal + order.subtotal;
+        }
+      }
 
       return {
         orders,
-        allOrder:[],
+        allOrder,
         invalid: false,
         invalidReason: null,
       } as DraftOrderData;

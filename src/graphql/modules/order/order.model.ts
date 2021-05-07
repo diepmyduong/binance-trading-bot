@@ -54,6 +54,7 @@ export const getShipMethods = async () => {
 export type IOrder = BaseDocument & {
   code?: string; // Mã đơn hàng
   isPrimary?: boolean; // Đơn Mobifone
+  isCrossSale?: boolean;
   itemIds?: string[]; // Danh sách sản phẩm
   items: IOrderItem[]; // danh sách sản phẩm trong đơn
   amount?: number; // Thành tiền
@@ -112,6 +113,7 @@ const orderSchema = new Schema(
   {
     code: { type: String, required: true },
     isPrimary: { type: Boolean, default: false },
+    isCrossSale: { type: Boolean, default: false },
     itemIds: {
       type: [{ type: Schema.Types.ObjectId, ref: "OrderItem" }],
       minlength: 1,

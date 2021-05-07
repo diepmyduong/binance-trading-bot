@@ -12,10 +12,15 @@ import {
   getShipMethods,
   IOrder,
   OrderStatus,
+  OrderType,
   PaymentMethod,
   ShipMethod,
 } from "./order.model";
-import { CollaboratorLoader, CollaboratorModel, ICollaborator } from "../collaborator/collaborator.model";
+import {
+  CollaboratorLoader,
+  CollaboratorModel,
+  ICollaborator,
+} from "../collaborator/collaborator.model";
 import {
   AddressDeliveryLoader,
   AddressDeliveryModel,
@@ -37,8 +42,7 @@ const Query = {
       set(args, "q.filter.sellerId", context.id);
     } else if (context.isCustomer()) {
       set(args, "q.filter.buyerId", context.id);
-    }
-    else {
+    } else {
       if (args.q.filter) {
         delete args.q.filter.isPrimary;
       }
@@ -76,8 +80,8 @@ const Order = {
     const member = await MemberModel.findById(root.sellerId);
     const collaboratorMember: any = {
       memberId: context.id,
-      member
-    }
+      member,
+    };
     if (collaborator) {
       const customer = await CustomerModel.findById(collaborator.customerId);
       collaboratorMember.id = collaborator.id;
@@ -93,21 +97,25 @@ const Order = {
     const member = await MemberModel.findById(root.sellerId);
     if (member) {
       if (root.shipMethod === ShipMethod.POST) {
-        const address = await AddressDeliveryLoader.load(root.addressDeliveryId);
-        if(member.code !== address.code){
-          return true
+        const address = await AddressDeliveryLoader.load(
+          root.addressDeliveryId
+        );
+        if (member.code !== address.code) {
+          return true;
         }
         return false;
       }
 
       if (root.shipMethod === ShipMethod.VNPOST) {
-        const address = await AddressStorehouseLoader.load(root.addressStorehouseId);
-        if(member.code !== address.code){
-          return true
+        const address = await AddressStorehouseLoader.load(
+          root.addressStorehouseId
+        );
+        if (member.code !== address.code) {
+          return true;
         }
-        return false
+        return false;
       }
-      return false
+      return false;
     }
     return false;
   },
@@ -144,8 +152,7 @@ const Order = {
 
     const result = await MemberModel.findOne({ code });
 
-    if (!result)
-      return await MemberModel.findById(root.sellerId);
+    if (!result) return await MemberModel.findById(root.sellerId);
 
     return result;
   },
@@ -187,6 +194,27 @@ const Order = {
         return `Đã hoàn hàng`;
       default:
         return root.status;
+    }
+  },
+
+
+  orderTypeText: (root: IOrder, args: any, context: Context) => {
+    if (root.isPrimary) {
+      return "Bưu điện";
+    } else if (root.isCrossSale) {
+      return "Bán chéo";
+    } else {
+      return "Chủ shop";
+    }
+  },
+
+  orderType: (root: IOrder, args: any, context: Context) => {
+    if (root.isPrimary) {
+      return OrderType.POST;
+    } else if (root.isCrossSale) {
+      return OrderType.CROSSSALE;
+    } else {
+      return OrderType.SHOP;
     }
   },
 

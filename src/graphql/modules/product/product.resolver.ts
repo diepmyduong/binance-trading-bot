@@ -42,6 +42,9 @@ const Query = {
         if (!member.allowSale) {
           set(args, "q.filter.memberId.$ne", member.id);
         }
+
+        // set(args, "q.filter.isPrimary", true);
+        // set(args, "q.filter.isCrossSale", true);
       }
     }
 

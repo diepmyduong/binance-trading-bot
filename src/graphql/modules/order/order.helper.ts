@@ -138,28 +138,33 @@ export class OrderHelper {
       }
     };
 
-    const getShopProducts = (productsInOrder: IProduct[]) => {
+    const getShopProducts = async (productsInOrder: IProduct[]) => {
       console.log("getShopProducts");
       const products = productsInOrder.filter(
         (p) => p.isPrimary === false && p.isCrossSale === false
       );
+
+      const productMemberIds = products
+        .map((p) => p.memberId)
+        .map(Types.ObjectId);
       // console.log('seller',seller);
+      const allowSaleMembers = await MemberModel.find({
+        _id: { $in: productMemberIds },
+      }).select("_id allowSale");
 
-      if (products.length > 0) {
-        if (!seller.allowSale) {
-          throw ErrorHelper.requestDataInvalid(
-            ". Sản phẩm mở rộng chưa được phép mua ở bưu cục này"
-          );
+      for (const member of allowSaleMembers) {
+        if(!member.allowSale){
+          throw ErrorHelper.requestDataInvalid(". Sản phẩm mở rộng chưa được phép mua ở bưu cục này.")
         }
+      }  
 
-        orders.push({
-          ...data,
-          isPrimary: false,
-          orderType: OrderType.SHOP,
-          products,
-          fromMemberId: sellerId,
-        });
-      }
+      orders.push({
+        ...data,
+        isPrimary: false,
+        orderType: OrderType.SHOP,
+        products,
+        fromMemberId: sellerId,
+      });
     };
 
     const getCrossSaleProducts = async (products: IProduct[]) => {
@@ -230,7 +235,7 @@ export class OrderHelper {
 
     // console.log("products", products);
     getPostProducts(products);
-    getShopProducts(products);
+    await getShopProducts(products);
     await getCrossSaleProducts(products);
     // console.log("orders", orders);
     // console.log("orders", orders.length);

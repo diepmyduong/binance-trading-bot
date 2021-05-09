@@ -20,13 +20,9 @@ const Query = {
     const crossSaleProducts = await CrossSaleModel.find({
       sellerId: seller._id,
     });
-    const products = await ProductModel.find({
-      _id: { $in: crossSaleProducts.map((c) => c.productId) },
-    });
 
-    return products.map((p: IProduct) => {
-      p.outOfStock = p.crossSaleInventory - p.crossSaleOrdered <= 0;
-      return p;
+    return await ProductModel.find({
+      _id: { $in: crossSaleProducts.map((c) => c.productId) },
     });
   },
 };

@@ -57,6 +57,7 @@ export type IMember = BaseDocument & {
   facebookAccessToken: string;
   xToken: string;
   lastLoginDate: Date;
+  allowSale: Boolean;
 };
 
 const memberSchema = new Schema(
@@ -120,11 +121,15 @@ const memberSchema = new Schema(
     facebookAccessToken: {
       type: String,
     },
-    xToken:{
+    xToken: {
       type: String,
     },
     lastLoginDate: {
       type: Date,
+    },
+    allowSale: {
+      type: Boolean,
+      default: false
     },
   },
   { timestamps: true }

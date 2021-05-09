@@ -235,7 +235,6 @@ const importProducts = async (root: any, args: any, context: Context) => {
           allowSale: true, // Mở bán
           // memberId: string; // Mã thành viên quản lý sản phẩm
           // qty: 100
-          // outOfStock: boolean; //hết hàng
 
           width: params.productWidth, // chiều rộng
           length: params.productLength, // chiều dài
@@ -281,7 +280,6 @@ const importProducts = async (root: any, args: any, context: Context) => {
           allowSale: true, // Mở bán
           // memberId: string; // Mã thành viên quản lý sản phẩm
           // qty: 100
-          // outOfStock: boolean; //hết hàng
   
           width: data.width, // chiều rộng
           length: data.length, // chiều dài

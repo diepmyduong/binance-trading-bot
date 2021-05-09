@@ -29,15 +29,16 @@ const Query = {
           set(args, "q.filter.memberId", { $ne: context.id });
         }
       }
-    } 
-    else{
-      // console.log('context.memberCode ',context.memberCode );
-      const member = await MemberModel.findOne({code: context.memberCode});
-      if(!member){
-        throw ErrorHelper.error("Không có chủ shop này");
-      }
-      if(!member.allowSale){
-        set(args, "q.filter.memberId.$ne", member.id);
+    } else {
+      if (context.memberCode) {
+        // console.log('context.memberCode ',context.memberCode );
+        const member = await MemberModel.findOne({ code: context.memberCode });
+        if (!member) {
+          throw ErrorHelper.error("Không có chủ shop này");
+        }
+        if (!member.allowSale) {
+          set(args, "q.filter.memberId.$ne", member.id);
+        }
       }
     }
 
@@ -65,8 +66,7 @@ const Mutation = {
     if (context.isMember()) {
       set(data, "isPrimary", false);
       set(data, "memberId", context.id);
-    }
-    else {
+    } else {
       set(data, "isPrimary", true);
     }
 
@@ -136,7 +136,7 @@ const Product = {
 
 const resolveArgs = (data: any) => {
   delete data.isPrimary;
-}
+};
 
 export default {
   Query,

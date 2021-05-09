@@ -17,21 +17,24 @@ const Query = {
     // AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
     // let seller = null;
     const { q } = args;
-    if (context.isMember()) {
-      // neu ko co filter crossale thi lay ra san pham cua shop do
-      if (isNull(q.filter.isCrossSale) || isUndefined(q.filter.isCrossSale)) {
-        set(args, "q.filter.memberId", context.id);
-      } else {
-        if (q.filter.isCrossSale === false) {
+    if(context.isAuth){
+      if (context.isMember()) {
+        // neu ko co filter crossale thi lay ra san pham cua shop do
+        if (isNull(q.filter.isCrossSale) || isUndefined(q.filter.isCrossSale)) {
           set(args, "q.filter.memberId", context.id);
         } else {
-          // neu co filter crossale thi lay ra san pham ko phai cua shop do
-          set(args, "q.filter.memberId", { $ne: context.id });
+          if (q.filter.isCrossSale === false) {
+            set(args, "q.filter.memberId", context.id);
+          } else {
+            // neu co filter crossale thi lay ra san pham ko phai cua shop do
+            set(args, "q.filter.memberId", { $ne: context.id });
+          }
         }
       }
-    } else {
+    }
+    else {
       if (context.memberCode) {
-        // console.log('context.memberCode ',context.memberCode );
+        console.log('context.memberCode ',context.memberCode );
         const member = await MemberModel.findOne({ code: context.memberCode });
         if (!member) {
           throw ErrorHelper.error("Không có chủ shop này");

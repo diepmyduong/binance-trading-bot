@@ -4,6 +4,7 @@ import { TokenHelper } from "../../../helpers/token.helper";
 import { Context } from "../../context";
 import { counterService } from "../counter/counter.service";
 import { CustomerModel, ICustomer } from "./customer.model";
+import { SubscriberInfo } from "../member/types/subscriberInfo.type";
 
 export class CustomerHelper {
   constructor(public customer: ICustomer) {}
@@ -24,7 +25,15 @@ export class CustomerHelper {
       pageId,
       psid,
       sellerId,
-      username: this.customer.name || this.customer.facebookName || this.customer.phone,
+      username:
+        this.customer.name || this.customer.facebookName || this.customer.phone,
     });
   }
+
+  static getInfo = async (chatbotHelper: any, psid: string) =>
+    await chatbotHelper.getSubscriber(psid).catch((err: any) => {
+      return {
+        name: "Khách vãng lai",
+      } as SubscriberInfo;
+    });
 }

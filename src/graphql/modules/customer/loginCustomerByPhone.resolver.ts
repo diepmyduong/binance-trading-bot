@@ -7,12 +7,10 @@ import { CustomerHelper } from "./customer.helper";
 import { CustomerModel } from "./customer.model";
 
 const Mutation = {
-  loginCustomerByToken: async (root: any, args: any, context: Context) => {
-    let { idToken, psid, pageId } = args;
+  loginCustomerByPhone: async (root: any, args: any, context: Context) => {
+    let { phone, psid, pageId } = args;
 
-    let decode = await firebaseHelper.verifyIdToken(idToken);
-    let phone = decode.phone_number;
-    if (!phone) throw ErrorHelper.badToken();
+    if (!phone) throw ErrorHelper.error("Chưa nhập số điện thoại");
 
     if (context.messengerSignPayload) {
       psid = context.messengerSignPayload.psid;
@@ -30,7 +28,7 @@ const Mutation = {
     }
 
     phone = UtilsHelper.parsePhone(phone, "0");
-    let customer = await CustomerModel.findOne({ uid: decode.uid });
+    let customer = await CustomerModel.findOne({ phone });
     // có customer
     if (customer) {
       // có psid
@@ -80,7 +78,6 @@ const Mutation = {
       customer = new CustomerModel({
         code: await CustomerHelper.generateCode(), // Mã khách hàng
         name: "Khách vãng lai",
-        uid: decode.uid,
         phone: phone,
         avatar: "https://i.imgur.com/NN9xQ5Q.png",
         pageAccounts: [

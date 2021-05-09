@@ -17,10 +17,11 @@ const Query = {
     // AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
     // let seller = null;
     const { q } = args;
-    if(context.isAuth){
-      if (context.isMember()) {
-        // neu ko co filter crossale thi lay ra san pham cua shop do
+
+    if (context.isAuth) {
+      if (context.isMember())
         if (isNull(q.filter.isCrossSale) || isUndefined(q.filter.isCrossSale)) {
+          // neu ko co filter crossale thi lay ra san pham cua shop do
           set(args, "q.filter.memberId", context.id);
         } else {
           if (q.filter.isCrossSale === false) {
@@ -30,15 +31,16 @@ const Query = {
             set(args, "q.filter.memberId", { $ne: context.id });
           }
         }
-      }
-    }
+    } 
     else {
       if (context.memberCode) {
-        console.log('context.memberCode ',context.memberCode );
+        console.log("context.memberCode ", context.memberCode);
         const member = await MemberModel.findOne({ code: context.memberCode });
         if (!member) {
           throw ErrorHelper.error("Không có chủ shop này");
         }
+        // set(args, "q.filter.isPrimary", true);
+        // set(args, "q.filter.isCrossSale", true);
         if (!member.allowSale) {
           set(args, "q.filter.memberId.$ne", member.id);
         }
@@ -47,7 +49,6 @@ const Query = {
 
     // console.log('role', get(context.tokenData, "role"))
     // console.log('q', q);
-    return await productService.fetch(args.q);
   },
 
   getOneProduct: async (root: any, args: any, context: Context) => {

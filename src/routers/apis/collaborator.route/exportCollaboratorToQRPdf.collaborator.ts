@@ -30,8 +30,8 @@ export const exportCollaboratorToQRPdf = async (
   context.auth(ROLES.ADMIN_EDITOR);
 
   const memberId: string = req.query.memberId
-  ? req.query.memberId.toString()
-  : null;
+    ? req.query.memberId.toString()
+    : null;
 
   if (!isEmpty(memberId)) {
     if (!isValidObjectId(memberId)) {
@@ -50,7 +50,7 @@ export const exportCollaboratorToQRPdf = async (
   }
 
   const collaborators = await CollaboratorModel.find({ ...$match });
-  
+
   const memberIds = collaborators
     .map((col) => col.memberId)
     .map(Types.ObjectId);
@@ -151,7 +151,7 @@ const getPDFOrder = async ({ collaborators, members }: any) => {
   // console.log("body", body);
 
   var dd = {
-    pageMargins: [ 20, 20, 20, 20 ],
+    pageMargins: [20, 20, 20, 20],
     content: [
       {
         table: {

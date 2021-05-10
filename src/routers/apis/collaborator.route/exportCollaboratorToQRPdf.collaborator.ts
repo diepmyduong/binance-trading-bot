@@ -4,7 +4,7 @@ import {
   Response,
   NextFunction,
 } from "../../../base/baseRoute";
-import _, { isUndefined } from "lodash";
+import _, { isEmpty, isUndefined, set } from "lodash";
 import { PrinterHelper } from "../../../helpers/printerHelper";
 
 import { createCanvas, loadImage } from "canvas";
@@ -18,7 +18,9 @@ import {
   IMember,
   MemberModel,
 } from "../../../graphql/modules/member/member.model";
-import { Types } from "mongoose";
+import { isValidObjectId, Types } from "mongoose";
+import { ErrorHelper } from "../../../base/error";
+import { ObjectId } from "bson";
 
 export const exportCollaboratorToQRPdf = async (
   req: Request,
@@ -27,7 +29,28 @@ export const exportCollaboratorToQRPdf = async (
   const context = (req as any).context as Context;
   context.auth(ROLES.ADMIN_EDITOR);
 
-  const collaborators = await CollaboratorModel.find({});
+  const memberId: string = req.query.memberId
+  ? req.query.memberId.toString()
+  : null;
+
+  if (!isEmpty(memberId)) {
+    if (!isValidObjectId(memberId)) {
+      throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+    }
+  }
+
+  const $match: any = {};
+
+  if (memberId) {
+    set($match, "memberId", new ObjectId(memberId));
+  }
+
+  if (context.isMember()) {
+    set($match, "memberId", new ObjectId(context.id));
+  }
+
+  const collaborators = await CollaboratorModel.find({ ...$match });
+  
   const memberIds = collaborators
     .map((col) => col.memberId)
     .map(Types.ObjectId);

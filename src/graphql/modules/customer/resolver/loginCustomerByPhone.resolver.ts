@@ -1,12 +1,11 @@
-import e from "express";
-import { ErrorHelper } from "../../../base/error";
-import { firebaseHelper, UtilsHelper } from "../../../helpers";
-import { ChatBotHelper } from "../../../helpers/chatbot.helper";
-import { Context } from "../../context";
-import { MemberModel } from "../member/member.model";
-import { SubscriberInfo } from "../member/types/subscriberInfo.type";
-import { CustomerHelper } from "./customer.helper";
-import { CustomerModel } from "./customer.model";
+import { ErrorHelper } from "../../../../base/error";
+import { firebaseHelper, UtilsHelper } from "../../../../helpers";
+import { ChatBotHelper } from "../../../../helpers/chatbot.helper";
+import { Context } from "../../../context";
+import { MemberModel } from "../../member/member.model";
+import { SubscriberInfo } from "../../member/types/subscriberInfo.type";
+import { CustomerHelper } from "../customer.helper";
+import { CustomerModel } from "../customer.model";
 
 const Mutation = {
   loginCustomerByToken: async (root: any, args: any, context: Context) => {

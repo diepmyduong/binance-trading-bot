@@ -55,6 +55,7 @@ const schema = gql`
     addressStorehouses: [AddressStorehouse]
     mainAddressStorehouseId: ID
     mainAddressStorehouse: AddressStorehouse
+    allowSale: Boolean
   }
 `;
 

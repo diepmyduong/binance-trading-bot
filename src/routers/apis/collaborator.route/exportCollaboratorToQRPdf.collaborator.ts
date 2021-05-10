@@ -14,16 +14,21 @@ import {
 } from "../../../graphql/modules/collaborator/collaborator.model";
 import { Context } from "../../../graphql/context";
 import { ROLES } from "../../../constants/role.const";
+import { Types } from "mongoose";
+import { IMember, MemberModel } from "../../../graphql/modules/member/member.model";
 
 export const exportCollaboratorToQRPdf = async (req: Request, res: Response) => {
   const context = (req as any).context as Context;
   context.auth(ROLES.ADMIN_EDITOR);
 
   const collaborators = await CollaboratorModel.find({});
+  const memberIds = collaborators.map(col=>col.memberId).map(Types.ObjectId);
+  const members = await MemberModel.find({ _id: {$in : memberIds} }).select("_id shopName");
+
 
   // console.log("collaborators", collaborators.length);
 
-  const pdfContent = await getPDFOrder(collaborators);
+  const pdfContent = await getPDFOrder({collaborators, members});
   return PrinterHelper.responsePDF(res, pdfContent, `danh-sach-qr-ctv`);
 };
 
@@ -35,16 +40,20 @@ const getBase64ImageFromURL = async (url: string) => {
   return ctx.canvas.toDataURL();
 };
 
-const getPDFOrder = async (collaborators: ICollaborator[]) => {
+const getPDFOrder = async ({collaborators, members}:any) => {
   // collaborators = [];
   if (collaborators.length <= 0) return { content: [{}] };
   const qrCodes = [];
   const qrTexts = [];
+  const qrColName = [];
 
   for (const collaborator of collaborators) {
     // console.log("collaborator", collaborator);
     qrCodes.push({ qr: collaborator.shortUrl });
     qrTexts.push(collaborator.name);
+    const member = members.find((member :IMember)=> member.id.toString() === collaborator.memberId.toString() )
+    // if()
+    // qrColName.push(collaborator.)
   }
 
   const styles = {

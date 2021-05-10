@@ -15,7 +15,8 @@ export class CollaboratorJob {
   static async execute(job: Job, done: any) {
     console.log("Execute Job " + CollaboratorJob.jobName, moment().format());
     await updateCustomerId();
-    await updateShortUrl();
+    await updateShortCodes();
+    await updateShortUrls();
     return done();
   }
 }
@@ -97,7 +98,7 @@ const updateCustomerId = async () => {
 };
 
 
-const updateShortUrl = async () => {
+const updateShortCodes = async () => {
   // console.log('doBusiness');
 
   const host = await SettingHelper.load(SettingKey.APP_DOMAIN);
@@ -150,10 +151,42 @@ const updateShortUrl = async () => {
       }
     }
   }
+  
+};
+
+
+const updateShortUrls = async () => {
+  // console.log('doBusiness');
+
+  const host = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN);
+
+  let collaborators = await CollaboratorModel.find({
+  }).limit(1000);
+
+  collaborators = collaborators.filter(col=>!col.shortUrl.includes(host))
+
+  // console.log('collaborators',collaborators.length);
+  // console.log("members", memberss);
+  for (const collaborator of collaborators) {
+    if (collaborator.shortCode) {
+      console.log("collaborator.shortCode", collaborator.shortCode);
+      const shortUrl = `${host}/ctv/${collaborator.shortCode}`;
+      await CollaboratorModel.findByIdAndUpdate(
+        collaborator.id,
+        {
+          $set: {
+            shortUrl,
+          },
+        },
+        { new: true }
+      );
+    }
+}
+  
 };
 
 // (async () => {
 //   console.log("test businessssssssssssssssssssssss");
-//   await updateShortUrl();
+//   await updateShortUrls();
 // })();
 

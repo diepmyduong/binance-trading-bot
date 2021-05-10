@@ -3,17 +3,14 @@ import { firebaseHelper, UtilsHelper } from "../../../../helpers";
 import { ChatBotHelper } from "../../../../helpers/chatbot.helper";
 import { Context } from "../../../context";
 import { MemberModel } from "../../member/member.model";
-import { SubscriberInfo } from "../../member/types/subscriberInfo.type";
 import { CustomerHelper } from "../customer.helper";
 import { CustomerModel } from "../customer.model";
 
 const Mutation = {
-  loginCustomerByToken: async (root: any, args: any, context: Context) => {
-    let { idToken, psid, pageId } = args;
+  loginCustomerByPhone: async (root: any, args: any, context: Context) => {
+    let { phone, psid, pageId } = args;
 
-    let decode = await firebaseHelper.verifyIdToken(idToken);
-    let phone = decode.phone_number;
-    if (!phone) throw ErrorHelper.badToken();
+    if (!phone) throw ErrorHelper.error("Chưa nhập số điện thoại");
 
     if (context.messengerSignPayload) {
       psid = context.messengerSignPayload.psid;
@@ -29,39 +26,9 @@ const Mutation = {
     if (!member) {
       throw Error("Cửa hàng này chưa được đăng ký.");
     }
-    // // kiem tra co pageid ko ?
-    // if (pageId) {
-    //   member = await MemberModel.findOne({ fanpageId: pageId });
-    //   // if (!member) {
-    //   //   throw Error("Fanpage này chưa được đăng ký.");
-    //   // }
-    //   // if (!member.activated) {
-    //   //   throw Error("Fanpage này chưa được kích hoạt.");
-    //   // }
-    //   // if (!member.chatbotKey) {
-    //   //   throw Error("Fanpage này chưa được đăng ký chatbot.");
-    //   // }
-    // }
-    // else {
-    //   // console.log('context.memberCode',context.memberCode);
-    //   member = await MemberModel.findOne({ code: context.memberCode });
-    //   // console.log('context.memberCode',context.memberCode);
-    //   if (!member) {
-    //     throw Error("Cửa hàng này chưa được đăng ký.");
-    //   }
-    //   if (!member.activated) {
-    //     throw Error("Cửa hàng này chưa được kích hoạt.");
-    //   }
-    // }
 
-    const getInfo = async (chatbotHelper: any, psid: string) =>
-      await chatbotHelper.getSubscriber(psid).catch((err: any) => {
-        return {
-          name: "Khách vãng lai",
-        } as SubscriberInfo;
-      });
     phone = UtilsHelper.parsePhone(phone, "0");
-    let customer = await CustomerModel.findOne({ uid: decode.uid });
+    let customer = await CustomerModel.findOne({ phone });
     // có customer
     if (customer) {
       // có psid
@@ -85,7 +52,7 @@ const Mutation = {
         }
 
         const chatbotHelper = new ChatBotHelper(member.chatbotKey);
-        const subscriberInfo = await getInfo(chatbotHelper, psid);
+        const subscriberInfo = await CustomerHelper.getInfo(chatbotHelper, psid);
         customer.facebookName = customer.facebookName ? customer.facebookName : subscriberInfo.name;
         customer.gender = customer.gender ? customer.gender : subscriberInfo.gender;
         customer.name = customer.name === "Khách vãng lai" ? subscriberInfo.name : customer.name;
@@ -94,7 +61,7 @@ const Mutation = {
             ? subscriberInfo.profilePic
             : customer.avatar;
       } else {
-        console.log("customer - psid");
+        // console.log("customer - psid");
         const params = {
           memberId: member._id,
           pageId: member.fanpageId,
@@ -107,11 +74,10 @@ const Mutation = {
         }
       }
     } else {
-      console.log("no customer");
+      // console.log("no customer");
       customer = new CustomerModel({
         code: await CustomerHelper.generateCode(), // Mã khách hàng
         name: "Khách vãng lai",
-        uid: decode.uid,
         phone: phone,
         avatar: "https://i.imgur.com/NN9xQ5Q.png",
         pageAccounts: [
@@ -124,7 +90,7 @@ const Mutation = {
       if (psid) {
         console.log("no customer + psId", psid);
         const chatbotHelper = new ChatBotHelper(member.chatbotKey);
-        const subscriberInfo = await getInfo(chatbotHelper, psid);
+        const subscriberInfo = await CustomerHelper.getInfo(chatbotHelper, psid);
         customer.name = subscriberInfo.name;
         customer.facebookName = subscriberInfo.name;
         customer.avatar = subscriberInfo.profilePic;

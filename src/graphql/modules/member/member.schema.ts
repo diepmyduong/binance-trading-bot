@@ -177,6 +177,8 @@ const schema = gql`
     ordersCount: Int
     "Số lượng đơn hàng chuyển giao"
     toMemberOrdersCount: Int
+
+    allowSale:Boolean
   }
 
   type MemberPageData {

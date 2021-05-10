@@ -14,16 +14,30 @@ import {
 } from "../../../graphql/modules/collaborator/collaborator.model";
 import { Context } from "../../../graphql/context";
 import { ROLES } from "../../../constants/role.const";
+import {
+  IMember,
+  MemberModel,
+} from "../../../graphql/modules/member/member.model";
+import { Types } from "mongoose";
 
-export const exportCollaboratorToQRPdf = async (req: Request, res: Response) => {
+export const exportCollaboratorToQRPdf = async (
+  req: Request,
+  res: Response
+) => {
   const context = (req as any).context as Context;
   context.auth(ROLES.ADMIN_EDITOR);
 
   const collaborators = await CollaboratorModel.find({});
+  const memberIds = collaborators
+    .map((col) => col.memberId)
+    .map(Types.ObjectId);
+  const members = await MemberModel.find({ _id: { $in: memberIds } }).select(
+    "_id shopName"
+  );
 
   // console.log("collaborators", collaborators.length);
 
-  const pdfContent = await getPDFOrder(collaborators);
+  const pdfContent = await getPDFOrder({ collaborators, members });
   return PrinterHelper.responsePDF(res, pdfContent, `danh-sach-qr-ctv`);
 };
 
@@ -35,16 +49,27 @@ const getBase64ImageFromURL = async (url: string) => {
   return ctx.canvas.toDataURL();
 };
 
-const getPDFOrder = async (collaborators: ICollaborator[]) => {
+const getPDFOrder = async ({ collaborators, members }: any) => {
   // collaborators = [];
   if (collaborators.length <= 0) return { content: [{}] };
   const qrCodes = [];
   const qrTexts = [];
+  const qrShopNames = [];
 
   for (const collaborator of collaborators) {
     // console.log("collaborator", collaborator);
+    const member = members.find(
+      (member: IMember) =>
+        member._id.toString() === collaborator.memberId.toString()
+    );
+    // console.log("test", member);
     qrCodes.push({ qr: collaborator.shortUrl });
     qrTexts.push(collaborator.name);
+    if (member) {
+      qrShopNames.push(member.shopName);
+    } else {
+      qrShopNames.push("");
+    }
   }
 
   const styles = {
@@ -61,40 +86,49 @@ const getPDFOrder = async (collaborators: ICollaborator[]) => {
     if (i % 3 == 0) {
       const qrCode1 = qrCodes[i];
       const qrText1 = qrTexts[i];
+      const qrShopName1 = qrShopNames[i];
 
       const codes: any[] = [qrCode1];
       const texts: any[] = [qrText1];
+      const shopNames: any[] = [qrShopName1];
 
       if (!isUndefined(qrTexts[i + 1])) {
         codes.push(qrCodes[i + 1]);
         texts.push(qrTexts[i + 1]);
+        shopNames.push(qrShopNames[i + 1]);
       } else {
         codes.push({
-          image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAoMBgDTD2qgAAAAASUVORK5CYII=',
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAoMBgDTD2qgAAAAASUVORK5CYII=",
           width: 164,
-          height:164
+          height: 164,
         });
         texts.push("");
+        shopNames.push("");
       }
       if (!isUndefined(qrTexts[i + 2])) {
         codes.push(qrCodes[i + 2]);
         texts.push(qrTexts[i + 2]);
+        shopNames.push(qrShopNames[i + 2]);
       } else {
         codes.push({
-          image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAoMBgDTD2qgAAAAASUVORK5CYII=',
-	        width: 164,
-	        height:164,
+          image:
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAoMBgDTD2qgAAAAASUVORK5CYII=",
+          width: 164,
+          height: 164,
         });
         texts.push("");
+        shopNames.push("");
       }
 
-      body.push(codes, texts);
+      body.push(codes, texts, shopNames);
     }
   }
 
   // console.log("body", body);
 
   var dd = {
+    pageMargins: [ 20, 20, 20, 20 ],
     content: [
       {
         table: {

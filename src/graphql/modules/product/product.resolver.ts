@@ -14,7 +14,7 @@ import { productService } from "./product.service";
 
 const Query = {
   getAllProduct: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
+    // AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
     // let seller = null;
     const { q } = args;
     if (context.isMember()) {

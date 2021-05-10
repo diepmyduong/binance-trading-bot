@@ -18,6 +18,7 @@ const schema = gql`
     createOrder(data: CreateOrderInput!): [Order]
     generateDraftOrder(data: CreateDraftOrderInput!): DraftOrderData
     transferOrder(id:ID!, memberId: ID!, note: String): Order
+    generateDraftDeliveryOrder(data: CreateDraftDeliveryOrderInput!): DraftOrderData
 
     cancelOrder(id: ID!, note: String): Order
 
@@ -75,7 +76,10 @@ const schema = gql`
 
 
   input CreateDraftOrderInput {
-    items: [OrderItemInput]!
+    items: [OrderItemInput]
+    shopItems: [OrderItemInput]
+    crossSaleitems: [OrderItemInput]
+
     buyerName: String
     buyerPhone: String
     buyerAddress: String
@@ -118,10 +122,8 @@ const schema = gql`
 
     "Mã đơn hàng"
     code: String 
-    "Đơn bưu điện"
+    "Đơn Mobifone"
     isPrimary: Boolean 
-    "Đơn bán chéo"
-    isCrossSale: Boolean
     "Danh sách sản phẩm"
     itemIds: [ID]
     "Thành tiền"
@@ -212,10 +214,7 @@ const schema = gql`
     collaborator: Collaborator
     "Thông tin vận đơn"
     deliveryInfo: DeliveryInfo
-    "Tên loại đơn"
-    orderTypeText: String
-    "Loại đơn"
-    orderType: String
+    updatedByUserId: ID
   }
 
 

@@ -48,7 +48,7 @@ const customerSchema = new Schema(
     code: { type: String, required: true },
     name: { type: String, required: true },
     facebookName: { type: String },
-    uid: { type: String, required: true },
+    uid: { type: String},
     phone: { type: String, required: true },
     password: { type: String },
     avatar: { type: String },

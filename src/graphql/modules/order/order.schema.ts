@@ -215,6 +215,9 @@ const schema = gql`
     "Thông tin vận đơn"
     deliveryInfo: DeliveryInfo
     updatedByUserId: ID
+    
+    orderType: String
+    orderTypeText: String
   }
 
 

@@ -1,8 +1,8 @@
-import { ErrorHelper } from "../../../base/error";
-import { ROLES } from "../../../constants/role.const";
-import { AuthHelper } from "../../../helpers";
-import { Context } from "../../context";
-import { CustomerModel } from "./customer.model";
+import { ErrorHelper } from "../../../../base/error";
+import { ROLES } from "../../../../constants/role.const";
+import { AuthHelper } from "../../../../helpers";
+import { Context } from "../../../context";
+import { CustomerModel } from "../customer.model";
 
 
 const Mutation = {

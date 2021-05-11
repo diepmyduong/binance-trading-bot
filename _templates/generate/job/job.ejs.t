@@ -10,7 +10,7 @@ export class <%= h.inflection.camelize(name) %>Job {
   static create(data: any) {
     return Agenda.create(this.jobName, data);
   }
-  static execute(job: Job) {
+  static async execute(job: Job) {
     console.log("Execute Job " + <%= h.inflection.camelize(name) %>Job.jobName, moment().format());
   }
 }

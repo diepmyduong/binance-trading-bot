@@ -13,16 +13,13 @@ const schema = gql`
   extend type Mutation {
     createProduct(data: CreateProductInput!): Product
     updateProduct(id: ID!, data: UpdateProductInput!): Product
-    cloneToCrosssale(id: ID!, data:CloneToCrosssaleInput): Product
     deleteOneProduct(id: ID!): Product
     deleteManyProduct(ids: [ID]): Int
     importProducts(file: Upload!): String
     increaseViewCount(productId: ID!): Product
   }
 
-  input CloneToCrosssaleInput{
-    name: String
-  }
+  
 
   input CreateProductInput {
     code: String

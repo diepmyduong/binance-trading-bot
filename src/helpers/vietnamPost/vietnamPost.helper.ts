@@ -266,7 +266,7 @@ export type ICreateDeliveryOrderResponse = {
   HubOfReceiverName: string;
 };
 
-export type ICalculateAllShipFeeRespone = {
+export type ICalculateAllShipFeeResponse = {
   TrongLuongQuyDoiGoc: number; //500;
   MaDichVu: string; //"EMS";
   TrongLuongQuyDoi: number; //630;
@@ -326,19 +326,13 @@ export type ICalculateAllShipFeeRespone = {
 export class VietnamPostHelper {
   static host = configs.vietnamPost.host;
   static getProvinces() {
-    return Axios.get(`${this.host}/TinhThanh/GetAll`).then((res) =>
-      get(res, "data")
-    );
+    return Axios.get(`${this.host}/TinhThanh/GetAll`).then((res) => get(res, "data"));
   }
   static getDistricts() {
-    return Axios.get(`${this.host}/QuanHuyen/GetAll`).then((res) =>
-      get(res, "data")
-    );
+    return Axios.get(`${this.host}/QuanHuyen/GetAll`).then((res) => get(res, "data"));
   }
   static getWards(): IWardTypeResponse[] {
-    const result: any = Axios.get(`${this.host}/PhuongXa/GetAll`).then((res) =>
-      get(res, "data")
-    );
+    const result: any = Axios.get(`${this.host}/PhuongXa/GetAll`).then((res) => get(res, "data"));
     return result;
   }
 
@@ -375,19 +369,15 @@ export class VietnamPostHelper {
     });
   }
 
-  static calculateAllShipFee(data: any): ICalculateAllShipFeeRespone {
+  static calculateAllShipFee(data: any): ICalculateAllShipFeeResponse {
     //https://donhang.vnpost.vn/api/api/TinhCuoc/TinhTatCaCuoc
     // console.log('vao vnpost')
     // console.log("data", data);
-    const result: any = Axios.post(
-      `${this.host}/TinhCuoc/TinhTatCaCuoc`,
-      data,
-      {
-        headers: {
-          "h-token": configs.vietnamPost.token,
-        },
-      }
-    )
+    const result: any = Axios.post(`${this.host}/TinhCuoc/TinhTatCaCuoc`, data, {
+      headers: {
+        "h-token": configs.vietnamPost.token,
+      },
+    })
       .then((res) => get(res, "data"))
       .catch((error) => {
         console.log("=======================>error", error);
@@ -427,11 +417,7 @@ export class VietnamPostHelper {
     return result;
   }
 
-  static getPostByAddress(
-    provinceId: string,
-    districtId: string,
-    wardId: string
-  ):IPostByAddress {
+  static getPostByAddress(provinceId: string, districtId: string, wardId: string): IPostByAddress {
     //https://donhang.vnpost.vn/api/api/TinhCuoc/TinhTatCaCuoc
     const result: any = Axios.post(
       `${this.host}/BuuCuc/GetListBuuCucByXaHuyenTinh`,

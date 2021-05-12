@@ -19,7 +19,7 @@ const Query = {
     // console.log('pageId', pageId);
     // console.log('xPageId', xPageId);
     // console.log('memberCode', memberCode);
-    console.log('xPsId',xPsId);
+    // console.log('xPsId',xPsId);
 
     if (pageId) {
       params.fanpageId = pageId;

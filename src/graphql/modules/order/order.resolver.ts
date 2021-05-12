@@ -1,26 +1,9 @@
-import { set, isNull } from "lodash";
+import { isNull, set } from "lodash";
+
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
-import { CustomerLoader, CustomerModel } from "../customer/customer.model";
-import { MemberLoader, MemberModel } from "../member/member.model";
-import { OrderItemLoader } from "../orderItem/orderItem.model";
-import { UserLoader } from "../user/user.model";
-import { orderService } from "./order.service";
-import {
-  getShipMethods,
-  IOrder,
-  OrderStatus,
-  OrderType,
-  PaymentMethod,
-  ShipMethod,
-} from "./order.model";
-import {
-  CollaboratorLoader,
-  CollaboratorModel,
-  ICollaborator,
-} from "../collaborator/collaborator.model";
 import {
   AddressDeliveryLoader,
   AddressDeliveryModel,
@@ -29,6 +12,12 @@ import {
   AddressStorehouseLoader,
   AddressStorehouseModel,
 } from "../addressStorehouse/addressStorehouse.model";
+import { CollaboratorModel } from "../collaborator/collaborator.model";
+import { CustomerLoader, CustomerModel } from "../customer/customer.model";
+import { MemberLoader, MemberModel } from "../member/member.model";
+import { OrderItemLoader } from "../orderItem/orderItem.model";
+import { getShipMethods, IOrder, OrderStatus, PaymentMethod, ShipMethod } from "./order.model";
+import { orderService } from "./order.service";
 
 const Query = {
   // neu la admin
@@ -97,9 +86,7 @@ const Order = {
     const member = await MemberModel.findById(root.sellerId);
     if (member) {
       if (root.shipMethod === ShipMethod.POST) {
-        const address = await AddressDeliveryLoader.load(
-          root.addressDeliveryId
-        );
+        const address = await AddressDeliveryLoader.load(root.addressDeliveryId);
         if (member.code !== address.code) {
           return true;
         }
@@ -107,9 +94,7 @@ const Order = {
       }
 
       if (root.shipMethod === ShipMethod.VNPOST) {
-        const address = await AddressStorehouseLoader.load(
-          root.addressStorehouseId
-        );
+        const address = await AddressStorehouseLoader.load(root.addressStorehouseId);
         if (member.code !== address.code) {
           return true;
         }
@@ -120,14 +105,8 @@ const Order = {
     return false;
   },
 
-  addressStorehouse: GraphQLHelper.loadById(
-    AddressStorehouseLoader,
-    "addressStorehouseId"
-  ),
-  addressDelivery: GraphQLHelper.loadById(
-    AddressDeliveryLoader,
-    "addressDeliveryId"
-  ),
+  addressStorehouse: GraphQLHelper.loadById(AddressStorehouseLoader, "addressStorehouseId"),
+  addressDelivery: GraphQLHelper.loadById(AddressDeliveryLoader, "addressDeliveryId"),
 
   deliveringMember: async (root: IOrder, args: any, context: Context) => {
     if (root.toMemberId) {
@@ -136,16 +115,12 @@ const Order = {
 
     let code = null;
     if (root.shipMethod === ShipMethod.POST) {
-      const addressDelivery = await AddressDeliveryModel.findById(
-        root.addressDeliveryId
-      );
+      const addressDelivery = await AddressDeliveryModel.findById(root.addressDeliveryId);
       code = addressDelivery.code;
     }
 
     if (root.shipMethod === ShipMethod.VNPOST) {
-      const addressStorehouse = await AddressStorehouseModel.findById(
-        root.addressStorehouseId
-      );
+      const addressStorehouse = await AddressStorehouseModel.findById(root.addressStorehouseId);
 
       code = addressStorehouse.code;
     }
@@ -170,9 +145,7 @@ const Order = {
 
   shipMethodText: async (root: IOrder, args: any, context: Context) => {
     const shipMethods = await getShipMethods();
-    const shipMethod = shipMethods.find(
-      (ship) => ship.value === root.shipMethod
-    );
+    const shipMethod = shipMethods.find((ship) => ship.value === root.shipMethod);
     return shipMethod ? shipMethod.label : "Không có phương thức này";
   },
 
@@ -197,15 +170,18 @@ const Order = {
     }
   },
 
-  orderTypeText: (root: IOrder, args: any, context: Context) => {
-    if (root.isPrimary) {
-      return "Bưu điện";
-    } else if (root.isCrossSale) {
-      return "Bán chéo";
-    } else {
-      return "Chủ shop";
-    }
-  },
+  // paymentStatusText: async (root: IOrder, args: any, context: Context) => {
+  //   switch (root.paymentStatus) {
+  //     case PaymentStatus.PENDING:
+  //       return `Đang chờ thanh toán`;
+  //     case PaymentStatus.PAID:
+  //       return `Đã thanh toán`;
+  //     case PaymentStatus.CANCELED:
+  //       return `Đã huỷ thanh toán`;
+  //     default:
+  //       return root.paymentStatus;
+  //   }
+  // },
 };
 
 export default {

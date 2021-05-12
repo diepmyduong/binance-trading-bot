@@ -16,18 +16,14 @@ const schema = gql`
 
   extend type Mutation {
     createOrder(data: CreateOrderInput!): [Order]
-    generateDraftOrder(data: CreateDraftOrderInput!): DraftOrderData
     transferOrder(id:ID!, memberId: ID!, note: String): Order
-
     cancelOrder(id: ID!, note: String): Order
-
     #VNPOST
     deliveryOrder(orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order
     #A => A
     confirmOrder(id: ID!, note: String): Order
     deliveryMemberOrder(id: ID!): Order
     approveOrder(id: ID!, note: String , status: String): Order
-
     #A => B
     confirmToMemberOrder(id: ID!, note: String): Order
     deliveryToMemberOrder (id: ID!): Order
@@ -43,51 +39,6 @@ const schema = gql`
   type DeliveryMethod {
     value: String
     label: String
-  }
-
-  type DraftDeliveryOrderData {
-    order: Order,
-    invalid: Boolean,
-    invalidReason: String
-  }
-
-  input CreateDraftDeliveryOrderInput {
-    items: [OrderItemInput]!
-    buyerName: String
-    buyerPhone: String
-    buyerAddress: String
-    buyerProvinceId: String
-    buyerDistrictId: String
-    buyerWardId: String
-    shipMethod: String!
-    paymentMethod: String!
-    addressDeliveryId: ID
-    latitude: Float
-    longitude: Float
-  }
-
-  type DraftOrderData {
-    orders: [Order],
-    allOrder: Order,
-    invalid: Boolean,
-    invalidReason: String
-  }
-
-
-  input CreateDraftOrderInput {
-    items: [OrderItemInput]!
-    buyerName: String
-    buyerPhone: String
-    buyerAddress: String
-    buyerProvinceId: String
-    buyerDistrictId: String
-    buyerWardId: String
-    shipMethod: String!
-    paymentMethod: String!
-    addressDeliveryId: ID
-    note: String
-    latitude: Float
-    longitude: Float
   }
 
   input CreateOrderInput {
@@ -106,10 +57,7 @@ const schema = gql`
     longitude: Float
   }
   
-  input OrderItemInput {
-    productId: ID!
-    quantity: Int!
-  }
+  
 
   type Order {
     id: String
@@ -118,10 +66,8 @@ const schema = gql`
 
     "Mã đơn hàng"
     code: String 
-    "Đơn bưu điện"
+    "Đơn Mobifone"
     isPrimary: Boolean 
-    "Đơn bán chéo"
-    isCrossSale: Boolean
     "Danh sách sản phẩm"
     itemIds: [ID]
     "Thành tiền"
@@ -140,9 +86,13 @@ const schema = gql`
     itemCount: Int
     "Chủ shop bán"
     sellerId: ID 
+    "Mã chủ shop bán"
+    sellerCode: String
+    "Chủ shop bán"
+    sellerName: String
     "Chủ shop bán chéo"
     fromMemberId: ID
-    "Trạng thái ${Object.values(OrderStatus).join('|')}"
+    "Trạng thái ${Object.values(OrderStatus).join("|")}"
     status: String
     "Hoa hồng VNPOST"
     commission0: Float
@@ -212,10 +162,10 @@ const schema = gql`
     collaborator: Collaborator
     "Thông tin vận đơn"
     deliveryInfo: DeliveryInfo
-    "Tên loại đơn"
-    orderTypeText: String
-    "Loại đơn"
+    updatedByUserId: ID
+    
     orderType: String
+    orderTypeText: String
   }
 
 

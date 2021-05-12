@@ -1,64 +1,33 @@
-import {
-  BaseRoute,
-  Request,
-  Response,
-  NextFunction,
-} from "../../../base/baseRoute";
-import _, { isEmpty, isUndefined, set } from "lodash";
-import { PrinterHelper } from "../../../helpers/printerHelper";
-
 import { createCanvas, loadImage } from "canvas";
+import _, { isUndefined, set } from "lodash";
+import { Types } from "mongoose";
+
+import { Request, Response } from "../../../base/baseRoute";
+import { SettingKey } from "../../../configs/settingData";
+import { ROLES } from "../../../constants/role.const";
+import { Context } from "../../../graphql/context";
 import {
   CollaboratorModel,
   ICollaborator,
 } from "../../../graphql/modules/collaborator/collaborator.model";
-import { Context } from "../../../graphql/context";
-import { ROLES } from "../../../constants/role.const";
-import {
-  IMember,
-  MemberModel,
-} from "../../../graphql/modules/member/member.model";
-import { isValidObjectId, Types } from "mongoose";
-import { ErrorHelper } from "../../../base/error";
-import { ObjectId } from "bson";
+import { IMember, MemberModel } from "../../../graphql/modules/member/member.model";
+import { SettingHelper } from "../../../graphql/modules/setting/setting.helper";
+import { PrinterHelper } from "../../../helpers/printerHelper";
 
-export const exportCollaboratorToQRPdf = async (
-  req: Request,
-  res: Response
-) => {
+export const exportCollaboratorToQRPdf = async (req: Request, res: Response) => {
   const context = (req as any).context as Context;
   context.auth(ROLES.ADMIN_EDITOR);
 
-  const memberId: string = req.query.memberId
-  ? req.query.memberId.toString()
-  : null;
-
-  if (!isEmpty(memberId)) {
-    if (!isValidObjectId(memberId)) {
-      throw ErrorHelper.requestDataInvalid("Mã bưu cục");
-    }
-  }
-
-  const $match: any = {};
-
-  if (memberId) {
-    set($match, "memberId", new ObjectId(memberId));
-  }
-
+  const query: any = {};
   if (context.isMember()) {
-    set($match, "memberId", new ObjectId(context.id));
+    set(query, "memberId", context.id);
+  } else if (req.query.memberId) {
+    set(query, "memberId", req.query.memberId);
   }
+  const collaborators = await CollaboratorModel.find(query);
 
-  const collaborators = await CollaboratorModel.find({ ...$match });
-  
-  const memberIds = collaborators
-    .map((col) => col.memberId)
-    .map(Types.ObjectId);
-  const members = await MemberModel.find({ _id: { $in: memberIds } }).select(
-    "_id shopName"
-  );
-
-  // console.log("collaborators", collaborators.length);
+  const memberIds = collaborators.map((col) => col.memberId).map(Types.ObjectId);
+  const members = await MemberModel.find({ _id: { $in: memberIds } }).select("_id shopName");
 
   const pdfContent = await getPDFOrder({ collaborators, members });
   return PrinterHelper.responsePDF(res, pdfContent, `danh-sach-qr-ctv`);
@@ -72,21 +41,26 @@ const getBase64ImageFromURL = async (url: string) => {
   return ctx.canvas.toDataURL();
 };
 
-const getPDFOrder = async ({ collaborators, members }: any) => {
+const getPDFOrder = async ({
+  collaborators,
+  members,
+}: {
+  collaborators: ICollaborator[];
+  members: IMember[];
+}) => {
   // collaborators = [];
   if (collaborators.length <= 0) return { content: [{}] };
   const qrCodes = [];
   const qrTexts = [];
   const qrShopNames = [];
-
+  const host = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN);
   for (const collaborator of collaborators) {
     // console.log("collaborator", collaborator);
     const member = members.find(
-      (member: IMember) =>
-        member._id.toString() === collaborator.memberId.toString()
+      (member: IMember) => member._id.toString() === collaborator.memberId.toString()
     );
     // console.log("test", member);
-    qrCodes.push({ qr: collaborator.shortUrl });
+    qrCodes.push({ qr: `${host}/ctv/${collaborator.shortCode}` });
     qrTexts.push(collaborator.name);
     if (member) {
       qrShopNames.push(member.shopName);
@@ -151,7 +125,7 @@ const getPDFOrder = async ({ collaborators, members }: any) => {
   // console.log("body", body);
 
   var dd = {
-    pageMargins: [ 20, 20, 20, 20 ],
+    pageMargins: [20, 20, 20, 20],
     content: [
       {
         table: {

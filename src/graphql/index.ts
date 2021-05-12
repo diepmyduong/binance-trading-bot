@@ -14,7 +14,6 @@ import { Logger } from "../loaders/logger";
 import { Request } from "../base/baseRoute";
 import { graphqlUploadExpress } from "graphql-upload";
 export default (app: Express, httpServer: Server) => {
-
   const typeDefs = [
     gql`
       scalar Mixed
@@ -64,6 +63,13 @@ export default (app: Express, httpServer: Server) => {
   ModuleFiles.filter((f: any) => /(.*).fragment.js$/.test(f)).map((f: any) => {
     const { default: fragment } = require(f);
     defaultFragment = _.merge(defaultFragment, fragment);
+  });
+  ModuleFiles.filter((f: any) => /(.*).graphql.js$/.test(f)).map((f: any) => {
+    const {
+      default: { resolver, schema },
+    } = require(f);
+    if (schema) typeDefs.push(schema);
+    if (resolver) resolvers = _.merge(resolvers, resolver);
   });
   const server = new ApolloServer({
     typeDefs,

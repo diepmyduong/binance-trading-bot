@@ -4,10 +4,10 @@ import { Context } from "../../../context";
 import { onOrderedProduct } from "../../../../events/onOrderedProduct.event";
 import { OrderHelper } from "../order.helper";
 import { OrderItemModel } from "../../orderItem/orderItem.model";
-import { SettingHelper } from "../../setting/setting.helper";
 import { SettingKey } from "../../../../configs/settingData";
-import { MemberLoader } from "../../member/member.model";
 import { CustomerLoader } from "../../customer/customer.model";
+import { MemberLoader } from "../../member/member.model";
+import { SettingHelper } from "../../setting/setting.helper";
 
 const Mutation = {
   createOrder: async (root: any, args: any, context: Context) => {
@@ -32,22 +32,13 @@ const Mutation = {
 
     const orders: any[] = [];
     for (let orderData of ordersData) {
-      const orderHelper = await OrderHelper.fromRaw({
-        orderData,
-        customer,
-        seller,
-      });
-      await orderHelper.fromItemsRaw({
-        products: orderData.products,
-        unitPrice,
-        seller,
-      });
+      const orderHelper = await OrderHelper.fromRaw(orderData);
+      // console.log('log loi tai day 1', orderHelper.order);
+      await orderHelper.generateItemsFromRaw(orderData.products);
 
       // console.log('log loi tai day 2', orderHelper.order);
       // Calculate Shipfee
-      await orderHelper.calculateShipfee({
-        seller,
-      });
+      await orderHelper.calculateShipfee();
       // console.log('log loi tai day 3',orderHelper.order.code);
       // Calculate Amount
       orderHelper.calculateAmount();

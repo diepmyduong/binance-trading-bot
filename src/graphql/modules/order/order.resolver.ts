@@ -170,15 +170,18 @@ const Order = {
     }
   },
 
-  orderTypeText: (root: IOrder, args: any, context: Context) => {
-    if (root.isPrimary) {
-      return "Bưu điện";
-    } else if (root.isCrossSale) {
-      return "Bán chéo";
-    } else {
-      return "Chủ shop";
-    }
-  },
+  // paymentStatusText: async (root: IOrder, args: any, context: Context) => {
+  //   switch (root.paymentStatus) {
+  //     case PaymentStatus.PENDING:
+  //       return `Đang chờ thanh toán`;
+  //     case PaymentStatus.PAID:
+  //       return `Đã thanh toán`;
+  //     case PaymentStatus.CANCELED:
+  //       return `Đã huỷ thanh toán`;
+  //     default:
+  //       return root.paymentStatus;
+  //   }
+  // },
 };
 
 export default {

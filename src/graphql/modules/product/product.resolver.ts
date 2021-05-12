@@ -1,6 +1,4 @@
-import { ObjectId } from "bson";
 import { set, isNull, isUndefined } from "lodash";
-import { Types } from "mongoose";
 import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
@@ -9,8 +7,7 @@ import { Context } from "../../context";
 import { CategoryLoader } from "../category/category.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { CollaboratorProductModel } from "../collaboratorProduct/collaboratorProduct.model";
-import { CrossSaleModel } from "../crossSale/crossSale.model";
-import { MemberLoader, MemberModel } from "../member/member.model";
+import { MemberLoader } from "../member/member.model";
 import { ProductHelper } from "./product.helper";
 import { IProduct, ProductModel, ProductType } from "./product.model";
 import { productService } from "./product.service";
@@ -20,96 +17,25 @@ const Query = {
     // AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
     // let seller = null;
     const { q } = args;
-    if (context.isAuth) {
-      if (context.isMember()) {
+    if (context.isMember()) {
+      // neu ko co filter crossale thi lay ra san pham cua shop do
+      if (isNull(q.filter.isCrossSale) || isUndefined(q.filter.isCrossSale)) {
         set(args, "q.filter.memberId", context.id);
-      }
-      if (context.isCustomer()) {
-        if (q.filter.isPrimary === false) {
-          // kiem tra cac shop dc cho phep ban
-          set(args, "q.filter.memberId.$in", [new ObjectId(context.sellerId)]);
-          set(args, "q.filter.isCrossSale", false);
-
-          const members = await MemberModel.find({ activated: true }).select(
-            "_id allowSale"
-          );
-          // console.log('members',members);
-          const notAllowMembers = members.filter((member) => !member.allowSale);
-          // console.log('notAllowMembers',notAllowMembers.length);
-
-          if (notAllowMembers.length > 0) {
-            const memberIds = notAllowMembers
-              .map((member) => member.id.toString())
-              .map(Types.ObjectId);
-            set(args, "q.filter.memberId.$nin", memberIds);
-          }
-        }
-
-        if (q.filter.isCrossSale === true) {
-          // kiem tra cac shop dc ban cheo
-          const crossSales = await CrossSaleModel.find({
-            sellerId: context.sellerId,
-          });
-
-          // console.log('context.sellerId',context.sellerId);
-          // console.log('crossSales',crossSales);
-
-          if (crossSales.length > 0) {
-            const productIds = crossSales
-              .map((crossSale) => crossSale.productId.toString())
-              .map(Types.ObjectId);
-            set(args, "q.filter._id.$in", productIds);
-          }
-        }
-
-        // console.log("args", args);
-      }
-    } else {
-      if (context.memberCode) {
-        console.log("context.memberCode ", context.memberCode);
-        const member = await MemberModel.findOne({ code: context.memberCode });
-        if (!member) {
-          throw ErrorHelper.error("Không có chủ shop này");
-        }
-        if (q.filter.isPrimary === false) {
-          // kiem tra cac shop dc cho phep ban
-          set(args, "q.filter.memberId.$in", [new ObjectId(member.id)]);
-          set(args, "q.filter.isCrossSale", false);
-
-          const members = await MemberModel.find({ activated: true }).select(
-            "_id allowSale"
-          );
-          // console.log('members',members);
-          const notAllowMembers = members.filter((member) => !member.allowSale);
-          // console.log('notAllowMembers',notAllowMembers.length);
-
-          if (notAllowMembers.length > 0) {
-            const memberIds = notAllowMembers
-              .map((member) => member.id.toString())
-              .map(Types.ObjectId);
-            set(args, "q.filter.memberId.$nin", memberIds);
-          }
-        }
-
-        if (q.filter.isCrossSale) {
-          // kiem tra cac shop dc ban cheo
-          const crossSales = await CrossSaleModel.find({
-            sellerId: member.id,
-          });
-
-          // console.log('context.sellerId',context.sellerId);
-          // console.log('crossSales',crossSales);
-
-          if (crossSales.length > 0) {
-            const productIds = crossSales
-              .map((crossSale) => crossSale.productId.toString())
-              .map(Types.ObjectId);
-            set(args, "q.filter._id.$in", productIds);
-          }
+      } else {
+        if (q.filter.isCrossSale === false) {
+          set(args, "q.filter.memberId", context.id);
+        } else {
+          // neu co filter crossale thi lay ra san pham ko phai cua shop do
+          set(args, "q.filter.memberId", { $ne: context.id });
         }
       }
+      // console.log('q.filter', q.filter);
+    } else if (context.isCustomer()) {
+      set(args, "q.filter.allowSale", true);
+      set(args, "q.filter.isCrossSale", false);
+      const $or = [{ memberId: context.sellerId }, { isPrimary: true }];
+      set(args, "q.filter.$or", $or);
     }
-
     // console.log('role', get(context.tokenData, "role"))
     // console.log('q', q);
     return await productService.fetch(args.q);
@@ -134,7 +60,8 @@ const Mutation = {
     if (context.isMember()) {
       set(data, "isPrimary", false);
       set(data, "memberId", context.id);
-    } else {
+    }
+    else {
       set(data, "isPrimary", true);
     }
 
@@ -204,7 +131,7 @@ const Product = {
 
 const resolveArgs = (data: any) => {
   delete data.isPrimary;
-};
+}
 
 export default {
   Query,

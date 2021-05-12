@@ -7,12 +7,6 @@ import { SettingHelper } from "../setting/setting.helper";
 import { SettingKey } from "../../../configs/settingData";
 const Schema = mongoose.Schema;
 
-export enum OrderType {
-  POST = "POST", // Đơn bưu điện,
-  SHOP = "SHOP", // Đơn bưu cục,
-  CROSSSALE = "CROSSSALE", // Bán chéo,
-}
-
 export enum OrderStatus {
   PENDING = "PENDING", // Chờ xử lý
   CONFIRMED = "CONFIRMED", // Xác nhận
@@ -113,14 +107,12 @@ export type IOrder = BaseDocument & {
   finishedAt: Date;
   loggedAt: Date;
   campaignCode: string;
-  orderType: OrderType;
 };
 
 const orderSchema = new Schema(
   {
     code: { type: String, required: true },
     isPrimary: { type: Boolean, default: false },
-    isCrossSale: { type: Boolean, default: false },
     itemIds: {
       type: [{ type: Schema.Types.ObjectId, ref: "OrderItem" }],
       minlength: 1,
@@ -173,19 +165,10 @@ const orderSchema = new Schema(
     subtotal: { type: Number, default: 0, min: 0 },
     itemCount: { type: Number, default: 0, min: 0 },
 
-    oldAddressStorehouseId: {
-      type: Schema.Types.ObjectId,
-      ref: "AddressStorehouse",
-    },
-    addressStorehouseId: {
-      type: Schema.Types.ObjectId,
-      ref: "AddressStorehouse",
-    },
+    oldAddressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse" },
+    addressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse" },
 
-    oldAddressDeliveryId: {
-      type: Schema.Types.ObjectId,
-      ref: "AddressDelivery",
-    },
+    oldAddressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery" },
     addressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery" },
 
     isUrbanDelivery: { type: Boolean, default: false },
@@ -202,11 +185,6 @@ const orderSchema = new Schema(
     isLate: { type: Boolean },
     finishedAt: { type: Schema.Types.Date },
     loggedAt: { type: Schema.Types.Date },
-    orderType: {
-      type: String,
-      enum: Object.values(OrderType),
-      default: OrderType.POST,
-    },
   },
   { timestamps: true }
 );

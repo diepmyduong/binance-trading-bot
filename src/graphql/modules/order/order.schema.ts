@@ -66,10 +66,8 @@ const schema = gql`
 
     "Mã đơn hàng"
     code: String 
-    "Đơn bưu điện"
+    "Đơn Mobifone"
     isPrimary: Boolean 
-    "Đơn bán chéo"
-    isCrossSale: Boolean
     "Danh sách sản phẩm"
     itemIds: [ID]
     "Thành tiền"
@@ -164,10 +162,10 @@ const schema = gql`
     collaborator: Collaborator
     "Thông tin vận đơn"
     deliveryInfo: DeliveryInfo
-    "Tên loại đơn"
-    orderTypeText: String
-    "Loại đơn"
+    updatedByUserId: ID
+    
     orderType: String
+    orderTypeText: String
   }
 
 

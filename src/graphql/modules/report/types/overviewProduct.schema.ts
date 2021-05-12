@@ -120,6 +120,8 @@ const schema = gql`
     allowSale: Boolean
     "Mã thành viên quản lý sản phẩm"
     memberId: ID
+    "Hết hàng"
+    outOfStock: Boolean
     #delivery
     "Chiều rộng"
     width: Int

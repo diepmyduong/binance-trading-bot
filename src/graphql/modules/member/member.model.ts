@@ -57,6 +57,7 @@ export type IMember = BaseDocument & {
   facebookAccessToken: string;
   xToken: string;
   lastLoginDate: Date;
+  allowSale: boolean;
 };
 
 const memberSchema = new Schema(
@@ -113,19 +114,11 @@ const memberSchema = new Schema(
     addressDeliveryIds: {
       type: [{ type: Schema.Types.ObjectId, ref: "AddressDelivery" }],
     }, //
-    isPost: {
-      type: Boolean,
-      default: false,
-    },
-    facebookAccessToken: {
-      type: String,
-    },
-    xToken:{
-      type: String,
-    },
-    lastLoginDate: {
-      type: Date,
-    },
+    isPost: { type: Boolean, default: false },
+    facebookAccessToken: { type: String },
+    xToken: { type: String },
+    lastLoginDate: { type: Date },
+    allowSale: { type: Boolean },
   },
   { timestamps: true }
 );
@@ -158,9 +151,6 @@ memberSchema.index({ username: 1 }, { unique: true });
 memberSchema.index({ uid: 1 }, { unique: true });
 
 export const MemberHook = new ModelHook<IMember>(memberSchema);
-export const MemberModel: mongoose.Model<IMember> = MainConnection.model(
-  "Member",
-  memberSchema
-);
+export const MemberModel: mongoose.Model<IMember> = MainConnection.model("Member", memberSchema);
 
 export const MemberLoader = ModelLoader<IMember>(MemberModel, MemberHook);

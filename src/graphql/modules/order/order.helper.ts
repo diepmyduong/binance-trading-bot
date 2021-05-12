@@ -2,26 +2,15 @@ import { chain, isNull, keyBy, set } from "lodash";
 import {
   ErrorHelper,
   ICalculateAllShipFeeRequest,
-  ICalculateAllShipFeeRespone,
+  ICalculateAllShipFeeResponse,
   ServiceCode,
   VietnamPostHelper,
   PickupType,
 } from "../../../helpers";
 import { AddressModel } from "../address/address.model";
 import { CounterModel } from "../counter/counter.model";
-import {
-  IProduct,
-  ProductLoader,
-  ProductModel,
-  ProductType,
-} from "../product/product.model";
-import {
-  IOrder,
-  OrderModel,
-  OrderType,
-  PaymentMethod,
-  ShipMethod,
-} from "./order.model";
+import { IProduct, ProductLoader, ProductModel, ProductType } from "../product/product.model";
+import { IOrder, OrderModel, OrderType, PaymentMethod, ShipMethod } from "./order.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
 import {
   AddressStorehouseModel,
@@ -109,18 +98,14 @@ export class OrderHelper {
     // kiểm tra danh sách
     const itemsLength = Object.keys(items).length;
     if (itemsLength === 0)
-      throw ErrorHelper.requestDataInvalid(
-        ". Không có sản phẩm trong đơn hàng"
-      );
+      throw ErrorHelper.requestDataInvalid(". Không có sản phẩm trong đơn hàng");
 
     const productIds = items.map((i: any) => i.productId).map(Types.ObjectId);
 
     let orders: any = [];
 
     const addQuantitytoProduct = (product: IProduct, items: any) => {
-      product.qty = items.find(
-        (item: any) => item.productId === product._id.toString()
-      ).quantity;
+      product.qty = items.find((item: any) => item.productId === product._id.toString()).quantity;
       return product;
     };
 
@@ -144,19 +129,19 @@ export class OrderHelper {
         (p) => p.isPrimary === false && p.isCrossSale === false
       );
 
-      const productMemberIds = products
-        .map((p) => p.memberId)
-        .map(Types.ObjectId);
+      const productMemberIds = products.map((p) => p.memberId).map(Types.ObjectId);
       // console.log('seller',seller);
       const allowSaleMembers = await MemberModel.find({
         _id: { $in: productMemberIds },
       }).select("_id allowSale");
 
       for (const member of allowSaleMembers) {
-        if(!member.allowSale){
-          throw ErrorHelper.requestDataInvalid(". Sản phẩm mở rộng chưa được phép mua ở bưu cục này.")
+        if (!member.allowSale) {
+          throw ErrorHelper.requestDataInvalid(
+            ". Sản phẩm mở rộng chưa được phép mua ở bưu cục này."
+          );
         }
-      }  
+      }
 
       orders.push({
         ...data,
@@ -222,16 +207,12 @@ export class OrderHelper {
     const products = await ProductModel.find({
       _id: { $in: productIds },
       allowSale: true,
-    }).then((products) =>
-      products.map((product) => addQuantitytoProduct(product, items))
-    );
+    }).then((products) => products.map((product) => addQuantitytoProduct(product, items)));
     // console.log("products",products.map(p=>p.qty));
 
     const productsLength = Object.keys(products).length;
     if (itemsLength !== productsLength)
-      throw ErrorHelper.requestDataInvalid(
-        ". Sản phẩm trong đơn hàng không tồn tại"
-      );
+      throw ErrorHelper.requestDataInvalid(". Sản phẩm trong đơn hàng không tồn tại");
 
     // console.log("products", products);
     getPostProducts(products);
@@ -375,16 +356,10 @@ export class OrderHelper {
         Math.round(((price / unitPrice) * 100) / 100) * factor;
       // Điểm thưởng khách hàng
       if (enabledCustomerBonus)
-        orderItem.buyerBonusPoint = getPointFromPrice(
-          customerBonusFactor,
-          basePrice
-        );
+        orderItem.buyerBonusPoint = getPointFromPrice(customerBonusFactor, basePrice);
       // Điểm thưởng chủ shop
       if (enabledMemberBonus)
-        orderItem.sellerBonusPoint = getPointFromPrice(
-          memberBonusFactor,
-          basePrice
-        );
+        orderItem.sellerBonusPoint = getPointFromPrice(memberBonusFactor, basePrice);
 
       const item = new OrderItemModel(orderItem);
       this.order.items.push(item);
@@ -433,9 +408,7 @@ export class OrderHelper {
 
     switch (this.order.shipMethod) {
       case ShipMethod.NONE:
-        this.order.shipfee = await SettingHelper.load(
-          SettingKey.DELIVERY_ORDER_SHIP_FEE
-        );
+        this.order.shipfee = await SettingHelper.load(SettingKey.DELIVERY_ORDER_SHIP_FEE);
         break;
 
       case ShipMethod.POST:
@@ -444,8 +417,7 @@ export class OrderHelper {
 
         if (
           seller.addressDeliveryIds.findIndex(
-            (id: any) =>
-              id.toString() == this.order.addressDeliveryId.toString()
+            (id: any) => id.toString() == this.order.addressDeliveryId.toString()
           ) === -1
         ) {
           throw ErrorHelper.somethingWentWrong("Mã địa điểm nhận không đúng");
@@ -461,9 +433,7 @@ export class OrderHelper {
         }
         // console.log("-------------------------->storehouses", storehouses);
 
-        this.order.shipfee = await SettingHelper.load(
-          SettingKey.DELIVERY_POST_FEE
-        );
+        this.order.shipfee = await SettingHelper.load(SettingKey.DELIVERY_POST_FEE);
 
         break;
 
@@ -497,10 +467,7 @@ export class OrderHelper {
           ? addressStorehouse.id
           : seller.mainAddressStorehouseId;
 
-        const cheapestService = await calculateServiceByMainStorehouse(
-          addressStorehouseId,
-          this
-        );
+        const cheapestService = await calculateServiceByMainStorehouse(addressStorehouseId, this);
 
         const cheapestShipFee = cheapestService.TongCuocBaoGomDVCT;
 
@@ -517,9 +484,7 @@ export class OrderHelper {
           lengthEvaluation: cheapestService.productLength,
           weightEvaluation: cheapestService.productWeight,
           widthEvaluation: cheapestService.productWidth,
-          packageContent: this.order.items
-            .map((i) => `[${i.productName} - SL:${i.qty}]`)
-            .join(" "),
+          packageContent: this.order.items.map((i) => `[${i.productName} - SL:${i.qty}]`).join(" "),
           isPackageViewable: false,
           pickupType: PickupType.DROP_OFF,
 
@@ -543,9 +508,7 @@ export class OrderHelper {
         break;
 
       default:
-        throw ErrorHelper.requestDataInvalid(
-          "Phương thức vận chuyển chưa được hỗ trợ."
-        );
+        throw ErrorHelper.requestDataInvalid("Phương thức vận chuyển chưa được hỗ trợ.");
     }
     return this;
   }
@@ -565,8 +528,7 @@ export class OrderHelper {
 
       const items = this.order.items.map((item: IOrderItem) => {
         const campaignResultByProductId = campaignSocialResults.find(
-          (c: ICampaignSocialResult) =>
-            c.productId.toString() == item.productId.toString()
+          (c: ICampaignSocialResult) => c.productId.toString() == item.productId.toString()
         );
         // console.log('campaignResultByProductId', campaignResultByProductId);
         if (campaignResultByProductId) {
@@ -616,9 +578,7 @@ const calculateServiceByMainStorehouse = async (
     MaQuanNhan = orderHelper.order.buyerDistrictId;
 
   const codAmountEvaluation =
-    orderHelper.order.paymentMethod == PaymentMethod.COD
-      ? orderHelper.order.subtotal
-      : 0;
+    orderHelper.order.paymentMethod == PaymentMethod.COD ? orderHelper.order.subtotal : 0;
 
   const productWeight = orderHelper.order.itemWeight;
   const productLength = orderHelper.order.itemLength;
@@ -650,9 +610,7 @@ const calculateServiceByMainStorehouse = async (
   // console.log("data", data);
   // noi thanh
 
-  const service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
-    data
-  );
+  const service: ICalculateAllShipFeeResponse = await VietnamPostHelper.calculateAllShipFee(data);
 
   return {
     ...service,

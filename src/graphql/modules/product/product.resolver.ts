@@ -32,9 +32,7 @@ const Query = {
       // console.log('q.filter', q.filter);
     } else if (context.isCustomer()) {
       set(args, "q.filter.allowSale", true);
-      set(args, "q.filter.isCrossSale", false);
-      const $or = [{ memberId: context.sellerId }, { isPrimary: true }];
-      set(args, "q.filter.$or", $or);
+      set(args, "q.filter.$or", [{ isPrimary: true }, { isCrossSale: true }]);
     }
     // console.log('role', get(context.tokenData, "role"))
     // console.log('q', q);
@@ -60,8 +58,7 @@ const Mutation = {
     if (context.isMember()) {
       set(data, "isPrimary", false);
       set(data, "memberId", context.id);
-    }
-    else {
+    } else {
       set(data, "isPrimary", true);
     }
 
@@ -131,7 +128,7 @@ const Product = {
 
 const resolveArgs = (data: any) => {
   delete data.isPrimary;
-}
+};
 
 export default {
   Query,

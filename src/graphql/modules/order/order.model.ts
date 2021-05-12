@@ -112,6 +112,7 @@ export type IOrder = BaseDocument & {
   finishedAt: Date;
   loggedAt: Date;
   campaignCode: string;
+  orderType: OrderType;
 };
 
 const orderSchema = new Schema(
@@ -190,6 +191,11 @@ const orderSchema = new Schema(
     isLate: { type: Boolean },
     finishedAt: { type: Schema.Types.Date },
     loggedAt: { type: Schema.Types.Date },
+    orderType: {
+      type: String,
+      enum: Object.values(OrderType),
+      default: OrderType.POST,
+    },
   },
   { timestamps: true }
 );

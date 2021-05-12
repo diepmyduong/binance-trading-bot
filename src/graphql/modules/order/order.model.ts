@@ -60,7 +60,7 @@ export const getShipMethods = async () => {
 export type IOrder = BaseDocument & {
   code?: string; // Mã đơn hàng
   isPrimary?: boolean; // Đơn Mobifone
-  isCrossSale?: boolean;
+  isCrossSale?: boolean; // Đơn bán chéo
   itemIds?: string[]; // Danh sách sản phẩm
   items: IOrderItem[]; // danh sách sản phẩm trong đơn
   amount?: number; // Thành tiền
@@ -230,9 +230,6 @@ orderSchema.index({ isPrimary: 1 });
 orderSchema.index({ buyerId: 1 });
 
 export const OrderHook = new ModelHook<IOrder>(orderSchema);
-export const OrderModel: mongoose.Model<IOrder> = MainConnection.model(
-  "Order",
-  orderSchema
-);
+export const OrderModel: mongoose.Model<IOrder> = MainConnection.model("Order", orderSchema);
 
 export const OrderLoader = ModelLoader<IOrder>(OrderModel, OrderHook);

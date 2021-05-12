@@ -14,35 +14,28 @@ const Mutation = {
     AuthHelper.acceptRoles(context, [ROLES.CUSTOMER]);
     const { campaignCode, sellerId, id: buyerId, collaboratorId } = context;
     const data = args.data;
-
     if (context.isCustomer()) {
       data.buyerId = buyerId;
       data.sellerId = sellerId;
     }
 
-    if (collaboratorId) {
-      data.collaboratorId = collaboratorId;
-    }
-
-    const [unitPrice, seller,customer] = await Promise.all([
+    if (collaboratorId) data.collaboratorId = collaboratorId;
+    const [unitPrice, seller, customer] = await Promise.all([
       SettingHelper.load(SettingKey.UNIT_PRICE),
       MemberLoader.load(sellerId),
       CustomerLoader.load(buyerId),
     ]);
 
-    const ordersData = await OrderHelper.modifyOrders({
-      data,
-      seller
-    });
+    const ordersData = await OrderHelper.modifyOrders({ data, seller });
 
     // console.log('log loi tai day 1', ordersData);
 
     const orders: any[] = [];
     for (let orderData of ordersData) {
       const orderHelper = await OrderHelper.fromRaw({
-        orderData, 
+        orderData,
         customer,
-        seller
+        seller,
       });
       await orderHelper.fromItemsRaw({
         products: orderData.products,
@@ -53,7 +46,7 @@ const Mutation = {
       // console.log('log loi tai day 2', orderHelper.order);
       // Calculate Shipfee
       await orderHelper.calculateShipfee({
-        seller
+        seller,
       });
       // console.log('log loi tai day 3',orderHelper.order.code);
       // Calculate Amount
@@ -84,6 +77,3 @@ const Mutation = {
 export default {
   Mutation,
 };
-
-
-

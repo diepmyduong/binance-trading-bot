@@ -7,25 +7,25 @@ class AddressService extends CrudService<typeof AddressModel> {
     super(AddressModel);
   }
 
-  async setProvinceName(doc: any) {
-    if (!doc.provinceId) return this;
-    const address = await AddressModel.findOne({ provinceId: doc.provinceId });
+  async setProvinceName(doc: any, key = "provinceId", name = "province") {
+    if (!doc[key]) return this;
+    const address = await AddressModel.findOne({ provinceId: doc[key] });
     if (!address) throw ErrorHelper.mgRecoredNotFound("Tỉnh / thành");
-    doc.province = address.province;
+    doc[name] = address.province;
     return this;
   }
-  async setDistrictName(doc: any) {
-    if (!doc.districtId) return this;
-    const address = await AddressModel.findOne({ districtId: doc.districtId });
+  async setDistrictName(doc: any, key = "districtId", name = "district") {
+    if (!doc[key]) return this;
+    const address = await AddressModel.findOne({ districtId: doc[key] });
     if (!address) throw ErrorHelper.mgRecoredNotFound("Quận / Huyện");
-    doc.district = address.district;
+    doc[name] = address.district;
     return this;
   }
-  async setWardName(doc: any) {
-    if (!doc.wardId) return this;
-    const address = await AddressModel.findOne({ wardId: doc.wardId });
+  async setWardName(doc: any, key = "wardId", name = "ward") {
+    if (!doc[key]) return this;
+    const address = await AddressModel.findOne({ wardId: doc[key] });
     if (!address) throw ErrorHelper.mgRecoredNotFound("Phường / Xã");
-    doc.ward = address.ward;
+    doc[name] = address.ward;
     return this;
   }
 

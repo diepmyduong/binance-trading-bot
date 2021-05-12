@@ -54,7 +54,6 @@ const getPDFOrder = async ({
   const qrTexts = [];
   const qrShopNames = [];
   const host = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN);
-
   for (const collaborator of collaborators) {
     // console.log("collaborator", collaborator);
     const member = members.find(

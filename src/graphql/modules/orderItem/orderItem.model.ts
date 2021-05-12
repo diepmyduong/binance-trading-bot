@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
-import { OrderStatus, OrderType } from "../order/order.model";
+import { OrderStatus } from "../order/order.model";
 const Schema = mongoose.Schema;
 
 export type IOrderItem = BaseDocument & {
@@ -16,22 +16,21 @@ export type IOrderItem = BaseDocument & {
   basePrice?: number; //  Giá bán
   qty?: number; //  Số lượng
   amount?: number; // Thành tiền
-  commission0?: number; //  Hoa hồng Mobifone
-  commission1?: number; //  Hoa hồng điểm bán
-  commission2?: number; //  Hoa hồng giới thiệu
-  commission3?: number; // Hoa hồng kho
-  sellerBonusPoint?: number; //  Điểm thường người bán
-  buyerBonusPoint?: number; //  Điểm thưởng người mua
-  campaignId?: string; // mã chiến dịch
-  campaignSocialResultId?: string; // mã kết quả chiến dịch
-  status?: OrderStatus;
+  commission0: number; //  Hoa hồng Mobifone
+  commission1: number; //  Hoa hồng điểm bán
+  commission2: number; //  Hoa hồng giới thiệu
+  commission3: number; // Hoa hồng kho
+  sellerBonusPoint: number; //  Điểm thường người bán
+  buyerBonusPoint: number; //  Điểm thưởng người mua
+  campaignId: string; // mã chiến dịch
+  campaignSocialResultId: string; // mã kết quả chiến dịch
+  status: OrderStatus;
   // delivery
-  note?: string; // ghi chú sản phẩm
-  productWeight?: number;
-  productLength ?: number;
-  productWidth?: number;
-  productHeight ?: number;
-  orderType?: OrderType
+  note: string; // ghi chú sản phẩm
+  productWeight: number;
+  productLength : number;
+  productWidth: number;
+  productHeight : number;
 };
 
 const orderItemSchema = new Schema(
@@ -62,11 +61,6 @@ const orderItemSchema = new Schema(
     campaignSocialResultId: {
       type: Schema.Types.ObjectId,
       ref: "CampaignSocialResult",
-    },
-    orderType: {
-      type: String,
-      enum: Object.values(OrderType),
-      default: OrderType.POST,
     },
     // delivery
     note: { type: Schema.Types.String },

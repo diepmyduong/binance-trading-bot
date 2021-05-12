@@ -185,6 +185,36 @@ const updateShortUrls = async () => {
   
 };
 
+const updateShortUrls = async () => {
+  // console.log('doBusiness');
+
+  const host = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN);
+
+  let collaborators = await CollaboratorModel.find({
+  }).limit(1000);
+
+  collaborators = collaborators.filter(col=>!col.shortUrl.includes(host))
+
+  // console.log('collaborators',collaborators.length);
+  // console.log("members", memberss);
+  for (const collaborator of collaborators) {
+    if (collaborator.shortCode) {
+      // console.log("collaborator.shortCode", collaborator.shortCode);
+      const shortUrl = `${host}/ctv/${collaborator.shortCode}`;
+      await CollaboratorModel.findByIdAndUpdate(
+        collaborator.id,
+        {
+          $set: {
+            shortUrl,
+          },
+        },
+        { new: true }
+      );
+    }
+}
+  
+};
+
 // (async () => {
 //   console.log("test businessssssssssssssssssssssss");
 //   await updateShortUrls();

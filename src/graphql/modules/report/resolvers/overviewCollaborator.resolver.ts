@@ -9,17 +9,6 @@ import { CustomerModel } from "../../customer/customer.model";
 import { CollaboratorModel, ICollaborator } from "../../collaborator/collaborator.model";
 import { collaboratorService } from "../../collaborator/collaborator.service";
 import { isEmpty, set } from "lodash";
-import { Types } from "mongoose";
-
-const resolveArgs = (args: any) => {
-  delete args.q.filter.fromDate;
-  delete args.q.filter.toDate;
-  delete args.q.filter.branchId;
-  if (args.q.filter.memberId === "") {
-    delete args.q.filter.memberId
-  }
-}
-
 
 const getOverviewCollaboratorReport = async (
   root: any,
@@ -28,7 +17,7 @@ const getOverviewCollaboratorReport = async (
 ) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const queryInput = args.q;
-  let { fromDate, toDate, memberId, branchId } = queryInput.filter;
+  let { fromDate, toDate, memberId } = queryInput.filter;
 
 
   let $match = {}, collaboratorMatch = {};
@@ -48,22 +37,12 @@ const getOverviewCollaboratorReport = async (
   }
 
   if (context.isMember()) {
-    set($match, "memberId.$in", [new ObjectId(context.id)]);
-    set(collaboratorMatch, "memberId.$in", [new ObjectId(context.id)]);
+    memberId = context.id;
   }
-  else {
-    if (branchId) {
-      const members = await MemberModel.find({ branchId, activated: true }).select("_id");
-      const memberIds = members.map(m => m.id);
-      set($match, "memberId.$in", memberIds.map(Types.ObjectId));
-      set(collaboratorMatch, "memberId.$in", memberIds.map(Types.ObjectId));
-    }
-    else {
-      if (memberId) {
-        set($match, "memberId.$in", [new ObjectId(context.id)]);
-        set(collaboratorMatch, "memberId.$in", [new ObjectId(context.id)]);
-      }
-    }
+
+  if (memberId) {
+    set($match, "memberId", memberId);
+    set(collaboratorMatch, "memberId", memberId);
   }
 
   const collaborators = await CollaboratorModel.find(collaboratorMatch);
@@ -85,30 +64,22 @@ const getFilteredCollaborators = async (
 ) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
 
-  const queryInput = args.q;
-  let { fromDate, toDate, memberId, branchId } = queryInput.filter;
+  let fromDate = args.q.filter.fromDate ? `${args.q.filter.fromDate}` : null;
+  let toDate = args.q.filter.toDate ? `${args.q.filter.toDate}` : null;
 
   fromDate = fromDate ? fromDate.replace("null", "") : "";
   toDate = toDate ? toDate.replace("null", "") : "";
 
-  if (context.isMember()) {
-    set(args, "q.filter.memberId.$in", [new ObjectId(context.id)]);
-  }
-  else {
-    if (branchId) {
-      const members = await MemberModel.find({ branchId, activated: true }).select("_id");
-      const memberIds = members.map(m => m.id);
-      set(args, "q.filter.memberId.$in", memberIds.map(Types.ObjectId));
-    }
-    else {
-      if (memberId) {
-        set(args, "q.filter.memberId.$in", [new ObjectId(memberId)]); 
-      }
-    }
-  }
-  resolveArgs(args);
-  // console.log('args',args);
+  delete args.q.filter.fromDate;
+  delete args.q.filter.toDate;
 
+  if (args.q.filter.memberId === "") {
+    delete args.q.filter.memberId
+  }
+
+  if (context.isMember()) {
+    args.q.filter.memberId = context.id;
+  }
 
   // console.log('args.q', args.q);
 
@@ -190,9 +161,7 @@ const FilteredCollaborator = {
       set($match, "createdAt.$lte", $lte);
     }
 
-    set($match, "collaboratorId", new ObjectId(id));
-
-    // console.log('$match',$match);
+    set($match, "collaboratorId", id);
 
     const customerCommissionLog = await CustomerCommissionLogModel.find($match);
     const count = customerCommissionLog.length;

@@ -30,6 +30,11 @@ export enum ShipMethod {
   VNPOST = "VNPOST", // Vietnam Post
   NONE = "NONE", // Không vận chuyển
 }
+export enum OrderType {
+  POST = "POST", // Đơn bưu điện,
+  SHOP = "SHOP", // Đơn bưu cục,
+  CROSSSALE = "CROSSSALE", // Bán chéo,
+}
 
 // export const ShipMethods = [
 //   { label: "Tự liên hệ", value: ShipMethod.NONE },
@@ -107,6 +112,7 @@ export type IOrder = BaseDocument & {
   finishedAt: Date;
   loggedAt: Date;
   campaignCode: string;
+  orderType: OrderType;
 };
 
 const orderSchema = new Schema(
@@ -185,6 +191,11 @@ const orderSchema = new Schema(
     isLate: { type: Boolean },
     finishedAt: { type: Schema.Types.Date },
     loggedAt: { type: Schema.Types.Date },
+    orderType: {
+      type: String,
+      enum: Object.values(OrderType),
+      default: OrderType.POST,
+    },
   },
   { timestamps: true }
 );

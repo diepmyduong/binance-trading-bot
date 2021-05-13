@@ -207,9 +207,9 @@ export class OrderGenerator {
       }),
       this.getNearestStore(),
     ]);
-    const mainAddressStorehouse = storehouses.find(
-      (s) => s._id.toString() == this.seller.mainAddressStorehouseId.toString()
-    );
+    const mainAddressStorehouse = this.seller.mainAddressStorehouseId
+      ? storehouses.find((s) => s._id.toString() == this.seller.mainAddressStorehouseId.toString())
+      : null;
     const urbanStores = storehouses.filter(
       (store) => store.provinceId === this.order.buyerProvinceId
     );

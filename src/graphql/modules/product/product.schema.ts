@@ -97,6 +97,8 @@ const schema = gql`
     isCrossSale: Boolean
     "Tồn kho bán chéo"
     crossSaleInventory: Int
+    "Số lượng đã đặt"
+    crossSaleOrdered: Int
     "Loại sản phẩm ${Object.values(ProductType)}"
     type: String
     "Gía bán"
@@ -151,7 +153,7 @@ const schema = gql`
 
     category: Category
     member: Member
-    collaboratorProduct : CollaboratorProduct
+    collaboratorProduct: CollaboratorProduct
   }
 
   type ProductPageData {

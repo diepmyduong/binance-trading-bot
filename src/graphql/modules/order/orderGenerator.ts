@@ -1,4 +1,4 @@
-import { Dictionary, keyBy, maxBy, sumBy } from "lodash";
+import { Dictionary, groupBy, keyBy, maxBy, sumBy } from "lodash";
 import { Types } from "mongoose";
 
 import { ErrorHelper } from "../../../base/error";
@@ -23,7 +23,7 @@ import {
 } from "../campaignSocialResult/campaignSocialResult.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { ICustomer } from "../customer/customer.model";
-import { IMember } from "../member/member.model";
+import { IMember, MemberModel } from "../member/member.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
 import { IProduct, ProductModel } from "../product/product.model";
 import { SettingHelper } from "../setting/setting.helper";
@@ -77,9 +77,6 @@ export class OrderGenerator {
       amount: 0,
       subtotal: 0,
       itemCount: 0,
-      sellerId: seller._id,
-      sellerCode: seller.code,
-      sellerName: seller.shopName || seller.name,
       status: OrderStatus.PENDING,
       commission1: 0,
       commission2: 0,
@@ -96,7 +93,6 @@ export class OrderGenerator {
       buyerWardId: orderInput.buyerWardId,
       sellerBonusPoint: 0,
       buyerBonusPoint: 0,
-      fromMemberId: seller._id,
       // delivery
       itemWeight: 0,
       itemWidth: 0, // chiều rộng
@@ -118,10 +114,23 @@ export class OrderGenerator {
   async generate() {
     await this.getUnitPrice();
     await Promise.all([this.setOrderItems(), this.setCollaborator(), this.setBuyerAddress()]);
-    this.calculateAmount();
+    this.calculateAmount(); // Tính tiền trước phí ship
+    await this.setOrderSeller();
     await Promise.all([this.setCampaign(), this.calculateShipfee()]);
-    this.calculateAmount();
+    this.calculateAmount(); // Tính tiền sau phí ship
   }
+  private async setOrderSeller() {
+    this.order.fromMemberId = this.seller._id;
+    if (!this.orderInput.isPrimary) {
+      const sellerIds = Object.keys(groupBy(Object.values(this.products), "memberId"));
+      if (sellerIds.length > 1) throw Error("Sản phẩm không cùng 1 cửa hàng");
+      this.seller = await MemberModel.findById(sellerIds[0]);
+    }
+    this.order.sellerId = this.seller._id;
+    this.order.sellerCode = this.seller.code;
+    this.order.sellerName = this.seller.shopName || this.seller.name;
+  }
+
   toDraft() {
     const order = this.order;
     order.items = this.orderItems;
@@ -139,7 +148,7 @@ export class OrderGenerator {
     const campaign = await CampaignModel.findOne({ code: this.campaignCode });
     if (!campaign) return;
     const campaignSocialResults = await CampaignSocialResultModel.find({
-      memberId: this.order.sellerId,
+      memberId: this.order.fromMemberId,
       campaignId: campaign.id,
     }).then((res) => keyBy(res, "productId"));
     this.orderItems = this.orderItems.map((item: IOrderItem) => {
@@ -302,7 +311,7 @@ export class OrderGenerator {
     } else {
       collaborator = await CollaboratorModel.findOne({
         phone: this.buyer.phone,
-        memberId: this.seller._id,
+        memberId: this.order.fromMemberId,
       });
     }
     if (collaborator) this.order.collaboratorId = collaborator._id;

@@ -63,12 +63,9 @@ export default {
           campaignCode
         );
         try {
-          console.log("generating order...");
           await orderGenerator.generate();
-          console.log("order is ready...");
           set(context, "isDraft", true);
           const draft = orderGenerator.toDraft();
-          console.log("draft", draft);
           return {
             order: draft,
             invalid: false,
@@ -77,7 +74,7 @@ export default {
         } catch (err) {
           console.log("error", err);
           return {
-            order: null,
+            order: orderGenerator.toDraft(),
             invalid: true,
             invalidReason: err.message,
           } as any;

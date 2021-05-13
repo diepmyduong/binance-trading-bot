@@ -103,7 +103,7 @@ export class OrderGenerator {
       itemLength: 0, // chiều dài
       itemHeight: 0, // chiều cao
       shipfee: 0,
-      deliveryInfo: {},
+      // deliveryInfo: {},
       shipMethod: orderInput.shipMethod,
       paymentMethod: orderInput.paymentMethod,
       productIds: [],
@@ -118,6 +118,7 @@ export class OrderGenerator {
   async generate() {
     await this.getUnitPrice();
     await Promise.all([this.setOrderItems(), this.setCollaborator(), this.setBuyerAddress()]);
+    this.calculateAmount();
     await Promise.all([this.setCampaign(), this.calculateShipfee()]);
     this.calculateAmount();
   }
@@ -172,6 +173,7 @@ export class OrderGenerator {
       activated: true,
     });
     if (storehouses.length === 0) throw new Error("Chưa cấu hình chi nhánh kho");
+    if (!this.order.addressDeliveryId) throw new Error("Chưa chọn địa điểm nhận hàng");
     const addressDeliveryNotExists =
       this.seller.addressDeliveryIds.findIndex(
         (id: any) => id.toString() == this.order.addressDeliveryId.toString()

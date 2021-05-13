@@ -116,6 +116,7 @@ const Mutation = {
 const Product = {
   category: GraphQLHelper.loadById(CategoryLoader, "categoryId"),
   member: GraphQLHelper.loadById(MemberLoader, "memberId"),
+  crossSaleOrdered: GraphQLHelper.requireRoles(ROLES.ADMIN_EDITOR_MEMBER),
   collaboratorProduct: async (root: IProduct, args: any, context: Context) => {
     let collaProduct = null;
     if (context.isCustomer()) {

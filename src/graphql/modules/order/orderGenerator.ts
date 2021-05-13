@@ -207,9 +207,9 @@ export class OrderGenerator {
       }),
       this.getNearestStore(),
     ]);
-    const mainAddressStorehouse = storehouses.find(
-      (s) => s._id.toString() == this.seller.mainAddressStorehouseId.toString()
-    );
+    const mainAddressStorehouse = this.seller.mainAddressStorehouseId
+      ? storehouses.find((s) => s._id.toString() == this.seller.mainAddressStorehouseId.toString())
+      : null;
     const urbanStores = storehouses.filter(
       (store) => store.provinceId === this.order.buyerProvinceId
     );
@@ -332,6 +332,7 @@ export class OrderGenerator {
     this.order.commission3 = sumBy(this.orderItems, (i) => i.commission3 * i.qty);
     this.order.sellerBonusPoint = sumBy(this.orderItems, "sellerBonusPoint");
     this.order.buyerBonusPoint = sumBy(this.orderItems, "buyerBonusPoint");
+    console.log('maxBy(this.orderItems, "productHeight")', maxBy(this.orderItems, "productHeight"));
     this.order.itemHeight = maxBy(this.orderItems, "productHeight").productHeight;
     this.order.itemLength = maxBy(this.orderItems, "productLength").productLength;
     this.order.itemWidth = maxBy(this.orderItems, "productWidth").productWidth;

@@ -7,7 +7,9 @@ import { Context } from "../../context";
 import { CategoryLoader } from "../category/category.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { CollaboratorProductModel } from "../collaboratorProduct/collaboratorProduct.model";
+import { CrossSaleModel } from "../crossSale/crossSale.model";
 import { MemberLoader } from "../member/member.model";
+import { OrderItemModel } from "../orderItem/orderItem.model";
 import { ProductHelper } from "./product.helper";
 import { IProduct, ProductModel, ProductType } from "./product.model";
 import { productService } from "./product.service";
@@ -95,7 +97,12 @@ const Mutation = {
         throw ErrorHelper.permissionDeny();
       }
     }
-    return await productService.deleteOne(id);
+    const orderItemCount = await OrderItemModel.count({ productId: id });
+    if (orderItemCount > 0) throw Error("Không thể xoá. Sản phẩm đã có đơn hàng");
+    return await productService.deleteOne(id).then(async (res: IProduct) => {
+      await CrossSaleModel.remove({ productId: res._id }).exec();
+      return res;
+    });
   },
 
   deleteManyProduct: async (root: any, args: any, context: Context) => {

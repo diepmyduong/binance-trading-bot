@@ -13,7 +13,7 @@ export default {
       getShopDataByCustomer: async (root: any, args: any, context: Context) => {
         const { memberIds } = args;
         const members = await MemberModel.find({ _id: { $in: memberIds } }).select(
-          "_id addressDeliveryIds address provinceId districtId wardId province district ward code shopName shopLogo"
+          "_id addressDeliveryIds address provinceId districtId wardId province district ward code shopName shopLogo mainAddressStorehouseId isPost"
         );
         return members;
       },

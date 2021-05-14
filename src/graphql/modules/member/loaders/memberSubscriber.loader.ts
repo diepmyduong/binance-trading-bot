@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import { keyBy } from "lodash";
+import { keyBy, times } from "lodash";
 
 import { SettingKey } from "../../../../configs/settingData";
 import { ChatBotHelper } from "../../../../helpers/chatbot.helper";
@@ -13,10 +13,13 @@ export class MemberSubscriber {
       this.loaders[apiKey] = new DataLoader<string, SubscriberInfo>(
         async (ids: string[]) => {
           const chatbotHelper = new ChatBotHelper(apiKey);
-          return await chatbotHelper.getAllSubscribers(ids).then((list) => {
-            const listKeyBy = keyBy(list, "psid");
-            return ids.map((id) => listKeyBy[id]);
-          });
+          return await chatbotHelper
+            .getAllSubscribers(ids)
+            .then((list) => {
+              const listKeyBy = keyBy(list, "psid");
+              return ids.map((id) => listKeyBy[id]);
+            })
+            .catch((err) => times(ids.length, null));
         },
         { cache: true } // Bỏ cache
       );

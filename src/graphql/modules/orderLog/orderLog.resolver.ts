@@ -31,7 +31,6 @@ const Query = {
   },
 };
 
-
 // orderId: { type: Schema.Types.ObjectId, ref: "Order", required: true },
 // type: { type: String, enum: Object.values(OrderLogType), required: true },
 // memberId: {type: Schema.Types.ObjectId, ref:"Member", required: true},
@@ -45,17 +44,21 @@ const OrderLog = {
   customer: GraphQLHelper.loadById(CustomerLoader, "customerId"),
 
   note: async (root: IOrderLog, args: any, context: Context) => {
-    const order = await OrderLoader.load(root.orderId);
-    const customer = await CustomerLoader.load(root.customerId);
-    const member = await MemberLoader.load(root.memberId);
-    const toMember = await MemberModel.findById(root.toMemberId);
-
+    const [order, customer, member, toMember] = await Promise.all([
+      OrderLoader.load(root.orderId),
+      CustomerLoader.load(root.customerId),
+      MemberLoader.load(root.memberId),
+      root.toMemberId ? MemberLoader.load(root.toMemberId) : null,
+    ]);
     switch (root.type) {
       case OrderLogType.CREATED:
         return `Đơn hàng ${order.code} đang chờ xác nhận - khách hàng: ${customer.name} - bưu cục bán: ${member?.shopName}`;
 
       case OrderLogType.CONFIRMED:
         return `Đơn hàng ${order.code} đã được xác nhận nhận đơn - khách hàng: ${customer.name} - bưu cục bán: ${member?.shopName}`;
+
+      case OrderLogType.TRANSFERED:
+        return `Đơn hàng ${order.code} đã được chuyển kho - khách hàng: ${customer.name} - bưu cục bán: ${member?.shopName} - bưu cục giao: ${toMember?.shopName}`;
 
       case OrderLogType.MEMBER_CANCELED:
         return `Đơn hàng ${order.code} đã bị huỷ - khách hàng: ${customer.name} - bưu cục bán huỷ đơn: ${member?.shopName}`;

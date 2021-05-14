@@ -16,7 +16,6 @@ const schema = gql`
 
   extend type Mutation {
     createOrder(data: CreateOrderInput!): [Order]
-    transferOrder(id:ID!, memberId: ID!, note: String): Order
     cancelOrder(id: ID!, note: String): Order
     #VNPOST
     deliveryOrder(orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order

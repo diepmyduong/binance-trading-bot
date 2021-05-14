@@ -3,8 +3,15 @@ import MongoTransport from "winston-mongodb";
 import { configs } from "../configs";
 
 let transports: any = [
-  // new winston.transports.File({ filename: `${__dirname}/../../error.log`, level: 'error', options: { flags: 'a', mode: 0o755 } }),
-  // new winston.transports.File({ filename: `${__dirname}/../../combined.log`, options: { flags: 'a', mode: 0o755 } })
+  new winston.transports.File({
+    filename: `log/error.log`,
+    level: "error",
+    options: { flags: "a", mode: 0o755 },
+  }),
+  new winston.transports.File({
+    filename: `log/combined.log`,
+    options: { flags: "a", mode: 0o755 },
+  }),
 ];
 if (process.env.NODE_ENV !== "development") {
   transports.push(new winston.transports.Console());

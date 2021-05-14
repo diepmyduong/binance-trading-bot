@@ -15,11 +15,8 @@ onConfirmedOrder.subscribe(async (order: IOrder) => {
     memberId: sellerId,
     customerId: buyerId,
     orderStatus: status,
+    toMemberId: toMemberId,
   });
-
-  if (toMemberId) {
-    log.toMemberId = toMemberId;
-  }
 
   await log.save().then((log) => {
     orderService.updateLogToOrder({ order, log });

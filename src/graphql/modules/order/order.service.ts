@@ -9,7 +9,7 @@ import {
 } from "../campaignSocialResult/campaignSocialResult.model";
 import { CrossSaleModel } from "../crossSale/crossSale.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
-import { OrderLogModel } from "../orderLog/orderLog.model";
+import { IOrderLog, OrderLogModel } from "../orderLog/orderLog.model";
 import { IProduct, ProductModel, ProductType } from "../product/product.model";
 import { SettingHelper } from "../setting/setting.helper";
 import { OrderHelper } from "./order.helper";
@@ -105,16 +105,10 @@ class OrderService extends CrudService<typeof OrderModel> {
           Math.round(((price / UNIT_PRICE) * 100) / 100) * factor;
         // Điểm thưởng khách hàng
         if (enabledCustomerBonus)
-          params.buyerBonusPoint = getPointFromPrice(
-            customerBonusFactor,
-            basePrice
-          );
+          params.buyerBonusPoint = getPointFromPrice(customerBonusFactor, basePrice);
         // Điểm thưởng chủ shop
         if (enabledMemberBonus)
-          params.sellerBonusPoint = getPointFromPrice(
-            memberBonusFactor,
-            basePrice
-          );
+          params.sellerBonusPoint = getPointFromPrice(memberBonusFactor, basePrice);
 
         // Tạo orderItem
         const orderItem = new OrderItemModel(params);
@@ -205,10 +199,10 @@ class OrderService extends CrudService<typeof OrderModel> {
     const campaignSocialResultBulk = CampaignSocialResultModel.collection.initializeUnorderedBulkOp();
     const campaignSocialResults = campaign
       ? await CampaignSocialResultModel.find({
-        memberId: sellerId,
-        campaignId: campaign.id,
-        productId: productIds,
-      })
+          memberId: sellerId,
+          campaignId: campaign.id,
+          productId: productIds,
+        })
       : null;
 
     //create OrderItem
@@ -247,21 +241,14 @@ class OrderService extends CrudService<typeof OrderModel> {
           Math.round(((price / UNIT_PRICE) * 100) / 100) * factor;
         // Điểm thưởng khách hàng
         if (enabledCustomerBonus)
-          params.buyerBonusPoint = getPointFromPrice(
-            customerBonusFactor,
-            basePrice
-          );
+          params.buyerBonusPoint = getPointFromPrice(customerBonusFactor, basePrice);
         // Điểm thưởng chủ shop
         if (enabledMemberBonus)
-          params.sellerBonusPoint = getPointFromPrice(
-            memberBonusFactor,
-            basePrice
-          );
+          params.sellerBonusPoint = getPointFromPrice(memberBonusFactor, basePrice);
 
         if (campaign) {
           const campaignResultByProductId = campaignSocialResults.find(
-            (c: ICampaignSocialResult) =>
-              c.productId.toString() == id.toString()
+            (c: ICampaignSocialResult) => c.productId.toString() == id.toString()
           );
           if (campaign.productId.toString() === id) {
             params.campaignId = campaign._id;
@@ -274,16 +261,13 @@ class OrderService extends CrudService<typeof OrderModel> {
 
         if (campaign) {
           const campaignResultByProductId = campaignSocialResults.find(
-            (c: ICampaignSocialResult) =>
-              c.productId.toString() == id.toString()
+            (c: ICampaignSocialResult) => c.productId.toString() == id.toString()
           );
           if (campaign.productId.toString() === id) {
             const { orderItemIds } = campaignResultByProductId;
-            campaignSocialResultBulk
-              .find({ _id: campaignResultByProductId._id })
-              .updateOne({
-                $set: { orderItemIds: [...orderItemIds, orderItem._id] },
-              });
+            campaignSocialResultBulk.find({ _id: campaignResultByProductId._id }).updateOne({
+              $set: { orderItemIds: [...orderItemIds, orderItem._id] },
+            });
           }
         }
         // console.log('orderItem', orderItem);
@@ -314,22 +298,19 @@ class OrderService extends CrudService<typeof OrderModel> {
     });
   };
 
-  updateLogToOrder = async ({ order, log }: any) => {
-    const orderLogs = await OrderLogModel.find({ orderId: order.id }).sort({ createdAt: -1 });
-    if (orderLogs.length > 0) {
-      const orderLogIds = orderLogs.map(log => log.id);
-      const loggedAt = log.createdAt;
-      const params = { orderLogIds, loggedAt };
-      // console.log('params',params);
-      if ([OrderStatus.COMPLETED, OrderStatus.CANCELED, OrderStatus.FAILURE].includes(order.status)) {
-        const orderlog = orderLogs.find(log => log.orderStatus === order.status);
-        if (orderlog) {
-          set(params, "finishedAt", orderlog.createdAt);
-        }
-      }
-      await OrderModel.findByIdAndUpdate(order.id, { $set: params }, { new: true })
+  updateLogToOrder = async ({ order, log }: { order: IOrder; log: IOrderLog }) => {
+    const setData: any = {
+      $push: { orderLogIds: log._id },
+      loggedAt: log.createdAt,
+    };
+    switch (log.orderStatus) {
+      case OrderStatus.COMPLETED:
+      case OrderStatus.CANCELED:
+      case OrderStatus.FAILURE:
+        setData.finishedAt = log.createdAt;
     }
-  }
+    await order.updateOne({ $set: setData }).exec();
+  };
 }
 
 const orderService = new OrderService();

@@ -187,6 +187,7 @@ const orderSchema = new Schema(
     latitude: { type: Schema.Types.String },
     orderLogIds: {
       type: [{ type: Schema.Types.ObjectId, ref: "OrderLog" }],
+      default: [],
     },
     isLate: { type: Boolean },
     finishedAt: { type: Schema.Types.Date },

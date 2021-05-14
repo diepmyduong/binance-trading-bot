@@ -4,27 +4,10 @@ import { orderService } from "../graphql/modules/order/order.service";
 import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
 import { OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 
-
 export const onConfirmedOrder = new Subject<IOrder>();
 
-// xac nhan don hang 
-// thong bao den chu shop
-// thong bao den khach hang
-onConfirmedOrder.subscribe(async (order) => {
-  const { shipMethod, addressDeliveryId } = order;
-  if (shipMethod === ShipMethod.POST) {
-
-  }
-});
-
 onConfirmedOrder.subscribe(async (order: IOrder) => {
-  const {
-    buyerId,
-    sellerId,
-    id,
-    status,
-    toMemberId
-  } = order;
+  const { buyerId, sellerId, id, status, toMemberId } = order;
 
   const log = new OrderLogModel({
     orderId: id,
@@ -32,11 +15,10 @@ onConfirmedOrder.subscribe(async (order: IOrder) => {
     memberId: sellerId,
     customerId: buyerId,
     orderStatus: status,
+    toMemberId: toMemberId,
   });
 
-  if (toMemberId) {
-    log.toMemberId = toMemberId;
-  }
-
-  await log.save().then(log => { orderService.updateLogToOrder({order, log}) });
+  await log.save().then((log) => {
+    orderService.updateLogToOrder({ order, log });
+  });
 });

@@ -1,5 +1,5 @@
 import { createCanvas, loadImage } from "canvas";
-import _, { isUndefined, set } from "lodash";
+import { chunk, keyBy, set, times } from "lodash";
 import { Types } from "mongoose";
 
 import { Request, Response } from "../../../base/baseRoute";
@@ -33,14 +33,6 @@ export const exportCollaboratorToQRPdf = async (req: Request, res: Response) => 
   return PrinterHelper.responsePDF(res, pdfContent, `danh-sach-qr-ctv`);
 };
 
-const getBase64ImageFromURL = async (url: string) => {
-  const canvas = createCanvas(400, 400);
-  const ctx = canvas.getContext("2d");
-  const image = await loadImage(url);
-  ctx.drawImage(image, 0, 0, 300, 300);
-  return ctx.canvas.toDataURL();
-};
-
 const getPDFOrder = async ({
   collaborators,
   members,
@@ -48,83 +40,54 @@ const getPDFOrder = async ({
   collaborators: ICollaborator[];
   members: IMember[];
 }) => {
-  // collaborators = [];
   if (collaborators.length <= 0) return { content: [{}] };
-  const qrCodes = [];
-  const qrTexts = [];
-  const qrShopNames = [];
   const host = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN);
-  for (const collaborator of collaborators) {
-    // console.log("collaborator", collaborator);
-    const member = members.find(
-      (member: IMember) => member._id.toString() === collaborator.memberId.toString()
-    );
-    // console.log("test", member);
-    qrCodes.push({ qr: `${host}/ctv/${collaborator.shortCode}` });
-    qrTexts.push(collaborator.name);
-    if (member) {
-      qrShopNames.push(member.shopName);
-    } else {
-      qrShopNames.push("");
-    }
-  }
-
-  const styles = {
-    styles: {},
-    defaultStyle: {
-      columnGap: 20,
-    },
-  };
-
+  const memberKeyById = keyBy(members, "_id");
+  const qrCodes = collaborators.map((c) => {
+    const member = memberKeyById[c.memberId];
+    return {
+      qr: `${host}/ctv/${c.shortCode}`,
+      text: c.name,
+      shopName: member ? member.shopName : "",
+    };
+  });
   const body = [];
+  const chunkSize = 4;
+  const qrSize = 100;
+  const columnSize = 120;
 
-  for (let i = 0; i < qrTexts.length; i++) {
-    // console.log('i % 3 == 0',i % 3 == 0);
-    if (i % 3 == 0) {
-      const qrCode1 = qrCodes[i];
-      const qrText1 = qrTexts[i];
-      const qrShopName1 = qrShopNames[i];
-
-      const codes: any[] = [qrCode1];
-      const texts: any[] = [qrText1];
-      const shopNames: any[] = [qrShopName1];
-
-      if (!isUndefined(qrTexts[i + 1])) {
-        codes.push(qrCodes[i + 1]);
-        texts.push(qrTexts[i + 1]);
-        shopNames.push(qrShopNames[i + 1]);
-      } else {
-        codes.push({
+  const qrChunk = chunk(qrCodes, chunkSize);
+  for (const row of qrChunk) {
+    let codes: any[] = row.map((r) => ({ qr: r.qr, fit: qrSize }));
+    let texts = row.map((r) => r.text);
+    let shopNames = row.map((r) => r.shopName);
+    if (row.length < chunkSize) {
+      const n = chunkSize - row.length;
+      codes = [
+        ...codes,
+        ...times(n, () => ({
           image:
             "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAoMBgDTD2qgAAAAASUVORK5CYII=",
           width: 164,
           height: 164,
-        });
-        texts.push("");
-        shopNames.push("");
-      }
-      if (!isUndefined(qrTexts[i + 2])) {
-        codes.push(qrCodes[i + 2]);
-        texts.push(qrTexts[i + 2]);
-        shopNames.push(qrShopNames[i + 2]);
-      } else {
-        codes.push({
-          image:
-            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAoMBgDTD2qgAAAAASUVORK5CYII=",
-          width: 164,
-          height: 164,
-        });
-        texts.push("");
-        shopNames.push("");
-      }
-
-      body.push(codes, texts, shopNames);
+        })),
+      ];
+      texts = [...texts, ...times(n, () => "")];
+      shopNames = [...shopNames, ...times(n, () => "")];
     }
+    body.push([
+      {
+        table: {
+          widths: times(chunkSize, () => columnSize),
+          dontBreakRows: true,
+          body: [codes, texts, shopNames],
+        },
+      },
+    ]);
   }
-
-  // console.log("body", body);
 
   var dd = {
+    pageSize: "A4",
     pageMargins: [20, 20, 20, 20],
     content: [
       {
@@ -132,9 +95,10 @@ const getPDFOrder = async ({
           dontBreakRows: true,
           body,
         },
+        layout: "noBorders",
       },
     ],
-    ...styles,
+    defaultStyle: { columnGap: 20, fontSize: 11 },
   };
 
   return dd;

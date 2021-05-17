@@ -1,13 +1,14 @@
-import _, { get } from "lodash";
-import { AuthHelper } from "../helpers";
-import { TokenHelper } from "../helpers/token.helper";
-import { TokenExpiredError } from "jsonwebtoken";
-import { ROLES } from "../constants/role.const";
-import { ChatBotHelper, MessengerTokenDecoded } from "../helpers/chatbot.helper";
 import { ObjectId } from "bson";
-import { connect } from "mongodb";
-import { SettingHelper } from "./modules/setting/setting.helper";
+import { TokenExpiredError } from "jsonwebtoken";
+import _, { get } from "lodash";
+
 import { SettingKey } from "../configs/settingData";
+import { ROLES } from "../constants/role.const";
+import { AuthHelper } from "../helpers";
+import { ChatBotHelper, MessengerTokenDecoded } from "../helpers/chatbot.helper";
+import { TokenHelper } from "../helpers/token.helper";
+import { SettingHelper } from "./modules/setting/setting.helper";
+
 export type TokenData = {
   role: string;
   _id: string;
@@ -29,12 +30,12 @@ export class Context {
     public memberCode: string = null,
     public campaignCode: string = null,
     public collaboratorId: string = null,
-    public xPageId : string = null,
-    public xPsId : string = null,
+    public xPageId: string = null,
+    public xPsId: string = null,
     public tokenData?: TokenData,
     public token: string = null,
     public messengerSignPayload?: MessengerTokenDecoded
-  ) { }
+  ) {}
 
   isMember() {
     return get(this.tokenData, "role") == ROLES.MEMBER;
@@ -72,7 +73,7 @@ export class Context {
         token = connection.context["x-token"];
       }
 
-      if (token === 'null') token = null;
+      if (token === "null") token = null;
 
       if (token) {
         const decodedToken: any = TokenHelper.decodeToken(token);
@@ -80,7 +81,6 @@ export class Context {
         this.tokenData = decodedToken;
         this.token = token;
       }
-
     } catch (err) {
       // console.log("error", err);
       if (err instanceof TokenExpiredError) {
@@ -110,9 +110,9 @@ export class Context {
         pageId = connection.context["x-page-id"];
       }
 
-      if (sig === 'null') sig = null;
-      if (psid === 'null') psid = null;
-      if (pageId === 'null') pageId = null;
+      if (sig === "null") sig = null;
+      if (psid === "null") psid = null;
+      if (pageId === "null") pageId = null;
 
       if (psid && pageId) {
         this.messengerSignPayload = { pageId, psid, threadId: "" };
@@ -133,12 +133,10 @@ export class Context {
     }
   }
 
-
   parseHeader = (params: any) => {
     try {
       const { req } = params;
-      let campaignCode, collaboratorId, memberCode, pageId,psid;
-
+      let campaignCode, collaboratorId, memberCode, pageId, psid;
       if (req) {
         campaignCode = _.get(req, "headers.x-campaign-code");
         collaboratorId = _.get(req, "headers.x-collaborator-id");
@@ -147,12 +145,11 @@ export class Context {
         memberCode = _.get(req, "headers.x-code") || _.get(req, "query.x-code");
       }
 
-      if (campaignCode === 'null') campaignCode = null;
-      if (collaboratorId === 'null') collaboratorId = null;
-      if (memberCode === 'null') memberCode = null;
-      if (pageId === 'null') pageId = null;
-      if (psid === 'null') psid = null;
-
+      if (campaignCode === "null") campaignCode = null;
+      if (collaboratorId === "null") collaboratorId = null;
+      if (memberCode === "null") memberCode = null;
+      if (pageId === "null") pageId = null;
+      if (psid === "null") psid = null;
 
       this.collaboratorId = ObjectId.isValid(collaboratorId) ? collaboratorId : null;
       this.collaboratorId = collaboratorId;
@@ -160,7 +157,6 @@ export class Context {
       this.xPageId = pageId;
       this.xPsId = psid;
       this.memberCode = memberCode;
-
     } catch (err) {
       // console.log("error", err);
       if (err instanceof TokenExpiredError) {
@@ -170,14 +166,14 @@ export class Context {
     } finally {
       return this;
     }
-  }
+  };
 
   modifyMemberCode = async () => {
     try {
-      const code = await SettingHelper.load(SettingKey.DEFAULT_SHOP_CODE);
-      if (!this.memberCode && !this.pageId) {
-        this.memberCode = code;
+      if (!this.memberCode && !this.xPageId) {
+        this.memberCode = await SettingHelper.load(SettingKey.DEFAULT_SHOP_CODE);
       }
+
       // console.log("this.memberCode",this.memberCode);
     } catch (err) {
       // console.log("error", err);
@@ -188,7 +184,7 @@ export class Context {
     } finally {
       return this;
     }
-  }
+  };
 
   auth(roles: string[]) {
     AuthHelper.acceptRoles(this, roles);
@@ -198,7 +194,7 @@ export class Context {
 export async function onContext(params: any) {
   let context: Context = new Context();
   await context.parseSig(params);
-  context.parseToken(params);
+  await context.parseToken(params);
   context.parseHeader(params);
   await context.modifyMemberCode();
   return context;

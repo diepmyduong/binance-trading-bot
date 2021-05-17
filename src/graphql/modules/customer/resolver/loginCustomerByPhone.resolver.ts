@@ -20,13 +20,12 @@ const Mutation = {
     if (context.memberCode) {
       member = await MemberModel.findOne({ code: context.memberCode });
     }
-    if (!member && pageId) {
-      member = await MemberModel.findOne({ fanpageId: pageId });
+    if (!member && context.xPageId) {
+      member = await MemberModel.findOne({ fanpageId: context.xPageId });
     }
     if (!member) {
       throw Error("Cửa hàng này chưa được đăng ký.");
     }
-
     phone = UtilsHelper.parsePhone(phone, "0");
     let customer = await CustomerModel.findOne({ phone });
     // có customer

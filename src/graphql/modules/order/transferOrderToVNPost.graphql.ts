@@ -92,10 +92,8 @@ export default {
       transferOrderToVNPostDraft: async (root: any, args: any, context: Context) => {
         context.auth(ROLES.ADMIN_EDITOR_MEMBER);
         const { orderId, data } = args;
-        console.log("data", data.serviceName);
         const order = await getOrder(orderId, context);
         order.deliveryInfo = merge(order.deliveryInfo, data);
-        console.log("order.deliveryInfo", order.deliveryInfo.serviceName);
         const vnpostShipFee = await calculateVNPostShipFee(order);
         order.deliveryInfo = merge(order.deliveryInfo, {
           serviceName: vnpostShipFee.MaDichVu as any,
@@ -113,7 +111,7 @@ async function getOrder(orderId: any, context: Context) {
   if (!order || order.status != OrderStatus.CONFIRMED) {
     throw Error("Đơn hàng không thể giao");
   }
-  if (context.isMember() && order.toMemberId.toString() != context.id.toString())
+  if (context.isMember() && order.sellerId.toString() != context.id.toString())
     throw ErrorHelper.permissionDeny();
   return order;
 }
@@ -202,6 +200,5 @@ async function calculateVNPostShipFee(order: IOrder) {
           ]
         : [],
   };
-  console.log("data", data);
   return await VietnamPostHelper.calculateAllShipFee(data);
 }

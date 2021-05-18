@@ -1,8 +1,6 @@
-import {
-  BaseRoute,
-} from "../../../base/baseRoute";
+import { BaseRoute } from "../../../base/baseRoute";
 import { auth } from "../../../middleware/auth";
-import { exportCommissionOrderReport } from "../commission.route/exportCommissionOrderReport.commission";
+import { exportCommissionOrderReport } from "./exportCommissionOrderReport.commission";
 
 class CommissionRoute extends BaseRoute {
   constructor() {

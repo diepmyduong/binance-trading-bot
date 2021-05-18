@@ -17,8 +17,7 @@ export default {
         context.auth(ROLES.ADMIN_EDITOR_MEMBER);
         const { id } = args;
         const order = await OrderModel.findById(id);
-        if (!order || order.status != OrderStatus.CONFIRMED)
-          throw Error("Đơn hàng không thể xác nhận");
+        if (!order || order.status != OrderStatus.CONFIRMED) throw Error("Đơn hàng không thể giao");
         if (context.isMember() && order.toMemberId.toString() != context.id.toString())
           throw ErrorHelper.permissionDeny();
         order.status = OrderStatus.DELIVERING;

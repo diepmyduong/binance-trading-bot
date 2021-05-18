@@ -4,12 +4,11 @@ import { Types } from "mongoose";
 import { ErrorHelper } from "../../../base/error";
 import { SettingKey } from "../../../configs/settingData";
 import { onOrderedProduct } from "../../../events/onOrderedProduct.event";
+import { VietnamPostHelper } from "../../../helpers";
 import {
   ICalculateAllShipFeeRequest,
-  ICalculateAllShipFeeResponse,
   PickupType,
-  VietnamPostHelper,
-} from "../../../helpers/vietnamPost/vietnamPost.helper";
+} from "../../../helpers/vietnamPost/resources/type";
 import { addressService } from "../address/address.service";
 import { AddressDeliveryModel } from "../addressDelivery/addressDelivery.model";
 import {
@@ -17,10 +16,7 @@ import {
   IAddressStorehouse,
 } from "../addressStorehouse/addressStorehouse.model";
 import { CampaignModel } from "../campaign/campaign.model";
-import {
-  CampaignSocialResultModel,
-  ICampaignSocialResult,
-} from "../campaignSocialResult/campaignSocialResult.model";
+import { CampaignSocialResultModel } from "../campaignSocialResult/campaignSocialResult.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { ICustomer } from "../customer/customer.model";
 import { IMember, MemberModel } from "../member/member.model";

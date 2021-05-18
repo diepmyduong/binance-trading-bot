@@ -4,12 +4,12 @@ import { get } from "lodash";
 import { configs } from "../../configs";
 import { Logger } from "../../loaders/logger";
 import {
-  ICalculateAllShipFeeResponse,
+  IWardTypeResponse,
+  IServiceResponse,
   ICreateDeliveryOrderRequest,
   ICreateDeliveryOrderResponse,
+  ICalculateAllShipFeeResponse,
   IPostByAddress,
-  IServiceResponse,
-  IWardTypeResponse,
 } from "./resources/type";
 
 export class VietnamPostHelper {

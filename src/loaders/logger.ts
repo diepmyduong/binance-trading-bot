@@ -4,14 +4,15 @@ import { configs } from "../configs";
 
 let transports: any = [
   new winston.transports.File({
-    filename: `log/error.log`,
+    filename: `logs/error.log`,
     level: "error",
     options: { flags: "a", mode: 0o755 },
   }),
   new winston.transports.File({
-    filename: `log/combined.log`,
+    filename: `logs/combined.log`,
     options: { flags: "a", mode: 0o755 },
   }),
+  new winston.transports.File({ filename: "logs/vnpost-error.log", level: "vnpost" }),
 ];
 if (process.env.NODE_ENV !== "development") {
   transports.push(new winston.transports.Console());
@@ -38,7 +39,7 @@ if (process.env.NODE_ENV === "testing") {
 
 const Logger = winston.createLogger({
   level: configs.winston.level,
-  levels: winston.config.npm.levels,
+  levels: { ...winston.config.npm.levels, vnpost: 10 },
   format: winston.format.combine(
     winston.format.timestamp({
       format: "YYYY-MM-DD HH:mm:ss",

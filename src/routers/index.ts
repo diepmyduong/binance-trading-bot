@@ -1,16 +1,28 @@
+import path from "path";
 import express from "express";
-import apis from "./apis";
-import views from "./views";
-import Actions from './actions';
+import { ErrorHelper } from "../base/error";
+import { UtilsHelper } from "../helpers/utils.helper";
 
-const router = express.Router();
+const router = express.Router() as any;
+const RouterFiles = UtilsHelper.walkSyncFiles(path.join(__dirname));
 
-router.use("/api", apis);
-router.use("/", views);
+function onError(res: express.Response, error: any) {
+  if (!error.info) {
+    ErrorHelper.logUnknowError(error);
+    const err = ErrorHelper.somethingWentWrong();
+    res.status(err.info.status).json(err.info);
+  } else {
+    res.status(error.info.status).json(error.info);
+  }
+}
 
-Actions.map(({ route, action }) => {
-    router.use(route, action);
-})
-
+RouterFiles.filter((f) => /(.*).route.js$/.test(f)).map((f) => {
+  const { default: routes } = require(f);
+  for (const route of routes) {
+    router[route.method](route.path, route.midd, (req: express.Request, res: express.Response) =>
+      route.action(req, res).catch((error: any) => onError(res, error))
+    );
+  }
+});
 
 export default router;

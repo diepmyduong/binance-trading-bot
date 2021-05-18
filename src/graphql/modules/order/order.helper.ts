@@ -2,13 +2,12 @@ import { chain, set } from "lodash";
 import { Types } from "mongoose";
 
 import { SettingKey } from "../../../configs/settingData";
+import { ErrorHelper, VietnamPostHelper } from "../../../helpers";
 import {
-  ErrorHelper,
   ICalculateAllShipFeeRequest,
   ICalculateAllShipFeeResponse,
   PickupType,
-  VietnamPostHelper,
-} from "../../../helpers";
+} from "../../../helpers/vietnamPost/resources/type";
 import { AddressModel } from "../address/address.model";
 import { AddressDeliveryModel } from "../addressDelivery/addressDelivery.model";
 import { AddressStorehouseModel } from "../addressStorehouse/addressStorehouse.model";

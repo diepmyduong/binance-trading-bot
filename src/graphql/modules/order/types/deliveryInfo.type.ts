@@ -1,10 +1,9 @@
 import { Schema } from "mongoose";
-import { type } from "os";
 import {
-  ServiceCode,
   AddressType,
+  ServiceCode,
   PickupType,
-} from "../../../../helpers/vietnamPost/vietnamPost.helper";
+} from "../../../../helpers/vietnamPost/resources/type";
 
 export type DeliveryInfo = {
   senderFullname?: string; // tên người gửi *

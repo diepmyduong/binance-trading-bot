@@ -1,18 +1,18 @@
 import { ROLES } from "../../../../constants/role.const";
 import { Context } from "../../../context";
-import { OrderModel, OrderStatus, ShipMethod} from "../order.model";
+import { OrderModel, OrderStatus, ShipMethod } from "../order.model";
 import { ErrorHelper } from "../../../../helpers/error.helper";
-import {
-  VietnamPostHelper,
-  ICreateDeliveryOrderRequest,
-  PickupType
-} from "../../../../helpers/vietnamPost/vietnamPost.helper";
+import { VietnamPostHelper } from "../../../../helpers/vietnamPost/vietnamPost.helper";
 import { MemberModel } from "../../member/member.model";
 import { CustomerModel } from "../../customer/customer.model";
 import { DeliveryInfo } from "../types/deliveryInfo.type";
 import { GetVietnamPostDeliveryStatusText } from "../../../../helpers/vietnamPost/vietnamPostDeliveryStatus";
 import { SettingKey } from "../../../../configs/settingData";
 import { SettingHelper } from "../../setting/setting.helper";
+import {
+  ICreateDeliveryOrderRequest,
+  PickupType,
+} from "../../../../helpers/vietnamPost/resources/type";
 
 const Mutation = {
   deliveryOrder: async (root: any, args: any, context: Context) => {
@@ -31,11 +31,9 @@ const Mutation = {
     if (!buyer) throw ErrorHelper.mgRecoredNotFound("khách hàng");
 
     // Kiểm tra tình trạng đơn hàng
-    if (order.status !== OrderStatus.PENDING)
-      throw ErrorHelper.cannotEditOrder();
+    if (order.status !== OrderStatus.PENDING) throw ErrorHelper.cannotEditOrder();
 
-    if (order.shipMethod === ShipMethod.NONE)
-      throw ErrorHelper.cannotMatchShipMethod();
+    if (order.shipMethod === ShipMethod.NONE) throw ErrorHelper.cannotMatchShipMethod();
     // Chuyển trạng thái đơn hàng
     order.status = OrderStatus.DELIVERING;
 
@@ -44,7 +42,6 @@ const Mutation = {
     const defaultServiceCode = await SettingHelper.load(
       SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
     );
-
 
     // bat address tai day
 
@@ -93,15 +90,12 @@ const Mutation = {
     order.deliveryInfo = {
       ...deliveryInfo,
     };
-    
+
     order.deliveryInfo.itemCode = bill.ItemCode;
     order.deliveryInfo.orderId = bill.Id;
 
     order.deliveryInfo.customerCode = bill.CustomerCode;
     order.deliveryInfo.vendorId = bill.VendorId;
-
-    order.deliveryInfo.itemCode = bill.ItemCode;
-    order.deliveryInfo.orderId = bill.Id;
 
     // kết quả delivery
     order.deliveryInfo.createTime = bill.CreateTime; // thời gian tạo đơn
@@ -115,7 +109,7 @@ const Mutation = {
     order.deliveryInfo.partnerFee = bill.TotalFreightIncludeVatEvaluation;
 
     order.status = OrderStatus.CONFIRMED;
-    
+
     return await order.save();
   },
 };

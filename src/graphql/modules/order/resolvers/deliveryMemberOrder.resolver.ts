@@ -1,19 +1,8 @@
 import { ROLES } from "../../../../constants/role.const";
-import { Context } from "../../../context";
-import { OrderModel, OrderStatus, ShipMethod} from "../order.model";
-import { ErrorHelper } from "../../../../helpers/error.helper";
-import {
-  VietnamPostHelper,
-  ICreateDeliveryOrderRequest,
-  PickupType
-} from "../../../../helpers/vietnamPost/vietnamPost.helper";
-import { MemberModel } from "../../member/member.model";
-import { CustomerModel } from "../../customer/customer.model";
-import { DeliveryInfo } from "../types/deliveryInfo.type";
-import { GetVietnamPostDeliveryStatusText } from "../../../../helpers/vietnamPost/vietnamPostDeliveryStatus";
-import { SettingKey } from "../../../../configs/settingData";
-import { SettingHelper } from "../../setting/setting.helper";
 import { onMemberDelivering } from "../../../../events/onMemberDelivering.event";
+import { ErrorHelper } from "../../../../helpers/error.helper";
+import { Context } from "../../../context";
+import { OrderModel, OrderStatus } from "../order.model";
 
 const Mutation = {
   deliveryMemberOrder: async (root: any, args: any, context: Context) => {
@@ -24,15 +13,14 @@ const Mutation = {
 
     let params: any = {
       _id: id,
-      status: OrderStatus.CONFIRMED
+      status: OrderStatus.CONFIRMED,
     };
 
-    
     if (context.isMember()) {
       params.sellerId = context.id;
     }
 
-    console.log('params',params);
+    console.log("params", params);
 
     const order = await OrderModel.findOne(params);
 
@@ -41,7 +29,7 @@ const Mutation = {
     }
 
     order.status = OrderStatus.DELIVERING;
-    
+
     return await order.save().then(async (order) => {
       onMemberDelivering.next(order);
       return order;

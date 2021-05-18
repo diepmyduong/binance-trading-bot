@@ -1,5 +1,5 @@
-import { DeliveryServices, ServiceCode } from "../helpers";
 import { SettingType } from "../graphql/modules/setting/setting.model";
+import { DeliveryServices, ServiceCode } from "../helpers/vietnamPost/resources/type";
 
 export enum SettingGroupSlug {
   CAU_HINH_CHUNG = "CAU_HINH_CHUNG",
@@ -17,7 +17,7 @@ export enum SettingKey {
   CHATBOT_API_KEY = "CHATBOT_API_KEY",
   DEFAULT_SHOP_CODE = "DEFAULT_SHOP_CODE",
   MAINTENANCE = "MAINTENANCE",
-  
+
   // THONG_BAO_CHATBOT
   REGIS_SERVICE_COMMISSION_MSG = "REGIS_SERVICE_COMMISSION_MSG",
   REGIS_SERVICE_BONUS_POINT_MSG = "REGIS_SERVICE_BONUS_POINT_MSG",
@@ -136,8 +136,7 @@ export enum SettingKey {
   ////////////////////// Loại thành viên
   MEMBER_TYPE_BRANCH = "MEMBER_TYPE_BRANCH",
   MEMBER_TYPE_SALE = "MEMBER_TYPE_SALE",
-  MEMBER_TYPE_AGENCY = "MEMBER_TYPE_AGENCY"
-
+  MEMBER_TYPE_AGENCY = "MEMBER_TYPE_AGENCY",
 }
 
 export const SETTING_DATA = [

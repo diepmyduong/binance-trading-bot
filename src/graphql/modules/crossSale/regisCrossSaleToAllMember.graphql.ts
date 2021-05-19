@@ -33,6 +33,7 @@ export default {
                 createdAt: new Date(),
                 updatedAt: new Date(),
               },
+              $set: { productName: product.name },
             });
         }
         if (bulk.length > 0) {

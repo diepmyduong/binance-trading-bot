@@ -40,7 +40,7 @@ const Mutation = {
     const product = await getCrossSaleProduct(productId);
     return await CrossSaleModel.findOneAndUpdate(
       { productId: product._id, sellerId: context.id },
-      {},
+      { $set: { productName: product.name } },
       { new: true, upsert: true }
     ).exec();
   },

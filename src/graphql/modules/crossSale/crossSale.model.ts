@@ -4,20 +4,21 @@ import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 const Schema = mongoose.Schema;
 
 export type ICrossSale = BaseDocument & {
-  productId?: string; //Mã sản phẩm
-  sellerId?: string; //Chủ shop đăng bán chéo
+  productId?: string; // Mã sản phẩm
+  sellerId?: string; // Chủ shop đăng bán chéo
+  productName?: string; // Tên sản phẩm
 };
-
 
 const crossSaleSchema = new Schema(
   {
     productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     sellerId: { type: Schema.Types.ObjectId, ref: "Member", required: true },
+    productName: { type: String },
   },
   { timestamps: true }
 );
 
-// crossSaleSchema.index({ name: "text" }, { weights: { name: 2 } });
+crossSaleSchema.index({ productName: "text" }, { weights: { productName: 2 } });
 
 export const CrossSaleHook = new ModelHook<ICrossSale>(crossSaleSchema);
 export const CrossSaleModel: mongoose.Model<ICrossSale> = MainConnection.model(

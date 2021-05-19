@@ -19,6 +19,8 @@ const schema = gql`
     sellerId: ID
     createdAt: DateTime
     updatedAt: DateTime
+    "Tên sản phẩm"
+    productName: String
 
     product: Product
   }

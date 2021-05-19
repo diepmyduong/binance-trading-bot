@@ -8,7 +8,7 @@ const { SettingHelper } = require('../../dist/graphql/modules/setting/setting.he
   const webDomain = await SettingHelper.load("WEBAPP_DOMAIN");
   console.log('Tên miền', webDomain);
   for (const p of products) {
-    bulk.find({ _id: p._id }).updateOne({ $set: { shortUrl: `${webDomain}}/san-pham/${p.shortCode}`} })
+    bulk.find({ _id: p._id }).updateOne({ $set: { shortUrl: `${webDomain}/san-pham/${p.shortCode}`} })
   }
   if (bulk.length > 0) {
     await bulk.execute();

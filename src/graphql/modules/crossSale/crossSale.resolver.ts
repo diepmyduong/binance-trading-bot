@@ -14,11 +14,10 @@ const Query = {
   getAllCrossSale: async (root: any, args: any, context: Context) => {
     if (context.isCustomer()) {
       set(args, "q.filter.sellerId", context.sellerId);
-    } else if (!context.isAuth) {
+    } else if (context.memberCode) {
       const seller = await MemberModel.findOne({ code: context.memberCode });
       set(args, "q.filter.sellerId", seller._id);
     } else {
-      AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
       if (context.isMember()) {
         set(args, "q.filter.sellerId", context.id);
       }

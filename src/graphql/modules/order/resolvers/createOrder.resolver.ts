@@ -4,23 +4,29 @@ import { Context } from "../../../context";
 import { onOrderedProduct } from "../../../../events/onOrderedProduct.event";
 import { OrderHelper } from "../order.helper";
 import { OrderItemModel } from "../../orderItem/orderItem.model";
+import { SettingKey } from "../../../../configs/settingData";
+import { CustomerLoader } from "../../customer/customer.model";
+import { MemberLoader } from "../../member/member.model";
+import { SettingHelper } from "../../setting/setting.helper";
 
 const Mutation = {
   createOrder: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.CUSTOMER]);
     const { campaignCode, sellerId, id: buyerId, collaboratorId } = context;
     const data = args.data;
-
     if (context.isCustomer()) {
       data.buyerId = buyerId;
       data.sellerId = sellerId;
     }
 
-    if (collaboratorId) {
-      data.collaboratorId = collaboratorId;
-    }
+    if (collaboratorId) data.collaboratorId = collaboratorId;
+    const [unitPrice, seller, customer] = await Promise.all([
+      SettingHelper.load(SettingKey.UNIT_PRICE),
+      MemberLoader.load(sellerId),
+      CustomerLoader.load(buyerId),
+    ]);
 
-    const ordersData = await OrderHelper.orderProducts(data);
+    const ordersData = await OrderHelper.modifyOrders({ data, seller });
 
     // console.log('log loi tai day 1', ordersData);
 

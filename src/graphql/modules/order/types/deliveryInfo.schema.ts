@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { DeliveryServices, PickupTypes, VietnamPostHelper } from "../../../../helpers";
+import { DeliveryServices, PickupTypes } from "../../../../helpers/vietnamPost/resources/type";
 
 export default gql`
   type DeliveryInfo {
@@ -31,7 +31,7 @@ export default gql`
     "Loại địa chỉ người nhận '1=Nhà riêng | 2=Cơ quan | null=Không có thông tin'"
     receiverAddressType: Int
 
-    "Mã Dịch vụ chuyển phát '${DeliveryServices.map(s=>`${s.code}-${s.name}`).join(' | ')}'"
+    "Mã Dịch vụ chuyển phát ${Object.values(DeliveryServices)}"
     serviceName: String
 
     "Mã hóa đơn liên quan"
@@ -55,7 +55,7 @@ export default gql`
     "Cho xem hàng không ?"
     isPackageViewable: Boolean
 
-    "Hình thức thu gom '${PickupTypes.map(s=>`${s.code}-${s.name}`).join(' | ')}'"
+    "Hình thức thu gom ${Object.values(PickupTypes)}"
     pickupType: Int
 
     "Giá trị đơn hàng tạm tính"

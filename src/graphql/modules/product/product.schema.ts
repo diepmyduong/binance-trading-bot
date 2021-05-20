@@ -13,28 +13,13 @@ const schema = gql`
   extend type Mutation {
     createProduct(data: CreateProductInput!): Product
     updateProduct(id: ID!, data: UpdateProductInput!): Product
-    cloneToCrosssale(id: ID!, data: CloneProductinput!): Product
     deleteOneProduct(id: ID!): Product
     deleteManyProduct(ids: [ID]): Int
     importProducts(file: Upload!): String
     increaseViewCount(productId: ID!): Product
   }
 
-  input CloneProductinput {
-    crossSaleInventory: Int!
-    commission0:Float,
-    commission1:Float,
-    commission2:Float,
-    enabledMemberBonus: Boolean
-    enabledCustomerBonus: Boolean
-    memberBonusFactor:Int,
-    customerBonusFactor:Int
-
-    width: Int
-    length: Int
-    height: Int
-    weight: Int
-  }
+  
 
   input CreateProductInput {
     code: String
@@ -112,6 +97,8 @@ const schema = gql`
     isCrossSale: Boolean
     "Tồn kho bán chéo"
     crossSaleInventory: Int
+    "Số lượng đã đặt"
+    crossSaleOrdered: Int
     "Loại sản phẩm ${Object.values(ProductType)}"
     type: String
     "Gía bán"
@@ -166,7 +153,7 @@ const schema = gql`
 
     category: Category
     member: Member
-    collaboratorProduct : CollaboratorProduct
+    collaboratorProduct: CollaboratorProduct
   }
 
   type ProductPageData {

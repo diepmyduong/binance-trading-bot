@@ -1,21 +1,9 @@
-import { set, isNull } from "lodash";
+import { isNull, set } from "lodash";
+
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
-import { CustomerLoader, CustomerModel } from "../customer/customer.model";
-import { MemberLoader, MemberModel } from "../member/member.model";
-import { OrderItemLoader } from "../orderItem/orderItem.model";
-import { UserLoader } from "../user/user.model";
-import { orderService } from "./order.service";
-import {
-  getShipMethods,
-  IOrder,
-  OrderStatus,
-  PaymentMethod,
-  ShipMethod,
-} from "./order.model";
-import { CollaboratorLoader, CollaboratorModel, ICollaborator } from "../collaborator/collaborator.model";
 import {
   AddressDeliveryLoader,
   AddressDeliveryModel,
@@ -24,6 +12,12 @@ import {
   AddressStorehouseLoader,
   AddressStorehouseModel,
 } from "../addressStorehouse/addressStorehouse.model";
+import { CollaboratorModel } from "../collaborator/collaborator.model";
+import { CustomerLoader, CustomerModel } from "../customer/customer.model";
+import { MemberLoader, MemberModel } from "../member/member.model";
+import { OrderItemLoader } from "../orderItem/orderItem.model";
+import { getShipMethods, IOrder, OrderStatus, PaymentMethod, ShipMethod } from "./order.model";
+import { orderService } from "./order.service";
 
 const Query = {
   // neu la admin
@@ -37,8 +31,7 @@ const Query = {
       set(args, "q.filter.sellerId", context.id);
     } else if (context.isCustomer()) {
       set(args, "q.filter.buyerId", context.id);
-    }
-    else {
+    } else {
       if (args.q.filter) {
         delete args.q.filter.isPrimary;
       }
@@ -76,8 +69,8 @@ const Order = {
     const member = await MemberModel.findById(root.sellerId);
     const collaboratorMember: any = {
       memberId: context.id,
-      member
-    }
+      member,
+    };
     if (collaborator) {
       const customer = await CustomerModel.findById(collaborator.customerId);
       collaboratorMember.id = collaborator.id;
@@ -94,32 +87,26 @@ const Order = {
     if (member) {
       if (root.shipMethod === ShipMethod.POST) {
         const address = await AddressDeliveryLoader.load(root.addressDeliveryId);
-        if(member.code !== address.code){
-          return true
+        if (member.code !== address.code) {
+          return true;
         }
         return false;
       }
 
       if (root.shipMethod === ShipMethod.VNPOST) {
         const address = await AddressStorehouseLoader.load(root.addressStorehouseId);
-        if(member.code !== address.code){
-          return true
+        if (member.code !== address.code) {
+          return true;
         }
-        return false
+        return false;
       }
-      return false
+      return false;
     }
     return false;
   },
 
-  addressStorehouse: GraphQLHelper.loadById(
-    AddressStorehouseLoader,
-    "addressStorehouseId"
-  ),
-  addressDelivery: GraphQLHelper.loadById(
-    AddressDeliveryLoader,
-    "addressDeliveryId"
-  ),
+  addressStorehouse: GraphQLHelper.loadById(AddressStorehouseLoader, "addressStorehouseId"),
+  addressDelivery: GraphQLHelper.loadById(AddressDeliveryLoader, "addressDeliveryId"),
 
   deliveringMember: async (root: IOrder, args: any, context: Context) => {
     if (root.toMemberId) {
@@ -128,24 +115,19 @@ const Order = {
 
     let code = null;
     if (root.shipMethod === ShipMethod.POST) {
-      const addressDelivery = await AddressDeliveryModel.findById(
-        root.addressDeliveryId
-      );
+      const addressDelivery = await AddressDeliveryModel.findById(root.addressDeliveryId);
       code = addressDelivery.code;
     }
 
     if (root.shipMethod === ShipMethod.VNPOST) {
-      const addressStorehouse = await AddressStorehouseModel.findById(
-        root.addressStorehouseId
-      );
+      const addressStorehouse = await AddressStorehouseModel.findById(root.addressStorehouseId);
 
       code = addressStorehouse.code;
     }
 
     const result = await MemberModel.findOne({ code });
 
-    if (!result)
-      return await MemberModel.findById(root.sellerId);
+    if (!result) return await MemberModel.findById(root.sellerId);
 
     return result;
   },
@@ -163,9 +145,7 @@ const Order = {
 
   shipMethodText: async (root: IOrder, args: any, context: Context) => {
     const shipMethods = await getShipMethods();
-    const shipMethod = shipMethods.find(
-      (ship) => ship.value === root.shipMethod
-    );
+    const shipMethod = shipMethods.find((ship) => ship.value === root.shipMethod);
     return shipMethod ? shipMethod.label : "Không có phương thức này";
   },
 

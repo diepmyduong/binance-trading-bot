@@ -1,8 +1,5 @@
 import { Subject } from "rxjs";
-import {
-  IOrder,
-  OrderStatus,
-} from "../graphql/modules/order/order.model";
+import { IOrder, OrderStatus } from "../graphql/modules/order/order.model";
 import { orderService } from "../graphql/modules/order/order.service";
 import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
 import { OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
@@ -26,6 +23,8 @@ onApprovedFailureOrder.subscribe(async (order: IOrder) => {
       log.type = OrderLogType.TO_MEMBER_FAILURE;
     }
 
-    await log.save().then(log => { orderService.updateLogToOrder({order, log}) });
+    await log.save().then((log) => {
+      orderService.updateLogToOrder({ order, log });
+    });
   }
 });

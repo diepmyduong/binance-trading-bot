@@ -7,7 +7,9 @@ import { Context } from "../../context";
 import { CategoryLoader } from "../category/category.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { CollaboratorProductModel } from "../collaboratorProduct/collaboratorProduct.model";
+import { CrossSaleModel } from "../crossSale/crossSale.model";
 import { MemberLoader } from "../member/member.model";
+import { OrderItemModel } from "../orderItem/orderItem.model";
 import { ProductHelper } from "./product.helper";
 import { IProduct, ProductModel, ProductType } from "./product.model";
 import { productService } from "./product.service";
@@ -32,9 +34,7 @@ const Query = {
       // console.log('q.filter', q.filter);
     } else if (context.isCustomer()) {
       set(args, "q.filter.allowSale", true);
-      set(args, "q.filter.isCrossSale", false);
-      const $or = [{ memberId: context.sellerId }, { isPrimary: true }];
-      set(args, "q.filter.$or", $or);
+      set(args, "q.filter.$or", [{ isPrimary: true }, { isCrossSale: true }]);
     }
     // console.log('role', get(context.tokenData, "role"))
     // console.log('q', q);
@@ -60,8 +60,7 @@ const Mutation = {
     if (context.isMember()) {
       set(data, "isPrimary", false);
       set(data, "memberId", context.id);
-    }
-    else {
+    } else {
       set(data, "isPrimary", true);
     }
 
@@ -98,7 +97,12 @@ const Mutation = {
         throw ErrorHelper.permissionDeny();
       }
     }
-    return await productService.deleteOne(id);
+    const orderItemCount = await OrderItemModel.count({ productId: id });
+    if (orderItemCount > 0) throw Error("Không thể xoá. Sản phẩm đã có đơn hàng");
+    return await productService.deleteOne(id).then(async (res: IProduct) => {
+      await CrossSaleModel.remove({ productId: res._id }).exec();
+      return res;
+    });
   },
 
   deleteManyProduct: async (root: any, args: any, context: Context) => {
@@ -112,6 +116,7 @@ const Mutation = {
 const Product = {
   category: GraphQLHelper.loadById(CategoryLoader, "categoryId"),
   member: GraphQLHelper.loadById(MemberLoader, "memberId"),
+  crossSaleOrdered: GraphQLHelper.requireRoles(ROLES.ADMIN_EDITOR_MEMBER),
   collaboratorProduct: async (root: IProduct, args: any, context: Context) => {
     let collaProduct = null;
     if (context.isCustomer()) {
@@ -131,7 +136,7 @@ const Product = {
 
 const resolveArgs = (data: any) => {
   delete data.isPrimary;
-}
+};
 
 export default {
   Query,

@@ -59,6 +59,7 @@ const schema = gql`
     branchId: ID!
     positionId: ID
     password: String!
+    allowSale:Boolean
   }
 
   input UpdateMemberInput {
@@ -79,6 +80,7 @@ const schema = gql`
     type: String
     branchId: ID
     positionId: ID
+    allowSale:Boolean
   }
 
   type Member {
@@ -150,6 +152,7 @@ const schema = gql`
     psids: [String]
     "Kịch bản chatbot"
     chatbotStory: [ChatbotStory]
+    allowSale:Boolean
     
     branch: Branch
     position: Position
@@ -178,7 +181,7 @@ const schema = gql`
     "Số lượng đơn hàng chuyển giao"
     toMemberOrdersCount: Int
 
-    allowSale:Boolean
+    
   }
 
   type MemberPageData {

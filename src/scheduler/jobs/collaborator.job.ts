@@ -32,8 +32,6 @@ const updateCustomerId = async () => {
     $or: [{ customerId: { $exists: false } }, { customerId: null }],
   }).limit(1000);
 
-  
-
   // console.log('collaborators',collaborators);
 
   const collaboratorPhones = collaborators.map((col) => col.phone);
@@ -44,18 +42,21 @@ const updateCustomerId = async () => {
   // console.log("members", memberss);
 
   for (const customer of customers) {
-    const collaborator = collaborators.find(
-      (col) => col.phone === customer.phone
-    );
+    const collaborator = collaborators.find((col) => col.phone === customer.phone);
     if (collaborator) {
-      if(collaborator.customerId){
-        if(customer.name === "Khách vãng lai"){
-          await CustomerModel.findByIdAndUpdate(collaborator.customerId, { $set: {
-            name: collaborator.name
-          } }, { new: true });
+      if (collaborator.customerId) {
+        if (customer.name === "Khách vãng lai") {
+          await CustomerModel.findByIdAndUpdate(
+            collaborator.customerId,
+            {
+              $set: {
+                name: collaborator.name,
+              },
+            },
+            { new: true }
+          );
         }
-      }
-      else{
+      } else {
         await CollaboratorModel.findByIdAndUpdate(
           collaborator.id,
           {
@@ -67,15 +68,15 @@ const updateCustomerId = async () => {
         );
       }
 
-      if(!collaborator.shortUrl){
+      if (!collaborator.shortUrl) {
         const collaboratorId = collaborator.id;
         const memberId = collaborator.memberId;
         const customerId = collaborator.customerId;
         const secret = `${collaboratorId.toString()}-${customerId.toString()}-${memberId.toString()}`;
-  
+
         let shortCode = KeycodeHelper.alpha(secret, 6);
         let shortUrl = `${host}/ctv/${shortCode}`;
-  
+
         let countShortUrl = await CollaboratorModel.count({ shortUrl });
         while (countShortUrl > 0) {
           shortCode = KeycodeHelper.alpha(secret, 6);
@@ -96,7 +97,6 @@ const updateCustomerId = async () => {
     }
   }
 };
-
 
 const updateShortCodes = async () => {
   // console.log('doBusiness');
@@ -117,20 +117,17 @@ const updateShortCodes = async () => {
   // console.log("members", memberss);
 
   for (const customer of customers) {
-    const collaborator = collaborators.find(
-      (col) => col.phone === customer.phone
-    );
+    const collaborator = collaborators.find((col) => col.phone === customer.phone);
     if (collaborator) {
-
-      if(!collaborator.shortCode){
+      if (!collaborator.shortCode) {
         const collaboratorId = collaborator.id;
         const memberId = collaborator.memberId;
         const customerId = collaborator.customerId;
         const secret = `${collaboratorId.toString()}-${customerId.toString()}-${memberId.toString()}`;
-  
+
         let shortCode = KeycodeHelper.alpha(secret, 6);
         let shortUrl = `${host}/ctv/${shortCode}`;
-  
+
         let countShortUrl = await CollaboratorModel.count({ shortUrl });
         while (countShortUrl > 0) {
           shortCode = KeycodeHelper.alpha(secret, 6);
@@ -143,7 +140,7 @@ const updateShortCodes = async () => {
           {
             $set: {
               shortUrl,
-              shortCode
+              shortCode,
             },
           },
           { new: true }
@@ -154,37 +151,21 @@ const updateShortCodes = async () => {
 };
 
 const updateShortUrls = async () => {
-  // console.log('doBusiness');
-
   const host = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN);
 
-  let collaborators = await CollaboratorModel.find({
-  }).limit(1000);
-
-  collaborators = collaborators.filter(col=>!col.shortUrl.includes(host))
-
+  let collaborators = await CollaboratorModel.find({});
+  collaborators = collaborators.filter((col) => !col.shortUrl.includes(host));
+  const bulk = CollaboratorModel.collection.initializeUnorderedBulkOp();
   // console.log('collaborators',collaborators.length);
   // console.log("members", memberss);
   for (const collaborator of collaborators) {
     if (collaborator.shortCode) {
       // console.log("collaborator.shortCode", collaborator.shortCode);
       const shortUrl = `${host}/ctv/${collaborator.shortCode}`;
-      await CollaboratorModel.findByIdAndUpdate(
-        collaborator.id,
-        {
-          $set: {
-            shortUrl,
-          },
-        },
-        { new: true }
-      );
+      bulk.find({ _id: collaborator._id }).updateOne({ $set: { shortUrl } });
     }
-}
-  
+  }
+  if (bulk.length > 0) {
+    await bulk.execute();
+  }
 };
-
-// (async () => {
-//   console.log("test businessssssssssssssssssssssss");
-//   await updateShortUrls();
-// })();
-

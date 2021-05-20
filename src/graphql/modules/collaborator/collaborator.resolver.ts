@@ -27,7 +27,7 @@ const Query = {
 const Mutation = {
   createCollaborator: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.MEMBER]);
-    
+
     const { data } = args;
 
     const { phone } = data;
@@ -41,9 +41,9 @@ const Mutation = {
 
     data.memberId = context.id;
 
-    const host = await SettingHelper.load(SettingKey.APP_DOMAIN);
+    const host = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN);
     const secret = `${phone}-${context.id}`;
-  
+
     let shortCode = KeycodeHelper.alpha(secret, 6);
     let shortUrl = `${host}/ctv/${shortCode}`;
 
@@ -53,7 +53,7 @@ const Mutation = {
       shortUrl = `${host}/ctv/${shortCode}`;
       countShortUrl = await CollaboratorModel.count({ shortUrl });
     }
-    
+
     data.shortCode = shortCode;
     data.shortUrl = shortUrl;
 
@@ -71,8 +71,7 @@ const Mutation = {
       memberId: context.id,
     });
 
-    if (existedCollaborator.id !== id)
-      throw ErrorHelper.duplicateError("Số điện thoại");
+    if (existedCollaborator.id !== id) throw ErrorHelper.duplicateError("Số điện thoại");
 
     data.memberId = context.id;
 

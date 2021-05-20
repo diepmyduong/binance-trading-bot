@@ -1,7 +1,7 @@
 import { ErrorHelper } from "../../../../base/error";
 import { SettingKey } from "../../../../configs/settingData";
 import { ROLES } from "../../../../constants/role.const";
-import { AuthHelper } from "../../../../helpers";
+import { AuthHelper, KeycodeHelper } from "../../../../helpers";
 import { ChatBotHelper } from "../../../../helpers/chatbot.helper";
 import { Context } from "../../../context";
 import { SettingHelper } from "../../setting/setting.helper";
@@ -34,11 +34,12 @@ const Mutation = {
       SettingKey.WEBAPP_DOMAIN,
       SettingKey.STORY_NAME,
     ]);
+    const code = KeycodeHelper.alpha(member.fanpageId, 6);
     const chatbotStory = {
       name,
       message,
       btnTitle,
-      ref,
+      ref: `${ref}-${code}`,
       webappDomain,
       pageId: pageData.id,
     } as ChatbotStory;

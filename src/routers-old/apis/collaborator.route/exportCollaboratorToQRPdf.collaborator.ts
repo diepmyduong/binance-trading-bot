@@ -1,10 +1,8 @@
-import { ObjectId } from "bson";
 import { createCanvas, loadImage } from "canvas";
 import { chunk, keyBy, set, times } from "lodash";
 import { Types } from "mongoose";
 
 import { Request, Response } from "../../../base/baseRoute";
-import { ErrorHelper } from "../../../base/error";
 import { SettingKey } from "../../../configs/settingData";
 import { ROLES } from "../../../constants/role.const";
 import { Context } from "../../../graphql/context";
@@ -19,17 +17,18 @@ import { PrinterHelper } from "../../../helpers/printerHelper";
 export const exportCollaboratorToQRPdf = async (req: Request, res: Response) => {
   const context = (req as any).context as Context;
   context.auth(ROLES.ADMIN_EDITOR);
-  const memberId: string = req.query.memberId ? req.query.memberId.toString() : null;
-  const $match: any = {};
-  if (memberId) {
-    set($match, "memberId", new ObjectId(memberId));
-  }
+
+  const query: any = {};
   if (context.isMember()) {
-    set($match, "memberId", new ObjectId(context.id));
+    set(query, "memberId", context.id);
+  } else if (req.query.memberId) {
+    set(query, "memberId", req.query.memberId);
   }
-  const collaborators = await CollaboratorModel.find({ ...$match });
+  const collaborators = await CollaboratorModel.find(query);
+
   const memberIds = collaborators.map((col) => col.memberId).map(Types.ObjectId);
   const members = await MemberModel.find({ _id: { $in: memberIds } }).select("_id shopName");
+
   const pdfContent = await getPDFOrder({ collaborators, members });
   return PrinterHelper.responsePDF(res, pdfContent, `danh-sach-qr-ctv`);
 };

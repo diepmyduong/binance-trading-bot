@@ -1,5 +1,5 @@
-import { DeliveryServices, ServiceCode } from "../helpers";
 import { SettingType } from "../graphql/modules/setting/setting.model";
+import { DeliveryServices, ServiceCode } from "../helpers/vietnamPost/resources/type";
 
 export enum SettingGroupSlug {
   CAU_HINH_CHUNG = "CAU_HINH_CHUNG",
@@ -17,7 +17,10 @@ export enum SettingKey {
   CHATBOT_API_KEY = "CHATBOT_API_KEY",
   DEFAULT_SHOP_CODE = "DEFAULT_SHOP_CODE",
   MAINTENANCE = "MAINTENANCE",
-  
+  SEO_TITLE = "SEO_TITLE",
+  SEO_DESCRIPTION = "SEO_DESCRIPTION",
+  SEO_IMAGE = "SEO_IMAGE",
+
   // THONG_BAO_CHATBOT
   REGIS_SERVICE_COMMISSION_MSG = "REGIS_SERVICE_COMMISSION_MSG",
   REGIS_SERVICE_BONUS_POINT_MSG = "REGIS_SERVICE_BONUS_POINT_MSG",
@@ -136,8 +139,7 @@ export enum SettingKey {
   ////////////////////// Loại thành viên
   MEMBER_TYPE_BRANCH = "MEMBER_TYPE_BRANCH",
   MEMBER_TYPE_SALE = "MEMBER_TYPE_SALE",
-  MEMBER_TYPE_AGENCY = "MEMBER_TYPE_AGENCY"
-
+  MEMBER_TYPE_AGENCY = "MEMBER_TYPE_AGENCY",
 }
 
 export const SETTING_DATA = [
@@ -151,7 +153,7 @@ export const SETTING_DATA = [
         type: SettingType.string,
         name: "Tiêu đề ứng dụng",
         key: SettingKey.TITLE,
-        value: `Mobifone - AShop`,
+        value: `PShop`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -197,6 +199,33 @@ export const SETTING_DATA = [
         name: "Bảo trì hệ thống",
         key: SettingKey.MAINTENANCE,
         value: false,
+        isActive: true,
+        isPrivate: false,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "SEO: Tiêu đề",
+        key: SettingKey.SEO_TITLE,
+        value: "PShop",
+        isActive: true,
+        isPrivate: false,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "SEO: Mô tả",
+        key: SettingKey.SEO_DESCRIPTION,
+        value: "Cửa hàng PShop By VNPost",
+        isActive: true,
+        isPrivate: false,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "SEO: Hình ảnh",
+        key: SettingKey.SEO_IMAGE,
+        value: "https://i.ibb.co/RCh1LhV/Screen-Shot-2021-05-18-at-14-08-33.png",
         isActive: true,
         isPrivate: false,
         readOnly: false,

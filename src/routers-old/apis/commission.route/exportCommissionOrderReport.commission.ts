@@ -1,40 +1,20 @@
-import { ROLES } from "../../../constants/role.const";
-import {
-  BaseRoute,
-  Request,
-  Response,
-  NextFunction,
-} from "../../../base/baseRoute";
-import { ErrorHelper } from "../../../base/error";
-import { Context } from "../../../graphql/context";
-
-import { auth } from "../../../middleware/auth";
-
-import _, { isEmpty, reverse, set, sortBy } from "lodash";
-import numeral from "numeral";
-import { PrinterHelper } from "../../../helpers/printerHelper";
-import {
-  // getShipMethods,
-  IOrder,
-  OrderStatus,
-  ShipMethod,
-} from "../../../graphql/modules/order/order.model";
-import { OrderModel } from "../../../graphql/modules/order/order.model";
-import { OrderItemModel } from "../../../graphql/modules/orderItem/orderItem.model";
-import { AddressDeliveryModel } from "../../../graphql/modules/addressDelivery/addressDelivery.model";
-import { MemberModel, MemberType } from "../../../graphql/modules/member/member.model";
-import { SettingHelper } from "../../../graphql/modules/setting/setting.helper";
-import { SettingKey } from "../../../configs/settingData";
-import { createCanvas, loadImage } from 'canvas';
-import { UtilsHelper } from "../../../helpers";
-import Excel from "exceljs";
 import { ObjectId } from "bson";
+import Excel from "exceljs";
+import _, { isEmpty, set } from "lodash";
 import moment from "moment";
-import { AddressStorehouseModel } from "../../../graphql/modules/addressStorehouse/addressStorehouse.model";
-import { AddressModel } from "../../../graphql/modules/address/address.model";
-import { BranchModel } from "../../../graphql/modules/branch/branch.model";
 import { isValidObjectId, Types } from "mongoose";
+
+import { Request, Response } from "../../../base/baseRoute";
+import { ErrorHelper } from "../../../base/error";
+import { ROLES } from "../../../constants/role.const";
+import { Context } from "../../../graphql/context";
+import { AddressDeliveryModel } from "../../../graphql/modules/addressDelivery/addressDelivery.model";
+import { AddressStorehouseModel } from "../../../graphql/modules/addressStorehouse/addressStorehouse.model";
+import { BranchModel } from "../../../graphql/modules/branch/branch.model";
 import { CollaboratorModel } from "../../../graphql/modules/collaborator/collaborator.model";
+import { MemberModel } from "../../../graphql/modules/member/member.model";
+import { OrderModel, OrderStatus, ShipMethod } from "../../../graphql/modules/order/order.model";
+import { UtilsHelper } from "../../../helpers";
 
 export const exportCommissionOrderReport = async (req: Request, res: Response) => {
   const context = (req as any).context as Context;
@@ -51,7 +31,6 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
   const orderStatus: any = req.query.orderStatus ? req.query.orderStatus.toString() : null;
   const memberIdsString = req.query.sellerIds ? req.query.sellerIds.toString() : null;
 
-
   //http://localhost:5555/api/commission/exportCommissionReport?fromDate=2021-04-01&toDate=2021-04-06&branchId=603717300ec1da6449646ac3&orderStatus=ALL&sellerIds=6038ba30ab0f5a2cfe0f4ab6|6038b74cab0f5a2cfe0f48ad&x-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU4iLCJfaWQiOiI2MDExMmJmYTRlMTI1YTI4MjQzZjc4NmQiLCJ1c2VybmFtZSI6IlBLRCAtIELEkFRQIiwiaWF0IjoxNjE3NjEyNzU3LCJleHAiOjE2MjAyMDQ3NTd9.of8nz5oPteaLjZqlgNreGD-mBl6TFlWNK05yjvyhwO4
   if (orderStatus) {
     if (!["COMPLETED", "UNCOMPLETED", "ALL"].includes(orderStatus)) {
@@ -59,12 +38,10 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
     }
   }
 
-
   let sellerIds: any = null;
   if (memberIdsString) {
     sellerIds = memberIdsString.split("|");
-    if (sellerIds.length < 0)
-      throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+    if (sellerIds.length < 0) throw ErrorHelper.requestDataInvalid("Mã bưu cục");
 
     sellerIds.map((m: string) => {
       if (!isValidObjectId(m)) {
@@ -74,7 +51,6 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
 
     sellerIds = sellerIds.map(Types.ObjectId);
   }
-
 
   if (!isValidObjectId(memberId)) {
     throw ErrorHelper.requestDataInvalid("Mã bưu cục");
@@ -92,24 +68,19 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
     set(params, "createdAt.$lte", $lte);
   }
 
-
-
   //theo bưu cục nào
   if (context.isMember()) {
     set(params, "sellerId.$in", [context.id]);
-  }
-  else {
+  } else {
     if (branchId) {
       const memberIds = await MemberModel.find({ branchId, activated: true }).select("_id");
-      const sellerIds = memberIds.map(m => m.id);
+      const sellerIds = memberIds.map((m) => m.id);
       set(params, "sellerId.$in", sellerIds.map(Types.ObjectId));
-    }
-    else {
+    } else {
       if (sellerIds) {
         if (sellerIds.length > 0) {
           set(params, "sellerId.$in", sellerIds);
-        }
-        else {
+        } else {
           delete params.sellerIds;
         }
       }
@@ -131,11 +102,15 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
         set(params, "status", [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING]);
         break;
       default:
-        set(params, "status", [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING, OrderStatus.COMPLETED]);
+        set(params, "status", [
+          OrderStatus.PENDING,
+          OrderStatus.CONFIRMED,
+          OrderStatus.DELIVERING,
+          OrderStatus.COMPLETED,
+        ]);
         break;
     }
   }
-
 
   const [
     orders,
@@ -146,11 +121,11 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
     branches,
   ] = await Promise.all([
     OrderModel.find(params),
-    AddressDeliveryModel.find({}).select('_id code'),
-    AddressStorehouseModel.find({}).select('_id code'),
+    AddressDeliveryModel.find({}).select("_id code"),
+    AddressStorehouseModel.find({}).select("_id code"),
     CollaboratorModel.find({}).select("_id code name"),
-    MemberModel.find({ activated: true }).select('_id code shopName district districtId branchId'),
-    BranchModel.find({}).select("_id name")
+    MemberModel.find({ activated: true }).select("_id code shopName district districtId branchId"),
+    BranchModel.find({}).select("_id name"),
   ]);
 
   const statusText = (order: any) => {
@@ -172,14 +147,17 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
       default:
         return order.status;
     }
-  }
+  };
 
   for (let i = 0; i < orders.length; i++) {
     const order = orders[i];
-    const shipMethod = order.shipMethod === ShipMethod.POST ? "Nhận hàng tại bưu cục" : "Giao hàng tại địa chỉ";
-    const seller = sellers.find(member => member.id.toString() === order.sellerId.toString());
-    const collaborator = collaboratorId ? collaborators.find(c => c.id.toString() === order.collaboratorId.toString()) : null;
-    const branch = branches.find(br => br.id.toString() === seller.branchId.toString());
+    const shipMethod =
+      order.shipMethod === ShipMethod.POST ? "Nhận hàng tại bưu cục" : "Giao hàng tại địa chỉ";
+    const seller = sellers.find((member) => member.id.toString() === order.sellerId.toString());
+    const collaborator = collaboratorId
+      ? collaborators.find((c) => c.id.toString() === order.collaboratorId.toString())
+      : null;
+    const branch = branches.find((br) => br.id.toString() === seller.branchId.toString());
 
     const params = {
       code: order.code,
@@ -195,11 +173,11 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
       commission2: order.commission2,
       commission3: order.commission3,
       commission: order.commission1 + order.commission2 + order.commission3,
-      logDate: moment(order.loggedAt).format('DD/MM/YYYY HH:mm:ss'),
-      createdDate: moment(order.createdAt).format('DD/MM/YYYY HH:mm:ss'),
-      finishedDate: order.finishedAt ? moment(order.finishedAt).format('DD/MM/YYYY HH:mm:ss') : "",
+      logDate: moment(order.loggedAt).format("DD/MM/YYYY HH:mm:ss"),
+      createdDate: moment(order.createdAt).format("DD/MM/YYYY HH:mm:ss"),
+      finishedDate: order.finishedAt ? moment(order.finishedAt).format("DD/MM/YYYY HH:mm:ss") : "",
       status: statusText(order),
-    }
+    };
     // console.log('count', i);
     data.push(params);
   }
@@ -247,7 +225,6 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
         d.shopDistrict,
         d.branchName,
 
-
         d.commission1,
         d.commission2,
         d.commission3,
@@ -261,7 +238,7 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
     });
 
     UtilsHelper.setThemeExcelWorkBook(sheet);
-  }
+  };
 
   const POSTS_SHEET_NAME = "Danh sách hoa hồng đơn hàng";
   createSheetData(data, POSTS_SHEET_NAME);
@@ -280,4 +257,4 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
   }
 
   return UtilsHelper.responseExcel(res, workbook, "danh_sach_hoa_hong");
-}
+};

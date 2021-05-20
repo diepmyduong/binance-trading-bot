@@ -21,11 +21,12 @@ const Query = {
     }
     return commissionLogService.fetch(args.q);
   },
-  // getCommissionTypes : 
+  // getCommissionTypes :
 };
 
 const CommissionLog = {
   order: GraphQLHelper.loadById(OrderLoader, "orderId"),
+  member: GraphQLHelper.loadById(MemberLoader, "memberId"),
   regisSMS: GraphQLHelper.loadById(RegisSMSLoader, "regisSMSId"),
   regisService: GraphQLHelper.loadById(RegisServiceLoader, "regisServiceId"),
   // commissionType : async (root: ICommissionLog, args: any, context: Context) => {
@@ -44,8 +45,10 @@ const CommissionLog = {
   //   }
   // },
   note: async (root: ICommissionLog, args: any, context: Context) => {
-    const order = await OrderLoader.load(root.orderId);
-    const member = await MemberLoader.load(order.sellerId);
+    const [order, member] = await Promise.all([
+      OrderLoader.load(root.orderId),
+      MemberLoader.load(root.memberId),
+    ]);
     switch (root.type) {
       case CommissionLogType.RECEIVE_COMMISSION_1_FROM_ORDER:
         return `Bưu cục ${member.shopName} nhận hoa hồng điểm bán từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;

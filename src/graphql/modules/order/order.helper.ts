@@ -1,41 +1,30 @@
-import { chain, isNull, keyBy, set } from "lodash";
-import {
-  ErrorHelper,
-  ICalculateAllShipFeeRequest,
-  ICalculateAllShipFeeRespone,
-  ServiceCode,
-  VietnamPostHelper,
-  PickupType,
-} from "../../../helpers";
-import { AddressModel } from "../address/address.model";
-import { CounterModel } from "../counter/counter.model";
-import {
-  IProduct,
-  ProductLoader,
-  ProductModel,
-  ProductType,
-} from "../product/product.model";
-import { IOrder, OrderModel, PaymentMethod, ShipMethod } from "./order.model";
-import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
-import {
-  AddressStorehouseModel,
-  IAddressStorehouse,
-} from "../addressStorehouse/addressStorehouse.model";
-import { MemberModel } from "../member/member.model";
-import { CrossSaleModel } from "../crossSale/crossSale.model";
-import { SettingHelper } from "../setting/setting.helper";
+import { chain, set } from "lodash";
+import { Types } from "mongoose";
+
 import { SettingKey } from "../../../configs/settingData";
+import { ErrorHelper, VietnamPostHelper } from "../../../helpers";
+import {
+  ICalculateAllShipFeeRequest,
+  ICalculateAllShipFeeResponse,
+  PickupType,
+} from "../../../helpers/vietnamPost/resources/type";
+import { AddressModel } from "../address/address.model";
+import { AddressDeliveryModel } from "../addressDelivery/addressDelivery.model";
+import { AddressStorehouseModel } from "../addressStorehouse/addressStorehouse.model";
 import { CampaignModel } from "../campaign/campaign.model";
 import {
   CampaignSocialResultModel,
   ICampaignSocialResult,
 } from "../campaignSocialResult/campaignSocialResult.model";
-import { UnorderedBulkOperation } from "mongodb";
-import { AddressDeliveryModel } from "../addressDelivery/addressDelivery.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
+import { CounterModel } from "../counter/counter.model";
+import { CrossSaleModel } from "../crossSale/crossSale.model";
 import { CustomerModel } from "../customer/customer.model";
-import { DeliveryInfo } from "./types/deliveryInfo.type";
-import { Types } from "mongoose";
+import { MemberModel } from "../member/member.model";
+import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
+import { IProduct, ProductModel, ProductType } from "../product/product.model";
+import { SettingHelper } from "../setting/setting.helper";
+import { IOrder, OrderModel, PaymentMethod, ShipMethod } from "./order.model";
 
 export class OrderHelper {
   constructor(public order: IOrder) {}
@@ -103,19 +92,14 @@ export class OrderHelper {
     // kiểm tra danh sách
     const itemsLength = Object.keys(items).length;
     if (itemsLength === 0)
-      throw ErrorHelper.requestDataInvalid(
-        ". Không có sản phẩm trong đơn hàng"
-      );
+      throw ErrorHelper.requestDataInvalid(". Không có sản phẩm trong đơn hàng");
 
     const productIds = items.map((i: any) => i.productId).map(Types.ObjectId);
 
     const orders: any = [];
 
     const addQuantitytoProduct = (product: IProduct, items: any) => {
-      product.qty = items.find(
-        (item: any) => item.productId === product._id.toString()
-      ).quantity;
-      console.log("product",product.qty);
+      product.qty = items.find((item: any) => item.productId === product._id.toString()).quantity;
       return product;
     };
 
@@ -132,17 +116,13 @@ export class OrderHelper {
       orders.push({
         ...data,
         isPrimary: false,
-        products: products.filter(
-          (p) => p.isPrimary === false && p.isCrossSale === false
-        ),
+        products: products.filter((p) => p.isPrimary === false && p.isCrossSale === false),
         fromMemberId: sellerId,
       });
     };
 
     const getCrossSaleProducts = (products: IProduct[]) => {
-      products = products.filter(
-        (p) => p.isPrimary === false && p.isCrossSale === true
-      );
+      products = products.filter((p) => p.isPrimary === false && p.isCrossSale === true);
       chain(products)
         .groupBy("memberId")
         .map((products, i) => {
@@ -158,16 +138,12 @@ export class OrderHelper {
     const products = await ProductModel.find({
       _id: { $in: productIds },
       allowSale: true,
-    }).then((products) =>
-      products.map((product) => addQuantitytoProduct(product, items))
-    );
+    }).then((products) => products.map((product) => addQuantitytoProduct(product, items)));
     // console.log("products",products.map(p=>p.qty));
 
     const productsLength = Object.keys(products).length;
     if (itemsLength !== productsLength)
-      throw ErrorHelper.requestDataInvalid(
-        ". Sản phẩm trong đơn hàng không tồn tại"
-      );
+      throw ErrorHelper.requestDataInvalid(". Sản phẩm trong đơn hàng không tồn tại");
 
     // console.log("products", products);
     getPostProducts(products);
@@ -197,8 +173,7 @@ export class OrderHelper {
     });
 
     const productsLength = Object.keys(allProducts).length;
-    if (productsLength !== itemsLength)
-      throw ErrorHelper.mgQueryFailed("Danh sách sản phẩm");
+    if (productsLength !== itemsLength) throw ErrorHelper.mgQueryFailed("Danh sách sản phẩm");
 
     const addQuantitytoProduct = (product: any) => {
       product.qty = items.find((p: any) => p.productId === product.id).quantity;
@@ -427,16 +402,10 @@ export class OrderHelper {
         Math.round(((price / UNIT_PRICE) * 100) / 100) * factor;
       // Điểm thưởng khách hàng
       if (enabledCustomerBonus)
-        orderItem.buyerBonusPoint = getPointFromPrice(
-          customerBonusFactor,
-          basePrice
-        );
+        orderItem.buyerBonusPoint = getPointFromPrice(customerBonusFactor, basePrice);
       // Điểm thưởng chủ shop
       if (enabledMemberBonus)
-        orderItem.sellerBonusPoint = getPointFromPrice(
-          memberBonusFactor,
-          basePrice
-        );
+        orderItem.sellerBonusPoint = getPointFromPrice(memberBonusFactor, basePrice);
 
       const item = new OrderItemModel(orderItem);
       this.order.items.push(item);
@@ -486,9 +455,7 @@ export class OrderHelper {
 
     switch (this.order.shipMethod) {
       case ShipMethod.NONE:
-        this.order.shipfee = await SettingHelper.load(
-          SettingKey.DELIVERY_ORDER_SHIP_FEE
-        );
+        this.order.shipfee = await SettingHelper.load(SettingKey.DELIVERY_ORDER_SHIP_FEE);
         break;
 
       case ShipMethod.POST:
@@ -513,9 +480,7 @@ export class OrderHelper {
         }
         // console.log("-------------------------->storehouses", storehouses);
 
-        this.order.shipfee = await SettingHelper.load(
-          SettingKey.DELIVERY_POST_FEE
-        );
+        this.order.shipfee = await SettingHelper.load(SettingKey.DELIVERY_POST_FEE);
 
         break;
 
@@ -549,10 +514,7 @@ export class OrderHelper {
           ? addressStorehouse.id
           : member.mainAddressStorehouseId;
 
-        const cheapestService = await calculateServiceByMainStorehouse(
-          addressStorehouseId,
-          this
-        );
+        const cheapestService = await calculateServiceByMainStorehouse(addressStorehouseId, this);
 
         const cheapestShipFee = cheapestService.TongCuocBaoGomDVCT;
 
@@ -569,9 +531,7 @@ export class OrderHelper {
           lengthEvaluation: cheapestService.productLength,
           weightEvaluation: cheapestService.productWeight,
           widthEvaluation: cheapestService.productWidth,
-          packageContent: this.order.items
-            .map((i) => `[${i.productName} - SL:${i.qty}]`)
-            .join(" "),
+          packageContent: this.order.items.map((i) => `[${i.productName} - SL:${i.qty}]`).join(" "),
           isPackageViewable: false,
           pickupType: PickupType.DROP_OFF,
 
@@ -595,9 +555,7 @@ export class OrderHelper {
         break;
 
       default:
-        throw ErrorHelper.requestDataInvalid(
-          "Phương thức vận chuyển chưa được hỗ trợ."
-        );
+        throw ErrorHelper.requestDataInvalid("Phương thức vận chuyển chưa được hỗ trợ.");
     }
     return this;
   }
@@ -617,8 +575,7 @@ export class OrderHelper {
 
       const items = this.order.items.map((item: IOrderItem) => {
         const campaignResultByProductId = campaignSocialResults.find(
-          (c: ICampaignSocialResult) =>
-            c.productId.toString() == item.productId.toString()
+          (c: ICampaignSocialResult) => c.productId.toString() == item.productId.toString()
         );
         // console.log('campaignResultByProductId', campaignResultByProductId);
         if (campaignResultByProductId) {
@@ -668,9 +625,7 @@ const calculateServiceByMainStorehouse = async (
     MaQuanNhan = orderHelper.order.buyerDistrictId;
 
   const codAmountEvaluation =
-    orderHelper.order.paymentMethod == PaymentMethod.COD
-      ? orderHelper.order.subtotal
-      : 0;
+    orderHelper.order.paymentMethod == PaymentMethod.COD ? orderHelper.order.subtotal : 0;
 
   const productWeight = orderHelper.order.itemWeight;
   const productLength = orderHelper.order.itemLength;
@@ -702,9 +657,7 @@ const calculateServiceByMainStorehouse = async (
   // console.log("data", data);
   // noi thanh
 
-  const service: ICalculateAllShipFeeRespone = await VietnamPostHelper.calculateAllShipFee(
-    data
-  );
+  const service: ICalculateAllShipFeeResponse = await VietnamPostHelper.calculateAllShipFee(data);
 
   return {
     ...service,

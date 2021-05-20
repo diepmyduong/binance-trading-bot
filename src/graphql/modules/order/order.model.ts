@@ -14,7 +14,7 @@ export enum OrderStatus {
   COMPLETED = "COMPLETED", // Đã thành công
   CANCELED = "CANCELED", // Đã huỷ
   RETURNED = "RETURNED", // Đã hoàn hàng
-  FAILURE = "FAILURE" // Thất bại
+  FAILURE = "FAILURE", // Thất bại
 }
 
 export enum PaymentMethod {
@@ -29,6 +29,11 @@ export enum ShipMethod {
   POST = "POST", // Nhận hàng tại chi nhánh
   VNPOST = "VNPOST", // Vietnam Post
   NONE = "NONE", // Không vận chuyển
+}
+export enum OrderType {
+  POST = "POST", // Đơn bưu điện,
+  SHOP = "SHOP", // Đơn bưu cục,
+  CROSSSALE = "CROSSSALE", // Bán chéo,
 }
 
 // export const ShipMethods = [
@@ -54,6 +59,7 @@ export const getShipMethods = async () => {
 export type IOrder = BaseDocument & {
   code?: string; // Mã đơn hàng
   isPrimary?: boolean; // Đơn Mobifone
+  isCrossSale?: boolean; // Đơn bán chéo
   itemIds?: string[]; // Danh sách sản phẩm
   items: IOrderItem[]; // danh sách sản phẩm trong đơn
   amount?: number; // Thành tiền
@@ -106,6 +112,7 @@ export type IOrder = BaseDocument & {
   finishedAt: Date;
   loggedAt: Date;
   campaignCode: string;
+  orderType: OrderType;
 };
 
 const orderSchema = new Schema(
@@ -165,7 +172,7 @@ const orderSchema = new Schema(
     itemCount: { type: Number, default: 0, min: 0 },
 
     oldAddressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse" },
-    addressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse", },
+    addressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse" },
 
     oldAddressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery" },
     addressDeliveryId: { type: Schema.Types.ObjectId, ref: "AddressDelivery" },
@@ -180,33 +187,39 @@ const orderSchema = new Schema(
     latitude: { type: Schema.Types.String },
     orderLogIds: {
       type: [{ type: Schema.Types.ObjectId, ref: "OrderLog" }],
+      default: [],
     },
     isLate: { type: Boolean },
     finishedAt: { type: Schema.Types.Date },
     loggedAt: { type: Schema.Types.Date },
+    orderType: {
+      type: String,
+      enum: Object.values(OrderType),
+      default: OrderType.POST,
+    },
   },
   { timestamps: true }
 );
 
-orderSchema.index({
-  code: "text",
-  buyerName: "text",
-  buyerPhone: "text",
-}, {
-  weights: {
-    code: 2,
-    buyerName: 3,
-    buyerPhone: 3
+orderSchema.index(
+  {
+    code: "text",
+    buyerName: "text",
+    buyerPhone: "text",
+  },
+  {
+    weights: {
+      code: 2,
+      buyerName: 3,
+      buyerPhone: 3,
+    },
   }
-});
+);
 orderSchema.index({ sellerId: 1 });
 orderSchema.index({ isPrimary: 1 });
 orderSchema.index({ buyerId: 1 });
 
 export const OrderHook = new ModelHook<IOrder>(orderSchema);
-export const OrderModel: mongoose.Model<IOrder> = MainConnection.model(
-  "Order",
-  orderSchema
-);
+export const OrderModel: mongoose.Model<IOrder> = MainConnection.model("Order", orderSchema);
 
 export const OrderLoader = ModelLoader<IOrder>(OrderModel, OrderHook);

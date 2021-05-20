@@ -14,14 +14,14 @@ export class GraphQLHelper {
     return (root: any, args: any, context: Context) => {
       return root[idField]
         ? loader
-          .loadMany(root[idField])
-          .then((res: any[]) => res.map((r) => r || option.defaultValue))
+            .loadMany(root[idField])
+            .then((res: any[]) => res.map((r) => r || option.defaultValue))
         : undefined;
     };
   }
   static requireRoles(roles: string[]) {
     return (root: any, args: any, context: Context, info: any) => {
-      AuthHelper.acceptRoles(context, roles);
+      context.auth(roles);
       return root[info.fieldName];
     };
   }

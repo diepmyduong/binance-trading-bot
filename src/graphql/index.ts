@@ -81,18 +81,21 @@ export default (app: Express, httpServer: Server) => {
 
     formatError(err) {
       // Logger.error()
-      Logger.error(err.message, {
-        metadata: {
-          stack: err.stack,
-          name: err.name,
-          message: err.message,
-          extensions: err.extensions,
-        },
-      });
-      if (err.extensions && !err.extensions.exception.info) {
-        ErrorHelper.logUnknowError(err);
+      try {
+        Logger.error(err.message, {
+          metadata: {
+            stack: err.stack,
+            name: err.name,
+            message: err.message,
+            extensions: err.extensions,
+          },
+        });
+        if (err.extensions && !err.extensions.exception.info) {
+          ErrorHelper.logUnknowError(err);
+        }
+      } catch (error) {
+        return err;
       }
-      return err;
     },
     subscriptions: {
       onConnect: (connectionParams, webSocket) => connectionParams,

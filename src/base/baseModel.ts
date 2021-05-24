@@ -1,12 +1,13 @@
-import mongoose from "mongoose";
 import DataLoader from "dataloader";
 import _ from "lodash";
+import { LRUMap } from "@jtfell/lru-map";
+import mongoose from "mongoose";
 import uniqueValidator from "mongoose-unique-validator";
-import { LRUMap } from "lru_map";
-import RedisDataLoader from "redis-dataloader";
 import Redis from "redis";
-import { configs } from "../configs";
+import RedisDataLoader from "redis-dataloader";
 import { Subject } from "rxjs";
+
+import { configs } from "../configs";
 
 const redisClient = configs.redis.enable
   ? Redis.createClient({
@@ -46,12 +47,14 @@ export function ModelLoader<T>(model: any, modelHook?: ModelHook<T>): DataLoader
   } else {
     loader = new DataLoader<string, T>(
       batchFunction,
-      { cacheMap: new LRUMap(100) } // Giới hạn chỉ cache 100 item sử dụng nhiêu nhất.
+      { cacheMap: new LRUMap({ maxSize: 100, maxAge: 10000 }) } // Giới hạn chỉ cache 100 item sử dụng nhiêu nhất.
     );
   }
   if (modelHook) {
     // modelHook.onFindOne.subscribe((doc: any) => loader.prime(doc._id.toString(), doc));
     modelHook.onDeleted.subscribe((doc: any) => loader.clear(doc._id.toString()));
+    // modelHook.onUpdated.subscribe((doc: any) => loader.clearAll());
+    modelHook.onSaved.subscribe((doc: any) => loader.clear(doc._id.toString()));
   }
 
   return loader;

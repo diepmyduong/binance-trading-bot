@@ -7,7 +7,7 @@ import { BaseService } from "./baseService";
 
 // import { IBaseStatic } from "./baseModel";
 // import { baseError } from "./baseError";
-export interface IQueryOptions { }
+export interface IQueryOptions {}
 
 export abstract class CrudService<M extends Model<Document, {}>> extends BaseService {
   model: M;
@@ -61,13 +61,16 @@ export abstract class CrudService<M extends Model<Document, {}>> extends BaseSer
     if (select) {
       query.select(select);
     }
-    return await Promise.all([query.exec().then(res => {
-      // console.timeEnd("Fetch");
-      return res;
-    }), countQuery.count().then(res => {
-      // console.timeEnd("Count");
-      return res;
-    })]).then((res) => {
+    return await Promise.all([
+      query.exec().then((res) => {
+        // console.timeEnd("Fetch");
+        return res;
+      }),
+      countQuery.count().then((res) => {
+        // console.timeEnd("Count");
+        return res;
+      }),
+    ]).then((res) => {
       return {
         data: res[0],
         total: res[1],

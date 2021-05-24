@@ -118,7 +118,7 @@ const memberSchema = new Schema(
     facebookAccessToken: { type: String },
     xToken: { type: String },
     lastLoginDate: { type: Date },
-    allowSale: { type: Boolean },
+    allowSale: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

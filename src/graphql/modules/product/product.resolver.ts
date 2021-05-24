@@ -11,7 +11,7 @@ import { CrossSaleModel } from "../crossSale/crossSale.model";
 import { MemberLoader } from "../member/member.model";
 import { OrderItemModel } from "../orderItem/orderItem.model";
 import { ProductHelper } from "./product.helper";
-import { IProduct, ProductModel, ProductType } from "./product.model";
+import { IProduct, ProductLoader, ProductModel, ProductType } from "./product.model";
 import { productService } from "./product.service";
 
 const Query = {
@@ -82,7 +82,9 @@ const Mutation = {
       // bỏ thuộc tính isPrimary , lấy các thuộc tính còn lại
       return product.updateOne({ $set: data });
     }
-    return await productService.updateOne(id, data);
+    return await productService.updateOne(id, data).then((res) => {
+      ProductLoader.clear(res.id);
+    });
   },
 
   deleteOneProduct: async (root: any, args: any, context: Context) => {

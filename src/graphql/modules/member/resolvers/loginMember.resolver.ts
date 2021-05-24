@@ -8,18 +8,29 @@ const Mutation = {
   loginMember: async (root: any, args: any, context: Context) => {
     const { idToken } = args;
     let decode = await firebaseHelper.verifyIdToken(idToken);
-    const member = await MemberModel.findOne({ uid: decode.uid });
+    let member = await MemberModel.findOne({ uid: decode.uid });
+    if (!member && decode.email) {
+      member = await MemberModel.findOneAndUpdate(
+        { username: decode.email },
+        { $set: { uid: decode.uid } },
+        { new: true }
+      );
+    }
     if (!member) throw ErrorHelper.mgRecoredNotFound("Tài khoản");
     const helper = new MemberHelper(member);
 
-    const token =helper.getToken();
+    const token = helper.getToken();
 
-    await MemberModel.findByIdAndUpdate(member.id, {
-      $set: {
-        xToken: token, 
-        lastLoginDate: new Date()
-      }
-    }, { new: true });
+    await MemberModel.findByIdAndUpdate(
+      member.id,
+      {
+        $set: {
+          xToken: token,
+          lastLoginDate: new Date(),
+        },
+      },
+      { new: true }
+    );
 
     return { member: member, token };
   },

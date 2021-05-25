@@ -7,6 +7,7 @@ export type ICrossSale = BaseDocument & {
   productId?: string; // Mã sản phẩm
   sellerId?: string; // Chủ shop đăng bán chéo
   productName?: string; // Tên sản phẩm
+  allowSale?: boolean; // Cho phép bán
 };
 
 const crossSaleSchema = new Schema(
@@ -14,6 +15,7 @@ const crossSaleSchema = new Schema(
     productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     sellerId: { type: Schema.Types.ObjectId, ref: "Member", required: true },
     productName: { type: String },
+    allowSale: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

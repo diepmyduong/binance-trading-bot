@@ -12,13 +12,13 @@ const { CrossSaleModel } = require('../../dist/graphql/modules/crossSale/crossSa
       }
     },
     { $unwind: '$product' },
-    { $project: { _id: 1, productName: '$product.name'} }
+    { $project: { _id: 1, productName: '$product.name', allowSale: '$product.allowSale'} }
   ]);
   console.log(`Fix ${crossSales.length} sản phẩm`);
   console.log('sample', take(crossSales, 10));
   const bulk = CrossSaleModel.collection.initializeUnorderedBulkOp();
   for (const p of crossSales) {
-    bulk.find({ _id: p._id }).updateOne({ $set: { productName: p.productName } });
+    bulk.find({ _id: p._id }).updateOne({ $set: { productName: p.productName, allowSale: p.allowSale } });
   }
   if (bulk.length > 0) {
     await bulk.execute();

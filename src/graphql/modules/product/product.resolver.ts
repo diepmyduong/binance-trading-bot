@@ -32,7 +32,7 @@ const Query = {
         }
       }
       // console.log('q.filter', q.filter);
-    } else if (context.isCustomer()) {
+    } else if (context.isCustomer() || context.isMessenger() || !context.isAuth) {
       set(args, "q.filter.allowSale", true);
       set(args, "q.filter.$or", [{ isPrimary: true }, { isCrossSale: true }]);
     }

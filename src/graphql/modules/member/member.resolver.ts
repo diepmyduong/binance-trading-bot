@@ -73,6 +73,7 @@ const Mutation = {
         AddressHelper.setWardName(helper.member),
       ]);
       helper.setActivedAt();
+      MemberLoader.clear(res.id);
       return await helper.member.save();
     });
   },

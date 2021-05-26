@@ -82,8 +82,13 @@ const Mutation = {
       // bỏ thuộc tính isPrimary , lấy các thuộc tính còn lại
       return product.updateOne({ $set: data });
     }
-    return await productService.updateOne(id, data).then((res) => {
+    return await productService.updateOne(id, data).then(async (res: IProduct) => {
       ProductLoader.clear(res.id);
+      await CrossSaleModel.updateMany(
+        { productId: res._id },
+        { $set: { productName: res.name, allowSale: res.allowSale } }
+      );
+      return res;
     });
   },
 

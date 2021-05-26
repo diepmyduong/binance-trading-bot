@@ -109,9 +109,10 @@ export class OrderGenerator {
   }
   async generate() {
     await this.getUnitPrice();
-    await Promise.all([this.setOrderItems(), this.setCollaborator(), this.setBuyerAddress()]);
+    await Promise.all([this.setOrderItems(), this.setBuyerAddress()]);
     this.calculateAmount(); // Tính tiền trước phí ship
     await this.setOrderSeller();
+    await this.setCollaborator();
     await Promise.all([this.setCampaign(), this.calculateShipfee()]);
     this.calculateAmount(); // Tính tiền sau phí ship
   }
@@ -304,9 +305,10 @@ export class OrderGenerator {
     let collaborator;
     if (this.collaboratorId) {
       collaborator = await CollaboratorModel.findById(this.collaboratorId);
-    } else {
+    }
+    if (!collaborator) {
       collaborator = await CollaboratorModel.findOne({
-        phone: this.buyer.phone,
+        phone: this.order.buyerPhone,
         memberId: this.order.fromMemberId,
       });
     }
@@ -328,7 +330,6 @@ export class OrderGenerator {
     this.order.commission3 = sumBy(this.orderItems, (i) => i.commission3 * i.qty);
     this.order.sellerBonusPoint = sumBy(this.orderItems, "sellerBonusPoint");
     this.order.buyerBonusPoint = sumBy(this.orderItems, "buyerBonusPoint");
-    console.log('maxBy(this.orderItems, "productHeight")', maxBy(this.orderItems, "productHeight"));
     this.order.itemHeight = maxBy(this.orderItems, "productHeight").productHeight;
     this.order.itemLength = maxBy(this.orderItems, "productLength").productLength;
     this.order.itemWidth = maxBy(this.orderItems, "productWidth").productWidth;

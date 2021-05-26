@@ -14,9 +14,11 @@ const Query = {
   getAllCrossSale: async (root: any, args: any, context: Context) => {
     if (context.isCustomer()) {
       set(args, "q.filter.sellerId", context.sellerId);
+      set(args, "q.filter.allowSale", true);
     } else if (context.memberCode) {
       const seller = await MemberModel.findOne({ code: context.memberCode });
       set(args, "q.filter.sellerId", seller._id);
+      set(args, "q.filter.allowSale", true);
     } else {
       if (context.isMember()) {
         set(args, "q.filter.sellerId", context.id);
@@ -39,7 +41,7 @@ const Mutation = {
     const product = await getCrossSaleProduct(productId);
     return await CrossSaleModel.findOneAndUpdate(
       { productId: product._id, sellerId: context.id },
-      { $set: { productName: product.name } },
+      { $set: { productName: product.name, allowSale: product.allowSale } },
       { new: true, upsert: true }
     ).exec();
   },

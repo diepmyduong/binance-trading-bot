@@ -33,7 +33,6 @@ const Query = {
     }
 
     // console.log('params', params);
-
     const member = await memberService.findOne(params);
 
     if (!member) throw ErrorHelper.mgRecoredNotFound("Bưu cục");

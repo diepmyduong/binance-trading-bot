@@ -12,6 +12,7 @@ import {
   VNPostOrderStatusDetailMap,
   VNPostOrderStatusMap,
 } from "../../helpers/vietnamPost/vietnamPostDeliveryStatus";
+import { Logger } from "../../loaders/logger";
 
 const publicKeyPem = getPem(configs.vietnamPost.publicKey, "AQAB");
 export default [
@@ -21,43 +22,46 @@ export default [
     midd: [],
     action: async (req: Request, res: Response) => {
       verifyWebhookData(req.body);
-      const data = JSON.parse(req.body.Data);
-      const order = await OrderModel.findOne({ code: data.OrderCode });
-      if (!order || order.deliveryInfo.itemCode != data.ItemCode) {
-        console.log("Đơn hàng không hợp lệ");
-        throw Error("Đơn hàng không hợp lệ");
-      }
-      // if (order.deliveryInfo.status == data.OrderStatusId.toString()) {
-      //   console.log("Trạng thái bị trùng");
-      //   return res.sendStatus(200);
-      // }
-      const deliveryLog = await DeliveryLogModel.create({
-        orderId: order._id,
-        memberId: order.sellerId,
-        customerId: order.buyerId,
-        orderNumber: data.ItemCode,
-        deliveryCode: data.ItemCode,
-        deliveryId: data.Id,
-        shipMethod: ShipMethod.VNPOST,
-        status: data.OrderStatusId.toString(),
-        statusName: VNPostOrderStatusMap.get(data.OrderStatusId),
-        statusDetail: VNPostOrderStatusDetailMap.get(data.OrderStatusId),
-        statusDate: moment(data.LastUpdateTime),
-        note: data.DeliveryNote,
-        moneyCollection: parseFloat(data.CodAmountEvaluation),
-        moneyFeeCOD: data.CodFreight,
-        moneyTotal: data.TotalFreightIncludeVat,
-        expectedDelivery: data.DeliveryDateEvaluation,
-        productWeight: data.WeightConvert,
-        orderService: data.ServiceDisplayName,
-        detail: data.PackageContent,
-      });
-      console.log("deliveryLog", deliveryLog);
-      order.deliveryInfo.status = deliveryLog.status;
-      order.deliveryInfo.statusText = deliveryLog.statusName;
-      await order.save();
-      onDelivering.next(order);
       res.sendStatus(200);
+      try {
+        const data = JSON.parse(req.body.Data);
+        const order = await OrderModel.findOne({ code: data.OrderCode });
+        if (!order || order.deliveryInfo.itemCode != data.ItemCode) {
+          throw Error("Đơn hàng không hợp lệ");
+        }
+        // if (order.deliveryInfo.status == data.OrderStatusId.toString()) {
+        //   console.log("Trạng thái bị trùng");
+        //   return res.sendStatus(200);
+        // }
+        const deliveryLog = await DeliveryLogModel.create({
+          orderId: order._id,
+          memberId: order.sellerId,
+          customerId: order.buyerId,
+          orderNumber: data.ItemCode,
+          deliveryCode: data.ItemCode,
+          deliveryId: data.Id,
+          shipMethod: ShipMethod.VNPOST,
+          status: data.OrderStatusId.toString(),
+          statusName: VNPostOrderStatusMap.get(data.OrderStatusId),
+          statusDetail: VNPostOrderStatusDetailMap.get(data.OrderStatusId),
+          statusDate: moment(data.LastUpdateTime),
+          note: data.DeliveryNote,
+          moneyCollection: parseFloat(data.CodAmountEvaluation),
+          moneyFeeCOD: data.CodFreight,
+          moneyTotal: data.TotalFreightIncludeVat,
+          expectedDelivery: data.DeliveryDateEvaluation,
+          productWeight: data.WeightConvert,
+          orderService: data.ServiceDisplayName,
+          detail: data.PackageContent,
+        });
+        console.log("deliveryLog", deliveryLog);
+        order.deliveryInfo.status = deliveryLog.status;
+        order.deliveryInfo.statusText = deliveryLog.statusName;
+        await order.save();
+        onDelivering.next(order);
+      } catch (err) {
+        Logger.error(`[WEBHOOK VNPOST]: ${err.message}`);
+      }
     },
   },
 ];

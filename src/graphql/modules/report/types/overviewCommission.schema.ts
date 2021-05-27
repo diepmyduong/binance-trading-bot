@@ -9,22 +9,30 @@ const schema = gql`
   }
 
   type OverviewCommissionReport {
+    "Đơn hoàn thành"
+    completeOrder: Int
+    "Đơn chưa hoàn thành"
+    uncompleteOrder: Int
     "Tổng hoa hồng thực nhận"
     totalCommission: Float
     "Tổng hoa hồng dự kiến"
     totalUnCompletedCommission: Float
 
-    "Hoa hồng bưu cục"
+    "Hoa hồng điểm bán"
     commission1:Float
-    "Hoa hồng CTV"
+    "Hoa hồng giới thiệu"
     commission2:Float
+    "Hoa hồng CTV"
+    commission21:Float
     "Hoa hồng giao hàng"
     commission3:Float
 
     "Hoa hồng bưu cục dự kiến"
     unCompletedCommission1:Float
-    "Hoa hồng CTV dự kiến"
+    "Hoa hồng điểm bán dự kiến"
     unCompletedcommission2:Float
+    "Hoa hồng CTV dự kiến"
+    unCompletedcommission21:Float
     "Hoa hồng giao hàng dự kiến"
     unCompletedcommission3:Float
   }
@@ -68,7 +76,7 @@ const schema = gql`
     sellerId: ID 
     "Chủ shop bán chéo"
     fromMemberId: ID
-    "Trạng thái ${Object.values(OrderStatus).join('|')}"
+    "Trạng thái ${Object.values(OrderStatus).join("|")}"
     status: String
     "Hoa hồng VNPOST"
     commission0: Float

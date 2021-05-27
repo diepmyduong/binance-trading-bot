@@ -1,20 +1,27 @@
+import { get, set } from "lodash";
+import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 
 import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper, UtilsHelper } from "../../../../helpers";
-import { Context } from "../../../context";
-import { AddressDeliveryLoader, AddressDeliveryModel } from "../../addressDelivery/addressDelivery.model";
-import { AddressStorehouseLoader, AddressStorehouseModel } from "../../addressStorehouse/addressStorehouse.model";
 import { GraphQLHelper } from "../../../../helpers/graphql.helper";
+import { Context } from "../../../context";
+import { AddressDeliveryLoader } from "../../addressDelivery/addressDelivery.model";
+import { AddressStorehouseLoader } from "../../addressStorehouse/addressStorehouse.model";
+import { CollaboratorLoader } from "../../collaborator/collaborator.model";
+import { CustomerLoader } from "../../customer/customer.model";
 import { MemberLoader, MemberModel } from "../../member/member.model";
-import { CustomerLoader, CustomerModel } from "../../customer/customer.model";
-import { getShipMethods, IOrder, OrderLoader, OrderModel, OrderStatus, PaymentMethod, ShipMethod } from "../../order/order.model";
-import { ObjectId } from "mongodb";
-import { OrderLogLoader } from "../../orderLog/orderLog.model";
+import {
+  getShipMethods,
+  IOrder,
+  OrderModel,
+  OrderStatus,
+  PaymentMethod,
+  ShipMethod,
+} from "../../order/order.model";
 import { orderService } from "../../order/order.service";
 import { OrderItemLoader } from "../../orderItem/orderItem.model";
-import { CollaboratorLoader, CollaboratorModel } from "../../collaborator/collaborator.model";
-import { set } from "lodash";
-import { Types } from "mongoose";
+import { OrderLogLoader } from "../../orderLog/orderLog.model";
 
 const resolveArgs = (args: any) => {
   delete args.q.filter.sellerIds;
@@ -22,154 +29,104 @@ const resolveArgs = (args: any) => {
   delete args.q.filter.toDate;
   delete args.q.filter.orderStatus;
   delete args.q.filter.branchId;
-}
+};
 
 const getCommissionReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  let { fromDate, toDate, sellerIds, branchId, collaboratorId } = args;
+  const { memberIds, $match }: { memberIds: Types.ObjectId[]; $match: any } = await getMatchQuery(
+    args,
+    context
+  );
+  const isFromMember = memberIds.length > 0 ? { $in: ["$fromMemberId", memberIds] } : true;
+  const isToMember = memberIds.length > 0 ? { $in: ["$toMemberId", memberIds] } : true;
+  const isCollaborator = { $ne: [{ $ifNull: ["$collaboratorId", 0] }, 0] };
+  const notCollaborator = { $eq: [{ $ifNull: ["$collaboratorId", 0] }, 0] };
+  const statusComplete = { $in: ["$status", ["COMPLETED"]] };
+  const statusUncomplete = { $in: ["$status", ["PENDING", "CONFIRMED", "DELIVERING"]] };
+  const commission1Cond: any = { $and: [isFromMember, statusComplete] };
+  const commission2Cond: any = { $and: [notCollaborator, isFromMember, statusComplete] };
+  const commission21Cond: any = { $and: [isCollaborator, statusComplete] };
+  const commission3Cond: any = { $and: [isToMember, statusComplete] };
+  const uncommission1Cond: any = { $and: [isFromMember] };
+  const uncommission2Cond: any = { $and: [notCollaborator, isFromMember] };
+  const uncommission21Cond: any = { $and: [isCollaborator] };
+  const uncommission3Cond: any = { $and: [isToMember] };
 
-  const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
-
-  const params = {};
-
-  if ($gte) {
-    set(params, "createdAt.$gte", $gte);
-  }
-
-  if ($lte) {
-    set(params, "loggedAt.$lte", $lte);
-  }
-
-  //theo bưu cục nào
-  if (context.isMember()) {
-    set(params, "sellerId.$in", [context.id]);
-  }
-  else {
-    if (branchId) {
-      const members = await MemberModel.find({ branchId, activated: true }).select("_id");;
-      const sellerIds = members.map(m => m.id);
-      set(params, "sellerId.$in", sellerIds.map(Types.ObjectId));
-    }
-    else {
-      if (sellerIds) {
-        if (sellerIds.length > 0) {
-          set(params, "sellerId.$in", sellerIds.map(Types.ObjectId));
-        }
-      }
-    }
-  }
-
-  //theo ctv nao
-  if (collaboratorId) {
-    set(params, "collaboratorId", new ObjectId(collaboratorId));
-  }
-
-  // console.log('params',params);
-
-  const [order] = await OrderModel.aggregate([
+  const query: any = [
+    { $match: $match },
     {
-      $match: {
-        ...params
-      }
+      $project: getFieldProject(),
+    },
+    { $addFields: { toMemberId: { $ifNull: ["$toMemberId", "$sellerId"] } } },
+    {
+      $addFields: {
+        commission1: { $cond: [commission1Cond, "$commission1", 0] },
+        commission2: { $cond: [commission2Cond, "$commission2", 0] },
+        commission21: { $cond: [commission21Cond, "$commission2", 0] },
+        commission3: { $cond: [commission3Cond, "$commission3", 0] },
+        unCompletedCommission1: { $cond: [uncommission1Cond, "$commission1", 0] },
+        unCompletedcommission2: { $cond: [uncommission2Cond, "$commission2", 0] },
+        unCompletedcommission21: { $cond: [uncommission21Cond, "$commission2", 0] },
+        unCompletedcommission3: { $cond: [uncommission3Cond, "$commission3", 0] },
+        completeOrder: { $cond: [statusComplete, 1, 0] },
+        uncompleteOrder: { $cond: [statusUncomplete, 1, 0] },
+      },
     },
     {
       $group: {
         _id: null,
-        commission1: { $sum: { $cond: [{ $in: ["$status", ["COMPLETED"]] }, "$commission1", 0] } },
-        commission2: { $sum: { $cond: [{ $in: ["$status", ["COMPLETED"]] }, "$commission2", 0] } },
-        commission3: { $sum: { $cond: [{ $in: ["$status", ["COMPLETED"]] }, "$commission3", 0] } },
-
-        unCompletedCommission1: { $sum: { $cond: [{ $in: ["$status", ["PENDING", "CONFIRMED", "DELIVERING"]] }, "$commission1", 0] } },
-        unCompletedcommission2: { $sum: { $cond: [{ $in: ["$status", ["PENDING", "CONFIRMED", "DELIVERING"]] }, "$commission2", 0] } },
-        unCompletedcommission3: { $sum: { $cond: [{ $in: ["$status", ["PENDING", "CONFIRMED", "DELIVERING"]] }, "$commission3", 0] } },
-      }
-    }
-  ]);
-
-  let result = {
-    commission1: 0,
-    commission2: 0,
-    commission3: 0,
-    unCompletedCommission1: 0,
-    unCompletedcommission2: 0,
-    unCompletedcommission3: 0,
-    totalCommission: 0,
-    totalUnCompletedCommission: 0,
-  }
-
-  if (order) {
-    result = {
-      ...order,
-      totalCommission: order.commission1 + order.commission2 + order.commission3,
-      totalUnCompletedCommission: order.unCompletedCommission1 + order.unCompletedcommission2 + order.unCompletedcommission3
-    }
-  }
-
+        completeOrder: { $sum: "completeOrder" },
+        uncompleteOrder: { $sum: "uncompleteOrder" },
+        commission1: { $sum: "$commission1" },
+        commission2: { $sum: "$commission2" },
+        commission21: { $sum: "$commission21" },
+        commission3: { $sum: "$commission3" },
+        unCompletedCommission1: { $sum: "$unCompletedCommission1" },
+        unCompletedcommission2: { $sum: "$unCompletedcommission2" },
+        unCompletedcommission21: { $sum: "$unCompletedcommission21" },
+        unCompletedcommission3: { $sum: "$unCompletedcommission3" },
+        totalCommission: {
+          $sum: { $add: ["$commission1", "$commission2", "$commission21", "$commission3"] },
+        },
+        totalUnCompletedCommission: {
+          $sum: {
+            $add: [
+              "$unCompletedCommission1",
+              "$unCompletedcommission2",
+              "$unCompletedcommission21",
+              "$unCompletedcommission3",
+            ],
+          },
+        },
+      },
+    },
+  ];
+  const result = await OrderModel.aggregate(query).then((res) =>
+    get(res, "0", {
+      completeOrder: 0,
+      uncompleteOrder: 0,
+      commission1: 0,
+      commission2: 0,
+      commission21: 0,
+      commission3: 0,
+      unCompletedCommission1: 0,
+      unCompletedcommission2: 0,
+      unCompletedcommission21: 0,
+      unCompletedcommission3: 0,
+      totalCommission: 0,
+      totalUnCompletedCommission: 0,
+    })
+  );
   return result;
 };
 
 const getCommissionReports = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  const queryInput = args.q;
-  let { fromDate, toDate, sellerIds, collaboratorId, orderStatus, branchId } = queryInput.filter;
-
-  const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
-
-  if ($gte) {
-    set(args, "q.filter.createdAt.$gte", $gte);
-  }
-
-  if ($lte) {
-    set(args, "q.filter.loggedAt.$lte", $lte);
-  }
-
-  //theo bưu cục nào
-  if (context.isMember()) {
-    set(args, "q.filter.sellerId.$in", [context.id]);
-  }
-  else {
-    if (branchId) {
-      const memberIds = await MemberModel.find({ branchId, activated: true }).select("_id");
-      const sellerIds = memberIds.map(m => m.id);
-      set(args, "q.filter.sellerId.$in", sellerIds.map(Types.ObjectId));
-    }
-    else {
-      if (sellerIds) {
-        if (sellerIds.length > 0) {
-          set(args, "q.filter.sellerId.$in", sellerIds.map(Types.ObjectId));
-        }
-        else {
-          delete args.q.filter.sellerIds;
-        }
-      }
-    }
-  }
-
-  //theo ctv nao
-  if (collaboratorId) {
-    set(args, "q.filter.collaboratorId", new ObjectId(collaboratorId));
-  }
-
-  //theo du kien
-  if (orderStatus) {
-    switch (orderStatus) {
-      case "COMPLETED":
-        set(args, "q.filter.status", [OrderStatus.COMPLETED]);
-        break;
-      case "UNCOMPLETED":
-        set(args, "q.filter.status", [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING]);
-        break;
-      default:
-        set(args, "q.filter.status", [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING, OrderStatus.COMPLETED]);
-        break;
-    }
-  }
-
-  // theo thuc nhan
-  resolveArgs(args);
-  // console.log('args', args);
-
-  return orderService.fetch(args.q, '-sellerBonusPoint -buyerBonusPoint -itemWeight -itemWidth -itemLength -itemHeight -isUrbanDelivery -buyerName -buyerPhone -fromMemberId -orderLogIds');
+  const { memberIds, $match }: { memberIds: Types.ObjectId[]; $match: any } = await getMatchQuery(
+    args.q.filter,
+    context
+  );
+  return orderService.fetch(args.q);
 };
 
 const OverviewCommission = {
@@ -185,60 +142,65 @@ const OverviewCommission = {
   },
 
   commission2Details: async (root: IOrder, args: any, context: Context) => {
-    const { commission2, collaboratorId, sellerId } = root
+    const { commission2, collaboratorId, sellerId } = root;
     if (collaboratorId) {
       const collaborator = await CollaboratorLoader.load(collaboratorId);
       return {
         code: collaborator.code,
         name: collaborator.name,
         type: "CTV",
-        value: commission2
-      }
-    }
-    else {
+        value: commission2,
+      };
+    } else {
       const member = await MemberModel.findById(sellerId);
       return {
         code: member.code,
         name: member.name,
         type: "Bưu Cục",
-        value: commission2
-      }
+        value: commission2,
+      };
     }
   },
 
   commission1Details: async (root: IOrder, args: any, context: Context) => {
-    const { commission1, sellerId } = root
+    const { commission1, sellerId } = root;
     const member = await MemberLoader.load(sellerId);
     return {
       code: member.code,
       name: member.shopName,
       type: "Bưu Cục",
-      value: commission1
-    }
+      value: commission1,
+    };
   },
 
   commission3Details: async (root: IOrder, args: any, context: Context) => {
-    const { commission3, sellerId, toMemberId, status, shipMethod, addressDeliveryId, addressStorehouseId } = root;
+    const {
+      commission3,
+      sellerId,
+      toMemberId,
+      status,
+      shipMethod,
+      addressDeliveryId,
+      addressStorehouseId,
+    } = root;
     if (toMemberId) {
       const member = await MemberLoader.load(toMemberId);
       return {
         code: member.code,
         name: member.shopName,
         type: "Bưu Cục giao hàng",
-        value: commission3
-      }
-    }
-    else {
+        value: commission3,
+      };
+    } else {
       if (status === OrderStatus.COMPLETED) {
         const member = await MemberLoader.load(sellerId);
         return {
           code: member.code,
           name: member.shopName,
           type: "Bưu Cục giao hàng",
-          value: commission3
-        }
-      }
-      else {
+          value: commission3,
+        };
+      } else {
         if (shipMethod === ShipMethod.POST) {
           const address = await AddressDeliveryLoader.load(addressDeliveryId);
           const member = await MemberModel.findOne({ code: address.code });
@@ -246,8 +208,8 @@ const OverviewCommission = {
             code: member.code,
             name: member.shopName,
             type: "Bưu Cục giao hàng",
-            value: commission3
-          }
+            value: commission3,
+          };
         }
         if (shipMethod === ShipMethod.VNPOST) {
           const address = await AddressStorehouseLoader.load(addressStorehouseId);
@@ -256,10 +218,9 @@ const OverviewCommission = {
             code: member.code,
             name: member.shopName,
             type: "Bưu Cục giao hàng",
-            value: commission3
-          }
+            value: commission3,
+          };
         }
-
       }
     }
   },
@@ -270,7 +231,7 @@ const OverviewCommission = {
       if (root.shipMethod === ShipMethod.POST) {
         const address = await AddressDeliveryLoader.load(root.addressDeliveryId);
         if (member.code !== address.code) {
-          return true
+          return true;
         }
         return false;
       }
@@ -278,23 +239,17 @@ const OverviewCommission = {
       if (root.shipMethod === ShipMethod.VNPOST) {
         const address = await AddressStorehouseLoader.load(root.addressStorehouseId);
         if (member.code !== address.code) {
-          return true
+          return true;
         }
-        return false
+        return false;
       }
-      return false
+      return false;
     }
     return false;
   },
 
-  addressStorehouse: GraphQLHelper.loadById(
-    AddressStorehouseLoader,
-    "addressStorehouseId"
-  ),
-  addressDelivery: GraphQLHelper.loadById(
-    AddressDeliveryLoader,
-    "addressDeliveryId"
-  ),
+  addressStorehouse: GraphQLHelper.loadById(AddressStorehouseLoader, "addressStorehouseId"),
+  addressDelivery: GraphQLHelper.loadById(AddressDeliveryLoader, "addressDeliveryId"),
 
   deliveringMember: async (root: IOrder, args: any, context: Context) => {
     if (root.toMemberId) {
@@ -315,8 +270,7 @@ const OverviewCommission = {
 
     const result = await MemberModel.findOne({ code });
 
-    if (!result)
-      return await MemberLoader.load(root.sellerId);
+    if (!result) return await MemberLoader.load(root.sellerId);
 
     return result;
   },
@@ -334,9 +288,7 @@ const OverviewCommission = {
 
   shipMethodText: async (root: IOrder, args: any, context: Context) => {
     const shipMethods = await getShipMethods();
-    const shipMethod = shipMethods.find(
-      (ship) => ship.value === root.shipMethod
-    );
+    const shipMethod = shipMethods.find((ship) => ship.value === root.shipMethod);
     return shipMethod ? shipMethod.label : "Không có phương thức này";
   },
 
@@ -361,15 +313,74 @@ const OverviewCommission = {
     }
   },
 
-  commission: async ({ commission1, commission2, commission3 }: IOrder, args: any, context: Context) => commission1 + commission2 + commission3
-}
+  commission: async (
+    { commission1, commission2, commission3 }: IOrder,
+    args: any,
+    context: Context
+  ) => commission1 + commission2 + commission3,
+};
 
 const Query = {
   getCommissionReportsOverview,
-  getCommissionReports
+  getCommissionReports,
 };
 
 export default {
   Query,
-  OverviewCommission
+  OverviewCommission,
 };
+function getFieldProject() {
+  return {
+    _id: 1,
+    sellerId: 1,
+    buyerId: 1,
+    fromMemberId: 1,
+    toMemberId: 1,
+    commission1: 1,
+    commission2: 1,
+    commission3: 1,
+    collaboratorId: 1,
+    status: 1,
+  };
+}
+
+async function getMatchQuery(args: any, context: Context) {
+  let { fromDate, toDate, sellerIds, branchId, collaboratorId } = args;
+  const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
+
+  const $match: any = {};
+  if ($gte) set($match, "createdAt.$gte", $gte);
+  if ($lte) set($match, "loggedAt.$lte", $lte);
+
+  //theo bưu cục nào
+  const memberIds: Types.ObjectId[] = await getMemberIds(context, branchId, sellerIds);
+  if (memberIds.length > 0) {
+    set($match, "$or", [
+      { sellerId: { $in: memberIds } },
+      { fromMemberId: { $in: memberIds } },
+      { toMemberId: { $in: memberIds } },
+    ]);
+  }
+
+  //theo ctv nao
+  if (collaboratorId) {
+    set($match, "collaboratorId", Types.ObjectId(collaboratorId));
+  }
+  return { memberIds, $match };
+}
+
+async function getMemberIds(context: Context, branchId: any, sellerIds: any) {
+  let memberIds: Types.ObjectId[] = [];
+  if (context.isMember()) {
+    memberIds = [Types.ObjectId(context.id)];
+  } else {
+    if (branchId) {
+      memberIds = await MemberModel.find({ branchId, activated: true })
+        .select("_id")
+        .then((res) => res.map((r) => r._id));
+    } else {
+      memberIds = sellerIds.map(Types.ObjectId) || [];
+    }
+  }
+  return memberIds;
+}

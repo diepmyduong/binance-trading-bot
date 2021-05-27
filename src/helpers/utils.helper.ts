@@ -9,39 +9,36 @@ import nlp from "wink-nlp-utils";
 import KhongDau from "khong-dau";
 
 import { AddressModel } from "../graphql/modules/address/address.model";
-import moment from "moment";
+import moment from "moment-timezone";
 
-const START_MONTH = moment().startOf('month').format('YYYY-MM-DD');
-const END_MONTH = moment().endOf('month').format('YYYY-MM-DD');
+const START_MONTH = moment().startOf("month").format("YYYY-MM-DD");
+const END_MONTH = moment().endOf("month").format("YYYY-MM-DD");
 
 export class UtilsHelper {
-  constructor() { }
+  constructor() {}
 
   static getDatesWithComparing = (fromDate: string = START_MONTH, toDate: string = END_MONTH) => {
     let $gte: Date = null,
       $lte: Date = null;
-    // console.log('fromDate',fromDate);
-    // console.log('toDate',toDate);
 
     if (fromDate) {
-      fromDate = fromDate + "T00:00:00+07:00";
-      $gte = new Date(fromDate);
+      $gte = moment(fromDate, "YYYY-MM-DD").startOf("date").toDate();
     }
 
     if (toDate) {
-      toDate = toDate + "T23:59:59+07:00";
-      $lte = new Date(toDate);
+      $lte = moment(toDate, "YYYY-MM-DD").endOf("date").toDate();
     }
     return {
-      $gte, $lte
-    }
-  }
+      $gte,
+      $lte,
+    };
+  };
 
-  static setTitleExcelWorkBook = (sheet:any , title:string)=>{
+  static setTitleExcelWorkBook = (sheet: any, title: string) => {
     sheet.insertRow(1, [title]);
     sheet.mergeCells(`A1:I1`);
-    sheet.getRow(1).font = { bold: true, size: 18 }
-  }
+    sheet.getRow(1).font = { bold: true, size: 18 };
+  };
 
   static setThemeExcelWorkBook = (sheet: any) => {
     for (let i = 0; i < sheet.columns.length; i += 1) {
@@ -55,24 +52,24 @@ export class UtilsHelper {
           dataMax = columnLength;
         }
         column.worksheet.getRow(j).border = {
-          top: { style: 'thin', color: { argb: '000000' } },
-          left: { style: 'thin', color: { argb: '000000' } },
-          bottom: { style: 'thin', color: { argb: '000000' } },
-          right: { style: 'thin', color: { argb: '000000' } }
-        }
+          top: { style: "thin", color: { argb: "000000" } },
+          left: { style: "thin", color: { argb: "000000" } },
+          bottom: { style: "thin", color: { argb: "000000" } },
+          right: { style: "thin", color: { argb: "000000" } },
+        };
       }
       column.width = dataMax < 10 ? 10 : dataMax;
       column.worksheet.getRow(headerIndex).fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFD100' },
-        bgColor: { argb: 'FFD100' },
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFD100" },
+        bgColor: { argb: "FFD100" },
       };
       column.worksheet.getRow(headerIndex).font = {
         bold: true,
-      }
+      };
     }
-  }
+  };
 
   static responseExcel(res: Response, workBook: Workbook, filename = "baocao") {
     res.status(200);
@@ -190,7 +187,6 @@ export class UtilsHelper {
       ":$1"
     );
   }
-
 }
 
 export const getProvinceName = async (provinceId: any) => {
@@ -198,16 +194,16 @@ export const getProvinceName = async (provinceId: any) => {
   const address = await AddressModel.findOne({ provinceId });
   if (!address) return null;
   return address.province;
-}
+};
 export const getDistrictName = async (districtId: any) => {
   if (!districtId) return null;
   const address = await AddressModel.findOne({ districtId });
   if (!address) return null;
   return address.district;
-}
+};
 export const getWardName = async (wardId: any) => {
   if (!wardId) return null;
   const address = await AddressModel.findOne({ wardId });
   if (!wardId) return null;
   return address.ward;
-}
+};

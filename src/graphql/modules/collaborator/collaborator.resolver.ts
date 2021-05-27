@@ -8,12 +8,13 @@ import { collaboratorService } from "./collaborator.service";
 import { CustomerModel } from "../customer/customer.model";
 import { SettingHelper } from "../setting/setting.helper";
 import { SettingKey } from "../../../configs/settingData";
+import { set } from "lodash";
 
 const Query = {
   getAllCollaborator: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     if (context.isMember()) {
-      args.q.filter.memberId = context.id;
+      set(args, "q.filter.memberId", context.id);
     }
     return collaboratorService.fetch(args.q);
   },

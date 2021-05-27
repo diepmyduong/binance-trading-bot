@@ -11,6 +11,7 @@ import {
   PickupType,
 } from "../../../helpers/vietnamPost/resources/type";
 import { Context } from "../../context";
+import { ShopConfigModel } from "../shopConfig/shopConfig.model";
 import { IOrder, OrderModel, OrderStatus, PaymentMethod } from "./order.model";
 
 export default {
@@ -80,21 +81,23 @@ export default {
   resolver: {
     Mutation: {
       transferOrderToVNPost: async (root: any, args: any, context: Context) => {
-        context.auth(ROLES.ADMIN_EDITOR_MEMBER);
+        context.auth([ROLES.MEMBER]);
         const { orderId, data } = args;
+        const shopConfig = await getShopConfig(context);
         const order = await getOrder(orderId, context);
         order.deliveryInfo = merge(order.deliveryInfo, data);
-        await requestVNPostBill(order);
+        await requestVNPostBill(order, shopConfig.vnpostToken);
         await order.save();
         onMemberDelivering.next(order);
         return order;
       },
       transferOrderToVNPostDraft: async (root: any, args: any, context: Context) => {
-        context.auth(ROLES.ADMIN_EDITOR_MEMBER);
+        context.auth([ROLES.MEMBER]);
         const { orderId, data } = args;
+        const shopConfig = await getShopConfig(context);
         const order = await getOrder(orderId, context);
         order.deliveryInfo = merge(order.deliveryInfo, data);
-        const vnpostShipFee = await calculateVNPostShipFee(order);
+        const vnpostShipFee = await calculateVNPostShipFee(order, shopConfig.vnpostToken);
         order.deliveryInfo = merge(order.deliveryInfo, {
           serviceName: vnpostShipFee.MaDichVu as any,
           codAmountEvaluation: order.paymentMethod == PaymentMethod.COD ? order.subtotal : 0,
@@ -106,6 +109,12 @@ export default {
     },
   },
 };
+async function getShopConfig(context: Context) {
+  const shopConfig = await ShopConfigModel.findOne({ memberId: context.id });
+  if (!shopConfig || !shopConfig.vnpostToken) throw Error("Chủ shop chưa kết nối giao hàng VNPost");
+  return shopConfig;
+}
+
 async function getOrder(orderId: any, context: Context) {
   const order = await OrderModel.findById(orderId);
   if (!order || order.status != OrderStatus.CONFIRMED) {
@@ -116,9 +125,9 @@ async function getOrder(orderId: any, context: Context) {
   return order;
 }
 
-async function requestVNPostBill(order: IOrder) {
+async function requestVNPostBill(order: IOrder, token: string) {
   const billRequestData = getBillRequestData(order);
-  const vnpostBill = await VietnamPostHelper.createDeliveryOrder(billRequestData);
+  const vnpostBill = await VietnamPostHelper.createDeliveryOrder(billRequestData, token);
   order.deliveryInfo.itemCode = vnpostBill.ItemCode;
   order.deliveryInfo.orderId = vnpostBill.Id;
   order.deliveryInfo.customerCode = vnpostBill.CustomerCode;
@@ -177,7 +186,7 @@ function getBillRequestData(order: IOrder): ICreateDeliveryOrderRequest {
   };
 }
 
-async function calculateVNPostShipFee(order: IOrder) {
+async function calculateVNPostShipFee(order: IOrder, token: string) {
   const data: ICalculateAllShipFeeRequest = {
     MaDichVu: order.deliveryInfo.serviceName,
     MaTinhGui: order.deliveryInfo.senderProvinceId,
@@ -200,5 +209,6 @@ async function calculateVNPostShipFee(order: IOrder) {
           ]
         : [],
   };
-  return await VietnamPostHelper.calculateAllShipFee(data);
+
+  return await VietnamPostHelper.calculateAllShipFee(data, token);
 }

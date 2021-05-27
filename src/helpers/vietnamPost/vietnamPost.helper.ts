@@ -14,6 +14,24 @@ import {
 
 export class VietnamPostHelper {
   static host = configs.vietnamPost.host;
+  static getToken(username: string, password: string) {
+    return Axios.post(`${this.host}/MobileAuthentication/GetAccessToken`, {
+      TenDangNhap: username,
+      MatKhau: password,
+    }).then((res) => {
+      if (res.data.IsSuccess) {
+        const data = res.data.Payload;
+        return {
+          vnpostToken: res.data.Token,
+          vnpostCode: get(data, "MaCRM"),
+          vnpostPhone: get(data, "SoDienThoai"),
+          vnpostName: get(data, "TenNguoiDung"),
+        };
+      } else {
+        throw Error(res.data.ErrorMessage);
+      }
+    });
+  }
   static getProvinces() {
     return Axios.get(`${this.host}/TinhThanh/GetAll`).then((res) => get(res, "data"));
   }

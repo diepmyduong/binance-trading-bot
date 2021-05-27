@@ -5,6 +5,7 @@ import { AuthHelper, VietnamPostHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { OrderItemModel } from "../../orderItem/orderItem.model";
 import { ProductModel } from "../../product/product.model";
+import { ShopConfigModel } from "../../shopConfig/shopConfig.model";
 import { OrderModel, OrderStatus } from "../order.model";
 
 const Mutation = {
@@ -37,15 +38,16 @@ const Mutation = {
     }
 
     if (context.isMember()) {
-      if (![OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING].includes(order.status)) {
-        throw ErrorHelper.somethingWentWrong(
-          "Đơn hàng này không hủy được."
-        );
+      if (
+        ![OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING].includes(order.status)
+      ) {
+        throw ErrorHelper.somethingWentWrong("Đơn hàng này không hủy được.");
       }
     }
 
     if (order.status === OrderStatus.DELIVERING && order.deliveryInfo.itemCode) {
-      await VietnamPostHelper.cancelOrder(order.deliveryInfo.orderId);
+      const shopConfig = await ShopConfigModel.findOne({ memberId: order.sellerId });
+      await VietnamPostHelper.cancelOrder(order.deliveryInfo.orderId, shopConfig.vnpostToken);
     }
 
     // Thực hiện huỷ đơn

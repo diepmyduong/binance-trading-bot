@@ -90,9 +90,10 @@ export default (app: Express, httpServer: Server) => {
             extensions: err.extensions,
           },
         });
-        if (err.extensions && !err.extensions.exception.info) {
-          ErrorHelper.logUnknowError(err);
-        }
+        // if (err.extensions && !err.extensions.exception.info) {
+        //   ErrorHelper.logUnknowError(err);
+        // }
+        return err;
       } catch (error) {
         return err;
       }

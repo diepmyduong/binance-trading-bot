@@ -10,6 +10,7 @@ import KhongDau from "khong-dau";
 
 import { AddressModel } from "../graphql/modules/address/address.model";
 import moment from "moment-timezone";
+import writtenNumber from "written-number";
 
 const START_MONTH = moment().startOf("month").format("YYYY-MM-DD");
 const END_MONTH = moment().endOf("month").format("YYYY-MM-DD");
@@ -207,3 +208,8 @@ export const getWardName = async (wardId: any) => {
   if (!wardId) return null;
   return address.ward;
 };
+
+export function num2Text(n: number, lang = "vi") {
+  if (n >= 0) return writtenNumber(n, { lang });
+  else return "Âm " + writtenNumber(-n, { lang });
+}

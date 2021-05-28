@@ -1,99 +1,59 @@
+import { get, set } from "lodash";
 import { ObjectId } from "mongodb";
-import { GraphQLHelper } from "../../../../helpers/graphql.helper";
+import { Types } from "mongoose";
+
 import { ROLES } from "../../../../constants/role.const";
-import { AuthHelper, ErrorHelper, UtilsHelper } from "../../../../helpers";
+import { AuthHelper, UtilsHelper } from "../../../../helpers";
+import { GraphQLHelper } from "../../../../helpers/graphql.helper";
 import { Context } from "../../../context";
-import { CustomerCommissionLogModel, ICustomerCommissionLog } from "../../customerCommissionLog/customerCommissionLog.model";
-import { Gender, MemberLoader, MemberModel } from "../../member/member.model";
-import { CustomerModel } from "../../customer/customer.model";
 import { CollaboratorModel, ICollaborator } from "../../collaborator/collaborator.model";
 import { collaboratorService } from "../../collaborator/collaborator.service";
-import { isEmpty, set } from "lodash";
+import { CustomerModel } from "../../customer/customer.model";
+import {
+  CustomerCommissionLogModel,
+  ICustomerCommissionLog,
+} from "../../customerCommissionLog/customerCommissionLog.model";
+import { Gender, MemberLoader, MemberModel } from "../../member/member.model";
 
-const getOverviewCollaboratorReport = async (
-  root: any,
-  args: any,
-  context: Context
-) => {
+const getOverviewCollaboratorReport = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  const queryInput = args.q;
-  let { fromDate, toDate, memberId } = queryInput.filter;
-
-
-  let $match = {}, collaboratorMatch = {};
-
-  if (isEmpty(memberId)) {
-    delete args.q.filter.memberId;
-  }
-
-  const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
-
-  if ($gte) {
-    set($match, "createdAt.$gte", $gte);
-  }
-
-  if ($lte) {
-    set($match, "createdAt.$lte", $lte);
-  }
-
-  if (context.isMember()) {
-    memberId = context.id;
-  }
-
-  if (memberId) {
-    set($match, "memberId", memberId);
-    set(collaboratorMatch, "memberId", memberId);
-  }
-
-  const collaborators = await CollaboratorModel.find(collaboratorMatch);
-  const collaboratorCount = collaborators.length;
-
-  const customerCommissionLog = await CustomerCommissionLogModel.find($match);
-  const count = customerCommissionLog.length;
+  const filter = get(args, "q.filter", {});
+  const $match: any = await getMatch(filter, context);
+  const collaboratorCount = await countCollaborator(filter, context);
+  const query: any = [
+    { $match: $match },
+    {
+      $group: {
+        _id: null,
+        value: { $sum: "$value" },
+      },
+    },
+  ];
+  const commission = await CustomerCommissionLogModel.aggregate(query).then((res) =>
+    get(res, "0.value", 0)
+  );
 
   return {
-    commission: count > 0 ? customerCommissionLog.reduce((total: number, o: ICustomerCommissionLog) => total += o.value, 0) : 0,
-    collaboratorCount,
+    commission: commission,
+    collaboratorCount: collaboratorCount,
   };
 };
 
-const getFilteredCollaborators = async (
-  root: any,
-  args: any,
-  context: Context
-) => {
+const getFilteredCollaborators = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-
-  let fromDate = args.q.filter.fromDate ? `${args.q.filter.fromDate}` : null;
-  let toDate = args.q.filter.toDate ? `${args.q.filter.toDate}` : null;
-
-  fromDate = fromDate ? fromDate.replace("null", "") : "";
-  toDate = toDate ? toDate.replace("null", "") : "";
-
-  delete args.q.filter.fromDate;
-  delete args.q.filter.toDate;
-
-  if (args.q.filter.memberId === "") {
-    delete args.q.filter.memberId
+  let { memberId, branchId } = get(args, "q.filter", {});
+  const $match: any = {};
+  if (memberId) set($match, "memberId", memberId);
+  if (context.isMember()) set($match, "memberId", memberId);
+  if (branchId) {
+    const memberIds = await MemberModel.find({ branchId, activated: true })
+      .select("_id")
+      .then((res) => res.map((r) => r._id));
+    set($match, "memberId.$in", memberIds);
   }
-
-  if (context.isMember()) {
-    args.q.filter.memberId = context.id;
-  }
-
-  // console.log('args.q', args.q);
-
-  const result = await collaboratorService.fetch(args.q);
-  const collaborators = result.data;
-  for (let i = 0; i < collaborators.length; i++) {
-    set(collaborators[i], "fromDate", fromDate);
-    set(collaborators[i], "toDate", toDate);
-  }
-  result.data = collaborators;
-
-  return result;
+  set(args, "q.filter", $match);
+  return await collaboratorService.fetch(args.q);
 };
-
 
 const FilteredCollaborator = {
   member: GraphQLHelper.loadById(MemberLoader, "memberId"),
@@ -103,7 +63,7 @@ const FilteredCollaborator = {
       // console.log('members', members);
       return members;
     }
-    return null
+    return null;
   },
 
   customer: async (root: ICollaborator, args: any, context: Context) => {
@@ -113,8 +73,7 @@ const FilteredCollaborator = {
 
       if (customer) {
         customer.name = customer.name + " - " + member.shopName;
-      }
-      else {
+      } else {
         customer = {
           code: root.code,
           name: root.name + " - Chưa có Bưu cục",
@@ -126,18 +85,18 @@ const FilteredCollaborator = {
           gender: Gender.OTHER, // Giới tính
           birthday: new Date(), // Ngày sinh
           address: "test", // Địa chỉ
-          province: "test",  // Tỉnh / thành
+          province: "test", // Tỉnh / thành
           district: "test", // Quận / huyện
           ward: "test", // Phường / xã
-          provinceId: "test",  // Mã Tỉnh / thành
-          districtId: "test",// Mã Quận / huyện
-          wardId: "test",// Mã Phường / xã
-          cumulativePoint: 0,// Điểm tích lũy
-          commission: 0,// Hoa hồng cộng tác viên
-          pageAccounts: [],// Danh sách account facebook của người dùng
+          provinceId: "test", // Mã Tỉnh / thành
+          districtId: "test", // Mã Quận / huyện
+          wardId: "test", // Mã Phường / xã
+          cumulativePoint: 0, // Điểm tích lũy
+          commission: 0, // Hoa hồng cộng tác viên
+          pageAccounts: [], // Danh sách account facebook của người dùng
           latitude: 0,
-          longitude: 0
-        }
+          longitude: 0,
+        };
       }
 
       return customer;
@@ -146,7 +105,6 @@ const FilteredCollaborator = {
   },
 
   total: async (root: ICollaborator, args: any, context: Context) => {
-
     let { id, fromDate, toDate } = root;
 
     let $match = {};
@@ -166,13 +124,48 @@ const FilteredCollaborator = {
     const customerCommissionLog = await CustomerCommissionLogModel.find($match);
     const count = customerCommissionLog.length;
 
-    return count > 0 ? customerCommissionLog.reduce((total: number, o: ICustomerCommissionLog) => total += o.value, 0) : 0;
-  }
+    return count > 0
+      ? customerCommissionLog.reduce(
+          (total: number, o: ICustomerCommissionLog) => (total += o.value),
+          0
+        )
+      : 0;
+  },
 };
-
 
 const Query = {
   getFilteredCollaborators,
-  getOverviewCollaboratorReport
+  getOverviewCollaboratorReport,
 };
 export default { Query, FilteredCollaborator };
+async function countCollaborator(filter: any = {}, context: Context) {
+  const { memberId, branchId } = filter;
+  const collaboratorMatch: any = {};
+  if (memberId) set(collaboratorMatch, "memberId", memberId);
+  if (context.isMember()) set(collaboratorMatch, "memberId", context.id);
+  if (branchId) {
+    const memberIds = await MemberModel.find({ branchId, activated: true })
+      .select("_id")
+      .then((res) => res.map((r) => r._id));
+    set(collaboratorMatch, "memberId.$in", memberIds);
+  }
+  const collaboratorCount = await CollaboratorModel.count(collaboratorMatch);
+  return collaboratorCount;
+}
+
+async function getMatch(filter: any = {}, context: Context) {
+  let { fromDate, toDate, memberId, branchId } = filter;
+  const $match: any = {};
+  const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
+  if ($gte) set($match, "createdAt.$gte", $gte);
+  if ($lte) set($match, "createdAt.$lte", $lte);
+  if (memberId) set($match, "memberId", Types.ObjectId(memberId));
+  if (context.isMember()) set($match, "memberId", Types.ObjectId(context.id));
+  if (branchId) {
+    const memberIds = await MemberModel.find({ branchId, activated: true })
+      .select("_id")
+      .then((res) => res.map((r) => r._id));
+    set($match, "memberId.$in", memberIds);
+  }
+  return $match;
+}

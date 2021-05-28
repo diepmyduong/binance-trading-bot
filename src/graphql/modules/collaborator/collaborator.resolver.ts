@@ -1,19 +1,22 @@
-import { GraphQLHelper } from "../../../helpers/graphql.helper";
+import { set } from "lodash";
+
+import { ModelSelectLoader } from "../../../base/baseModel";
+import { SettingKey } from "../../../configs/settingData";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper, KeycodeHelper } from "../../../helpers";
+import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
-import { MemberLoader } from "../member/member.model";
-import { CollaboratorModel, ICollaborator } from "./collaborator.model";
-import { collaboratorService } from "./collaborator.service";
-import { CustomerModel } from "../customer/customer.model";
+import { CustomerLoader } from "../customer/customer.model";
+import { IMember, MemberModel } from "../member/member.model";
 import { SettingHelper } from "../setting/setting.helper";
-import { SettingKey } from "../../../configs/settingData";
+import { CollaboratorModel } from "./collaborator.model";
+import { collaboratorService } from "./collaborator.service";
 
 const Query = {
   getAllCollaborator: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     if (context.isMember()) {
-      args.q.filter.memberId = context.id;
+      set(args, "q.filter.memberId", context.id);
     }
     return collaboratorService.fetch(args.q);
   },
@@ -84,12 +87,11 @@ const Mutation = {
     return await collaboratorService.deleteOne(id);
   },
 };
+const memberLoader = ModelSelectLoader<IMember>(MemberModel, "id shopName shopLogo fanpageImage");
 
 const Collaborator = {
-  member: GraphQLHelper.loadById(MemberLoader, "memberId"),
-  customer: async (root: ICollaborator, args: any, context: Context) => {
-    return await CustomerModel.findOne({ phone: root.phone });
-  },
+  member: GraphQLHelper.loadById(memberLoader, "memberId"),
+  customer: GraphQLHelper.loadById(CustomerLoader, "customerId"),
 };
 
 export default {

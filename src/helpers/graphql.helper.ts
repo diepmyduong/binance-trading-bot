@@ -1,12 +1,18 @@
-import { AuthHelper } from "./auth.helper";
-import { Context } from "../graphql/context";
 import { get } from "lodash";
 
+import { Context } from "../graphql/context";
+
 export class GraphQLHelper {
-  static loadById(loader: any, idField: string, option: { defaultValue: any } = {} as any) {
+  static loadById(
+    loader: any,
+    idField: string,
+    option: { defaultValue?: any; select?: string } = {} as any
+  ) {
     return (root: any, args: any, context: Context) => {
       return root[idField]
-        ? loader.load(root[idField].toString()).then((res: any) => res || option.defaultValue)
+        ? loader
+            .load(root[idField].toString() + (option.select ? ":" + option.select : ""))
+            .then((res: any) => res || option.defaultValue)
         : undefined;
     };
   }

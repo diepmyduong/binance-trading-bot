@@ -36,7 +36,7 @@ export default [
       return UtilsHelper.responseExcel(
         res,
         reportWorkbook,
-        `Tong Hop Thu Lao CTV - ${data.fromDate} - ${data.toDate}`
+        `Tong Hop Thu Lao CTV ${data.fromDate} ${data.toDate}`
       );
     },
   },
@@ -46,12 +46,12 @@ async function prepareData(filter: any, context: Context) {
   let { memberId, fromDate, toDate } = filter;
   const $match: any = getMatch(memberId, context, fromDate, toDate);
   const [collaborators, member, commissions] = await Promise.all([
-    CollaboratorModel.find({ memberId: $match.memberId }),
-    MemberModel.findById($match.memberId).select("_id shopName"),
+    CollaboratorModel.find({ memberId: $match.memberId, code: { $exists: !!filter.staff } }),
+    MemberModel.findById($match.memberId).select("_id shopName code"),
     aggregateCommission($match),
   ]);
   return {
-    shopName: member.shopName,
+    shopName: `${member.code} - ${member.shopName}`,
     fromDate: fromDate,
     toDate: toDate,
     collaborators: collaborators,

@@ -2,7 +2,7 @@ import { gql } from "apollo-server-express";
 
 const schema = gql`
   extend type Query {
-    getFilteredCollaborators(q: QueryGetListInput): FilteredCollaboratorPageData
+    getFilteredCollaborators(q: QueryGetListInput): CollaboratorPageData
     getOverviewCollaboratorReport(q: QueryGetListInput): OverviewCollaboratorsReport
     # Add Query
   }
@@ -11,7 +11,6 @@ const schema = gql`
     commission: Float
     collaboratorCount: Int
   }
-
 
   type FilteredCollaborator {
     code: String
@@ -23,7 +22,7 @@ const schema = gql`
     members: [Member]
     memberId: ID
     member: Member
-    total:Float
+    total: Float
   }
 
   type FilteredCollaboratorPageData {
@@ -31,7 +30,6 @@ const schema = gql`
     total: Int
     pagination: Pagination
   }
-
 `;
 
 export default schema;

@@ -59,7 +59,25 @@ export function ModelLoader<T>(model: any, modelHook?: ModelHook<T>): DataLoader
 
   return loader;
 }
-
+export function ModelSelectLoader<T>(model: any, select: string): DataLoader<string, T> {
+  model.schema.plugin(uniqueValidator, { message: "{VALUE} đã tồn tại." });
+  let loader: DataLoader<string, T>;
+  const batchFunction = (ids: string[]) => {
+    return model
+      .find({ _id: { $in: ids } })
+      .select(select)
+      .exec()
+      .then((list: any[]) => {
+        const listByKey = _.keyBy(list, "_id");
+        return ids.map((id) => _.get(listByKey, id, undefined));
+      });
+  };
+  loader = new DataLoader<string, T>(
+    batchFunction,
+    { cache: new LRUMap({ maxSize: 100, maxAge: 10000 }) } // Giới hạn chỉ cache 100 item sử dụng nhiêu nhất.
+  );
+  return loader;
+}
 export class ModelHook<T> {
   public onSaved = new Subject<T>();
   public onUpdated = new Subject();

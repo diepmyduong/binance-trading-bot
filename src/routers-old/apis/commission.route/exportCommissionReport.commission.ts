@@ -1,26 +1,21 @@
-import {
-  BaseRoute,
-  Request,
-  Response,
-  NextFunction,
-} from "../../../base/baseRoute";
+import Excel from "exceljs";
+import { isEmpty, set } from "lodash";
+import moment from "moment";
+import { ObjectId } from "mongodb";
+import { isValidObjectId, Types } from "mongoose";
+
+import { Request, Response } from "../../../base/baseRoute";
+import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { Context } from "../../../graphql/context";
-import { auth } from "../../../middleware/auth";
-import Excel from "exceljs";
-import { UtilsHelper } from "../../../helpers";
-import { MemberModel, MemberType } from "../../../graphql/modules/member/member.model";
-import { ObjectId } from "mongodb";
-import { CommissionLogModel, CommissionLogType, ICommissionLog } from "../../../graphql/modules/commissionLog/commissionLog.model";
 import { BranchModel } from "../../../graphql/modules/branch/branch.model";
-import { isValidObjectId, Types } from "mongoose";
-import { ErrorHelper } from "../../../base/error";
-import { get, isEmpty, set } from "lodash";
-import { OrderLogModel } from "../../../graphql/modules/orderLog/orderLog.model";
-import { CollaboratorModel } from "../../../graphql/modules/collaborator/collaborator.model";
-import { CustomerModel } from "../../../graphql/modules/customer/customer.model";
-import moment from "moment";
+import {
+  CommissionLogModel,
+  CommissionLogType,
+} from "../../../graphql/modules/commissionLog/commissionLog.model";
 import { CustomerCommissionLogModel } from "../../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
+import { MemberModel, MemberType } from "../../../graphql/modules/member/member.model";
+import { UtilsHelper } from "../../../helpers";
 
 const STT = "STT";
 const RESULT_IMPORT_FILE_NAME = "ket_qua_import_buu_cuc";
@@ -30,15 +25,10 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
   const context = (req as any).context as Context;
   context.auth(ROLES.ADMIN_EDITOR_MEMBER);
 
-
-  let fromDate: string = req.query.fromDate
-    ? req.query.fromDate.toString()
-    : null;
+  let fromDate: string = req.query.fromDate ? req.query.fromDate.toString() : null;
   let toDate: string = req.query.toDate ? req.query.toDate.toString() : null;
 
-  const memberId: string = req.query.memberId
-    ? req.query.memberId.toString()
-    : "";
+  const memberId: string = req.query.memberId ? req.query.memberId.toString() : "";
 
   if (!isEmpty(memberId)) {
     if (!isValidObjectId(memberId)) {
@@ -59,7 +49,6 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
     set($match, "createdAt.$lte", $lte);
   }
 
-
   if (memberId) {
     set($memberMatch, "_id", new ObjectId(memberId));
   }
@@ -72,18 +61,18 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
     {
       $match: {
         ...$memberMatch,
-        activated: true
-      }
+        activated: true,
+      },
     },
     {
       $lookup: {
-        from: 'branches',
-        localField: 'branchId',
-        foreignField: '_id',
-        as: 'branch'
-      }
+        from: "branches",
+        localField: "branchId",
+        foreignField: "_id",
+        as: "branch",
+      },
     },
-    { $unwind: '$branch' },
+    { $unwind: "$branch" },
     {
       $project: {
         _id: 1,
@@ -92,30 +81,59 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
         district: 1,
         branchCode: "$branch.code",
         branchName: "$branch.name",
-        lastLoginDate: 1
-      }
-    }
+        lastLoginDate: 1,
+      },
+    },
   ]);
 
   // console.log('members', members);
 
-  const memberIds = members.map(member => member._id).map(Types.ObjectId);
+  const memberIds = members.map((member) => member._id).map(Types.ObjectId);
   set($match, "memberId.$in", memberIds);
 
-  const [memberCommissionStats, collaboratorCommissionStats ,branches] = await Promise.all([
+  const [memberCommissionStats, collaboratorCommissionStats, branches] = await Promise.all([
     CommissionLogModel.aggregate([
       {
-        $match
+        $match,
       },
       {
         $group: {
           _id: "$memberId",
-          commission1: { $sum: { $cond: [{ $eq: ["$type", CommissionLogType.RECEIVE_COMMISSION_1_FROM_ORDER] }, "$value", 0] } },
-          commission2: { $sum: { $cond: [{ $eq: ["$type", CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR] }, "$value", 0] } },
-          commission3: { $sum: { $cond: [{ $eq: ["$type", CommissionLogType.RECEIVE_COMMISSION_3_FROM_ORDER] }, "$value", 0] } },
+          commission1: {
+            $sum: {
+              $cond: [
+                { $eq: ["$type", CommissionLogType.RECEIVE_COMMISSION_1_FROM_ORDER] },
+                "$value",
+                0,
+              ],
+            },
+          },
+          commission2: {
+            $sum: {
+              $cond: [
+                {
+                  $eq: [
+                    "$type",
+                    CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR,
+                  ],
+                },
+                "$value",
+                0,
+              ],
+            },
+          },
+          commission3: {
+            $sum: {
+              $cond: [
+                { $eq: ["$type", CommissionLogType.RECEIVE_COMMISSION_3_FROM_ORDER] },
+                "$value",
+                0,
+              ],
+            },
+          },
           commission: { $sum: "$value" },
-        }
-      }
+        },
+      },
     ]),
     CustomerCommissionLogModel.aggregate([
       {
@@ -126,41 +144,41 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
           _id: {
             customerId: "$customerId",
             memberId: "$memberId",
-            collaboratorId: "$collaboratorId"
+            collaboratorId: "$collaboratorId",
           },
           commission: { $sum: "$value" },
-        }
+        },
       },
       {
         $project: {
           _id: "$_id.customerId",
           collaboratorId: "$_id.collaboratorId",
           memberId: "$_id.memberId",
-          commission: 1
-        }
+          commission: 1,
+        },
       },
       {
         $sort: {
-          commission: -1
-        }
+          commission: -1,
+        },
       },
       {
         $lookup: {
-          from: 'collaborators',
-          localField: 'collaboratorId',
-          foreignField: '_id',
-          as: 'collaborator'
-        }
+          from: "collaborators",
+          localField: "collaboratorId",
+          foreignField: "_id",
+          as: "collaborator",
+        },
       },
-      { $unwind: '$collaborator' },
+      { $unwind: "$collaborator" },
       {
         $project: {
           _id: "$collaborator._id",
           code: "$collaborator.code",
           name: "$collaborator.name",
           memberId: 1,
-          commission: 1
-        }
+          commission: 1,
+        },
       },
       {
         $project: {
@@ -168,11 +186,11 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
           code: 1,
           name: 1,
           memberId: 1,
-          commission: 1
-        }
-      }
+          commission: 1,
+        },
+      },
     ]),
-    BranchModel.find({})
+    BranchModel.find({}),
   ]);
 
   // console.log('orderStats',memberCommissionStats);
@@ -181,10 +199,11 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
   let staticsticData: any = [];
   const branchesData = [];
 
- 
   for (let i = 0; i < members.length; i++) {
     const member: any = members[i];
-    const memberCommissionStat = memberCommissionStats.find(stats => stats._id.toString() === member._id.toString());
+    const memberCommissionStat = memberCommissionStats.find(
+      (stats) => stats._id.toString() === member._id.toString()
+    );
     const params = {
       memberCode: member.code,
       shopName: member.shopName,
@@ -196,10 +215,12 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
       commission2: memberCommissionStat ? memberCommissionStat.commission2 : 0,
       commission3: memberCommissionStat ? memberCommissionStat.commission3 : 0,
       commission: memberCommissionStat ? memberCommissionStat.commission : 0,
-    }
+    };
     data.push(params);
-    
-    const collaborators = collaboratorCommissionStats.filter(stats => stats.memberId.toString() === member._id.toString());
+
+    const collaborators = collaboratorCommissionStats.filter(
+      (stats) => stats.memberId.toString() === member._id.toString()
+    );
     for (const collaborator of collaborators) {
       const params = {
         collaboratorCode: collaborator.code,
@@ -214,7 +235,7 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
         commission2: collaborator ? collaborator.commission : 0,
         commission3: 0,
         commission: collaborator ? collaborator.commission : 0,
-      }
+      };
       data.push(params);
     }
   }
@@ -242,14 +263,14 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
 
     data.forEach((d: any, i: number) => {
       const dataRow = [
-        i + 1,//STT
-        d.memberCode,//"Mã bưu cục",
-        d.shopName,// "Bưu cục",
+        i + 1, //STT
+        d.memberCode, //"Mã bưu cục",
+        d.shopName, // "Bưu cục",
         d.collaboratorCode,
         d.collaboratorName,
         d.type,
-        d.district,//"Quận / Huyện",
-        d.branchName,//"Chi nhánh",
+        d.district, //"Quận / Huyện",
+        d.branchName, //"Chi nhánh",
         d.commission1,
         d.commission2,
         d.commission3,
@@ -263,24 +284,15 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
     const vnToDate = moment(toDate).format("DD-MM-YYYY");
     const title = `BÁO CÁO HOA HỒNG BƯU CỤC ${vnFromDate} - ${vnToDate}`;
     UtilsHelper.setTitleExcelWorkBook(sheet, title);
-  }
-
+  };
 
   const createStatisticSheetData = (data: [], name: string) => {
     const sheet = workbook.addWorksheet(name);
-    const excelHeaders = [
-      STT,
-      "Khu vực",
-      "Hoa hồng thực nhận"
-    ];
+    const excelHeaders = [STT, "Khu vực", "Hoa hồng thực nhận"];
     sheet.addRow(excelHeaders);
 
     data.forEach((d: any, i: number) => {
-      const dataRow = [
-        i + 1,
-        d.name,
-        d.commission
-      ];
+      const dataRow = [i + 1, d.name, d.commission];
       sheet.addRow(dataRow);
     });
 
@@ -290,23 +302,24 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
     const vnToDate = moment(toDate).format("DD-MM-YYYY");
     const title = `BÁO CÁO TỔNG QUAN HOA HỒNG CÁC KHU VỰC ${vnFromDate} - ${vnToDate}`;
     UtilsHelper.setTitleExcelWorkBook(sheet, title);
-  }
+  };
 
   const sumAllData = (name: string, data: any[]) => {
     return {
       name: name,
-      customersAsCollaboratorCount: data.reduce((total: number, m: any) => total += m.customersAsCollaboratorCount, 0),
-      commission1: data.reduce((total: number, m: any) => total += m.commission1, 0),
-      commission2: data.reduce((total: number, m: any) => total += m.commission2, 0),
-      commission3: data.reduce((total: number, m: any) => total += m.commission3, 0),
-      commission: data.reduce((total: number, m: any) => total += m.commission, 0),
-    }
-  }
-
+      customersAsCollaboratorCount: data.reduce(
+        (total: number, m: any) => (total += m.customersAsCollaboratorCount),
+        0
+      ),
+      commission1: data.reduce((total: number, m: any) => (total += m.commission1), 0),
+      commission2: data.reduce((total: number, m: any) => (total += m.commission2), 0),
+      commission3: data.reduce((total: number, m: any) => (total += m.commission3), 0),
+      commission: data.reduce((total: number, m: any) => (total += m.commission), 0),
+    };
+  };
 
   const POSTS_SHEET_NAME = "Danh sách Hoa hồng Bưu cục";
   createSheetData(data, POSTS_SHEET_NAME);
-
 
   if (!context.isMember() && isEmpty(memberId)) {
     for (const branch of branches) {
@@ -329,7 +342,4 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
   const vnToDate = moment(toDate).format("DD.MM.YYYY");
   const fileName = `bao_cao_hoa_hong_${vnFromDate}_${vnToDate}`;
   return UtilsHelper.responseExcel(res, workbook, fileName);
-}
-
-
-
+};

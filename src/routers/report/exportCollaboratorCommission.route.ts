@@ -74,6 +74,7 @@ async function aggregateProducts($match: any) {
   const orderIds = await OrderModel.find($match)
     .select("_id")
     .then((res) => res.map((r) => r._id));
+  if (orderIds.length == 0) return [];
   const query = [
     {
       $match: {

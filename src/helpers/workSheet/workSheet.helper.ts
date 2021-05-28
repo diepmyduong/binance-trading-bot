@@ -10,7 +10,7 @@ import { UtilsHelper } from "../utils.helper";
 export type iterateCells = (cell: Cell) => void | false;
 
 export class WorkSheetHelper {
-  constructor(private worksheet: Worksheet) { }
+  constructor(private worksheet: Worksheet) {}
 
   public get workbook(): Workbook {
     return this.worksheet.workbook;
@@ -24,13 +24,13 @@ export class WorkSheetHelper {
     if (!sheet) sheet = this.worksheet;
     const cells = this.getSheetValueCell(sheet);
     cells.forEach((c) => this.parseCell(c, info));
-    console.log('cell', cells[0].value);
+    console.log("cell", cells[0].value);
   }
 
   public parseSheet(info: any, sheet?: Worksheet) {
     if (!sheet) sheet = this.worksheet;
     const cells = this.getSheetValueCell(sheet);
-    console.log('cells', cells);
+    console.log("cells", cells);
     cells.forEach((c) => this.parseCell(c, info));
   }
   public parseRange(cellRange: CellRange, info: any, sheet?: Worksheet) {
@@ -265,7 +265,6 @@ export class WorkSheetHelper {
   private parseCell(cell: Cell, info: any) {
     if (typeof cell.value == "string") {
       const value = UtilsHelper.parseStringWithInfo({ data: cell.value, info });
-      console.log('value', value);
       if (_.isEmpty(value)) {
         cell.value = "";
       } else {

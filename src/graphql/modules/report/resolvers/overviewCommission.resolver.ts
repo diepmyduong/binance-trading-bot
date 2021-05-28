@@ -126,6 +126,7 @@ const getCommissionReports = async (root: any, args: any, context: Context) => {
     args.q.filter,
     context
   );
+  set(args, "q.filter", $match);
   return orderService.fetch(args.q);
 };
 

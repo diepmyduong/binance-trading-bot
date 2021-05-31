@@ -1,12 +1,12 @@
 {
-  "name": "express-typescript-starter",
+  "name": "3mshop-server",
   "version": "0.1.0",
-  "description": "A starting point for Node.js express apps with TypeScript",
+  "description": "3MShop Server By ASM",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Microsoft/TypeScript-Node-Starter"
+    "url": "https://github.com/ctymcom/3mshop.git"
   },
-  "author": "Bowden Kelly",
+  "author": "Dương Jerry",
   "license": "MIT",
   "scripts": {
     "start": "npm run serve",

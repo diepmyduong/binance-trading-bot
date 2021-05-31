@@ -24,7 +24,6 @@ const Query = {
         set(args, "q.filter.sellerId", context.id);
       }
     }
-    console.log("args.q", args.q);
     return crossSaleService.fetch(args.q);
   },
   getOneCrossSale: async (root: any, args: any, context: Context) => {

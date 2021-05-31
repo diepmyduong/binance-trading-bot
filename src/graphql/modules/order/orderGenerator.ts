@@ -281,8 +281,7 @@ export class OrderGenerator {
   private async getNearestStore() {
     const longitude = this.order.longitude || 0;
     const latitude = this.order.latitude || 0;
-
-    return await AddressStorehouseModel.findOne({
+    let query: any = {
       allowPickup: true,
       location: {
         $near: {
@@ -292,6 +291,22 @@ export class OrderGenerator {
           },
         },
       },
+    };
+    if (longitude == 0 || latitude == 0) {
+      query = {
+        allowPickup: true,
+        wardId: this.order.buyerWardId,
+        districtId: this.order.buyerDistrictId,
+        provinceId: this.order.buyerProvinceId,
+      };
+    }
+    return await AddressStorehouseModel.findOne(query).then((res) => {
+      if (!!res || res.districtId != this.order.buyerDistrictId) {
+        return AddressStorehouseModel.findOne({
+          allowPickup: true,
+          districtId: this.order.buyerDistrictId,
+        });
+      }
     });
   }
   private async setBuyerAddress() {

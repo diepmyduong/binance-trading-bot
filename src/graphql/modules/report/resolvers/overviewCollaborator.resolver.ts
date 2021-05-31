@@ -41,7 +41,7 @@ const getOverviewCollaboratorReport = async (root: any, args: any, context: Cont
 
 const getFilteredCollaborators = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  let { memberId, branchId } = get(args, "q.filter", {});
+  let { memberId, branchId, code } = get(args, "q.filter", {});
   const $match: any = {};
   if (memberId) set($match, "memberId", memberId);
   if (context.isMember()) set($match, "memberId", memberId);
@@ -50,6 +50,9 @@ const getFilteredCollaborators = async (root: any, args: any, context: Context) 
       .select("_id")
       .then((res) => res.map((r) => r._id));
     set($match, "memberId.$in", memberIds);
+  }
+  if (code) {
+    set($match, "code", get(code, "__exists", false) ? { $ne: "" } : { $eq: "" });
   }
   set(args, "q.filter", $match);
   return await collaboratorService.fetch(args.q);

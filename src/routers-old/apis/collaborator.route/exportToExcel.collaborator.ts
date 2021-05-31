@@ -1,28 +1,15 @@
-import {
-  BaseRoute,
-  Request,
-  Response,
-  NextFunction,
-} from "../../../base/baseRoute";
+import Excel from "exceljs";
+
+import { Request, Response } from "../../../base/baseRoute";
 import { ROLES } from "../../../constants/role.const";
 import { Context } from "../../../graphql/context";
-
-import { auth } from "../../../middleware/auth";
-import Excel from "exceljs";
-import { UtilsHelper } from "../../../helpers";
 import {
   CollaboratorModel,
   ICollaborator,
 } from "../../../graphql/modules/collaborator/collaborator.model";
-import {
-  CollaboratorImportingLogModel,
-  ICollaboratorImportingLog,
-} from "../../../graphql/modules/collaboratorImportingLog/collaboratorImportingLog.model";
 import { CustomerModel } from "../../../graphql/modules/customer/customer.model";
-import { Gender, MemberModel } from "../../../graphql/modules/member/member.model";
-import { CustomerCommissionLogModel } from "../../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
-import { ObjectId } from "mongodb";
-import { set } from "lodash";
+import { Gender } from "../../../graphql/modules/member/member.model";
+import { UtilsHelper } from "../../../helpers";
 
 const STT = "STT";
 const NAME = "Tên";
@@ -77,4 +64,4 @@ export const exportToExcel = async (req: Request, res: Response) => {
   UtilsHelper.setThemeExcelWorkBook(sheet);
 
   return UtilsHelper.responseExcel(res, workbook, RESULT_FILE_NAME);
-}
+};

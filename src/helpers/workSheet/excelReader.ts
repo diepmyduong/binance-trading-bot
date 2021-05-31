@@ -23,16 +23,12 @@ export const getJsonFromCSVStream = (stream: any) => {
   });
 };
 
-export const modifyExcelData = (
-  result: any[],
-  headerData: any[]
-) => {
+export const modifyExcelData = (result: any[], headerData: any[]) => {
   // Cast type unknown to any
   let dataImport = <any[]>result;
   // console.log('dataImport', dataImport);
   // Kiểm tra dữ liệu
-  if (dataImport.length == 0)
-    throw ErrorHelper.requestDataInvalid("File import không có dữ liệu");
+  if (dataImport.length == 0) throw ErrorHelper.requestDataInvalid("File import không có dữ liệu");
 
   let excelHeaders = <any[]>result;
   [, excelHeaders] = dataImport;
@@ -87,7 +83,7 @@ export const modifyExcelData = (
         error: "Dòng này không có dữ liệu",
       });
       continue;
-    } 
+    }
     dataResult.push({ ...item, line: index + 1 });
   }
   // console.log('=========>dataResult', dataResult);
@@ -99,8 +95,7 @@ export const modifyCSVData = (result: any[], headerData: any[]) => {
   // Cast type unknown to any
   const dataImport = <any[]>result;
   // Kiểm tra dữ liệu
-  if (dataImport.length == 0)
-    throw ErrorHelper.requestDataInvalid("File import không có dữ liệu");
+  if (dataImport.length == 0) throw ErrorHelper.requestDataInvalid("File import không có dữ liệu");
   // Kiểm tra cột dữ liệu
   let importHeaders = headerData;
   if (

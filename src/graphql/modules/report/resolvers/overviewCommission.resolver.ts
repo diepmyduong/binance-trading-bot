@@ -75,8 +75,8 @@ const getCommissionReportsOverview = async (root: any, args: any, context: Conte
     {
       $group: {
         _id: null,
-        completeOrder: { $sum: "completeOrder" },
-        uncompleteOrder: { $sum: "uncompleteOrder" },
+        completeOrder: { $sum: "$completeOrder" },
+        uncompleteOrder: { $sum: "$uncompleteOrder" },
         commission1: { $sum: "$commission1" },
         commission2: { $sum: "$commission2" },
         commission21: { $sum: "$commission21" },

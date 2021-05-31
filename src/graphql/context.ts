@@ -7,6 +7,7 @@ import { ROLES } from "../constants/role.const";
 import { AuthHelper } from "../helpers";
 import { ChatBotHelper, MessengerTokenDecoded } from "../helpers/chatbot.helper";
 import { TokenHelper } from "../helpers/token.helper";
+import { MemberModel } from "./modules/member/member.model";
 import { SettingHelper } from "./modules/setting/setting.helper";
 
 export type TokenData = {
@@ -170,10 +171,18 @@ export class Context {
 
   modifyMemberCode = async () => {
     try {
-      if (!this.memberCode && !this.xPageId) {
-        this.memberCode = await SettingHelper.load(SettingKey.DEFAULT_SHOP_CODE);
+      if (!this.memberCode) {
+        if (this.xPageId) {
+          const member = await MemberModel.findOne({ fanpageId: this.xPageId });
+          if (member) {
+            this.memberCode = member.code;
+          } else {
+            this.memberCode = await SettingHelper.load(SettingKey.DEFAULT_SHOP_CODE);
+          }
+        } else {
+          this.memberCode = await SettingHelper.load(SettingKey.DEFAULT_SHOP_CODE);
+        }
       }
-
       // console.log("this.memberCode",this.memberCode);
     } catch (err) {
       // console.log("error", err);

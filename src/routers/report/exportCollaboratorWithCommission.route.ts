@@ -46,7 +46,10 @@ async function prepareData(filter: any, context: Context) {
   let { memberId, fromDate, toDate } = filter;
   const $match: any = getMatch(memberId, context, fromDate, toDate);
   const [collaborators, member, commissions] = await Promise.all([
-    CollaboratorModel.find({ memberId: $match.memberId, code: { $exists: !!filter.staff } }),
+    CollaboratorModel.find({
+      memberId: $match.memberId,
+      code: { $exists: filter.staff == "true" },
+    }),
     MemberModel.findById($match.memberId).select("_id shopName code"),
     aggregateCommission($match),
   ]);

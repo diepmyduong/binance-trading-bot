@@ -7,19 +7,6 @@ import { collaboratorService } from "../../collaborator/collaborator.service";
 import { collaboratorProductService } from "../../collaboratorProduct/collaboratorProduct.service";
 import { MemberModel } from "../../member/member.model";
 
-const getOverviewAllCollaboratorProducts = async (root: any, args: any, context: Context) => {
-  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-
-  //Tổng lượt share - like - comment - click - tổng số lượng sp đặt hàng thành công
-
-  return {
-    shareCount: 0,
-    likeCount: 0,
-    commentCount: 0,
-    completedQty: 0,
-  };
-};
-
 const getTopMediaCollaboratorProducts = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
 
@@ -77,7 +64,6 @@ const Query = {
   getCollaboratorsMediaReports,
   getProductsMediaReports,
 
-  getOverviewAllCollaboratorProducts,
   getTopMediaCollaboratorProducts,
   getTopMediaCollaborators,
 };

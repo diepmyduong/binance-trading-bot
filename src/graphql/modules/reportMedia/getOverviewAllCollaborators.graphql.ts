@@ -25,7 +25,7 @@ export default {
         context.auth(ROLES.ADMIN_EDITOR_MEMBER);
         const { branchId, sellerIds } = args;
         const $match: any = await getMatch(context, branchId, sellerIds);
-        return await CollaboratorModel.aggregate([
+        const query: any = [
           { $match: $match },
           {
             $group: {
@@ -37,7 +37,8 @@ export default {
               collaboratorCount: { $sum: 1 },
             },
           },
-        ]).then((res) =>
+        ];
+        return await CollaboratorModel.aggregate(query).then((res) =>
           get(res, "0", {
             shareCount: 0,
             likeCount: 0,

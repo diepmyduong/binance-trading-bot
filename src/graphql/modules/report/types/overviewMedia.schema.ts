@@ -3,7 +3,7 @@ import { gql } from "apollo-server-express";
 const schema = gql`
   extend type Query {
     getCollaboratorsMediaReports(q: QueryGetListInput): CollaboratorPageData
-    getProductsMediaReports(q: QueryGetListInput): MediaProductPageData
+    getProductsMediaReports(q: QueryGetListInput): CollaboratorProductPageData
 
     getOverviewAllCollaboratorProducts(fromDate: String, toDate: String): OverviewMediaProductStats
     getOverviewAllCollaborators(fromDate: String, toDate: String): OverviewMediaCollaboratorStats
@@ -86,39 +86,6 @@ const schema = gql`
     productsCommentCount: Int
     "Tổng link SP"
     productLinksCount: Int
-  }
-
-  type MediaProduct {
-    id: String
-    createdAt: DateTime
-    updatedAt: DateTime
-
-    "Mã cộng tác viên"
-    collaboratorId: ID
-    "Mã sản phẩm"
-    productId: ID
-    "Mã giới thiệu"
-    shortCode: String
-    "Link giới thiệu"
-    shortUrl: String
-    "Số lượng click"
-    clickCount: Int
-    "Số lượng like"
-    likeCount: Int
-    "Số lượng share"
-    shareCount: Int
-    "Số lượng comment"
-    commentCount: Int
-
-    collaborator: Collaborator
-    product: Product
-    mediaProductStats(fromDate: String, toDate: String): MediaProductStats
-  }
-
-  type MediaProductPageData {
-    data: [MediaProduct]
-    total: Int
-    pagination: Pagination
   }
 `;
 

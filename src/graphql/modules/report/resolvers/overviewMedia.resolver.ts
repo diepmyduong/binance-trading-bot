@@ -77,34 +77,19 @@ const getTopMediaCollaborators = async (root: any, args: any, context: Context) 
 const getCollaboratorsMediaReports = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const { branchId, sellerIds } = get(args, "q.filter", {});
-  const $match: any = {};
-  if (context.isMember()) {
-    set($match, "memberId.$in", [context.id]);
-  } else if (branchId) {
-    const memberIds = await MemberModel.find({ branchId, activated: true })
-      .select("_id")
-      .then((res) => res.map((r) => r._id));
-    set($match, "memberId.$in", memberIds);
-  } else if (sellerIds?.length) {
-    set($match, "memberId.$in", sellerIds);
-  }
+  const $match: any = await getMatch(context, branchId, sellerIds);
   set(args, "q.filter", $match);
-  console.log("query", args.q.filter);
   return await collaboratorService.fetch(args.q);
 };
 
 //sản phẩm - CTV - đường link - lựợt click - lượt like - lượt share - lượt comment - lượng đặt hàng thành công
 const getProductsMediaReports = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+  const { branchId, sellerIds } = get(args, "q.filter", {});
+  const $match: any = await getMatch(context, branchId, sellerIds);
+  set(args, "q.filter", $match);
+  console.log("args", args.q.filter);
   return collaboratorProductService.fetch(args.q);
-};
-
-const MediaProduct = {
-  collaborator: GraphQLHelper.loadById(CollaboratorLoader, "collaboratorId"),
-  product: GraphQLHelper.loadById(ProductLoader, "productId"),
-  mediaProductStats: async (root: ICollaboratorProduct, args: any, context: Context) => {
-    return MediaProductStats.getLoader(args).load(root.id);
-  },
 };
 
 const Query = {
@@ -119,5 +104,18 @@ const Query = {
 
 export default {
   Query,
-  MediaProduct,
 };
+async function getMatch(context: Context, branchId: any, sellerIds: any) {
+  const $match: any = {};
+  if (context.isMember()) {
+    set($match, "memberId.$in", [context.id]);
+  } else if (branchId) {
+    const memberIds = await MemberModel.find({ branchId, activated: true })
+      .select("_id")
+      .then((res) => res.map((r) => r._id));
+    set($match, "memberId.$in", memberIds);
+  } else if (sellerIds?.length) {
+    set($match, "memberId.$in", sellerIds);
+  }
+  return $match;
+}

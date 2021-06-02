@@ -2,15 +2,10 @@ import { get, set } from "lodash";
 
 import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper } from "../../../../helpers";
-import { GraphQLHelper } from "../../../../helpers/graphql.helper";
 import { Context } from "../../../context";
-import { CollaboratorLoader } from "../../collaborator/collaborator.model";
 import { collaboratorService } from "../../collaborator/collaborator.service";
-import { ICollaboratorProduct } from "../../collaboratorProduct/collaboratorProduct.model";
 import { collaboratorProductService } from "../../collaboratorProduct/collaboratorProduct.service";
 import { MemberModel } from "../../member/member.model";
-import { ProductLoader } from "../../product/product.model";
-import { MediaProductStats } from "../loaders/mediaProductStats.loader";
 
 const getOverviewAllCollaboratorProducts = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
@@ -22,19 +17,6 @@ const getOverviewAllCollaboratorProducts = async (root: any, args: any, context:
     likeCount: 0,
     commentCount: 0,
     completedQty: 0,
-  };
-};
-
-const getOverviewAllCollaborators = async (root: any, args: any, context: Context) => {
-  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-
-  //CTV : Tổng lượt share - like - comment - click - tổng lượng ctv
-
-  return {
-    shareCount: 0,
-    likeCount: 0,
-    commentCount: 0,
-    collaboratorCount: 0,
   };
 };
 
@@ -96,7 +78,6 @@ const Query = {
   getProductsMediaReports,
 
   getOverviewAllCollaboratorProducts,
-  getOverviewAllCollaborators,
   getTopMediaCollaboratorProducts,
   getTopMediaCollaborators,
 };

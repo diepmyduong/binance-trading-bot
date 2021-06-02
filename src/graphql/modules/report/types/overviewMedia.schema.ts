@@ -6,7 +6,6 @@ const schema = gql`
     getProductsMediaReports(q: QueryGetListInput): CollaboratorProductPageData
 
     getOverviewAllCollaboratorProducts(fromDate: String, toDate: String): OverviewMediaProductStats
-    getOverviewAllCollaborators(fromDate: String, toDate: String): OverviewMediaCollaboratorStats
     getTopMediaCollaborators(
       fromDate: String
       toDate: String
@@ -48,13 +47,6 @@ const schema = gql`
     likeCount: Int
     commentCount: Int
     completedQty: Int
-  }
-
-  type OverviewMediaCollaboratorStats {
-    shareCount: Int
-    likeCount: Int
-    commentCount: Int
-    collaboratorCount: Int
   }
 
   type MediaProductsStats {

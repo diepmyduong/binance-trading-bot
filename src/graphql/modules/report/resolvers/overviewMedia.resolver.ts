@@ -88,7 +88,6 @@ const getProductsMediaReports = async (root: any, args: any, context: Context) =
   const { branchId, sellerIds } = get(args, "q.filter", {});
   const $match: any = await getMatch(context, branchId, sellerIds);
   set(args, "q.filter", $match);
-  console.log("args", args.q.filter);
   return collaboratorProductService.fetch(args.q);
 };
 

@@ -7,41 +7,6 @@ import { collaboratorService } from "../../collaborator/collaborator.service";
 import { collaboratorProductService } from "../../collaboratorProduct/collaboratorProduct.service";
 import { MemberModel } from "../../member/member.model";
 
-const getTopMediaCollaboratorProducts = async (root: any, args: any, context: Context) => {
-  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-
-  //CTV : Tổng lượt share - like - comment - click - tổng lượng ctv
-  const mostLikeProducts: any = [];
-  const mostShareProducts: any = [];
-  const mostCommentProducts: any = [];
-  const mostViewProducts: any = [];
-
-  return {
-    mostLikeProducts,
-    mostShareProducts,
-    mostCommentProducts,
-    mostViewProducts,
-  };
-};
-
-const getTopMediaCollaborators = async (root: any, args: any, context: Context) => {
-  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-
-  //CTV : Tổng lượt share - like - comment - click - tổng lượng ctv
-
-  const mostLikeCollaborators: any = [];
-  const mostShareCollaborators: any = [];
-  const mostCommentCollaborators: any = [];
-  const mostViewCollaborators: any = [];
-
-  return {
-    mostLikeCollaborators,
-    mostShareCollaborators,
-    mostCommentCollaborators,
-    mostViewCollaborators,
-  };
-};
-
 //CTV - đường link - lựợt click - lượt like - lượt share - lượt comment - tổng like SP - Tổng share SP - Tổng coment SP - tổng SP - tổng lượng sp đặt hàng thành công
 const getCollaboratorsMediaReports = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
@@ -63,9 +28,6 @@ const getProductsMediaReports = async (root: any, args: any, context: Context) =
 const Query = {
   getCollaboratorsMediaReports,
   getProductsMediaReports,
-
-  getTopMediaCollaboratorProducts,
-  getTopMediaCollaborators,
 };
 
 export default {

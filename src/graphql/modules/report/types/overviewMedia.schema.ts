@@ -4,27 +4,7 @@ const schema = gql`
   extend type Query {
     getCollaboratorsMediaReports(q: QueryGetListInput): CollaboratorPageData
     getProductsMediaReports(q: QueryGetListInput): CollaboratorProductPageData
-
-    getTopMediaCollaboratorProducts(
-      fromDate: String
-      toDate: String
-      sellerIds: [ID]
-      branchId: ID
-      collaboratorId: ID
-    ): MediaCollaboratorProducts
     # Add Query
-  }
-
-  type MediaCollaboratorProducts {
-    mostLikeProducts: [MediaStats]
-    mostShareProducts: [MediaStats]
-    mostCommentProducts: [MediaStats]
-    mostViewProducts: [MediaStats]
-  }
-
-  type MediaStats {
-    shortUrl: String
-    count: String
   }
 
   type MediaProductsStats {

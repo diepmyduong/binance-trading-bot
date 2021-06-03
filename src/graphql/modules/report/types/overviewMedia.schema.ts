@@ -5,13 +5,6 @@ const schema = gql`
     getCollaboratorsMediaReports(q: QueryGetListInput): CollaboratorPageData
     getProductsMediaReports(q: QueryGetListInput): CollaboratorProductPageData
 
-    getTopMediaCollaborators(
-      fromDate: String
-      toDate: String
-      sellerIds: [ID]
-      branchId: ID
-      collaboratorId: ID
-    ): MediaCollaborators
     getTopMediaCollaboratorProducts(
       fromDate: String
       toDate: String
@@ -20,13 +13,6 @@ const schema = gql`
       collaboratorId: ID
     ): MediaCollaboratorProducts
     # Add Query
-  }
-
-  type MediaCollaborators {
-    mostLikeCollaborators: [MediaStats]
-    mostShareCollaborators: [MediaStats]
-    mostCommentCollaborators: [MediaStats]
-    mostViewCollaborators: [MediaStats]
   }
 
   type MediaCollaboratorProducts {

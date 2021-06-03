@@ -24,24 +24,6 @@ const getTopMediaCollaboratorProducts = async (root: any, args: any, context: Co
   };
 };
 
-const getTopMediaCollaborators = async (root: any, args: any, context: Context) => {
-  AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-
-  //CTV : Tổng lượt share - like - comment - click - tổng lượng ctv
-
-  const mostLikeCollaborators: any = [];
-  const mostShareCollaborators: any = [];
-  const mostCommentCollaborators: any = [];
-  const mostViewCollaborators: any = [];
-
-  return {
-    mostLikeCollaborators,
-    mostShareCollaborators,
-    mostCommentCollaborators,
-    mostViewCollaborators,
-  };
-};
-
 //CTV - đường link - lựợt click - lượt like - lượt share - lượt comment - tổng like SP - Tổng share SP - Tổng coment SP - tổng SP - tổng lượng sp đặt hàng thành công
 const getCollaboratorsMediaReports = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
@@ -65,7 +47,6 @@ const Query = {
   getProductsMediaReports,
 
   getTopMediaCollaboratorProducts,
-  getTopMediaCollaborators,
 };
 
 export default {

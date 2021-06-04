@@ -95,3 +95,5 @@ async function getOrderIds(objectIds: Types.ObjectId[], $gte: Date, $lte: Date) 
   ]).then((res) => res.map((r) => Types.ObjectId(r._id)));
   return orderIds;
 }
+
+export const CollaboratorProductOrderStats = getLoader;

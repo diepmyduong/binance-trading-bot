@@ -47,6 +47,12 @@ export class Context {
   isMessenger() {
     return get(this.tokenData, "role") == ROLES.MESSENGER;
   }
+  isAdmin() {
+    return get(this.tokenData, "role") == ROLES.ADMIN;
+  }
+  isEditor() {
+    return get(this.tokenData, "role") == ROLES.EDITOR;
+  }
   get id() {
     return get(this.tokenData, "_id");
   }

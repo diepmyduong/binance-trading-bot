@@ -1,18 +1,31 @@
 import { ROLES } from "../../../../constants/role.const";
 import { AuthHelper, UtilsHelper } from "../../../../helpers";
 import { Context } from "../../../context";
-import { AddressDeliveryLoader, AddressDeliveryModel } from "../../addressDelivery/addressDelivery.model";
-import { AddressStorehouseLoader, AddressStorehouseModel } from "../../addressStorehouse/addressStorehouse.model";
+import {
+  AddressDeliveryLoader,
+  AddressDeliveryModel,
+} from "../../addressDelivery/addressDelivery.model";
+import {
+  AddressStorehouseLoader,
+  AddressStorehouseModel,
+} from "../../addressStorehouse/addressStorehouse.model";
 import { GraphQLHelper } from "../../../../helpers/graphql.helper";
 import { MemberLoader, MemberModel } from "../../member/member.model";
 import { CustomerLoader, CustomerModel } from "../../customer/customer.model";
-import { getShipMethods, IOrder, OrderModel, OrderStatus, PaymentMethod, ShipMethod } from "../../order/order.model";
+import {
+  getShipMethods,
+  IOrder,
+  OrderModel,
+  OrderStatus,
+  PaymentMethod,
+  ShipMethod,
+} from "../../order/order.model";
 import { ObjectId } from "mongodb";
 import { OrderLogLoader } from "../../orderLog/orderLog.model";
 import { orderService } from "../../order/order.service";
 import { OrderItemLoader } from "../../orderItem/orderItem.model";
 import { CollaboratorModel } from "../../collaborator/collaborator.model";
-import { set } from "lodash";
+import { get, set } from "lodash";
 import { Types } from "mongoose";
 
 const getOrderReportsOverview = async (root: any, args: any, context: Context) => {
@@ -33,8 +46,7 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
 
   if (context.isMember()) {
     set(params, "sellerId.$in", [new ObjectId(context.id)]);
-  }
-  else {
+  } else {
     if (sellerIds) {
       if (sellerIds.length > 0) {
         set(params, "sellerId.$in", sellerIds.map(Types.ObjectId));
@@ -44,14 +56,12 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
 
   if (context.isMember()) {
     set(params, "sellerId.$in", [new ObjectId(context.id)]);
-  }
-  else {
+  } else {
     if (branchId) {
       const memberIds = await MemberModel.find({ branchId, activated: true }).select("_id");
-      const sellerIds = memberIds.map(m => m.id);
+      const sellerIds = memberIds.map((m) => m.id);
       set(params, "sellerId.$in", sellerIds.map(Types.ObjectId));
-    }
-    else {
+    } else {
       if (sellerIds) {
         if (sellerIds.length > 0) {
           set(params, "sellerId.$in", sellerIds.map(Types.ObjectId));
@@ -66,11 +76,13 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
     set(params, "isLate", isLate);
   }
 
-
   const [
-    allOrdersCount, [allOrderSum],
-    pendingOrdersCount, [pendingOrderSum],
-    confirmedOrdersCount, [confirmedOrderSum],
+    allOrdersCount,
+    [allOrderSum],
+    pendingOrdersCount,
+    [pendingOrderSum],
+    confirmedOrdersCount,
+    [confirmedOrderSum],
   ] = await Promise.all([
     OrderModel.count(params),
     OrderModel.aggregate([
@@ -79,9 +91,9 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
         $group: {
           _id: null,
           total: {
-            $sum: "$amount"
-          }
-        }
+            $sum: "$amount",
+          },
+        },
       },
     ]),
 
@@ -92,9 +104,9 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
         $group: {
           _id: null,
           total: {
-            $sum: "$amount"
-          }
-        }
+            $sum: "$amount",
+          },
+        },
       },
     ]),
 
@@ -105,17 +117,20 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
         $group: {
           _id: null,
           total: {
-            $sum: "$amount"
-          }
-        }
+            $sum: "$amount",
+          },
+        },
       },
     ]),
   ]);
 
   const [
-    deliveringOrdersCount, [deliveringOrderSum],
-    completedOrdersCount, [completedOrderSum],
-    failureOrdersCount, [failureOrderSum]
+    deliveringOrdersCount,
+    [deliveringOrderSum],
+    completedOrdersCount,
+    [completedOrderSum],
+    failureOrdersCount,
+    [failureOrderSum],
   ] = await Promise.all([
     OrderModel.count({ ...params, status: OrderStatus.DELIVERING }),
     OrderModel.aggregate([
@@ -124,9 +139,9 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
         $group: {
           _id: null,
           total: {
-            $sum: "$amount"
-          }
-        }
+            $sum: "$amount",
+          },
+        },
       },
     ]),
 
@@ -137,9 +152,9 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
         $group: {
           _id: null,
           total: {
-            $sum: "$amount"
-          }
-        }
+            $sum: "$amount",
+          },
+        },
       },
     ]),
 
@@ -150,16 +165,14 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
         $group: {
           _id: null,
           total: {
-            $sum: "$amount"
-          }
-        }
+            $sum: "$amount",
+          },
+        },
       },
     ]),
   ]);
 
-  const [
-    canceledOrdersCount, [canceledOrderSum],
-  ] = await Promise.all([
+  const [canceledOrdersCount, [canceledOrderSum]] = await Promise.all([
     OrderModel.count({ ...params, status: OrderStatus.CANCELED }),
     OrderModel.aggregate([
       { $match: { ...params, status: OrderStatus.CANCELED } },
@@ -167,47 +180,47 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
         $group: {
           _id: null,
           total: {
-            $sum: "$amount"
-          }
-        }
+            $sum: "$amount",
+          },
+        },
       },
     ]),
-  ])
+  ]);
 
   const allOrders = {
     count: allOrdersCount,
-    sum: allOrderSum?.total ? allOrderSum?.total : 0,
-  }
+    sum: get(allOrderSum, "total", 0),
+  };
 
   const pendingOrders = {
     count: pendingOrdersCount,
-    sum: pendingOrderSum?.total ? pendingOrderSum?.total : 0,
-  }
+    sum: get(pendingOrderSum, "total", 0),
+  };
 
   const confirmedOrders = {
     count: confirmedOrdersCount,
-    sum: confirmedOrderSum?.total ? confirmedOrderSum?.total : 0,
-  }
+    sum: get(confirmedOrderSum, "total", 0),
+  };
 
   const deliveringOrders = {
     count: deliveringOrdersCount,
-    sum: deliveringOrderSum?.total ? deliveringOrderSum?.total : 0,
-  }
+    sum: get(deliveringOrderSum, "total", 0),
+  };
 
   const completedOrders = {
     count: completedOrdersCount,
-    sum: completedOrderSum?.total ? completedOrderSum?.total : 0,
-  }
+    sum: get(completedOrderSum, "total", 0),
+  };
 
   const failureOrders = {
     count: failureOrdersCount,
-    sum: failureOrderSum?.total ? failureOrderSum?.total : 0,
-  }
+    sum: get(failureOrderSum, "total", 0),
+  };
 
   const canceledOrders = {
     count: canceledOrdersCount,
-    sum: canceledOrderSum?.total ? canceledOrderSum?.total : 0,
-  }
+    sum: get(canceledOrderSum, "total", 0),
+  };
 
   return {
     allOrders,
@@ -216,14 +229,14 @@ const getOrderReportsOverview = async (root: any, args: any, context: Context) =
     deliveringOrders,
     completedOrders,
     failureOrders,
-    canceledOrders
-  }
+    canceledOrders,
+  };
 };
 
 const getOrderReports = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const queryInput = args.q;
-  let { fromDate, toDate, sellerIds, status,branchId } = queryInput.filter;
+  let { fromDate, toDate, sellerIds, status, branchId } = queryInput.filter;
 
   const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
 
@@ -238,19 +251,16 @@ const getOrderReports = async (root: any, args: any, context: Context) => {
   //theo bưu cục nào
   if (context.isMember()) {
     set(args, "q.filter.sellerId.$in", [new ObjectId(context.id)]);
-  }
-  else {
+  } else {
     if (branchId) {
       const memberIds = await MemberModel.find({ branchId, activated: true }).select("_id");
-      const sellerIds = memberIds.map(m => m.id);
+      const sellerIds = memberIds.map((m) => m.id);
       set(args, "q.filter.sellerId.$in", sellerIds.map(Types.ObjectId));
-    }
-    else {
+    } else {
       if (sellerIds) {
         if (sellerIds.length > 0) {
           set(args, "q.filter.sellerId.$in", sellerIds.map(Types.ObjectId));
-        }
-        else {
+        } else {
           delete args.q.filter.sellerIds;
         }
       }
@@ -258,7 +268,11 @@ const getOrderReports = async (root: any, args: any, context: Context) => {
   }
 
   if (status === "UNCOMPLETED") {
-    set(args, "q.filter.status.$in", [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING]);
+    set(args, "q.filter.status.$in", [
+      OrderStatus.PENDING,
+      OrderStatus.CONFIRMED,
+      OrderStatus.DELIVERING,
+    ]);
   }
 
   resolveArgs(args);
@@ -266,13 +280,12 @@ const getOrderReports = async (root: any, args: any, context: Context) => {
   return orderService.fetch(args.q);
 };
 
-
 const resolveArgs = (args: any) => {
   delete args.q.filter.sellerIds;
   delete args.q.filter.fromDate;
   delete args.q.filter.toDate;
   delete args.q.filter.branchId;
-}
+};
 
 const OverviewOrder = {
   orderLogs: GraphQLHelper.loadManyById(OrderLogLoader, "orderLogIds"),
@@ -286,8 +299,8 @@ const OverviewOrder = {
     const member = await MemberModel.findById(root.sellerId);
     const collaboratorMember: any = {
       memberId: context.id,
-      member
-    }
+      member,
+    };
     if (collaborator) {
       const customer = await CustomerModel.findById(collaborator.customerId);
       collaboratorMember.id = collaborator.id;
@@ -305,7 +318,7 @@ const OverviewOrder = {
       if (root.shipMethod === ShipMethod.POST) {
         const address = await AddressDeliveryLoader.load(root.addressDeliveryId);
         if (member.code !== address.code) {
-          return true
+          return true;
         }
         return false;
       }
@@ -313,23 +326,17 @@ const OverviewOrder = {
       if (root.shipMethod === ShipMethod.VNPOST) {
         const address = await AddressStorehouseLoader.load(root.addressStorehouseId);
         if (member.code !== address.code) {
-          return true
+          return true;
         }
-        return false
+        return false;
       }
-      return false
+      return false;
     }
     return false;
   },
 
-  addressStorehouse: GraphQLHelper.loadById(
-    AddressStorehouseLoader,
-    "addressStorehouseId"
-  ),
-  addressDelivery: GraphQLHelper.loadById(
-    AddressDeliveryLoader,
-    "addressDeliveryId"
-  ),
+  addressStorehouse: GraphQLHelper.loadById(AddressStorehouseLoader, "addressStorehouseId"),
+  addressDelivery: GraphQLHelper.loadById(AddressDeliveryLoader, "addressDeliveryId"),
 
   deliveringMember: async (root: IOrder, args: any, context: Context) => {
     if (root.toMemberId) {
@@ -338,24 +345,19 @@ const OverviewOrder = {
 
     let code = null;
     if (root.shipMethod === ShipMethod.POST) {
-      const addressDelivery = await AddressDeliveryModel.findById(
-        root.addressDeliveryId
-      );
+      const addressDelivery = await AddressDeliveryModel.findById(root.addressDeliveryId);
       code = addressDelivery.code;
     }
 
     if (root.shipMethod === ShipMethod.VNPOST) {
-      const addressStorehouse = await AddressStorehouseModel.findById(
-        root.addressStorehouseId
-      );
+      const addressStorehouse = await AddressStorehouseModel.findById(root.addressStorehouseId);
 
       code = addressStorehouse.code;
     }
 
     const result = await MemberModel.findOne({ code });
 
-    if (!result)
-      return await MemberModel.findById(root.sellerId);
+    if (!result) return await MemberModel.findById(root.sellerId);
 
     return result;
   },
@@ -373,9 +375,7 @@ const OverviewOrder = {
 
   shipMethodText: async (root: IOrder, args: any, context: Context) => {
     const shipMethods = await getShipMethods();
-    const shipMethod = shipMethods.find(
-      (ship) => ship.value === root.shipMethod
-    );
+    const shipMethod = shipMethods.find((ship) => ship.value === root.shipMethod);
     return shipMethod ? shipMethod.label : "Không có phương thức này";
   },
 
@@ -400,16 +400,19 @@ const OverviewOrder = {
     }
   },
 
-  commission: async ({ commission1, commission2, commission3 }: IOrder, args: any, context: Context) => commission1 + commission2 + commission3
-
-}
+  commission: async (
+    { commission1, commission2, commission3 }: IOrder,
+    args: any,
+    context: Context
+  ) => commission1 + commission2 + commission3,
+};
 
 const Query = {
   getOrderReportsOverview,
-  getOrderReports
+  getOrderReports,
 };
 
 export default {
   Query,
-  OverviewOrder
+  OverviewOrder,
 };

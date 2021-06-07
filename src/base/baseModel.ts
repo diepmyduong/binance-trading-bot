@@ -1,12 +1,11 @@
+import { LRUMap } from "@jtfell/lru-map";
 import DataLoader from "dataloader";
 import _ from "lodash";
-import { LRUMap } from "@jtfell/lru-map";
 import mongoose from "mongoose";
 import uniqueValidator from "mongoose-unique-validator";
 import Redis from "redis";
 import RedisDataLoader from "redis-dataloader";
 import { Subject } from "rxjs";
-
 import { configs } from "../configs";
 
 const redisClient = configs.redis.enable

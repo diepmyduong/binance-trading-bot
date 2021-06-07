@@ -1,4 +1,4 @@
-FROM node:10-alpine AS BUILD_IMAGE
+FROM node:12-alpine AS BUILD_IMAGE
 
 RUN apk add --no-cache \
         sudo \
@@ -21,8 +21,10 @@ COPY package.json package-lock.json ./
 RUN npm install
 
 COPY . .
-
+ARG MONGODB_URI
+ARG FIREBASE_VIEW
 RUN npm run build-ts
+RUN MONGODB_URI=$MONGODB_URI FIREBASE_VIEW=$FIREBASE_VIEW npm run next:build
 
 RUN npm prune --production
 
@@ -50,7 +52,10 @@ COPY --from=BUILD_IMAGE /usr/src/app/dist ./dist
 COPY --from=BUILD_IMAGE /usr/src/app/node_modules ./node_modules
 COPY --from=BUILD_IMAGE /usr/src/app/docs ./docs
 COPY --from=BUILD_IMAGE /usr/src/app/public ./public
+COPY --from=BUILD_IMAGE /usr/src/app/next/public ./next/public
 COPY --from=BUILD_IMAGE /usr/src/app/package.json ./package.json
+COPY --from=BUILD_IMAGE /usr/src/app/next/.next ./next/.next
+COPY --from=BUILD_IMAGE /usr/src/app/next/next.config.js ./next/next.config.js
 
 EXPOSE 5555
 

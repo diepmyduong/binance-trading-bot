@@ -1,10 +1,5 @@
 import { ROLES } from "../../../constants/role.const";
-import {
-  BaseRoute,
-  Request,
-  Response,
-  NextFunction,
-} from "../../../base/baseRoute";
+import { BaseRoute, Request, Response, NextFunction } from "../../../base/baseRoute";
 import { ErrorHelper } from "../../../base/error";
 import { Context } from "../../../graphql/context";
 
@@ -30,7 +25,6 @@ import { AddressStorehouseModel } from "../../../graphql/modules/addressStorehou
 import { BranchModel } from "../../../graphql/modules/branch/branch.model";
 import { isValidObjectId, Types } from "mongoose";
 
-
 export const exportOrdersReport = async (req: Request, res: Response) => {
   const context = (req as any).context as Context;
   context.auth(ROLES.ADMIN_EDITOR_MEMBER);
@@ -44,18 +38,26 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
   const status: any = req.query.status ? req.query.status.toString() : null;
 
   if (status) {
-    if (![OrderStatus.PENDING, OrderStatus.FAILURE, OrderStatus.DELIVERING, OrderStatus.CONFIRMED, OrderStatus.COMPLETED, OrderStatus.CANCELED, OrderStatus.RETURNED].includes(status)) {
+    if (
+      ![
+        OrderStatus.PENDING,
+        OrderStatus.FAILURE,
+        OrderStatus.DELIVERING,
+        OrderStatus.CONFIRMED,
+        OrderStatus.COMPLETED,
+        OrderStatus.CANCELED,
+        OrderStatus.RETURNED,
+      ].includes(status)
+    ) {
       throw ErrorHelper.requestDataInvalid("Trạng thái đơn hàng");
     }
   }
-
 
   const memberIdsString = req.query.memberIds ? req.query.memberIds.toString() : null;
   let memberIds: any = null;
   if (memberIdsString) {
     memberIds = memberIdsString.split("|");
-    if (memberIds.length < 0)
-      throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+    if (memberIds.length < 0) throw ErrorHelper.requestDataInvalid("Mã bưu cục");
 
     memberIds.map((m: string) => {
       if (!isValidObjectId(m)) {
@@ -65,7 +67,6 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
 
     memberIds = memberIds.map(Types.ObjectId);
   }
-
 
   if (!isValidObjectId(memberId)) {
     throw ErrorHelper.requestDataInvalid("Mã bưu cục");
@@ -83,11 +84,9 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
     set(params, "createdAt.$lte", $lte);
   }
 
-
   if (memberIds) {
     set(params, "sellerId.$in", memberIds);
-  }
-  else {
+  } else {
     if (memberId) {
       set(params, "sellerId", new ObjectId(memberId));
     }
@@ -97,25 +96,20 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
     set(params, "sellerId", new ObjectId(context.id));
   }
 
-
   if (status) {
     set(params, "status", status);
   }
 
   // console.log('params', params);
 
-  const [
-    orders,
-    addressDeliverys,
-    addressStorehouses,
-    sellers,
-    branches
-  ] = await Promise.all([
+  const [orders, addressDeliverys, addressStorehouses, sellers, branches] = await Promise.all([
     OrderModel.find(params),
     AddressDeliveryModel.find({}),
     AddressStorehouseModel.find({}),
-    MemberModel.find({ activated: true }).select('-addressStorehouseIds -addressDeliveryIds -fanpageImage -fanpageName'),
-    BranchModel.find({})
+    MemberModel.find({ activated: true }).select(
+      "-addressStorehouseIds -addressDeliveryIds -fanpageImage -fanpageName"
+    ),
+    BranchModel.find({}),
   ]);
 
   const statusText = (order: any) => {
@@ -137,14 +131,21 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
       default:
         return order.status;
     }
-  }
+  };
 
   for (let i = 0; i < orders.length; i++) {
     const order = orders[i];
-    const shipMethod = order.shipMethod === ShipMethod.POST ? "Nhận hàng tại bưu cục" : "Giao hàng tại địa chỉ";
-    const seller = sellers.find(member => member.id.toString() === order.sellerId.toString());
-    const addressDelivery = order.addressDeliveryId ? addressDeliverys.find(addr => addr.id.toString() === order.addressDeliveryId.toString()) : null;
-    const addressStorehouse = order.addressStorehouseId ? addressStorehouses.find(addr => addr.id.toString() === order.addressStorehouseId.toString()) : null;
+    const shipMethod =
+      order.shipMethod === ShipMethod.POST ? "Nhận hàng tại bưu cục" : "Giao hàng tại địa chỉ";
+    const seller = sellers.find((member) => member.id.toString() === order.sellerId.toString());
+    const addressDelivery = order.addressDeliveryId
+      ? addressDeliverys.find((addr) => addr.id.toString() === order.addressDeliveryId.toString())
+      : null;
+    const addressStorehouse = order.addressStorehouseId
+      ? addressStorehouses.find(
+          (addr) => addr.id.toString() === order.addressStorehouseId.toString()
+        )
+      : null;
 
     const deliveryAddressCode = addressDelivery ? addressDelivery.code : null;
     const deliveryAddressName = addressDelivery ? addressDelivery.name : null;
@@ -155,12 +156,18 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
     const storehouseAddress = addressStorehouse ? addressStorehouse.address : null;
 
     const buyerAddress = order.buyerAddress;
-    const branch = branches.find(br => br.id.toString() === seller.branchId.toString());
+    const branch = branches.find((br) => br.id.toString() === seller.branchId.toString());
     const createdDate = moment(order.createdAt);
     const finishedDate = order.finishedAt ? moment(order.finishedAt) : null;
     const toDate = moment(new Date());
-    const orderDuration = order.isLate ? [OrderStatus.COMPLETED, OrderStatus.CANCELED, OrderStatus.FAILURE].includes(order.status) ? moment.duration(finishedDate.diff(createdDate)) : moment.duration(toDate.diff(createdDate)) : null;
-    const remainTime = orderDuration ? `${orderDuration.days() - 1} Ngày ${orderDuration.hours()} Giờ` : "";
+    const orderDuration = order.isLate
+      ? [OrderStatus.COMPLETED, OrderStatus.CANCELED, OrderStatus.FAILURE].includes(order.status)
+        ? moment.duration(finishedDate.diff(createdDate))
+        : moment.duration(toDate.diff(createdDate))
+      : null;
+    const remainTime = orderDuration
+      ? `${orderDuration.days() - 1} Ngày ${orderDuration.hours()} Giờ`
+      : "";
     const remainDays = orderDuration ? orderDuration.days() - 1 : 0;
     const remainHours = orderDuration ? orderDuration.hours() : 0;
     const params = {
@@ -173,7 +180,7 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
       buyer: order.buyerName,
       buyerPhone: order.buyerPhone,
       shipMethod,
-      
+
       deliveryAddressCode: order.shipMethod === ShipMethod.POST ? deliveryAddressCode : null,
       deliveryAddressName: order.shipMethod === ShipMethod.POST ? deliveryAddressName : null,
       deliveryAddress: order.shipMethod === ShipMethod.POST ? deliveryAddress : null,
@@ -189,17 +196,17 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
       commission2: order.commission2,
       commission3: order.commission3,
       subTotal: order.subtotal,
-      shipfee: order?.shipfee,
+      shipfee: order.shipfee,
       amount: order.amount,
       status: statusText(order),
-      createdDate: moment(order.createdAt).format('DD/MM/YYYY HH:mm:ss'),
-      finishedDate: order.finishedAt ? moment(order.finishedAt).format('DD/MM/YYYY HH:mm:ss') : "",
-      logDate: moment(order.loggedAt).format('DD/MM/YYYY HH:mm:ss'),
+      createdDate: moment(order.createdAt).format("DD/MM/YYYY HH:mm:ss"),
+      finishedDate: order.finishedAt ? moment(order.finishedAt).format("DD/MM/YYYY HH:mm:ss") : "",
+      logDate: moment(order.loggedAt).format("DD/MM/YYYY HH:mm:ss"),
       late: order.isLate ? "Trễ" : "",
       remainTime: order.isLate ? remainTime : "",
       remainDays: order.isLate ? remainDays : "",
-      remainHours: order.isLate ? remainHours : ""
-    }
+      remainHours: order.isLate ? remainHours : "",
+    };
     // console.log('count', i);
     data.push(params);
   }
@@ -267,7 +274,7 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
         d.buyerPhone,
 
         d.shipMethod,
-        
+
         d.deliveryAddressCode,
         d.deliveryAddressName,
         d.deliveryAddress,
@@ -296,7 +303,7 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
     });
 
     UtilsHelper.setThemeExcelWorkBook(sheet);
-  }
+  };
 
   const POSTS_SHEET_NAME = "Danh sách đơn hàng";
   createSheetData(data, POSTS_SHEET_NAME);
@@ -315,4 +322,4 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
   }
 
   return UtilsHelper.responseExcel(res, workbook, "danh_sach_don_hang");
-}
+};

@@ -1,15 +1,12 @@
 import { Workbook } from "exceljs";
 import { Response } from "express";
 import fs from "fs";
-import path from "path";
+import KhongDau from "khong-dau";
 import _ from "lodash";
-
+import moment from "moment-timezone";
+import path from "path";
 import bm25 from "wink-bm25-text-search";
 import nlp from "wink-nlp-utils";
-import KhongDau from "khong-dau";
-
-import { AddressModel } from "../graphql/modules/address/address.model";
-import moment from "moment-timezone";
 import writtenNumber from "written-number";
 
 const START_MONTH = moment().startOf("month").format("YYYY-MM-DD");
@@ -18,6 +15,9 @@ const END_MONTH = moment().endOf("month").format("YYYY-MM-DD");
 export class UtilsHelper {
   constructor() {}
 
+  static toBoolean(value: string) {
+    return _.upperCase(value) == "TRUE";
+  }
   static getDatesWithComparing = (fromDate: string = START_MONTH, toDate: string = END_MONTH) => {
     let $gte: Date = null,
       $lte: Date = null;
@@ -189,25 +189,6 @@ export class UtilsHelper {
     );
   }
 }
-
-export const getProvinceName = async (provinceId: any) => {
-  if (!provinceId) return null;
-  const address = await AddressModel.findOne({ provinceId });
-  if (!address) return null;
-  return address.province;
-};
-export const getDistrictName = async (districtId: any) => {
-  if (!districtId) return null;
-  const address = await AddressModel.findOne({ districtId });
-  if (!address) return null;
-  return address.district;
-};
-export const getWardName = async (wardId: any) => {
-  if (!wardId) return null;
-  const address = await AddressModel.findOne({ wardId });
-  if (!wardId) return null;
-  return address.ward;
-};
 
 export function num2Text(n: number, lang = "vi") {
   if (n >= 0) return writtenNumber(n, { lang });

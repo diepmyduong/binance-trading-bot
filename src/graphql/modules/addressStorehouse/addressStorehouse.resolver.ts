@@ -1,3 +1,4 @@
+import { get } from "lodash";
 import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, UtilsHelper } from "../../../helpers";
@@ -5,10 +6,7 @@ import { Context } from "../../context";
 import { AddressHelper } from "../address/address.helper";
 import { MemberModel } from "../member/member.model";
 import { AddressStorehouseHelper } from "./addressStorehouse.helper";
-import {
-  AddressStorehouseModel,
-  IAddressStorehouse,
-} from "./addressStorehouse.model";
+import { AddressStorehouseModel, IAddressStorehouse } from "./addressStorehouse.model";
 import { addressStorehouseService } from "./addressStorehouse.service";
 
 const Query = {
@@ -32,13 +30,11 @@ const Mutation = {
     if (email && !UtilsHelper.isEmail(email))
       throw ErrorHelper.requestDataInvalid(".Email không đúng định dạng");
 
-    const helper = new AddressStorehouseHelper(
-      new AddressStorehouseModel(data)
-    );
+    const helper = new AddressStorehouseHelper(new AddressStorehouseModel(data));
 
     helper.addressStorehouse.code = data.code || (await AddressStorehouseHelper.generateCode());
 
-    if(data.longitude && data.latitude){
+    if (data.longitude && data.latitude) {
       const location = {
         coordinates: [data ? data.longitude : 0, data ? data.latitude : 0],
         type: "Point",
@@ -46,7 +42,7 @@ const Mutation = {
 
       helper.addressStorehouse.location = location;
     }
-    
+
     await Promise.all([
       AddressHelper.setProvinceName(helper.addressStorehouse),
       AddressHelper.setDistrictName(helper.addressStorehouse),
@@ -76,23 +72,19 @@ const Mutation = {
           AddressHelper.setDistrictName(helper.addressStorehouse),
           AddressHelper.setWardName(helper.addressStorehouse),
         ]);
-        if(data.longitude && data.latitude){
+        if (data.longitude && data.latitude) {
           const location = {
             coordinates: [data ? data.longitude : 0, data ? data.latitude : 0],
             type: "Point",
           };
-  
+
           helper.addressStorehouse.location = location;
         }
         return await helper.addressStorehouse.save();
       });
   },
 
-  deleteOneAddressStorehouse: async (
-    root: any,
-    args: any,
-    context: Context
-  ) => {
+  deleteOneAddressStorehouse: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
     const { id } = args;
     const existedMembersbyAddress = await MemberModel.find({ addressStorehouseIds: { $in: [id] } });
@@ -111,11 +103,11 @@ const AddressStorehouse = {
   },
 
   longitude: (root: IAddressStorehouse, args: any, context: Context) => {
-    return root?.location?.coordinates[0];
+    return get(root, "location.coordinates[0]");
   },
 
   latitude: (root: IAddressStorehouse, args: any, context: Context) => {
-    return root?.location?.coordinates[1];
+    return get(root, "location.coordinates[1]");
   },
 };
 

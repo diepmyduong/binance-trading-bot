@@ -1,4 +1,4 @@
-import { set } from "lodash";
+import { get, set } from "lodash";
 import { SettingKey } from "../../../configs/settingData";
 
 import { ROLES } from "../../../constants/role.const";
@@ -118,7 +118,7 @@ const Member = {
   chatbotRef: async (root: IMember, args: any, context: Context) => {
     const ref = await SettingHelper.load(SettingKey.STORY_REF);
     return root.fanpageId
-      ? `https://m.me/${root.fanpageId}?ref=story.${root.chatbotStory?.ref || ref}`
+      ? `https://m.me/${root.fanpageId}?ref=story.${get(root, "chatbotStory.ref", ref)}`
       : null;
   },
 

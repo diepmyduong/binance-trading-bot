@@ -21,7 +21,7 @@ const Query = {
     return collaboratorService.fetch(args.q);
   },
   getOneCollaborator: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, [ROLES.ADMIN, ROLES.EDITOR]);
+    // AuthHelper.acceptRoles(context, [ROLES.ADMIN, ROLES.EDITOR]);
     const { id } = args;
     return await collaboratorService.findOne({ _id: id });
   },

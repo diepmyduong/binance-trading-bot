@@ -1,4 +1,4 @@
-FROM node:10-alpine AS BUILD_IMAGE
+FROM node:12-alpine AS BUILD_IMAGE
 
 RUN apk add --no-cache \
         sudo \

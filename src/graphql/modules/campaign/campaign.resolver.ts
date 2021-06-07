@@ -37,21 +37,12 @@ const Mutation = {
 
     data.code = data.code || (await CampaignHelper.generateCode());
 
-    const {
-      startDate,
-      endDate,
-      branchId,
-      provinceId,
-      productId,
-      memberType,
-    } = data;
+    const { startDate, endDate, branchId, provinceId, productId, memberType } = data;
 
     const diff = CampaignHelper.diffDate(startDate, endDate);
 
     if (diff <= 0)
-      throw ErrorHelper.requestDataInvalid(
-        ". Ngày bắt đầu và ngày kết thúc không đúng."
-      );
+      throw ErrorHelper.requestDataInvalid(". Ngày bắt đầu và ngày kết thúc không đúng.");
 
     const memberFilterParams: any[] = [];
 
@@ -91,7 +82,7 @@ const Mutation = {
           countShortUrl = await CampaignSocialResultModel.count({ shortUrl });
         }
 
-        const host = await SettingHelper.load(SettingKey.APP_DOMAIN);
+        const host = await SettingHelper.load(SettingKey.WEBAPP_DOMAIN);
 
         const affiliateLink = `${host}/cd/${shortUrl}`;
 
@@ -106,9 +97,7 @@ const Mutation = {
       }
     }
 
-    campaign.campainSocialResultIds = campaignSocialResults.map(
-      (res) => res._id
-    );
+    campaign.campainSocialResultIds = campaignSocialResults.map((res) => res._id);
     campaign.memberIds = campaignSocialResults.map((res) => res.memberId);
 
     return await Promise.all([

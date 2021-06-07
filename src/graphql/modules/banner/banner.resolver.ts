@@ -3,7 +3,7 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
-import { ProductModel } from "../product/product.model";
+import { ProductLoader, ProductModel } from "../product/product.model";
 import { bannerService } from "./banner.service";
 
 const Query = {
@@ -39,7 +39,7 @@ const Mutation = {
 };
 
 const Banner = {
-  product: GraphQLHelper.loadById(ProductModel, "productId"),
+  product: GraphQLHelper.loadById(ProductLoader, "productId"),
 };
 
 export default {

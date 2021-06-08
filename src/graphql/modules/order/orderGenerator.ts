@@ -1,4 +1,4 @@
-import { Dictionary, groupBy, keyBy, maxBy, sumBy } from "lodash";
+import { Dictionary, get, groupBy, keyBy, maxBy, sumBy } from "lodash";
 import { Types } from "mongoose";
 
 import { ErrorHelper } from "../../../base/error";
@@ -23,6 +23,7 @@ import { IMember, MemberModel } from "../member/member.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
 import { IProduct, ProductModel } from "../product/product.model";
 import { SettingHelper } from "../setting/setting.helper";
+import { ShopConfigModel } from "../shopConfig/shopConfig.model";
 import { OrderHelper } from "./order.helper";
 import {
   IOrder,
@@ -253,6 +254,7 @@ export class OrderGenerator {
     const defaultServiceCode = await SettingHelper.load(
       SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE
     );
+
     const data: ICalculateAllShipFeeRequest = {
       MaDichVu: defaultServiceCode,
       MaTinhGui: storehouse.provinceId,
@@ -275,8 +277,8 @@ export class OrderGenerator {
             ]
           : [],
     };
-
-    return await VietnamPostHelper.calculateAllShipFee(data);
+    const shopConfig = await ShopConfigModel.findOne({ memberId: this.seller._id });
+    return await VietnamPostHelper.calculateAllShipFee(data, get(shopConfig, "vnpostToken"));
   }
   private async getNearestStore() {
     const longitude = this.order.longitude || 0;

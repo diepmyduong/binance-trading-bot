@@ -303,12 +303,14 @@ export class OrderGenerator {
       };
     }
     return await AddressStorehouseModel.findOne(query).then((res) => {
-      if (!!res || res.districtId != this.order.buyerDistrictId) {
+      if (!res || res.districtId != this.order.buyerDistrictId) {
         return AddressStorehouseModel.findOne({
+          _id: { $in: this.seller.addressStorehouseIds },
           allowPickup: true,
           districtId: this.order.buyerDistrictId,
         });
       }
+      return res;
     });
   }
   private async setBuyerAddress() {

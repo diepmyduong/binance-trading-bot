@@ -28,7 +28,7 @@ RUN npm prune --production
 
 WORKDIR /usr/src/app
 
-FROM node:10-alpine
+FROM node:12-alpine
 
 RUN apk add --no-cache \
         sudo \
@@ -51,6 +51,8 @@ COPY --from=BUILD_IMAGE /usr/src/app/node_modules ./node_modules
 COPY --from=BUILD_IMAGE /usr/src/app/docs ./docs
 COPY --from=BUILD_IMAGE /usr/src/app/public ./public
 COPY --from=BUILD_IMAGE /usr/src/app/package.json ./package.json
+
+RUN npm i canvas --build-from-source
 
 EXPOSE 5555
 

@@ -5,6 +5,8 @@ services:
     build: .
     env_file:
       - .env
+    ports:
+      - 5555:5555
   redis:
     image: redis:alpine
     command: redis-server --requirepass 123456

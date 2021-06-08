@@ -10,17 +10,17 @@ interface PropsType extends ReactProps, HeaderPropsType {}
 export function DefaultLayout({ ...props }: PropsType) {
   const { user, redirectToWebappLogin } = useAuth();
 
-  useEffect(() => {
-    if (user === null) {
-      redirectToWebappLogin();
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user === null) {
+  //     redirectToWebappLogin();
+  //   }
+  // }, [user]);
 
   return (
     <DefaulLayoutProvider>
-      {!user ? (
+      {/* {!user ? (
         <Spinner />
-      ) : (
+      ) : ( */}
         <div className="flex flex-col min-h-screen relative">
           <>
             <DefaultHead />
@@ -29,7 +29,7 @@ export function DefaultLayout({ ...props }: PropsType) {
             <Footer />
           </>
         </div>
-      )}
+      {/* )} */}
     </DefaulLayoutProvider>
   );
 }

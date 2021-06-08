@@ -8,7 +8,7 @@ import { bannerService } from "./banner.service";
 
 const Query = {
   getAllBanner: async (root: any, args: any, context: Context) => {
-    if (!context.isAdmin() || !context.isEditor()) {
+    if (!context.isAdmin() && !context.isEditor()) {
       set(args, "q.filter.isPublish", true);
     }
     return bannerService.fetch(args.q);

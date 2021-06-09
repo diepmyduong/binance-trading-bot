@@ -5,7 +5,7 @@ import { Button } from "../../../shared/utilities/form/button";
 import { Img } from "../../../shared/utilities/img";
 
 export function Banner() {
-  const { user } = useAuth();
+  // const { user } = useAuth();
   return (
     <>
       <div
@@ -16,10 +16,10 @@ export function Banner() {
           <div className="flex flex-col text-white ">
             <div className="max-w-xs flex items-center justify-between cursor-pointer bg-primary rounded p-2">
               <div className="flex items-center">
-                <Img src={user.profilePicture} avatar className="w-14" />
+                <Img src="/assets/default/avatar.png" avatar className="w-14" />
                 <div className="flex flex-col px-3">
-                  <div className="font-bold text-lg">{user.name}</div>
-                  <div className="text-sm">ID: {user.code}</div>
+                  <div className="font-bold text-lg">Ninh</div>
+                  <div className="text-sm">ID: 123</div>
                 </div>
               </div>
               <i className="text-xl">
@@ -53,10 +53,10 @@ export function Banner() {
         <div className="w-full h-full flex items-center justify-center">
           <div className="w-full flex flex-col items-center justify-items-center text-white ">
             <div className="w-full max-w-xs flex items-center justify-center cursor-pointer bg-primary rounded p-2">
-              <Img src={user.profilePicture} avatar className="w-14" />
+              <Img src="/assets/default/avatar.png" avatar className="w-14" />
               <div className="flex flex-col px-3">
-                <div className="font-bold text-lg">{user.name}</div>
-                <div className="text-sm">ID: {user.code}</div>
+                <div className="font-bold text-lg">Ninh</div>
+                <div className="text-sm">ID: 123123</div>
               </div>
               <i className="text-xl">
                 <HiOutlineChevronRight />

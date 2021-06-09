@@ -1,13 +1,9 @@
-import { Banner } from "./component/banner";
-import { News } from "./component/news";
-import { QuoteHistory } from "./component/quote-history";
+import RestaurantInformation from "./component/restaurant-information/restaurant-information";
 
 export function Homepage() {
   return (
     <div className="z-0">
-      <Banner />
-      <QuoteHistory />
-      <News />
+      <RestaurantInformation />
     </div>
   );
 }

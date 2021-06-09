@@ -9,19 +9,28 @@ export default {
     extend type Member {
       deliveryDistricts: [String]
     }
+    extend type Shop {
+      deliveryDistricts: [String]
+    }
   `,
   resolver: {
     Member: {
-      deliveryDistricts: async (root: IMember, args: any, context: Context) => {
-        if (root.addressDeliveryIds) {
-          const addressDeliveries = await AddressDeliveryLoader.loadMany(
-            root.addressDeliveryIds.map((id) => id.toString())
-          );
-          return uniq(addressDeliveries.map((a: IAddressDelivery) => a.districtId));
-        } else {
-          return [];
-        }
-      },
+      deliveryDistricts: deliveryDistricts(),
+    },
+    Shop: {
+      deliveryDistricts: deliveryDistricts(),
     },
   },
 };
+function deliveryDistricts() {
+  return async (root: IMember, args: any, context: Context) => {
+    if (root.addressDeliveryIds) {
+      const addressDeliveries = await AddressDeliveryLoader.loadMany(
+        root.addressDeliveryIds.map((id) => id.toString())
+      );
+      return uniq(addressDeliveries.map((a: IAddressDelivery) => a.districtId));
+    } else {
+      return [];
+    }
+  };
+}

@@ -21,15 +21,14 @@ export function DefaultLayout({ ...props }: PropsType) {
       {/* {!user ? (
         <Spinner />
       ) : ( */}
-        <div className="flex flex-col min-h-screen relative">
-          <>
-            <DefaultHead />
-            <Header {...props} />
-            <div className="w-full flex-1 mt-14 bg-bluegray-100">{props.children}</div>
-            <Footer />
-          </>
-        </div>
-      {/* )} */}
+      <div className="flex flex-col min-h-screen relative">
+        <>
+          <DefaultHead />
+          <Header {...props} />
+          <div className="w-full flex-1 mt-14 bg-bluegray-100">{props.children}</div>
+          <Footer />
+        </>
+      </div>
     </DefaulLayoutProvider>
   );
 }

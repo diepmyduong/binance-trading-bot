@@ -7,12 +7,12 @@ class ViewRoute extends BaseRoute {
   }
 
   customRouting() {
-    this.router.get("/login", this.route(this.login));
+    this.router.get("/loginPhone", this.route(this.login));
     this.router.get("/loginEmail", this.route(this.loginEmail));
   }
 
   async login(req: Request, res: Response) {
-    res.render("login", {
+    res.render("loginPhone", {
       config: configs.firebaseView,
     });
   }

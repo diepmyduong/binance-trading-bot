@@ -16,7 +16,7 @@ module.exports = {
       options: {
         safelist: {
           standard: [/^col-span\-/, /^text\-/, /^bg\-/],
-          greedy: [/^react-select/, /^react-datepicker/]
+          greedy: [/^react-select/, /^react-datepicker/, /^swiper/]
         }
       }
     },
@@ -32,14 +32,14 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          light: '#fcf2ff',
-          DEFAULT: '#662d80',
-          dark: '#5f2978',
+          light: '#f0f8ff',
+          DEFAULT: '#3D9BE9',
+          dark: '#318ad4',
         },
         accent: {
-          light: '#fff6eb',
+          light: '#fffaf0',
           DEFAULT: '#EC983E',
-          dark: '#e39536',
+          dark: '#e89a0c',
         },
         info: getSemanticColors(colors.blue),
         success: getSemanticColors(colors.green),

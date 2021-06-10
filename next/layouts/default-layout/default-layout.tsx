@@ -29,7 +29,6 @@ export function DefaultLayout({ ...props }: PropsType) {
           <Footer />
         </>
       </div>
-      {/* )} */}
     </DefaulLayoutProvider>
   );
 }

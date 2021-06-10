@@ -7,7 +7,7 @@ import { orderLogService } from "./orderLog.service";
 import { IOrderLog, OrderLogType } from "./orderLog.model";
 import { MemberLoader, MemberModel } from "../member/member.model";
 import { CustomerLoader } from "../customer/customer.model";
-import { set } from "lodash";
+import { get, set } from "lodash";
 
 const Query = {
   getAllOrderLog: async (root: any, args: any, context: Context) => {
@@ -52,40 +52,73 @@ const OrderLog = {
     ]);
     switch (root.type) {
       case OrderLogType.CREATED:
-        return `Đơn hàng ${order.code} đang chờ xác nhận - khách hàng: ${customer.name} - bưu cục bán: ${member?.shopName}`;
+        return `Đơn hàng ${order.code} đang chờ xác nhận - khách hàng: ${
+          customer.name
+        } - bưu cục bán: ${get(member, "shopName")}`;
 
       case OrderLogType.CONFIRMED:
-        return `Đơn hàng ${order.code} đã được xác nhận nhận đơn - khách hàng: ${customer.name} - bưu cục bán: ${member?.shopName}`;
+        return `Đơn hàng ${order.code} đã được xác nhận nhận đơn - khách hàng: ${
+          customer.name
+        } - bưu cục bán: ${get(member, "shopName")}`;
 
       case OrderLogType.TRANSFERED:
-        return `Đơn hàng ${order.code} đã được chuyển kho - khách hàng: ${customer.name} - bưu cục bán: ${member?.shopName} - bưu cục giao: ${toMember?.shopName}`;
+        return `Đơn hàng ${order.code} đã được chuyển kho - khách hàng: ${
+          customer.name
+        } - bưu cục bán: ${get(member, "shopName")} - bưu cục giao: ${get(toMember, "shopName")}`;
 
       case OrderLogType.MEMBER_CANCELED:
-        return `Đơn hàng ${order.code} đã bị huỷ - khách hàng: ${customer.name} - bưu cục bán huỷ đơn: ${member?.shopName}`;
+        return `Đơn hàng ${order.code} đã bị huỷ - khách hàng: ${
+          customer.name
+        } - bưu cục bán huỷ đơn: ${get(member, "shopName")}`;
 
       case OrderLogType.CUSTOMER_CANCELED:
-        return `Đơn hàng ${order.code} đã bị huỷ - khách hàng huỷ đơn: ${customer.name} - bưu cục bán: ${member?.shopName}`;
+        return `Đơn hàng ${order.code} đã bị huỷ - khách hàng huỷ đơn: ${
+          customer.name
+        } - bưu cục bán: ${get(member, "shopName")}`;
 
       case OrderLogType.MEMBER_DELIVERING:
-        return `Đơn hàng ${order.code} đang giao - khách hàng: ${customer.name} - bưu cục bán: ${member?.shopName} - bưu cục giao: ${member?.shopName}`;
+        return `Đơn hàng ${order.code} đang giao - khách hàng: ${
+          customer.name
+        } - bưu cục bán: ${get(member, "shopName")} - bưu cục giao: ${get(member, "shopName")}`;
 
       case OrderLogType.TO_MEMBER_DELIVERING:
-        return `Đơn hàng ${order.code} đang giao - khách hàng: ${customer.name} - bưu cục bán: ${member?.shopName} - bưu cục giao: ${toMember?.shopName}`;
+        return `Đơn hàng ${order.code} đang giao - khách hàng: ${
+          customer.name
+        } - bưu cục bán: ${get(member, "shopName")} - bưu cục giao: ${get(toMember, "shopName")}`;
 
       case OrderLogType.MEMBER_COMPLETED:
-        return `Đơn hàng ${order.code} thành công - khách hàng: ${customer.name} - bưu cục bán xác nhận: ${member?.shopName}`;
+        return `Đơn hàng ${order.code} thành công - khách hàng: ${
+          customer.name
+        } - bưu cục bán xác nhận: ${get(member, "shopName")}`;
 
       case OrderLogType.TO_MEMBER_COMPLETED:
-        return `Đơn hàng ${order.code} thành công - khách hàng: ${customer.name} - bưu cục bán: ${member?.shopName} - bưu cục giao xác nhận: ${toMember?.shopName}`;
+        return `Đơn hàng ${order.code} thành công - khách hàng: ${
+          customer.name
+        } - bưu cục bán: ${get(member, "shopName")} - bưu cục giao xác nhận: ${get(
+          toMember,
+          "shopName"
+        )}`;
 
       case OrderLogType.MEMBER_FAILURE:
-        return `Đơn hàng ${order.code} không thành công - khách hàng: ${customer.name} - bưu cục bán xác nhận: ${member?.shopName}`;
+        return `Đơn hàng ${order.code} không thành công - khách hàng: ${
+          customer.name
+        } - bưu cục bán xác nhận: ${get(member, "shopName")}`;
 
       case OrderLogType.TO_MEMBER_FAILURE:
-        return `Đơn hàng ${order.code} không thành công - khách hàng: ${customer.name} - bưu cục bán: ${member?.shopName} - bưu cục giao xác nhận: ${toMember?.shopName}`;
+        return `Đơn hàng ${order.code} không thành công - khách hàng: ${
+          customer.name
+        } - bưu cục bán: ${get(member, "shopName")} - bưu cục giao xác nhận: ${get(
+          toMember,
+          "shopName"
+        )}`;
 
       case OrderLogType.TO_MEMBER_FAILURE:
-        return `Đơn hàng ${order.code} không thành công - khách hàng: ${customer.name} - bưu cục bán: ${member?.shopName} - bưu cục giao xác nhận: ${toMember?.shopName}`;
+        return `Đơn hàng ${order.code} không thành công - khách hàng: ${
+          customer.name
+        } - bưu cục bán: ${get(member, "shopName")} - bưu cục giao xác nhận: ${get(
+          toMember,
+          "shopName"
+        )}`;
 
       default:
         return "";

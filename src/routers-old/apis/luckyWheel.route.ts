@@ -3,15 +3,20 @@ import { ErrorHelper } from "../../base/error";
 import { ROLES } from "../../constants/role.const";
 import { Context } from "../../graphql/context";
 import { CampaignModel } from "../../graphql/modules/campaign/campaign.model";
-import { ILuckyWheelResult, LuckyWheelResultModel, SpinStatus } from "../../graphql/modules/luckyWheelResult/luckyWheelResult.model";
+import {
+  ILuckyWheelResult,
+  LuckyWheelResultModel,
+  SpinStatus,
+} from "../../graphql/modules/luckyWheelResult/luckyWheelResult.model";
 import { MemberModel } from "../../graphql/modules/member/member.model";
 import { ProductModel } from "../../graphql/modules/product/product.model";
 import { auth } from "../../middleware/auth";
 import Excel from "exceljs";
-import { getDistrictName, getProvinceName, getWardName, UtilsHelper } from "../../helpers";
+import { UtilsHelper } from "../../helpers";
 import { LuckyWheelModel } from "../../graphql/modules/luckyWheel/luckyWheel.model";
 import { ObjectId } from "mongodb";
 import { GiftType } from "../../graphql/modules/luckyWheelGift/luckyWheelGift.model";
+import { AddressModel } from "../../graphql/modules/address/address.model";
 class LuckyWheelRoute extends BaseRoute {
   constructor() {
     super();
@@ -28,7 +33,7 @@ class LuckyWheelRoute extends BaseRoute {
 
     const luckyWheelId: string = req.query.luckyWheelId.toString();
 
-    console.log('luckyWheelId', luckyWheelId);
+    console.log("luckyWheelId", luckyWheelId);
     const luckyWheel = await LuckyWheelModel.findById(luckyWheelId);
     let data: any[] = [];
 
@@ -38,7 +43,6 @@ class LuckyWheelRoute extends BaseRoute {
 
     //   console.log("fetch from ", luckyWheelId, resultCount);
 
-
     //   console.log("stop do");
     // } while (resultCount > 0);
 
@@ -46,15 +50,15 @@ class LuckyWheelRoute extends BaseRoute {
       {
         $match: {
           luckyWheelId: new ObjectId(luckyWheelId),
-          status: { $in: [SpinStatus.WIN, SpinStatus.LOSE] }
-        }
+          status: { $in: [SpinStatus.WIN, SpinStatus.LOSE] },
+        },
       },
       {
         $lookup: {
           from: "customers",
           localField: "customerId",
           foreignField: "_id",
-          as: "customer"
+          as: "customer",
         },
       },
       {
@@ -65,7 +69,7 @@ class LuckyWheelRoute extends BaseRoute {
           from: "luckywheelgifts",
           localField: "giftId",
           foreignField: "_id",
-          as: "gift"
+          as: "gift",
         },
       },
       {
@@ -76,7 +80,7 @@ class LuckyWheelRoute extends BaseRoute {
           from: "luckywheels",
           localField: "luckyWheelId",
           foreignField: "_id",
-          as: "luckyWheel"
+          as: "luckyWheel",
         },
       },
       {
@@ -87,7 +91,7 @@ class LuckyWheelRoute extends BaseRoute {
           from: "members",
           localField: "memberId",
           foreignField: "_id",
-          as: "member"
+          as: "member",
         },
       },
       {
@@ -110,7 +114,7 @@ class LuckyWheelRoute extends BaseRoute {
           customer: 1,
           gift: 1,
           luckyWheel: 1,
-          member: 1
+          member: 1,
         },
       },
     ]);
@@ -118,17 +122,25 @@ class LuckyWheelRoute extends BaseRoute {
     const newResults = [];
 
     for (const result of results) {
-      result.ward = await getWardName(result.customer.wardId);
-      result.district = await getDistrictName(result.customer.districtId);
-      result.province = await getProvinceName(result.customer.provinceId);
+      const address = await AddressModel.findOne({ wardId: result.customer.wardId });
+      result.ward = address.ward;
+      result.district = address.district;
+      result.province = address.province;
 
       result.status = result.status === SpinStatus.WIN ? "Thắng" : SpinStatus.LOSE ? "Thua" : "";
 
       // quà trúng
-      result.giftCustomType = result.giftType === GiftType.CUMMULATIVE_POINT ? result.giftType === GiftType.NOTHING ? "" : "Điểm thưởng" : "Quà tặng";
+      result.giftCustomType =
+        result.giftType === GiftType.CUMMULATIVE_POINT
+          ? result.giftType === GiftType.NOTHING
+            ? ""
+            : "Điểm thưởng"
+          : "Quà tặng";
 
       // giá trị
-      result.giftCustomValue === GiftType.CUMMULATIVE_POINT ? result.gift.payPoint : result.gift.payPresent;
+      result.giftCustomValue === GiftType.CUMMULATIVE_POINT
+        ? result.gift.payPoint
+        : result.gift.payPresent;
 
       newResults.push(result);
     }
@@ -168,7 +180,7 @@ class LuckyWheelRoute extends BaseRoute {
         d.gift.code, //Code
         d.status, //Kết quả
         d.giftName, //Quà trúng
-        d.giftCustomType,//Loại quà
+        d.giftCustomType, //Loại quà
         d.giftCustomValue, //Giá trị
         d.customer.name,
         d.customer.facebookName,
@@ -185,9 +197,12 @@ class LuckyWheelRoute extends BaseRoute {
 
     UtilsHelper.setThemeExcelWorkBook(sheet);
 
-    return UtilsHelper.responseExcel(res, workbook, `danh_sach_trung_thuong_vong_quay_${luckyWheel.code}`);
+    return UtilsHelper.responseExcel(
+      res,
+      workbook,
+      `danh_sach_trung_thuong_vong_quay_${luckyWheel.code}`
+    );
   }
 }
-
 
 export default new LuckyWheelRoute().router;

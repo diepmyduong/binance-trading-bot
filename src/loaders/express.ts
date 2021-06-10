@@ -5,6 +5,7 @@ import express, { Request, Response } from "express";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
 import morgan from "morgan";
+import next from "next";
 
 import { configs } from "../configs";
 import { swaggerSpec, swaggerTheme } from "../configs/swagger";
@@ -33,10 +34,17 @@ export default ({ app }: { app: express.Application }) => {
     res.send(swaggerSpec);
   });
 
-  app.get("/", function (req: Request, res: Response) {
-    res.send(`${configs.name} - ${configs.version} - ${configs.description}`);
-  });
+  // app.get("/", function (req: Request, res: Response) {
+  //   res.send(`${configs.name} - ${configs.version} - ${configs.description}`);
+  // });
 
   app.use("/", router);
   app.use("/", routerv2);
+
+  const nextApp = next({ dev: configs.nextDev, dir: "./next" });
+  const handle = nextApp.getRequestHandler();
+  nextApp.prepare().then(() => {
+    console.log("Next App Initialized!");
+    app.get("*", (req, res) => handle(req, res));
+  });
 };

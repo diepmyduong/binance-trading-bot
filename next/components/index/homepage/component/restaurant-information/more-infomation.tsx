@@ -2,6 +2,7 @@ import React from "react";
 import { FaPercent } from "react-icons/fa";
 import { HiShoppingCart, HiStar } from "react-icons/hi";
 import { Package, SmileIcon, MoneyBag } from "../../../../../public/assets/svg/svg";
+import Rating from "../../../../shared/utilities/infomation/rating";
 interface Propstype extends ReactProps {}
 const MoreInfomation = (props: Propstype) => {
   const reactions = [
@@ -37,13 +38,7 @@ const MoreInfomation = (props: Propstype) => {
         <p className="text-primary cursor-pointer font-semibold">Xem thêm</p>
       </div>
       <div className="flex justify-between items-center  py-2">
-        <div className="flex items-center">
-          <i className="text-warning text-lg">
-            <HiStar />
-          </i>
-          <span className="font-bold mx-1">4.8</span>
-          <p className="text-gray-400"> (688+)</p>
-        </div>
+        <Rating numRated={344} rating={4.8} />
         <div className="flex items-center">
           <i className="text-lg">
             <HiShoppingCart />

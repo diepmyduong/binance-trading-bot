@@ -2,7 +2,7 @@ import React from "react";
 import { Img } from "../../../../shared/utilities/img";
 import DefaultInfomation from "./default-infomation";
 import MoreInfomation from "./more-infomation";
-import SlidePromtion from "./slide-promtion";
+import SlidePromtion from "./banner-promtion";
 
 const RestaurantInformation = (props) => {
   return (

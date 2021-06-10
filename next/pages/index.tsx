@@ -8,7 +8,6 @@ export default function Page() {
   return (
     <>
       <NextSeo title="Trang chủ" />
-      <Homepage />
     </>
   );
 }

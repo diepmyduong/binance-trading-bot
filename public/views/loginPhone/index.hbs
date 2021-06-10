@@ -91,7 +91,6 @@
           // User signed in successfully.
           document.getElementById('status').textContent = 'Đã xác thực';
           var user = result.user;
-          console.log('user', user);
           getToken();
         })
         .catch(function (error) {

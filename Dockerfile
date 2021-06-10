@@ -57,6 +57,8 @@ COPY --from=BUILD_IMAGE /usr/src/app/package.json ./package.json
 COPY --from=BUILD_IMAGE /usr/src/app/next/.next ./next/.next
 COPY --from=BUILD_IMAGE /usr/src/app/next/next.config.js ./next/next.config.js
 
+RUN npm i canvas --build-from-source
+
 EXPOSE 5555
 
 CMD [ "node", "dist/server.js"]

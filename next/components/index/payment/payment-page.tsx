@@ -1,9 +1,13 @@
 import { HiChevronRight, HiDocumentAdd } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { Button } from "../../shared/utilities/form/button";
+import { Field } from "../../shared/utilities/form/field";
+import { Form } from "../../shared/utilities/form/form";
+import { Input } from "../../shared/utilities/form/input";
 import { Select } from "../../shared/utilities/form/select";
 import { TabButtonGroup } from "../../shared/utilities/tab-button-group/tab-button-group";
 import { TabGroup } from "../../shared/utilities/tab/tab-group";
+import { TicketVoucher } from "./component/ticket-voucher";
 
 export function PaymentPage() {
   return (
@@ -12,22 +16,30 @@ export function PaymentPage() {
         <div className="">
           <TabButtonGroup>
             <TabButtonGroup.Tab label="Giao hàng">
-              <div className="px-4 pt-6">
-                <div className="flex items-center">
-                  <p className="">Uy</p>
-                  <p className="px-2">-</p>
-                  <p className="">0965 696 363</p>
-                </div>
-                <div className="flex items-start justify-between">
-                  <p className="">
-                    Block B4 chung cư Thạnh Mỹ Lợi ở Thủ Đức, thành phố Hồ Chí Minh
-                  </p>
-                  <Button text="Thay đổi" textPrimary className="px-0 py-0 min-w-max text-sm" />
-                </div>
+              <div className="px-4 pt-6 text-sm">
+                <Form>
+                  <Field label="Tên người nhận">
+                    <Input placeholder="Nhập tên người nhận" />
+                  </Field>
+                  <Field label="Số điện thoại">
+                    <Input type="number" placeholder="Nhập số điện thoại" />
+                  </Field>
+                  <Field label="Giao đến">
+                    <Input placeholder="Nhập địa chỉ nhận hàng" />
+                  </Field>
+                </Form>
               </div>
             </TabButtonGroup.Tab>
             <TabButtonGroup.Tab label="Lấy tại quán">
-              <div className="px-4 pt-6">
+              <div className="px-4 pt-6 text-sm">
+                <Form>
+                  <Field label="Tên người nhận">
+                    <Input placeholder="Nhập tên người nhận" />
+                  </Field>
+                  <Field label="Số điện thoại">
+                    <Input type="number" placeholder="Nhập số điện thoại" />
+                  </Field>
+                </Form>
                 <div className="font-bold">Quán chi nhánh 1</div>
                 <div className="flex items-start justify-between">
                   <p className="">110 Nguyễn Văn Linh, F. Tân Thuận Tây, Quận 7, Hồ Chí Minh</p>
@@ -104,6 +116,11 @@ export function PaymentPage() {
           <div className="text-accent">{NumberPipe(40000)}đ</div>
         </div>
       </div>
+      <div className="px-4 py-6 flex w-full overflow-auto">
+        {dataVoucher.map((item, index) => {
+          return <TicketVoucher item={item} index={index} />;
+        })}
+      </div>
       <div className="sticky bottom-0 px-4 py-4 bg-white mt-1">
         <div className="flex items-center justify-between">
           <p className="">Thanh toán COD</p>
@@ -130,5 +147,20 @@ const data = [
     count: 2,
     note: "Không cơm ít gà",
     price: 119000,
+  },
+];
+
+const dataVoucher = [
+  {
+    title: "Giảm 40k cho đơn từ 150k",
+    duedate: "6/8/2021",
+  },
+  {
+    title: "Giảm 40k cho đơn từ 150k",
+    duedate: "6/8/2021",
+  },
+  {
+    title: "Giảm 40k cho đơn từ 150k",
+    duedate: "6/8/2021",
   },
 ];

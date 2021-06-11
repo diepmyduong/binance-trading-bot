@@ -2,13 +2,13 @@ import { HiChevronRight } from "react-icons/hi";
 import { NumberPipe } from "../../../../lib/pipes/number";
 import { Button } from "../../../shared/utilities/form/button";
 
-export function Billed({ item, index }) {
+export function Billed({ item, index, status }) {
   return (
-    <div className="w-full mt-2 bg-white text-sm" key={index}>
+    <div className="w-full mt-1 bg-white text-sm" key={index}>
       <div className="flex items-center justify-between">
         <div className="p-2 flex flex-col">
           <div className="flex items-center justify-start">
-            <p className="text-primary font-bold text-sm">Đã giao</p>
+            <p className="text-primary font-bold text-sm">{status}</p>
             <p className="px-2">-</p>
             <p className="">24/12/2021</p>
           </div>
@@ -32,7 +32,9 @@ export function Billed({ item, index }) {
       </div>
       <div className="w-full flex justify-center items-center">
         <Button
-          text="Đặt lại"
+          text={`${
+            status == "Đang làm món" || status == "Đang giao" ? "Gọi cho nhà hàng" : "Đặt lại"
+          }`}
           large
           className="w-full border border-gray-200 rounded-none"
           textPrimary

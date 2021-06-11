@@ -5,7 +5,7 @@ import { DefaultLayout } from "../../layouts/default-layout/default-layout";
 export default function Page() {
   return (
     <>
-      <NextSeo title="Đơn hàng của tôi" />
+      <NextSeo title="Lịch sử đơn hàng" />
       <OrderPage />
     </>
   );

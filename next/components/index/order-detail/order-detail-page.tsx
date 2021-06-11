@@ -1,3 +1,6 @@
+import { BiRadio } from "react-icons/bi";
+import { CgRadioChecked } from "react-icons/cg";
+import { FaCircle } from "react-icons/fa";
 import { HiArrowRight, HiChevronRight } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { Button } from "../../shared/utilities/form/button";
@@ -5,25 +8,28 @@ import { Button } from "../../shared/utilities/form/button";
 export function OrderDetailPage() {
   return (
     <div className="text-gray-800">
-      <div className="w-full text-sm bg-white ">
-        <div className="w-full flex flex-col items-center py-4">
-          <div className="w-full max-w-28 px-4 py-1 rounded-sm text-center bg-red-100 text-red-600">
-            Đã hủy
+      <div className="w-full text-sm bg-white px-4">
+        <div className="grid grid-cols-2 w-full pt-4">
+          <div className="flex flex-col space-y-1">
+            <p className="text-xs text-gray-500">Mã đơn hàng</p>
+            <p className="uppercase font-bold">AVZK QWPE ALKD</p>
           </div>
-          <div className="w-full py-1 text-center">15:23 - 12/05/2021</div>
+          <div className="flex flex-col space-y-1 pl-2 border-l">
+            <p className="text-xs text-gray-500">Tình trạng</p>
+            <p className="text-accent">Chưa xác nhận</p>
+          </div>
         </div>
-        <div className="mx-4 p-3 bg-gray-100 rounded text-gray-500">
-          Đổi món ăn, không muốn đặt nữa
-        </div>
-        <div className="px-4 grid grid-cols-3 py-6 gap-y-1 md:text-sm">
-          <div className="font-bold">Mã đơn hàng</div>
-          <div className="col-span-2">FJASDOFJ</div>
-          <div className="font-bold">Tài xế</div>
-          <div className="col-span-2">Nguyễn Lê Hữu Thành - 0903 878 252</div>
-          <div className="font-bold">Tên khách</div>
-          <div className="col-span-2">Uy Minh - 0608 666 888</div>
-          <div className="font-bold">Giao đến</div>
-          <div className="col-span-2">block B4 chung cư Thạnh Mỹ Lợi ở Thủ Đức, Hồ Chí Minh</div>
+        <div className="flex items-center">
+          <i className="text-primary text-xl ">
+            <CgRadioChecked />
+          </i>
+          <div className="text-xs py-6 flex flex-col space-y-1 ml-2">
+            <p className="text-gray-500">Gửi đến</p>
+            <p className="">
+              <span className="font-bold">Uy Minh</span>(086 9698 360)
+            </p>
+            <p className="">block B4 chung cư Thạnh Mỹ Lợi ở Thủ Đức, Hồ Chí Minh</p>
+          </div>
         </div>
       </div>
       <div className="mt-1 bg-white">
@@ -73,7 +79,7 @@ export function OrderDetailPage() {
           <div className="font-bold">{NumberPipe(900000)}đ</div>
         </div>
         <div className="p-2 sticky bottom-0 w-full bg-white">
-          <Button text="Đặt lại" primary large className="w-full" />
+          <Button text="Gọi nhà hàng" primary large className="w-full" />
         </div>
       </div>
     </div>

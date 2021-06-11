@@ -3,7 +3,7 @@ import RestaurantInformation from "./component/restaurant-information/restaurant
 
 export function Homepage() {
   return (
-    <div className="z-0 bg-white">
+    <div className="z-0 bg-white text-gray-800">
       <RestaurantInformation />
       <RestaurantFood />
     </div>

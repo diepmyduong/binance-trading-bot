@@ -20,6 +20,8 @@ export interface ImgProps extends ReactProps {
   imageClassName?: string;
   default?: string;
   compress?: number;
+
+  border?: boolean;
 }
 
 export function Img({

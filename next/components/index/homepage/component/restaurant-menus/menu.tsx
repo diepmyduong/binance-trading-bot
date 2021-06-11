@@ -2,6 +2,7 @@ import React from "react";
 import Rating from "../../../../shared/utilities/infomation/rating";
 import { NumberPipe } from "../../../../../lib/pipes/number";
 import { Img } from "../../../../shared/utilities/img";
+import Price from "../../../../shared/utilities/infomation/price";
 interface PropsType extends ReactProps {
   list: {
     name: string;
@@ -24,7 +25,7 @@ const Menu = (props: PropsType) => {
             <p>{item.name}</p>
             <Rating rating={item.rating || 4.8} numRated={item.rating || 688} />
             <p className="text-gray-400 text-sm">{item.des}</p>
-            <p className="text-gray-800 font-semibold text-sm">{NumberPipe(item.price, true)}</p>
+            <Price price={item.price} />
           </div>
           <Img className="w-24 h-24 rounded-md" />
         </div>

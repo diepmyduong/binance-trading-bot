@@ -62,32 +62,24 @@ const Menus = (props) => {
     },
   ];
   const [isViewing, setIsViewing] = useState(0);
-  const [isClickSroll, setIsClickSroll] = useState(false);
   const handleChange = async (index: number) => {
-    setIsClickSroll(true);
-    let task = [
-      setIsViewing(index),
-      document.getElementsByClassName("title")[isViewing].scrollIntoView({
+    document.getElementsByClassName("title")[index].scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+    setTimeout(() => {
+      document.getElementsByClassName("menu-container")[index].scrollIntoView({
         behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      }),
-      setTimeout(() => {
-        document.getElementsByClassName("menu-container")[index].scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-          inline: "start",
-        });
-      }, 600),
-    ];
-    Promise.all(task).then((res) =>
-      setTimeout(() => {
-        setIsClickSroll(false);
-      }, 700)
-    );
+        block: "start",
+        inline: "start",
+      });
+    }, 600);
+    setTimeout(() => {
+      setIsViewing(index);
+    }, 600);
   };
   useEffect(() => {
-    console.log(isClickSroll);
     let interval = null;
     document.addEventListener(
       "scroll",
@@ -96,7 +88,7 @@ const Menus = (props) => {
         const menuNext = document.getElementsByClassName("menu")[isViewing + 1];
         if (menuNext) {
           let res = menuNext.getBoundingClientRect();
-          if (res.top < 200 && !interval && !isClickSroll) {
+          if (res.top < 200 && !interval) {
             interval = setInterval(() => {
               document.getElementsByClassName("title")[isViewing + 1].scrollIntoView({
                 behavior: "smooth",
@@ -110,11 +102,7 @@ const Menus = (props) => {
         }
         if (menuPrev) {
           let res = menuPrev.getBoundingClientRect();
-          if (
-            res.bottom > document.documentElement.clientHeight - 200 &&
-            !interval &&
-            !isClickSroll
-          ) {
+          if (res.bottom > document.documentElement.clientHeight - 200 && !interval) {
             interval = setInterval(() => {
               document.getElementsByClassName("title")[isViewing - 1].scrollIntoView({
                 behavior: "smooth",
@@ -135,7 +123,7 @@ const Menus = (props) => {
     return () => {
       clearInterval(interval);
     };
-  }, [isViewing || isClickSroll]);
+  }, [isViewing]);
 
   return (
     <div className="main-container relative">

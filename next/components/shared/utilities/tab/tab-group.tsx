@@ -39,8 +39,8 @@ export function TabGroup({ index = 0, bodyClassName = "", ...props }: PropsType)
               <a
                 key={index}
                 id={id + "-" + index}
-                className={`flex-1 w-full md:max-w-xs text-md md:text-sm cursor-pointer flex justify-center items-center h-12 px-1 ${
-                  selectedIndex == index ? "text-gray-700 font-semibold" : "text-gray-500"
+                className={`flex-1 w-full text-gray-700 md:max-w-xs text-center font-semibold text-sm md:text-sm cursor-pointer flex justify-center items-center h-12 px-1 ${
+                  selectedIndex == index ? "text-primary" : "text-gray-500"
                 }`}
                 onClick={() => setSelectedIndex(index)}
               >
@@ -48,7 +48,7 @@ export function TabGroup({ index = 0, bodyClassName = "", ...props }: PropsType)
               </a>
             ))}
             <div
-              className="absolute bottom-0 h-1 bg-accent transition-all ease-in-out duration-300"
+              className="absolute bottom-0 h-1 bg-primary transition-all ease-in-out duration-300"
               ref={inkbarRef}
             ></div>
           </div>

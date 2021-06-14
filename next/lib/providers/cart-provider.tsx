@@ -12,7 +12,7 @@ export const CartContext = createContext<
   }>
 >({});
 export type Food = {
-  qty: number;
+  qty?: number;
   name: string;
   note?: string;
   img: string;
@@ -21,43 +21,7 @@ export type Food = {
 };
 export function CartProvider(props) {
   const toast = useToast();
-  const list: Food[] = [
-    {
-      qty: 1,
-      name: "Cơm tấm sườn Ốp la",
-      note: "Nước mắm nhiều ớt",
-      img: "",
-      price: 119000,
-    },
-    {
-      qty: 1,
-      name: "Cơm tấm sườn Ốp la",
-      note: "Nước mắm nhiều ớt",
-      img: "",
-      price: 119000,
-    },
-    {
-      qty: 1,
-      name: "Cơm tấm sườn Ốp la",
-      note: "Nước mắm nhiều ớt",
-      img: "",
-      price: 119000,
-    },
-    {
-      qty: 1,
-      name: "Cơm tấm sườn Ốp la",
-      note: "Nước mắm nhiều ớt",
-      img: "",
-      price: 119000,
-    },
-    {
-      qty: 1,
-      name: "Cơm tấm sườn Ốp la",
-      img: "",
-      price: 119000,
-    },
-  ];
-  const [cart, setCart] = useState(list);
+  const [cart, setCart] = useState<Food[]>([]);
   const [totalFood, setTotalFood] = useState(0);
   const [totalMoney, setTotalMoney] = useState(0);
   useEffect(() => {
@@ -73,7 +37,7 @@ export function CartProvider(props) {
     } else {
       let cartProduct = newCart.find((x) => x.name == food.name);
       if (cartProduct) {
-        cartProduct.qty += food.qty;
+        cartProduct.qty = food.qty;
         cartProduct.amount = cartProduct.price * cartProduct.qty;
       } else {
         newCart.push({
@@ -83,8 +47,8 @@ export function CartProvider(props) {
           price: food.price,
           amount: food.price,
         });
+        toast.success("Đã thêm sản phẩm vào giỏ hàng");
       }
-      toast.success("Đã thêm sản phẩm vào giỏ hàng");
     }
     setCart(cloneDeep(newCart));
   }

@@ -16,9 +16,7 @@ const CartDialog = (props: Propstype) => {
         <ListCart cart={props.cart} onChange={props.onChange} />
       </Dialog.Body>
       <Dialog.Footer>
-        <div className="w-full flex justify-end">
-          <Button primary large text={`Thanh toán ${props.money}`} className="justify-end" />
-        </div>
+        <Button primary large text={`Thanh toán ${props.money}đ`} className="w-full" />
       </Dialog.Footer>
     </Dialog>
   );

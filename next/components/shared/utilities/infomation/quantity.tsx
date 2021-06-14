@@ -5,7 +5,6 @@ interface PropsType extends ReactProps {
   inputClassName?: string;
   buttonClassName?: string;
   quantity: number;
-  disabled?: boolean;
   setQuantity: Function;
 }
 export function Quantity(props: PropsType) {
@@ -21,10 +20,9 @@ export function Quantity(props: PropsType) {
       <div className="flex items-center py-2.5 md:py-1">
         <button
           className={`${buttonStyle} ${props.buttonClassName || ""}`}
-          disabled={props.disabled}
           onClick={() => handleSetQuantity(props.quantity - 1)}
         >
-          <i>
+          <i className=" text-32">
             <HiMinusCircle />
           </i>
         </button>
@@ -32,15 +30,13 @@ export function Quantity(props: PropsType) {
           className={"w-6 h-10 text-center " + props.inputClassName}
           value={props.quantity}
           type="number"
-          readOnly={props.disabled}
           onChange={(e) => handleSetQuantity(Number(e.target.value))}
         />
         <button
           className={`${buttonStyle} ${props.buttonClassName || ""}`}
-          disabled={props.disabled}
           onClick={() => handleSetQuantity(props.quantity + 1)}
         >
-          <i>
+          <i className=" text-32">
             <HiPlusCircle />
           </i>
         </button>

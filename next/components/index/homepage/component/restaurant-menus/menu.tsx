@@ -9,7 +9,7 @@ interface PropsType extends ReactProps {
     name: string;
     sold: number | string;
     des: string;
-    price: string;
+    price: number;
     img: string;
     rating?: number | string;
   }[];

@@ -10,7 +10,7 @@ interface Propstype extends ReactProps {
 
 const ListCart = (props: Propstype) => {
   const alert = useAlert();
-  async function onChange(qty: number, index, item: Food) {
+  async function onChange(qty: number, index: number, item: Food) {
     if (qty > 0) {
       props.onChange(-1, { ...item, qty: qty });
     } else {
@@ -25,7 +25,7 @@ const ListCart = (props: Propstype) => {
     }
   }
   return (
-    <div className=" main-container text-sm ">
+    <div className="text-sm overflow-y-auto" style={{ maxHeight: `calc(100vh - 250px)` }}>
       {props.cart.map((item, index) => (
         <div className="flex items-center justify-between py-1.5 border-b w-full" key={index}>
           <div className="leading-7">

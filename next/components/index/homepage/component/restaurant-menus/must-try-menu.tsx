@@ -9,22 +9,22 @@ const MustTryMenu = (props: Propstype) => {
     {
       img: "",
       name: "Combo 2 người",
-      price: "119000",
+      price: 119000,
     },
     {
       img: "",
       name: "Combo 3 người",
-      price: "149000",
+      price: 119000,
     },
     {
       img: "",
       name: "Combo 4 người",
-      price: "199000",
+      price: 119000,
     },
     {
       img: "",
       name: "Combo 5 người",
-      price: "249000",
+      price: 119000,
     },
   ];
   const { handleChange } = useCartContext();

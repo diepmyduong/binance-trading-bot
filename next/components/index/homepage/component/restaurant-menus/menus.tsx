@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Menu from "./menu";
+import SwitchTabs from "../../../../shared/utilities/tab/switch-tabs";
+interface Propstype extends ReactProps {}
 const Menus = (props) => {
   const food = [
     {
@@ -138,6 +140,15 @@ const Menus = (props) => {
           </p>
         ))}
       </div>
+      {/* <SwitchTabs
+        native
+        options={[
+          ...food.map((item, index) => {
+            return { value: index, label: item.title };
+          }),
+        ]}
+        onChange={(val)=>handleChange(val)}
+      /> */}
       {food.map((item, index) => (
         <Menu list={item.list} title={item.title} key={index} />
       ))}

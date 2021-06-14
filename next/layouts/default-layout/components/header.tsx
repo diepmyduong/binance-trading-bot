@@ -65,18 +65,9 @@ export function Header({ ...props }: HeaderPropsType) {
           {/* <div className="">
             <Button href="/quotation" text="Tạo báo giá" accent small />
           </div> */}
-          <div className="flex items-center">
-            <Link href="/cart">
-              <button className="btn px-2">
-                <i className="text-primary text-2xl">
-                  <HiShoppingCart />
-                </i>
-              </button>
-            </Link>
-            <button className="btn px-2" ref={userRef}>
-              <Img avatar src="/assets/default/avatar.png" className="w-10" />
-            </button>
-          </div>
+          <button className="btn px-2" ref={userRef}>
+            <Img avatar src="/assets/default/avatar.png" className="w-10" />
+          </button>
           <Dropdown reference={userRef}>
             <Dropdown.Avatar
               avatar

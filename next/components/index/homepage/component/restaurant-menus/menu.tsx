@@ -20,12 +20,12 @@ const Menu = (props: PropsType) => {
       <div className=" absolute -top-28 menu-container"></div>
       <p className="font-semibold text-primary">{props.title}</p>
       {props.list.map((item, index) => (
-        <div key={index} className="flex py-2">
+        <div key={index} className="flex py-2 items-center">
           <div className="flex-1">
             <p>{item.name}</p>
-            <Rating rating={item.rating || 4.8} numRated={item.rating || 688} />
+            <Rating rating={item.rating || 4.8} numRated={item.rating || 688} textSm />
             <p className="text-gray-400 text-sm">{item.des}</p>
-            <Price price={item.price} />
+            <Price price={item.price} textDanger />
           </div>
           <Img className="w-24 h-24 rounded-md" />
         </div>

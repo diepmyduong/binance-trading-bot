@@ -125,12 +125,12 @@ const Menus = (props) => {
 
   return (
     <div className="main-container relative">
-      <div className="flex overflow-auto sticky top-12 bg-white z-20 pt-3">
+      <div className="flex gap-3 overflow-auto sticky top-12 bg-white z-20 pt-3">
         {food.map((item, index) => (
           <p
             key={index}
             onClick={() => handleChange(index)}
-            className={`title font-semibold p-2 whitespace-nowrap ${
+            className={`title font-semibold py-2 whitespace-nowrap ${
               (isViewing === index && "text-gray-800") || "text-gray-400"
             }`}
           >

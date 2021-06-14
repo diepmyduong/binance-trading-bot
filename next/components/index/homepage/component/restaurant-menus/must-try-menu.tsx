@@ -1,6 +1,7 @@
 import React from "react";
 import { NumberPipe } from "../../../../../lib/pipes/number";
 import { Img } from "../../../../shared/utilities/img";
+import Price from "../../../../shared/utilities/infomation/price";
 
 const MustTryMenu = (props) => {
   const tryFood = [
@@ -33,7 +34,7 @@ const MustTryMenu = (props) => {
           <div className="flex-1" key={index}>
             <Img src={item.img} ratio169 className=" min-w-4xs" />
             <p>{item.name}</p>
-            <p className="font-bold text-primary">{NumberPipe(item.price, true)}</p>
+            <Price price={item.price} textDanger />
           </div>
         ))}
       </div>

@@ -12,7 +12,7 @@ const ListCart = (props: Propstype) => {
     <div className=" main-container text-sm ">
       {props.cart.map((item, index) => (
         <div className="flex items-center py-1.5 border-b" key={index}>
-          <div className="flex-1">
+          <div className="flex-1 leading-7">
             <p>
               <span className="text-primary font-semibold">{item.qty} X </span>
               {item.name}

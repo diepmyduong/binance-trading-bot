@@ -8,8 +8,8 @@ const RestaurantInformation = (props) => {
   return (
     <div className="relative text-sm bg-white">
       <Img src="" ratio169 />
-      <DefaultInfomation className="absolute m-3 p-3 top-32 main-container" />
-      <MoreInfomation className="pt-40" />
+      <DefaultInfomation className="absolute left-3 p-3 top-32 w-11/12" />
+      <MoreInfomation className="pt-20" />
       <SlidePromtion />
     </div>
   );

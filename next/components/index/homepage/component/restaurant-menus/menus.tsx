@@ -127,7 +127,7 @@ const Menus = (props) => {
 
   return (
     <div className="main-container relative">
-      <div className="flex gap-3 overflow-auto sticky top-12 bg-white z-20 pt-3">
+      <div className="flex gap-3 overflow-x-auto sticky top-12 bg-white z-20 pt-3">
         {food.map((item, index) => (
           <p
             key={index}

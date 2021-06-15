@@ -26,7 +26,7 @@ const BannerPromtion = (props: Propstype) => {
   return (
     <div className={`mt-4 ${props.className} `}>
       <Swiper
-        spaceBetween={50}
+        spaceBetween={10}
         slidesPerView={1}
         onSlideChange={() => console.log("slide change")}
         onSwiper={(swiper) => console.log(swiper)}

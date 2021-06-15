@@ -115,22 +115,10 @@ const Menus = (props) => {
 
   return (
     <div className="main-container relative">
-      {/* <div className="flex gap-3 overflow-x-auto">
-        {food.map((item, index) => (
-          <p
-            key={index}
-            onClick={() => handleChange(index)}
-            className={`title font-semibold py-2 whitespace-nowrap ${
-              (isViewing === index && "text-gray-800") || "text-gray-400"
-            }`}
-          >
-            {item.title}
-          </p>
-        ))}
-      </div> */}
       <SwitchTabs
+        chevron
         value={isViewing}
-        className=" sticky top-12 bg-white z-20 pt-3"
+        className=" sticky top-10 bg-white z-20 pt-3"
         native
         options={[
           ...food.map((item, index) => {

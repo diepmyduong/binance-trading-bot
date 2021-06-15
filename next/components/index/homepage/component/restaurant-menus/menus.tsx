@@ -61,6 +61,7 @@ const Menus = (props) => {
     },
   ];
   const [isViewing, setIsViewing] = useState(0);
+  const [isClickView, setIsClickView] = useState(false);
   function isInViewport(element) {
     const rect = element.getBoundingClientRect();
     return (
@@ -73,29 +74,15 @@ const Menus = (props) => {
   function menuScrollEvent() {
     let scrollCheckInterval = null;
     let menus = document.getElementsByClassName("menu");
-    if (menus && menus.length > 0) {
+    if (!isClickView && menus && menus.length > 0) {
       scrollCheckInterval = setInterval(() => {
         for (let index = 0; index < menus.length; index++) {
           let position = isInViewport(menus[index]);
           if (position) {
-            let task = [];
-            let titleViewing = document.getElementsByClassName("title")[index];
-            if (!isInViewport(titleViewing)) {
-              task.push(
-                titleViewing.scrollIntoView({
-                  behavior: "smooth",
-                  block: "nearest",
-                  inline: "center",
-                })
-              );
-            }
             setTimeout(() => {
-              if (task.length) {
-                Promise.all(task);
-              }
               setIsViewing(index);
               clearInterval(scrollCheckInterval);
-            }, 400);
+            }, 300);
             break;
           }
         }
@@ -111,23 +98,24 @@ const Menus = (props) => {
     };
   }, []);
   const handleChange = async (index: number) => {
-    document.getElementsByClassName("title")[index].scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center",
-    });
+    console.log(index);
+    setIsClickView(true);
+    setIsViewing(index);
     setTimeout(() => {
       document.getElementsByClassName("menu-container")[index].scrollIntoView({
         behavior: "smooth",
         block: "start",
         inline: "start",
       });
-    }, 700);
+    }, 400);
+    setTimeout(() => {
+      setIsClickView(false);
+    }, 300);
   };
 
   return (
     <div className="main-container relative">
-      <div className="flex gap-3 overflow-x-auto sticky top-12 bg-white z-20 pt-3">
+      {/* <div className="flex gap-3 overflow-x-auto">
         {food.map((item, index) => (
           <p
             key={index}
@@ -139,16 +127,18 @@ const Menus = (props) => {
             {item.title}
           </p>
         ))}
-      </div>
-      {/* <SwitchTabs
+      </div> */}
+      <SwitchTabs
+        value={isViewing}
+        className=" sticky top-12 bg-white z-20 pt-3"
         native
         options={[
           ...food.map((item, index) => {
             return { value: index, label: item.title };
           }),
         ]}
-        onChange={(val)=>handleChange(val)}
-      /> */}
+        onChange={(val) => handleChange(val)}
+      />
       {food.map((item, index) => (
         <Menu list={item.list} title={item.title} key={index} />
       ))}

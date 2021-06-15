@@ -3,6 +3,7 @@ import { Food } from "../../../../../lib/providers/cart-provider";
 import { Dialog, DialogPropsType } from "../../../../shared/utilities/dialog/dialog";
 import ListCart from "./list-cart";
 import { Button } from "../../../../shared/utilities/form/button";
+import { NumberPipe } from "../../../../../lib/pipes/number";
 interface Propstype extends DialogPropsType {
   cart: Food[];
   onChange: Function;
@@ -16,7 +17,12 @@ const CartDialog = (props: Propstype) => {
         <ListCart cart={props.cart} onChange={props.onChange} />
       </Dialog.Body>
       <Dialog.Footer>
-        <Button primary large text={`Thanh toán ${props.money}đ`} className="w-full" />
+        <Button
+          primary
+          large
+          text={`Thanh toán ${NumberPipe(props.money, true)}`}
+          className="w-full"
+        />
       </Dialog.Footer>
     </Dialog>
   );

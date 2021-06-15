@@ -1,60 +1,62 @@
 import React, { useEffect, useState } from "react";
 import Menu from "./menu";
+import SwitchTabs from "../../../../shared/utilities/tab/switch-tabs";
+interface Propstype extends ReactProps {}
 const Menus = (props) => {
   const food = [
     {
       title: "Món cơm",
       list: [
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
       ],
     },
     {
       title: "Món canh",
       list: [
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
       ],
     },
     {
       title: "Nước",
       list: [
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
       ],
     },
     {
       title: "Món xào",
       list: [
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
       ],
     },
     {
       title: "Món Chiên",
       list: [
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
       ],
     },
   ];
@@ -138,6 +140,15 @@ const Menus = (props) => {
           </p>
         ))}
       </div>
+      {/* <SwitchTabs
+        native
+        options={[
+          ...food.map((item, index) => {
+            return { value: index, label: item.title };
+          }),
+        ]}
+        onChange={(val)=>handleChange(val)}
+      /> */}
       {food.map((item, index) => (
         <Menu list={item.list} title={item.title} key={index} />
       ))}

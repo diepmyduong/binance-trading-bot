@@ -28,6 +28,9 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
     setClickToView(true);
     setValue(index);
     setTimeout(() => {
+      checkLeftnRight();
+    }, 500);
+    setTimeout(() => {
       setClickToView(false);
     }, 300);
   }
@@ -41,6 +44,9 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
         block: "nearest",
         inline: "center",
       });
+      setTimeout(() => {
+        checkLeftnRight();
+      }, 500);
     }
   }, [debounceValue]);
   const debounceValue2 = useDebounce(value, 200);
@@ -61,9 +67,6 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
       }
     }
     if (clickToView) {
-      setTimeout(() => {
-        checkLeftnRight();
-      }, 500);
       props.onChange(debounceValue2);
     }
   }, [debounceValue2]);

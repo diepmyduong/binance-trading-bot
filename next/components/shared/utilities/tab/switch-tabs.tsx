@@ -3,7 +3,7 @@ import { Button } from "../form/button";
 import useDebounce from "../../../../lib/hooks/useDebounce";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 interface Propstype extends FormControlProps {
-  options: { value: any; label: string; icon?: JSX.Element }[];
+  options?: { value: any; label: string; icon?: JSX.Element }[];
   native?: boolean;
   width?: number;
   value?: any;

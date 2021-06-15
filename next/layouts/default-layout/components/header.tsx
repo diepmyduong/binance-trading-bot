@@ -70,6 +70,7 @@ export function Header({ ...props }: HeaderPropsType) {
           </button>
           <Dropdown reference={userRef}>
             <Dropdown.Avatar
+              key="avatar"
               avatar
               src="/assets/default/avatar.png"
               className=" w-24 h-24 "

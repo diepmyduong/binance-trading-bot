@@ -66,7 +66,7 @@ const SwitchTabs = ({ native = false, ...props }: Propstype) => {
             />
           )) || (
             <p
-              className={`flex-1 p-2 tab whitespace-nowrap font-bold cursor-pointer ${
+              className={`flex-1 p-2 tab whitespace-nowrap font-bold cursor-pointer transition-all duration-300 ${
                 (item.value !== value && "text-gray-400") || "text-gray-800"
               }`}
               key={item.value}

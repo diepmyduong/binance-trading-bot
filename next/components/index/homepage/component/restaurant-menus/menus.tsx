@@ -114,7 +114,7 @@ const Menus = (props) => {
   };
 
   return (
-    <div className="main-container relative">
+    <div className="relative">
       <SwitchTabs
         chevron
         value={isViewing}

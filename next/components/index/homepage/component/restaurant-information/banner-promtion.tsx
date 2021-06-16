@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Img } from "../../../../shared/utilities/img";
 import { Swiper, SwiperSlide } from "swiper/react";
-import SwiperCore, { Pagination } from "swiper/core";
+import SwiperCore, { Pagination, Autoplay } from "swiper/core";
 // install Swiper modules
-SwiperCore.use([Pagination]);
+SwiperCore.use([Pagination, Autoplay]);
 interface Propstype extends ReactProps {}
 const BannerPromtion = (props: Propstype) => {
   const promotions = [
@@ -27,9 +27,11 @@ const BannerPromtion = (props: Propstype) => {
     <div className={`mt-4 ${props.className} `}>
       <Swiper
         spaceBetween={10}
-        slidesPerView={1}
-        onSlideChange={() => console.log("slide change")}
-        onSwiper={(swiper) => console.log(swiper)}
+        loop={true}
+        autoplay={{
+          delay: 5000,
+          disableOnInteraction: false,
+        }}
         pagination={{ clickable: true }}
       >
         {promotions.map((item, index) => (

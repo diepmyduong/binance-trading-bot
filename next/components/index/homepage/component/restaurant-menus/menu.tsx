@@ -18,7 +18,7 @@ interface PropsType extends ReactProps {
 const Menu = (props: PropsType) => {
   const { handleChange } = useCartContext();
   return (
-    <div id={props.title} className="relative menu">
+    <div id={props.title} className="relative menu main-container ">
       <div className=" absolute -top-28 menu-container"></div>
       <p className="font-semibold text-primary">{props.title}</p>
       {props.list.map((item, index) => (

@@ -61,13 +61,13 @@ export type IOrder = BaseDocument & {
   isPrimary?: boolean; // Đơn Mobifone
   isCrossSale?: boolean; // Đơn bán chéo
   itemIds?: string[]; // Danh sách sản phẩm
-  items: IOrderItem[]; // danh sách sản phẩm trong đơn
+  items?: IOrderItem[]; // danh sách sản phẩm trong đơn
   amount?: number; // Thành tiền
   subtotal?: number; // Tổng tiền hàng
   itemCount?: number; // Số lượng sản phẩm
   sellerId?: string; // Chủ shop bán
-  sellerCode: string; // Mã chủ shop bán
-  sellerName: string; // Chủ shop bán
+  sellerCode?: string; // Mã chủ shop bán
+  sellerName?: string; // Chủ shop bán
   status?: OrderStatus; // Trạng thái
   commission0?: number; // Hoa hồng Mobifone
   commission1?: number; // Hoa hồng điểm bán
@@ -76,43 +76,47 @@ export type IOrder = BaseDocument & {
   buyerId?: string; // Khách hàng mua
   buyerName?: string; // Tên khách hàng
   buyerPhone?: string; // Điện thoại khách hàng
-  buyerAddress: string; // Địa chỉ khách hàng
-  buyerProvince: string; // Tỉnh / thành
-  buyerDistrict: string; // Quận / huyện
-  buyerWard: string; // Phường / xã
-  buyerProvinceId: string; // Mã Tỉnh / thành
-  buyerDistrictId: string; // Mã Quận / huyện
-  buyerWardId: string; // Mã Phường / xã
+  buyerAddress?: string; // Địa chỉ khách hàng
+  buyerProvince?: string; // Tỉnh / thành
+  buyerDistrict?: string; // Quận / huyện
+  buyerWard?: string; // Phường / xã
+  buyerProvinceId?: string; // Mã Tỉnh / thành
+  buyerDistrictId?: string; // Mã Quận / huyện
+  buyerWardId?: string; // Mã Phường / xã
   sellerBonusPoint?: number; // Điểm thường người bán
   buyerBonusPoint?: number; // Điểm thưởng người mua
-  fromMemberId: string; // Shoper bán chéo
+  fromMemberId?: string; // Shoper bán chéo
   // delivery
-  itemWeight: number;
-  itemWidth: number; // chiều rộng
-  itemLength: number; // chiều dài
-  itemHeight: number; // chiều cao
-  shipfee: number;
-  deliveryInfo: DeliveryInfo;
+  itemWeight?: number;
+  itemWidth?: number; // chiều rộng
+  itemLength?: number; // chiều dài
+  itemHeight?: number; // chiều cao
+  shipfee?: number;
+  deliveryInfo?: DeliveryInfo;
   shipMethod?: ShipMethod;
   paymentMethod?: PaymentMethod;
-  productIds: string[];
-  oldAddressStorehouseId: string; // Mã kho cũ
+  productIds?: string[];
+  oldAddressStorehouseId?: string; // Mã kho cũ
   addressStorehouseId?: string; // Mã kho
-  oldAddressDeliveryId: string; // Mã điểm nhận cũ
-  addressDeliveryId: string; // Mã điểm nhận
-  isUrbanDelivery: boolean;
-  collaboratorId: string;
-  note: string;
-  toMemberNote: string;
-  toMemberId: string; // Bưu cục được chuyển đơn
-  longitude: string;
-  latitude: string;
-  orderLogIds: string[];
-  isLate: boolean; // Đơn Mobifone
-  finishedAt: Date;
-  loggedAt: Date;
-  campaignCode: string;
-  orderType: OrderType;
+  oldAddressDeliveryId?: string; // Mã điểm nhận cũ
+  addressDeliveryId?: string; // Mã điểm nhận
+  isUrbanDelivery?: boolean;
+  collaboratorId?: string;
+  note?: string;
+  toMemberNote?: string;
+  toMemberId?: string; // Bưu cục được chuyển đơn
+  longitude?: string;
+  latitude?: string;
+  orderLogIds?: string[];
+  isLate?: boolean; // Đơn Mobifone
+  finishedAt?: Date;
+  loggedAt?: Date;
+  campaignCode?: string;
+  orderType?: OrderType;
+  driverId?: string; // Mã tài xế
+  driverName?: string; // Tên tài xế
+  driverPhone?: string; // Điện thoại tài xế
+  driverLicense?: string; // Biển số xe tài xế
 };
 
 const orderSchema = new Schema(
@@ -197,6 +201,10 @@ const orderSchema = new Schema(
       enum: Object.values(OrderType),
       default: OrderType.POST,
     },
+    driverId: { type: Schema.Types.ObjectId, ref: "Driver" },
+    driverName: { type: String },
+    driverPhone: { type: String },
+    driverLicense: { type: String },
   },
   { timestamps: true }
 );

@@ -69,12 +69,9 @@ export function Header({ ...props }: HeaderPropsType) {
             <Img avatar src="/assets/default/avatar.png" className="w-10" />
           </button>
           <Dropdown reference={userRef}>
-            <Dropdown.Avatar
-              avatar
-              src="/assets/default/avatar.png"
-              className=" w-24 h-24 "
-              text="0927244741"
-            />
+            <Dropdown.Item>
+              <div className="w-full font-semibold text-center">086 9698 360</div>
+            </Dropdown.Item>
             {menus.map((item, index) => {
               return (
                 <Dropdown.Item

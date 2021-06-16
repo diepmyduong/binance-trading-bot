@@ -1,145 +1,132 @@
 import React, { useEffect, useState } from "react";
 import Menu from "./menu";
-import { Swiper, SwiperSlide } from "swiper/react";
-import useDebounce from "../../../../../lib/hooks/useDebounce";
-
+import SwitchTabs from "../../../../shared/utilities/tab/switch-tabs";
+interface Propstype extends ReactProps {}
 const Menus = (props) => {
   const food = [
     {
       title: "Món cơm",
       list: [
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
       ],
     },
     {
       title: "Món canh",
       list: [
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
       ],
     },
     {
       title: "Nước",
       list: [
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
       ],
     },
     {
       title: "Món xào",
       list: [
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
       ],
     },
     {
       title: "Món Chiên",
       list: [
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
-        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: "49000", img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
+        { name: "Cơm 1 người ăn", sold: 300, des: "Cơm + trứng + canh", price: 49000, img: "" },
       ],
     },
   ];
   const [isViewing, setIsViewing] = useState(0);
-  const handleChange = async (index: number) => {
-    document.getElementsByClassName("title")[index].scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center",
+  const [isClickView, setIsClickView] = useState(false);
+  function isInViewport(element) {
+    const rect = element.getBoundingClientRect();
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom / 2 <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  }
+  function menuScrollEvent() {
+    let scrollCheckInterval = null;
+    let menus = document.getElementsByClassName("menu");
+    if (!isClickView && menus && menus.length > 0) {
+      scrollCheckInterval = setInterval(() => {
+        for (let index = 0; index < menus.length; index++) {
+          let position = isInViewport(menus[index]);
+          if (position) {
+            setTimeout(() => {
+              setIsViewing(index);
+              clearInterval(scrollCheckInterval);
+            }, 300);
+            break;
+          }
+        }
+      }, 300);
+    }
+  }
+  useEffect(() => {
+    document.addEventListener("scroll", menuScrollEvent, {
+      passive: true,
     });
+    return () => {
+      document.removeEventListener("scroll", menuScrollEvent);
+    };
+  }, []);
+  const handleChange = async (index: number) => {
+    console.log(index);
+    setIsClickView(true);
+    setIsViewing(index);
     setTimeout(() => {
       document.getElementsByClassName("menu-container")[index].scrollIntoView({
         behavior: "smooth",
         block: "start",
         inline: "start",
       });
-    }, 600);
+    }, 400);
     setTimeout(() => {
-      setIsViewing(index);
-    }, 600);
+      setIsClickView(false);
+    }, 300);
   };
-  useEffect(() => {
-    let interval = null;
-    document.addEventListener(
-      "scroll",
-      function () {
-        const menuPrev = document.getElementsByClassName("menu")[isViewing - 1];
-        const menuNext = document.getElementsByClassName("menu")[isViewing + 1];
-        if (menuNext) {
-          let res = menuNext.getBoundingClientRect();
-          if (res.top < 200 && !interval) {
-            interval = setInterval(() => {
-              document.getElementsByClassName("title")[isViewing + 1].scrollIntoView({
-                behavior: "smooth",
-                block: "nearest",
-                inline: "center",
-              });
-              setIsViewing(isViewing + 1);
-              clearInterval(interval);
-            }, 100);
-          }
-        }
-        if (menuPrev) {
-          let res = menuPrev.getBoundingClientRect();
-          if (res.bottom > document.documentElement.clientHeight - 200 && !interval) {
-            interval = setInterval(() => {
-              document.getElementsByClassName("title")[isViewing - 1].scrollIntoView({
-                behavior: "smooth",
-                block: "nearest",
-                inline: "center",
-              });
-              setIsViewing(isViewing - 1);
-              console.log("any");
-              clearInterval(interval);
-            }, 100);
-          }
-        }
-      },
-      {
-        passive: true,
-      }
-    );
-    return () => {
-      clearInterval(interval);
-    };
-  }, [isViewing]);
 
   return (
     <div className="main-container relative">
-      <div className="flex overflow-auto max-w-xs sticky top-12 bg-white z-20 pt-3">
-        {food.map((item, index) => (
-          <p
-            key={index}
-            onClick={() => handleChange(index)}
-            className={`title font-semibold p-2 whitespace-nowrap ${
-              (isViewing === index && "text-gray-800") || "text-gray-400"
-            }`}
-          >
-            {item.title}
-          </p>
-        ))}
-      </div>
+      <SwitchTabs
+        chevron
+        value={isViewing}
+        className=" sticky top-10 bg-white z-20 pt-3"
+        native
+        options={[
+          ...food.map((item, index) => {
+            return { value: index, label: item.title };
+          }),
+        ]}
+        onChange={(val) => handleChange(val)}
+      />
       {food.map((item, index) => (
         <Menu list={item.list} title={item.title} key={index} />
       ))}

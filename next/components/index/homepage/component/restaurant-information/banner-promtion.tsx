@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Img } from "../../../../shared/utilities/img";
 import { Swiper, SwiperSlide } from "swiper/react";
+import SwiperCore, { Pagination } from "swiper/core";
+// install Swiper modules
+SwiperCore.use([Pagination]);
 interface Propstype extends ReactProps {}
-const BannerPromtion = (props: ReactProps) => {
+const BannerPromtion = (props: Propstype) => {
   const promotions = [
     {
       img: "",
@@ -23,10 +26,11 @@ const BannerPromtion = (props: ReactProps) => {
   return (
     <div className={`mt-4 ${props.className} `}>
       <Swiper
-        spaceBetween={50}
+        spaceBetween={10}
         slidesPerView={1}
         onSlideChange={() => console.log("slide change")}
         onSwiper={(swiper) => console.log(swiper)}
+        pagination={{ clickable: true }}
       >
         {promotions.map((item, index) => (
           <SwiperSlide key={index}>

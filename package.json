@@ -112,7 +112,7 @@
     "uuid": "^8.1.0",
     "wink-bm25-text-search": "^3.0.1",
     "wink-nlp-utils": "^2.0.6",
-    "winston": "^3.2.1",
+    "winston": "^3.3.3",
     "winston-mongodb": "^5.0.1",
     "written-number": "^0.9.1"
   },

@@ -1,6 +1,7 @@
 import winston from "winston";
 import MongoTransport from "winston-mongodb";
 import { configs } from "../configs";
+import moment from "moment-timezone";
 
 let transports: any = [
   new winston.transports.File({
@@ -51,4 +52,22 @@ const Logger = winston.createLogger({
   transports,
 });
 
-export { Logger };
+const timestampFormat = winston.format.timestamp({
+  format: () => moment().format("YYYY-MM-DD HH:mm:ss"),
+});
+const simpleTimestampFormat = winston.format.combine(
+  timestampFormat,
+  winston.format.printf(({ level, message, timestamp, stack }) => {
+    if (stack) {
+      // print log trace
+      return `${timestamp} ${level}: ${message} - ${stack}`;
+    }
+    return `[${timestamp}] ${level}: ${message}`;
+  })
+);
+const errorFormat = winston.format.combine(
+  winston.format.errors({ stack: true }),
+  timestampFormat,
+  winston.format.prettyPrint()
+);
+export { Logger, simpleTimestampFormat, timestampFormat, errorFormat };

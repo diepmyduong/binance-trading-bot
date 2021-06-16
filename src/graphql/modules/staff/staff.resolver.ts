@@ -28,7 +28,7 @@ const Mutation = {
     const user = await StaffModel.findOne({ memberId: context.id, username: data.username });
     if (user) throw Error("Tên đăng nhập đã tồn tại.");
     if (password.length < 6) throw Error("Mật khẩu quá ngắn. Yêu cầu từ 6 ký tự trở lên.");
-    data.hashPassword = passwordHash.generate(password);
+    data.password = passwordHash.generate(password);
     data.memberId = context.id;
     return await staffService.create(data);
   },

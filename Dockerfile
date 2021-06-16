@@ -30,7 +30,7 @@ RUN npm prune --production
 
 WORKDIR /usr/src/app
 
-FROM node:10-alpine
+FROM node:12-alpine
 
 RUN apk add --no-cache \
         sudo \
@@ -56,6 +56,8 @@ COPY --from=BUILD_IMAGE /usr/src/app/next/public ./next/public
 COPY --from=BUILD_IMAGE /usr/src/app/package.json ./package.json
 COPY --from=BUILD_IMAGE /usr/src/app/next/.next ./next/.next
 COPY --from=BUILD_IMAGE /usr/src/app/next/next.config.js ./next/next.config.js
+
+RUN npm i canvas --build-from-source
 
 RUN npm i canvas --build-from-source
 

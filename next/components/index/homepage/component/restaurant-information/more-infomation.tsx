@@ -3,6 +3,7 @@ import { FaPercent } from "react-icons/fa";
 import { HiShoppingCart, HiStar } from "react-icons/hi";
 import { Package, SmileIcon, MoneyBag } from "../../../../../public/assets/svg/svg";
 import Rating from "../../../../shared/utilities/infomation/rating";
+import EmotionsEvaluate from "./emotions-evaluate";
 interface Propstype extends ReactProps {}
 const MoreInfomation = (props: Propstype) => {
   const reactions = [
@@ -47,16 +48,7 @@ const MoreInfomation = (props: Propstype) => {
         </div>
         <p className="text-primary cursor-pointer font-semibold">Xem 365 bình luận</p>
       </div>
-      <div className="flex justify-between items-center overflow-x-auto whitespace-nowrap">
-        {reactions.map((item, key) => (
-          <div key={key} className="flex bg-primary-light rounded-full mr-3 items-center p-1.5">
-            <i className="mr-1.5">{item.icon}</i>
-            <p>
-              {item.name} ({item.value})
-            </p>
-          </div>
-        ))}
-      </div>
+      <EmotionsEvaluate reactions={reactions} />
     </div>
   );
 };

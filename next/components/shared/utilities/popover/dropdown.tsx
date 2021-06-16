@@ -48,32 +48,28 @@ export function Dropdown({
                   },
                 }}
               />
-            ) : (
-              <>
-                {item.type.displayName === "Avatar" ? (
-                  <div key={index} className="flex-col flex items-center ">
-                    {/* {/* <div className="rounded-full p-4 "> */}
-                    <div className="rounded-full p-3 bg-primary  bg-opacity-5">
-                      <Img
-                        border
-                        imageClassName="  p-3 bg-primary bg-opacity-20 "
-                        {...{
-                          ...item.props,
-                          onClick: async (e) => {
-                            if (item.props.onClick) await item.props.onClick(e);
-                            (reference.current as any)?._tippy.hide();
-                          },
-                        }}
-                      />
-                    </div>
-                    {/* </div>
+            ) : item.type.displayName === "Avatar" ? (
+              <div key={index} className="flex-col flex items-center ">
+                {/* {/* <div className="rounded-full p-4 "> */}
+                <div className="rounded-full p-3 bg-primary  bg-opacity-5">
+                  <Img
+                    border
+                    imageClassName="  p-3 bg-primary bg-opacity-20 "
+                    {...{
+                      ...item.props,
+                      onClick: async (e) => {
+                        if (item.props.onClick) await item.props.onClick(e);
+                        (reference.current as any)?._tippy.hide();
+                      },
+                    }}
+                  />
+                </div>
+                {/* </div>
                     </div> */}
-                    <p className="my-2 font-semibold">{item.props.text}</p>
-                  </div>
-                ) : (
-                  <hr key={index} className="my-1 border-gray-100" />
-                )}
-              </>
+                <p className="my-2 font-semibold">{item.props.text}</p>
+              </div>
+            ) : (
+              <hr key={index} className="my-1 border-gray-100" />
             )
           )}
         </div>

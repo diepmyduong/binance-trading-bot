@@ -51,7 +51,6 @@ const Query = {
     if (context.isMember()) {
       set(args, "q.filter.toMemberId", context.id);
     }
-
     return orderService.fetch(args.q);
   },
 };

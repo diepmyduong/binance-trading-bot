@@ -1,8 +1,5 @@
 import Link from "next/link";
 import React, { useState } from "react";
-import { HiChevronRight, HiShoppingCart, HiUser } from "react-icons/hi";
-import { Button } from "../../../components/shared/utilities/form/button";
-import { Menu } from "./menu";
 import { Img } from "../../../components/shared/utilities/img";
 import { useRef } from "react";
 import { Dropdown } from "../../../components/shared/utilities/popover/dropdown";

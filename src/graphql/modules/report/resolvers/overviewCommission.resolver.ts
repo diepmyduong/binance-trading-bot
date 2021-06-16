@@ -23,14 +23,6 @@ import { orderService } from "../../order/order.service";
 import { OrderItemLoader } from "../../orderItem/orderItem.model";
 import { OrderLogLoader } from "../../orderLog/orderLog.model";
 
-const resolveArgs = (args: any) => {
-  delete args.q.filter.sellerIds;
-  delete args.q.filter.fromDate;
-  delete args.q.filter.toDate;
-  delete args.q.filter.orderStatus;
-  delete args.q.filter.branchId;
-};
-
 const getCommissionReportsOverview = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
   const { memberIds, $match }: { memberIds: Types.ObjectId[]; $match: any } = await getMatchQuery(

@@ -9,6 +9,8 @@ services:
         - MONGODB_URI=mongodb+srv://dev:KTRtYUyC9Yw523em@cluster0.pidrw.mongodb.net/dev
     env_file:
       - .env
+    ports:
+      - 5555:5555
   redis:
     image: redis:alpine
     command: redis-server --requirepass 123456

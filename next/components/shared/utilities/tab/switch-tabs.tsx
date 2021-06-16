@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "../form/button";
 import useDebounce from "../../../../lib/hooks/useDebounce";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import useScreen from "../../../../lib/hooks/useScreen";
 interface Propstype extends FormControlProps {
   options?: { value: any; label: string; icon?: JSX.Element }[];
   native?: boolean;
@@ -116,14 +117,13 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
       }
     }
   }
-
   return (
     <div className={`relative group w-full ${props.className || ""}`}>
       {chevron && (
         <>
           {!isLastLeft && (
             <button
-              className={`z-100 focus:outline-none absolute  left-0 my-0 bottom-1 p-4 bg-primary-light text-primary transition-all duration-300 opacity-0 group-hover:opacity-80
+              className={`z-100 focus:outline-none absolute left-0 my-0 bottom-1 p-4 bg-primary-light text-primary transition-all duration-300 opacity-100 sm:opacity-0 group-hover:opacity-80
               hover:opacity-100 hover:bg-primary hover:text-white`}
               onClick={() => scrollTo(true)}
             >
@@ -134,7 +134,7 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
           )}
           {!isLastRight && (
             <button
-              className={`z-100 focus:outline-none absolute  right-0 my-0 bottom-1 p-4 bg-primary-light text-primary transition-all duration-300 opacity-0 group-hover:opacity-80
+              className={`z-100 focus:outline-none absolute  right-0 my-0 bottom-1 p-4 bg-primary-light text-primary transition-all duration-300 opacity-100 sm:opacity-0 group-hover:opacity-80
               hover:opacity-100 hover:bg-primary hover:text-white`}
               onClick={() => scrollTo(false)}
             >

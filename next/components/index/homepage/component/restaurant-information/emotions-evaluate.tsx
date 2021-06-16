@@ -45,7 +45,7 @@ const EmotionsEvaluate = (props: Propstype) => {
     <div className="relative group">
       <>
         <button
-          className={`z-100 focus:outline-none absolute  left-0 my-0 bottom-1 p-2 bg-primary-light text-primary transition-all duration-300 opacity-0 group-hover:opacity-80
+          className={`z-100 focus:outline-none absolute  left-0 my-0 bottom-1 p-2 bg-primary-light text-primary transition-all duration-300 opacity-100 sm:opacity-0 group-hover:opacity-80
               hover:opacity-100 hover:bg-primary hover:text-white`}
           onClick={() => scrollTo(true)}
         >
@@ -54,7 +54,7 @@ const EmotionsEvaluate = (props: Propstype) => {
           </i>
         </button>
         <button
-          className={`z-100 focus:outline-none absolute  right-0 my-0 bottom-1 p-2 bg-primary-light text-primary transition-all duration-300 opacity-0 group-hover:opacity-80
+          className={`z-100 focus:outline-none absolute  right-0 my-0 bottom-1 p-2 bg-primary-light text-primary transition-all duration-300 opacity-100 sm:opacity-0 group-hover:opacity-80
               hover:opacity-100 hover:bg-primary hover:text-white`}
           onClick={() => scrollTo(false)}
         >

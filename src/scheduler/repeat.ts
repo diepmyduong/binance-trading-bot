@@ -7,13 +7,11 @@ import CampaignJob from "./jobs/campaign.job";
 import MemberCommissionJob from "./jobs/memberCommission.job";
 import CustomerCommissionJob from "./jobs/customerCommission.job";
 import OrderJob from "./jobs/order.job";
+import SyncSocialEngagementJob from "./jobs/syncSocialEngagement.job";
 
 export function InitRepeatJobs() {
   console.log("Generate Repeat Jobs");
-  LuckyWheelJob.create({})
-    .repeatEvery("5 seconds")
-    .unique({ name: LuckyWheelJob.jobName })
-    .save();
+  LuckyWheelJob.create({}).repeatEvery("5 seconds").unique({ name: LuckyWheelJob.jobName }).save();
   CollaboratorJob.create({})
     .repeatEvery("5 minutes")
     .unique({ name: CollaboratorJob.jobName })
@@ -26,12 +24,11 @@ export function InitRepeatJobs() {
     .repeatEvery("2 minutes")
     .unique({ name: CustomerCommissionJob.jobName })
     .save();
-  OrderJob.create({})
-    .repeatEvery("24 hours")
-    .unique({ name: OrderJob.jobName })
+  OrderJob.create({}).repeatEvery("24 hours").unique({ name: OrderJob.jobName }).save();
+  CampaignJob.create({}).repeatEvery("2 minutes").unique({ name: OrderJob.jobName }).save();
+  SyncSocialEngagementJob.create({})
+    .repeatEvery("1 hours", { skipImmediate: true })
+    .unique({ name: SyncSocialEngagementJob.name })
     .save();
-  CampaignJob.create({})
-    .repeatEvery("2 minutes")
-    .unique({ name: OrderJob.jobName })
-    .save();
+  // .then((job) => job.run());
 }

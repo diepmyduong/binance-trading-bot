@@ -15,8 +15,15 @@ const Mutation = {
       token: deviceToken,
       android: {
         priority: "high",
-        notification: notification,
+        notification: { ...notification, sound: "default" },
         data: notifyData,
+      },
+      apns: {
+        payload: {
+          aps: {
+            sound: "default",
+          },
+        },
       },
     });
   },

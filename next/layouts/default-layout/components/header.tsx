@@ -1,12 +1,10 @@
 import Link from "next/link";
 import React, { useState } from "react";
-import { HiChevronRight, HiShoppingCart } from "react-icons/hi";
-import { Button } from "../../../components/shared/utilities/form/button";
-import { Menu } from "./menu";
 import { Img } from "../../../components/shared/utilities/img";
 import { useRef } from "react";
 import { Dropdown } from "../../../components/shared/utilities/popover/dropdown";
 import { useRouter } from "next/router";
+import { FaHistory, FaPercent, FaSignInAlt, FaUserAlt } from "react-icons/fa";
 
 export interface HeaderPropsType extends ReactProps {
   title?: string;
@@ -20,6 +18,7 @@ export function Header({ ...props }: HeaderPropsType) {
   const menus = [
     {
       label: "Thông tin tài khoản",
+      icon: <FaUserAlt />,
       onClick: () => router.push("#"),
     },
     // {
@@ -29,14 +28,17 @@ export function Header({ ...props }: HeaderPropsType) {
     // },
     {
       label: "Lịch sử đặt hàng",
+      icon: <FaHistory />,
       onClick: () => router.push("#"),
     },
     {
       label: "Khuyến mãi",
+      icon: <FaPercent />,
       onClick: () => router.push("#"),
     },
     {
       label: "Đăng xuất",
+      icon: <FaSignInAlt />,
       // onClick: () => logout(),
     },
   ];
@@ -69,13 +71,9 @@ export function Header({ ...props }: HeaderPropsType) {
             <Img avatar src="/assets/default/avatar.png" className="w-10" />
           </button>
           <Dropdown reference={userRef}>
-            <Dropdown.Avatar
-              key="avatar"
-              avatar
-              src="/assets/default/avatar.png"
-              className=" w-24 h-24 "
-              text="0927244741"
-            />
+            <Dropdown.Item>
+              <div className="w-full font-semibold text-center">086 9698 360</div>
+            </Dropdown.Item>
             {menus.map((item, index) => {
               return (
                 <Dropdown.Item
@@ -83,8 +81,8 @@ export function Header({ ...props }: HeaderPropsType) {
                   text={item.label}
                   onClick={item.onClick}
                   key={index}
-                  iconPosition="end"
-                  icon={<HiChevronRight />}
+                  className="flex justify-start border-b border-gray-200 rounded-none "
+                  icon={item.icon}
                 />
               );
             })}

@@ -8,9 +8,9 @@ const Query = {
   getShopAddressDelivery: async (root: any, args: any, context: Context) => {
     AuthHelper.acceptRoles(context, [ROLES.CUSTOMER]);
 
-    const { provinceId, districtId, wardId } = args;
+    const { provinceId, districtId, wardId, sellerId } = args;
     // console.log("sellerId", context.sellerId);
-    const member = await MemberModel.findById(context.sellerId);
+    const member = await MemberModel.findById(sellerId || context.sellerId);
 
     // console.log("member", member);
     if (!member) throw ErrorHelper.recoredNotFound("chủ shop");
@@ -23,7 +23,6 @@ const Query = {
     provinceId ? (params.provinceId = provinceId) : null;
     districtId ? (params.districtId = districtId) : null;
     wardId ? (params.wardId = wardId) : null;
-
     const addresses = await AddressDeliveryModel.find(params);
 
     // console.log("address", addresses);

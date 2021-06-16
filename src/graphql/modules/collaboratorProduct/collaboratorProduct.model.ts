@@ -11,7 +11,9 @@ export type ICollaboratorProduct = BaseDocument & {
   shareCount?: number;
   commentCount?: number;
   collaboratorId?: string;
+  memberId?: string;
   productId?: string;
+  engagementCount?: number;
 };
 
 const collaboratorProductSchema = new Schema(
@@ -23,7 +25,9 @@ const collaboratorProductSchema = new Schema(
     shareCount: { type: Number, default: 0 },
     commentCount: { type: Number, default: 0 },
     collaboratorId: { type: Schema.Types.ObjectId, ref: "Collaborator" },
+    memberId: { type: Schema.Types.ObjectId, ref: "MemberId" },
     productId: { type: Schema.Types.ObjectId, ref: "Product" },
+    engagementCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

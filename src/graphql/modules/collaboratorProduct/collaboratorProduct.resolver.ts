@@ -46,6 +46,7 @@ const Mutation = {
     let { shortUrl, shortCode } = await getShortCode(collaboratorId, productId);
     data.shortUrl = shortUrl;
     data.shortCode = shortCode;
+    data.memberId = collaborator.memberId;
 
     return await collaboratorProductService.create(data);
   },

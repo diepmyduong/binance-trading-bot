@@ -7,13 +7,12 @@ const schema = gql`
     # Add Query
   }
 
-
   extend type Mutation {
     createCollaborator(data: CreateCollaboratorInput!): Collaborator
     updateCollaborator(id: ID!, data: UpdateCollaboratorInput!): Collaborator
     deleteOneCollaborator(id: ID!): Collaborator
     importCollaborators(file: Upload!): String
-    trackCollaboratorUrlEngagement(id: String!, accessToken:String): [Collaborator]
+    trackCollaboratorUrlEngagement(id: String!, accessToken: String): [Collaborator]
     # Add Mutation
   }
 
@@ -30,15 +29,15 @@ const schema = gql`
   }
 
   type Collaborator {
-    id: String    
+    id: String
     createdAt: DateTime
     updatedAt: DateTime
-    
+
     "Mã Cộng tác viên"
     code: String
     "Tên cộng tác viên"
     name: String
-    "Số điện thoại" 
+    "Số điện thoại"
     phone: String
     "Chủ shop"
     memberId: ID
@@ -59,8 +58,9 @@ const schema = gql`
     shareCount: Int
     "Số lượng comment"
     commentCount: Int
+    "Số lượt tương tác"
+    engagementCount: Int
   }
-
 
   type CollaboratorPageData {
     data: [Collaborator]

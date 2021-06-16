@@ -18,6 +18,7 @@ export type ICollaborator = BaseDocument & {
   commentCount?: number;
   fromDate: string;
   toDate: string;
+  engagementCount?: number;
 };
 
 const collaboratorSchema = new Schema(
@@ -33,6 +34,7 @@ const collaboratorSchema = new Schema(
     customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
     shortCode: { type: String },
     shortUrl: { type: String },
+    engagementCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
@@ -50,15 +52,10 @@ collaboratorSchema.index(
   }
 );
 
-export const CollaboratorHook = new ModelHook<ICollaborator>(
-  collaboratorSchema
-);
+export const CollaboratorHook = new ModelHook<ICollaborator>(collaboratorSchema);
 export const CollaboratorModel: mongoose.Model<ICollaborator> = MainConnection.model(
   "Collaborator",
   collaboratorSchema
 );
 
-export const CollaboratorLoader = ModelLoader<ICollaborator>(
-  CollaboratorModel,
-  CollaboratorHook
-);
+export const CollaboratorLoader = ModelLoader<ICollaborator>(CollaboratorModel, CollaboratorHook);

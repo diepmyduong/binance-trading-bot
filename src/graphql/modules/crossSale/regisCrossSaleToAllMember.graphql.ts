@@ -28,12 +28,10 @@ export default {
             .upsert()
             .updateOne({
               $setOnInsert: {
-                productId: product._id,
-                sellerId: m._id,
                 createdAt: new Date(),
                 updatedAt: new Date(),
               },
-              $set: { productName: product.name },
+              $set: { productName: product.name, allowSale: true },
             });
         }
         if (bulk.length > 0) {

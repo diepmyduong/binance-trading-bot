@@ -309,7 +309,13 @@ class OrderService extends CrudService<typeof OrderModel> {
       case OrderStatus.FAILURE:
         setData.finishedAt = log.createdAt;
     }
-    await order.updateOne({ $set: setData }).exec();
+    await Promise.all([
+      order.updateOne({ $set: setData }).exec(),
+      OrderItemModel.updateMany(
+        { orderId: order._id },
+        { $set: { finishedAt: setData.finishedAt || order.finishedAt, status: log.orderStatus } }
+      ).exec(),
+    ]);
   };
 }
 

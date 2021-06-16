@@ -8,6 +8,7 @@ export enum SettingGroupSlug {
   CAU_HINH_VAN_CHUYEN = "CAU_HINH_VAN_CHUYEN",
   CAU_HINH_THONG_BAO_TONG_CUC = "CAU_HINH_THONG_BAO_TONG_CUC",
   CAU_HINH_DASHBOARD = "CAU_HINH_DASHBOARD",
+  CAU_HINH_TRUYEN_THONG = "CAU_HINH_TRUYEN_THONG",
 }
 export enum SettingKey {
   // CAU_HINH_CHUNG
@@ -140,6 +141,8 @@ export enum SettingKey {
   MEMBER_TYPE_BRANCH = "MEMBER_TYPE_BRANCH",
   MEMBER_TYPE_SALE = "MEMBER_TYPE_SALE",
   MEMBER_TYPE_AGENCY = "MEMBER_TYPE_AGENCY",
+  // CAU_HINH_TRUYEN_THONG
+  MEDIA_FACEBOOK_TOKEN = "MEDIA_FACEBOOK_TOKEN",
 }
 
 export const SETTING_DATA = [
@@ -1243,6 +1246,23 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
         name: "LOẠI THÀNH VIÊN - điểm bán",
         key: SettingKey.MEMBER_TYPE_AGENCY,
         value: "Điểm bán",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+    ],
+  },
+  {
+    slug: SettingGroupSlug.CAU_HINH_TRUYEN_THONG,
+    name: "Cấu hình Truyền thông",
+    desc: "Cấu hình Truyền thông",
+    readOnly: true,
+    settings: [
+      {
+        type: SettingType.string,
+        name: "TOKEN Truy xuất thông tin tương tác của link",
+        key: SettingKey.MEDIA_FACEBOOK_TOKEN,
+        value: "",
         isActive: true,
         isPrivate: true,
         readOnly: false,

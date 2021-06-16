@@ -28,9 +28,10 @@ export type IOrderItem = BaseDocument & {
   // delivery
   note: string; // ghi chú sản phẩm
   productWeight: number;
-  productLength : number;
+  productLength: number;
   productWidth: number;
-  productHeight : number;
+  productHeight: number;
+  finishedAt: Date;
 };
 
 const orderItemSchema = new Schema(
@@ -68,10 +69,14 @@ const orderItemSchema = new Schema(
     productLength: { type: Number, default: 0, min: 0 },
     productWidth: { type: Number, default: 0, min: 0 },
     productHeight: { type: Number, default: 0, min: 0 },
+    finishedAt: { type: Date },
   },
   { timestamps: true }
 );
 
+orderItemSchema.index({ orderId: 1 });
+orderItemSchema.index({ finishedAt: 1 });
+orderItemSchema.index({ status: 1 });
 // orderItemSchema.index({ name: "text" }, { weights: { name: 2 } });
 
 export const OrderItemHook = new ModelHook<IOrderItem>(orderItemSchema);
@@ -80,7 +85,4 @@ export const OrderItemModel: mongoose.Model<IOrderItem> = MainConnection.model(
   orderItemSchema
 );
 
-export const OrderItemLoader = ModelLoader<IOrderItem>(
-  OrderItemModel,
-  OrderItemHook
-);
+export const OrderItemLoader = ModelLoader<IOrderItem>(OrderItemModel, OrderItemHook);

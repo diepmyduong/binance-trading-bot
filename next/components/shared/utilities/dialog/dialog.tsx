@@ -30,7 +30,7 @@ export function Dialog({
   overlayClass = "fixed w-full h-full top-0 left-0 pointer-events-none",
   dialogClass = "relative bg-white shadow-md rounded m-auto",
   headerClass = "relative flex justify-between px-4 py-1 box-content bg-white z-5 border-top rounded-t border-b border-gray-200",
-  bodyClass = "relative p-4 bg-white rounded",
+  bodyClass = "relative bg-white rounded",
   footerClass = "relative flex px-4 pb-3 pt-2 bg-white z-5 rounded-b",
   mobileMode = true,
   width = "auto",

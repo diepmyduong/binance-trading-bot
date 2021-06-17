@@ -35,6 +35,10 @@ export enum OrderType {
   SHOP = "SHOP", // Đơn bưu cục,
   CROSSSALE = "CROSSSALE", // Bán chéo,
 }
+export enum PickupMethod {
+  DELIVERY = "DELIVERY", // Giao hàng
+  STORE = "STORE", // Nhận tại cửa hàng
+}
 
 // export const ShipMethods = [
 //   { label: "Tự liên hệ", value: ShipMethod.NONE },
@@ -118,6 +122,9 @@ export type IOrder = BaseDocument & {
   driverName?: string; // Tên tài xế
   driverPhone?: string; // Điện thoại tài xế
   driverLicense?: string; // Biển số xe tài xế
+
+  pickupMethod?: PickupMethod; // Phương thức nhận hàng
+  pickupTime?: Date; // Thời gian nhận hàng
 };
 
 const orderSchema = new Schema(

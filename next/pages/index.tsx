@@ -9,7 +9,7 @@ export default function Page(props) {
   const router = useRouter();
   return (
     <>
-      <NextSeo title={`Trang chủ | ${props.shopName}`} />
+      <NextSeo title={`Trang chủ`} />
       <Homepage />
     </>
   );

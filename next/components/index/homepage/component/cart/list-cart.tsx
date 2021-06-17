@@ -9,19 +9,11 @@ interface Propstype extends ReactProps {
 }
 
 const ListCart = (props: Propstype) => {
-  const alert = useAlert();
   async function onChange(qty: number, index: number, item: Food) {
     if (qty > 0) {
       props.onChange(-1, { ...item, qty: qty });
     } else {
-      let res = await alert.question(
-        "Thông báo",
-        "Bạn muốn xóa sản phẩm này khỏi giỏ hàng",
-        "Xác nhận"
-      );
-      if (res) {
-        props.onChange(index);
-      }
+      props.onChange(index);
     }
   }
   return (

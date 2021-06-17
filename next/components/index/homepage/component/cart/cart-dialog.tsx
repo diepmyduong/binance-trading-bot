@@ -12,13 +12,7 @@ interface Propstype extends DialogPropsType {
 
 const CartDialog = (props: Propstype) => {
   return (
-    <Dialog
-      mobileMode
-      isOpen={props.isOpen}
-      onClose={props.onClose}
-      title={"Giỏ hàng của bạn"}
-      width="320px"
-    >
+    <Dialog isOpen={props.isOpen} onClose={props.onClose} title={"Giỏ hàng của bạn"} width="320px">
       <Dialog.Body>
         <ListCart cart={props.cart} onChange={props.onChange} />
       </Dialog.Body>

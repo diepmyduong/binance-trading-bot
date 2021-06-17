@@ -8,6 +8,7 @@ import MemberCommissionJob from "./jobs/memberCommission.job";
 import CustomerCommissionJob from "./jobs/customerCommission.job";
 import OrderJob from "./jobs/order.job";
 import SyncSocialEngagementJob from "./jobs/syncSocialEngagement.job";
+import SendNotificationJob from "./jobs/sendNotification.job";
 
 export function InitRepeatJobs() {
   console.log("Generate Repeat Jobs");
@@ -31,4 +32,9 @@ export function InitRepeatJobs() {
     .unique({ name: SyncSocialEngagementJob.name })
     .save();
   // .then((job) => job.run());
+
+  SendNotificationJob.create({})
+    .repeatEvery("5 seconds")
+    .unique({ name: SendNotificationJob.jobName })
+    .save();
 }

@@ -53,6 +53,9 @@ export class Context {
   isEditor() {
     return get(this.tokenData, "role") == ROLES.EDITOR;
   }
+  isStaff() {
+    return get(this.tokenData, "role") == ROLES.STAFF;
+  }
   get id() {
     return get(this.tokenData, "_id");
   }

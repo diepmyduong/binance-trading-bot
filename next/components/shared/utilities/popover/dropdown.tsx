@@ -36,7 +36,7 @@ export function Dropdown({
             item.type.displayName === "Item" ? (
               <Button
                 key={index}
-                className={`rounded-none hover:bg-gray-50 justify-start px-6 ${
+                className={`rounded-none flex justify-start hover:bg-gray-50  px-6 ${
                   item.props.disabled ? "line-through" : ""
                 }`}
                 stopPropagation

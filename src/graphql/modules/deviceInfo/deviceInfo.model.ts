@@ -4,20 +4,18 @@ import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 const Schema = mongoose.Schema;
 
 export type IDeviceInfo = BaseDocument & {
-  userId?: string;
-  memberId?: string;
-  employeeId?: string;
-  agencyId?: string;
-  deviceId?: string;
-  deviceToken?: string;
+  userId?: string; // Mã người dùng
+  memberId?: string; // Mã chủ shop
+  staffId?: string; // Mã nhân viên
+  deviceId?: string; // Mã thiết bị
+  deviceToken?: string; // Token thiết bị
 };
 
 const deviceInfoSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User" },
-    memberId: { type: Schema.Types.ObjectId },
-    employeeId: { type: Schema.Types.ObjectId, ref: "StationEmployee" },
-    agencyId: { type: Schema.Types.ObjectId, ref: "Agency" },
+    memberId: { type: Schema.Types.ObjectId, ref: "Member" },
+    staffId: { type: Schema.Types.ObjectId, ref: "Staff" },
     deviceId: { type: String },
     deviceToken: { type: String },
   },
@@ -25,6 +23,7 @@ const deviceInfoSchema = new Schema(
 );
 
 deviceInfoSchema.index({ userId: 1 });
+deviceInfoSchema.index({ staffId: 1 });
 deviceInfoSchema.index({ memberId: 1 });
 // deviceInfoSchema.index({ name: "text" }, { weights: { name: 2 } });
 

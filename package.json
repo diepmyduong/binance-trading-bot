@@ -37,6 +37,7 @@
     "@ckeditor/ckeditor5-react": "^3.0.2",
     "@jtfell/lru-map": "^1.0.1",
     "@lynxerious/ckeditor5-build-mcom": "^15.0.2",
+    "@next/bundle-analyzer": "^10.2.3",
     "@tailwindcss/aspect-ratio": "^0.2.1",
     "@tippyjs/react": "^4.2.5",
     "agenda": "^3.1.0",
@@ -84,6 +85,7 @@
     "next-seo": "^4.24.0",
     "node-cache": "^5.1.2",
     "numeral": "^2.0.6",
+    "password-hash": "^1.2.2",
     "pdfmake": "^0.1.70",
     "postcss-preset-env": "^6.7.0",
     "react": "^17.0.2",
@@ -110,10 +112,9 @@
     "uuid": "^8.1.0",
     "wink-bm25-text-search": "^3.0.1",
     "wink-nlp-utils": "^2.0.6",
-    "winston": "^3.2.1",
+    "winston": "^3.3.3",
     "winston-mongodb": "^5.0.1",
-    "written-number": "^0.9.1",
-    "@next/bundle-analyzer": "^10.2.3"
+    "written-number": "^0.9.1"
   },
   "devDependencies": {
     "@types/agenda": "^3.0.2",
@@ -139,6 +140,7 @@
     "@types/multer": "^1.4.5",
     "@types/node": "^12.7.8",
     "@types/numeral": "^2.0.1",
+    "@types/password-hash": "^1.2.20",
     "@types/pdfmake": "^0.1.17",
     "@types/react": "^17.0.9",
     "@types/react-dom": "^17.0.6",

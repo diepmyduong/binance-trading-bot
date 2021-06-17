@@ -1,20 +1,20 @@
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { Context } from "../../context";
-import { NotificationModel } from "./notification.model";
+import { NotificationModel, NotificationTarget } from "./notification.model";
 
 const Mutation = {
   readAllNotification: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR);
-    if (ROLES.ADMIN_EDITOR.includes(context.tokenData.role)) {
+    context.auth([ROLES.MEMBER, ROLES.STAFF]);
+    if (context.isMember()) {
       await NotificationModel.updateMany(
-        { userId: context.tokenData._id },
-        { $set: { seen: true } }
+        { target: NotificationTarget.MEMBER, memberId: context.id, seen: false },
+        { $set: { seen: true, seenAt: new Date() } }
       );
     } else {
       await NotificationModel.updateMany(
-        { staffId: context.tokenData._id },
-        { $set: { seen: true } }
+        { target: NotificationTarget.STAFF, staffId: context.id, seen: false },
+        { $set: { seen: true, seenAt: new Date() } }
       );
     }
     return true;

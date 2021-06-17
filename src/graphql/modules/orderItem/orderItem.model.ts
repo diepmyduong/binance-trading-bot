@@ -1,7 +1,10 @@
 import mongoose from "mongoose";
+
+import { BaseDocument, ModelHook, ModelLoader } from "../../../base/baseModel";
 import { MainConnection } from "../../../loaders/database";
-import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 import { OrderStatus } from "../order/order.model";
+import { OrderItemTopping, OrderItemToppingSchema } from "./types/orderItemTopping.schema";
+
 const Schema = mongoose.Schema;
 
 export type IOrderItem = BaseDocument & {
@@ -32,6 +35,9 @@ export type IOrderItem = BaseDocument & {
   productWidth: number;
   productHeight: number;
   finishedAt: Date;
+
+  toppings: OrderItemTopping[]; // Topping kèm theo
+  toppingAmount: number; // Tổng tiên topping
 };
 
 const orderItemSchema = new Schema(
@@ -70,6 +76,9 @@ const orderItemSchema = new Schema(
     productWidth: { type: Number, default: 0, min: 0 },
     productHeight: { type: Number, default: 0, min: 0 },
     finishedAt: { type: Date },
+
+    toppings: { type: [OrderItemToppingSchema], default: [] },
+    toppingAmount: { type: Number, default: 0, min: 0 },
   },
   { timestamps: true }
 );

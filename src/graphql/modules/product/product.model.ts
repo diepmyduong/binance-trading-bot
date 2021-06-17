@@ -43,6 +43,8 @@ export type IProduct = BaseDocument & {
   weight: number; // cân nặng
 
   viewCount: number;
+
+  toppingIds: string[]; // Các topping cho sản phẩm
 };
 
 const productSchema = new Schema(
@@ -84,16 +86,13 @@ const productSchema = new Schema(
     weight: { type: Number, default: 1 }, // cân nặng
 
     viewCount: { type: Number, default: 0 }, //số lượng người xem
-
+    toppingIds: { type: [{ type: Schema.Types.ObjectId, ref: "ProductTopping" }], default: [] },
   },
   { timestamps: true }
 );
 
 productSchema.index({ memberId: 1 });
-productSchema.index(
-  { name: "text", code: "text" },
-  { weights: { name: 2, code: 2 } }
-);
+productSchema.index({ name: "text", code: "text" }, { weights: { name: 2, code: 2 } });
 
 export const ProductHook = new ModelHook<IProduct>(productSchema);
 export const ProductModel: mongoose.Model<IProduct> = MainConnection.model(

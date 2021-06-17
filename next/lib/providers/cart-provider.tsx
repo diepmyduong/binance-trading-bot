@@ -20,7 +20,6 @@ export type Food = {
   amount?: number;
 };
 export function CartProvider(props) {
-  const toast = useToast();
   const [cart, setCart] = useState<Food[]>([]);
   const [totalFood, setTotalFood] = useState(0);
   const [totalMoney, setTotalMoney] = useState(0);

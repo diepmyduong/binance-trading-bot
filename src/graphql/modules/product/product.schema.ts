@@ -50,6 +50,9 @@ const schema = gql`
     width: Int
     length: Int
     height: Int
+
+    "Các topping cho sản phẩm"
+    toppingIds: [ID]
   }
 
   input UpdateProductInput {
@@ -81,6 +84,9 @@ const schema = gql`
     width: Int
     length: Int
     height: Int
+
+    "Các topping cho sản phẩm"
+    toppingIds: [ID]
   }
 
   type Product {
@@ -150,10 +156,13 @@ const schema = gql`
     height: Int
     "Cân nặng"
     weight: Int
+    "Các topping cho sản phẩm"
+    toppingIds: [ID]
 
     category: Category
     member: Member
     collaboratorProduct: CollaboratorProduct
+    toppings: [ProductTopping]
   }
 
   type ProductPageData {

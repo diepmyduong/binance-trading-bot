@@ -1,18 +1,14 @@
 import { gql } from "apollo-server-express";
-import { get, keyBy, set } from "lodash";
-import { Types } from "mongoose";
+import { get, set } from "lodash";
 
-import { SettingKey } from "../../../configs/settingData";
 import { ROLES } from "../../../constants/role.const";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
-import { CustomerLoader, ICustomer } from "../customer/customer.model";
-import { IMember, MemberLoader } from "../member/member.model";
+import { CustomerLoader } from "../customer/customer.model";
+import { MemberLoader } from "../member/member.model";
 import { OrderItemLoader } from "../orderItem/orderItem.model";
-import { ProductModel } from "../product/product.model";
-import { SettingHelper } from "../setting/setting.helper";
-import { IOrder, OrderModel, OrderStatus, OrderType } from "./order.model";
-import { CreateOrderInput, OrderGenerator } from "./orderGenerator";
+import { IOrder } from "./order.model";
+import { OrderGenerator } from "./orderGenerator";
 
 export default {
   schema: gql`
@@ -43,6 +39,7 @@ export default {
     input OrderItemInput {
       productId: ID!
       quantity: Int!
+      toppings: [OrderItemToppingInput]
     }
   `,
   resolver: {

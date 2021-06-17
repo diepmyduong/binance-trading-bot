@@ -62,7 +62,7 @@ export function Header({ ...props }: HeaderPropsType) {
           </Button> */}
           {(shop && (
             <Link href="/">
-              <Img src={shop.shopLogo || ""} className="h-10 w-10" />
+              <img src={shop.shopLogo || ""} className="h-10 w-10 object-contain" />
             </Link>
           )) || <Spinner />}
           {/* <Menu isOpenMenu={isOpenMenu} setIsOpenMenu={setIsOpenMenu} /> */}

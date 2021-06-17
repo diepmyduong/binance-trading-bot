@@ -25,7 +25,7 @@ export function Homepage() {
             <RestaurantFood />
           </>
         ) || <Spinner />)}
-      {cart && cart.length && (
+      {cart && cart.length > 0 && (
         <FloatingButton
           totalFood={totalFood}
           totalMoney={totalMoney}

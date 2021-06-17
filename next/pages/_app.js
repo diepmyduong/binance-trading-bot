@@ -14,8 +14,8 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <DefaultSeo
-        titleTemplate="%s"
-        defaultTitle="3mShop"
+        titleTemplate="%s | 3M Shop"
+        defaultTitle="3M Shop"
         openGraph={{
           type: 'website',
           locale: 'vi_VN',

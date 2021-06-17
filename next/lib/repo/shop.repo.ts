@@ -65,6 +65,7 @@ export class ShopRepository extends CrudRepository<Shop> {
   district: String
   ward: String
   allowSale: Boolean
+  addressDeliveryIds: [ID]
   deliveryDistricts: [String]`);
 
   async getShopData() {

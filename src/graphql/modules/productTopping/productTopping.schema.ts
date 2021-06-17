@@ -29,7 +29,7 @@ const schema = gql`
     "Số lượng chọn tối đa"
     max: Int
     "Những lựa chọn"
-    options: [ToppingOptions]
+    options: [ToppingOptionInput]
   }
 
   type ProductTopping {
@@ -48,7 +48,7 @@ const schema = gql`
     "Số lượng chọn tối đa"
     max: Int
     "Những lựa chọn"
-    options: [ToppingOptions]
+    options: [ToppingOption]
   }
 
   type ProductToppingPageData {

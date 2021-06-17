@@ -25,7 +25,7 @@ export default gql`
     optionName: String
     "Giá"
     price: Float
-  };
+  }
   input OrderItemToppingInput {
     "Mã topping"
     toppingId: ID
@@ -35,7 +35,7 @@ export default gql`
     optionName: String
     "Giá"
     price: Float
-  };
+  }
 
   extend type OrderItem {
     "Topping kèm theo"

@@ -40,7 +40,7 @@ const Menu = (props: PropsType) => {
             <p className="text-gray-400 text-sm">{item.des}</p>
             <Price price={item.price} textDanger />
           </div>
-          <Img className="w-24 h-24 rounded-sm" />
+          <Img src={item.img} className="w-24 h-24 rounded-sm" />
         </div>
       ))}
       <Form

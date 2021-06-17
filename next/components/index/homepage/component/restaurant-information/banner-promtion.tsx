@@ -8,17 +8,22 @@ interface Propstype extends ReactProps {}
 const BannerPromtion = (props: Propstype) => {
   const promotions = [
     {
-      img: "",
+      img:
+        "https://file.hstatic.net/200000043306/file/banner_web_mobile_83c075fe49b44d8a8267ccd829a8748d.png",
       name: "",
       code: "",
     },
     {
-      img: "",
+      img:
+        "https://file.hstatic.net/200000043306/file/banner_web_mobile_83c075fe49b44d8a8267ccd829a8748d.png",
+
       name: "",
       code: "",
     },
     {
-      img: "",
+      img:
+        "https://file.hstatic.net/200000043306/file/banner_web_mobile_83c075fe49b44d8a8267ccd829a8748d.png",
+
       name: "",
       code: "",
     },
@@ -36,7 +41,7 @@ const BannerPromtion = (props: Propstype) => {
       >
         {promotions.map((item, index) => (
           <SwiperSlide key={index}>
-            <Img key={index} src={item.img || "/assets/default/default.png"} ratio169 />
+            <img key={index} src={item.img || "/assets/default/default.png"} />
           </SwiperSlide>
         ))}
       </Swiper>

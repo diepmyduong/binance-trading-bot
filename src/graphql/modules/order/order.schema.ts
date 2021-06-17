@@ -72,6 +72,8 @@ const schema = gql`
     amount: Float 
     "Tổng tiền hàng"
     subtotal: Float
+    "Tổng tiền topping"
+    toppingAmount: Float
     "Phương thức vận chuyển ${Object.values(ShipMethod)}"
     shipMethod: String
     "Tiền ship"

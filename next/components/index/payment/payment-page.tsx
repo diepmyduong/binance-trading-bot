@@ -78,7 +78,7 @@ export function PaymentPage() {
             return <TicketVoucher item={item} index={index} />;
           })}
         </div>
-        <div className="sticky bottom-0 px-4 py-4 bg-white mt-1">
+        <div className="sticky shadow-2xl bottom-0 px-4 py-4 bg-white mt-2">
           <div className="flex items-center justify-between">
             <p className="">Thanh toán COD</p>
             <p className="">|</p>

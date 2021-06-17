@@ -4,6 +4,7 @@ import { Dialog, DialogPropsType } from "../../../../shared/utilities/dialog/dia
 import ListCart from "./list-cart";
 import { Button } from "../../../../shared/utilities/form/button";
 import { NumberPipe } from "../../../../../lib/pipes/number";
+import { useRouter } from "next/router";
 interface Propstype extends DialogPropsType {
   cart: Food[];
   onChange: Function;
@@ -11,6 +12,7 @@ interface Propstype extends DialogPropsType {
 }
 
 const CartDialog = (props: Propstype) => {
+  const router = useRouter();
   return (
     <Dialog
       mobileMode
@@ -28,6 +30,7 @@ const CartDialog = (props: Propstype) => {
           large
           text={`Thanh toán ${NumberPipe(props.money, true)}`}
           className="w-full"
+          onClick={() => router.push("/payment")}
         />
       </Dialog.Footer>
     </Dialog>

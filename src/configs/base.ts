@@ -35,7 +35,9 @@ export default {
   secretKey: process.env.SECRET || "HkQlTCrDfYWezqEp494TjDUqBhSzQSnn",
   timezone: "Asia/Ho_Chi_Minh",
   domain: "http://localhost:" + process.env.PORT || 3000,
-  firebase: JSON.parse(process.env.FIREBASE),
+  firebase: JSON.parse(
+    process.env.FIREBASE || `{"credential":{},"databaseURL":"https://mshop-1506c.firebaseio.com"}`
+  ),
   firebaseView: process.env.FIREBASE_VIEW,
   redis: {
     enable: false,

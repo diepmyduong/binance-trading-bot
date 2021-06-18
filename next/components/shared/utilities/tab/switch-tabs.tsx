@@ -124,7 +124,7 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
         <>
           {!isLastLeft && (
             <button
-              className={`z-100 focus:outline-none absolute left-0 my-0 bottom-0 py-2 hover:bg-primary-light rounded-full  text-primary transition-all duration-300 opacity-0 group-hover:opacity-80
+              className={`z-30 focus:outline-none absolute left-0 my-0 bottom-0 py-2 hover:bg-primary-light rounded-full  text-primary transition-all duration-300 opacity-0 group-hover:opacity-80
               hover:opacity-100 hover:text-primary-dark`}
               onClick={() => scrollTo(true)}
             >
@@ -135,7 +135,7 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
           )}
           {!isLastRight && (
             <button
-              className={`z-100 focus:outline-none absolute  right-0 my-0 bottom-0 py-2 hover:bg-primary-light rounded-full text-primary transition-all duration-300 opacity-0 group-hover:opacity-80
+              className={`z-30 focus:outline-none absolute  right-0 my-0 bottom-0 py-2 hover:bg-primary-light rounded-full text-primary transition-all duration-300 opacity-0 group-hover:opacity-80
               hover:opacity-100 hover:text-primary-dark`}
               onClick={() => scrollTo(false)}
             >

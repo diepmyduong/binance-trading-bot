@@ -19,7 +19,7 @@ const ListCart = (props: Propstype) => {
   return (
     <div
       className="text-sm overflow-y-auto main-container"
-      style={{ maxHeight: `calc(100vh - 250px)` }}
+      style={{ maxHeight: `calc(100vh - 250px)`, minHeight: `calc(100vh - 350px)` }}
     >
       {props.cart.map((item, index) => (
         <div className="flex items-center justify-between py-1.5 border-b w-full" key={index}>

@@ -36,8 +36,7 @@ export function CartProvider(props) {
       let foodCart = newCart.find((x) => x.name == food.name);
       if (foodCart) {
         console.log(foodCart, food);
-
-        if (foodCart.qty) {
+        if (food.qty) {
           foodCart.qty = food.qty;
         } else {
           foodCart.qty += 1;

@@ -4,9 +4,6 @@ services:
   app:
     build:
       context: .
-      args:
-        - FIREBASE_VIEW={"apiKey":"AIzaSyAV9Q9T9ImutQNouZ3LvfjSx8cnJsOVWUw","authDomain":"mshop-1506c.firebaseapp.com","projectId":"mshop-1506c","storageBucket":"mshop-1506c.appspot.com","messagingSenderId":"1044546379107","appId":"1:1044546379107:web:66e92544c488ff022a4756","measurementId":"G-CG0NLNZVYY"}
-        - MONGODB_URI=mongodb+srv://dev:KTRtYUyC9Yw523em@cluster0.pidrw.mongodb.net/dev
     env_file:
       - .env
     ports:

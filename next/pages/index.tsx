@@ -17,8 +17,8 @@ export default function Page(props) {
 
 Page.Layout = DefaultLayout;
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { code } = context.query;
-  if (!code) Redirect(context.res, "/404");
+  const { code = "3MSHOP" } = context.query;
+  // if (!code) Redirect(context.res, "/404");
   const shop = await MemberModel.findOne({ code }, "shopName shopLogo");
   const { shopName, shopLogo } = shop;
   if (!shop) Redirect(context.res, "/404");

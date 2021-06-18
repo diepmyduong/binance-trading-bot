@@ -5,6 +5,8 @@ import { useRef } from "react";
 import { Dropdown } from "../../../components/shared/utilities/popover/dropdown";
 import { useRouter } from "next/router";
 import { FaHistory, FaPercent, FaSignInAlt, FaUserAlt } from "react-icons/fa";
+import { useShopContext } from "../../../lib/providers/shop-provider";
+import { Spinner } from "../../../components/shared/utilities/spinner";
 
 export interface HeaderPropsType extends ReactProps {
   title?: string;
@@ -13,6 +15,7 @@ export interface HeaderPropsType extends ReactProps {
   showAvatar?: boolean;
 }
 export function Header({ ...props }: HeaderPropsType) {
+  const { shop } = useShopContext();
   // const [isOpenMenu, setIsOpenMenu] = useState(false);
   const router = useRouter();
   const menus = [
@@ -57,12 +60,11 @@ export function Header({ ...props }: HeaderPropsType) {
               <HiMenu />
             </i>
           </Button> */}
-          <Link href="/">
-            <button className="flex-1 flex justify-start items-center md:ml-0">
-              <img src="/assets/img/logo.png" className="h-10 p-2" />
-              <img src="/assets/img/logoBanner.png" className="h-5 p-1" />
-            </button>
-          </Link>
+          {(shop && (
+            <Link href="/">
+              <img src={shop.shopLogo || ""} className="h-10 w-10 object-contain" />
+            </Link>
+          )) || <Spinner />}
           {/* <Menu isOpenMenu={isOpenMenu} setIsOpenMenu={setIsOpenMenu} /> */}
           {/* <div className="">
             <Button href="/quotation" text="Tạo báo giá" accent small />

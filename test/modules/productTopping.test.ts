@@ -1,19 +1,19 @@
-import addressDeliveryResolver from "../../src/graphql/modules/addressDelivery/addressDelivery.resolver";
+import productToppingResolver from "../../src/graphql/modules/productTopping/productTopping.resolver";
 import { expect } from "chai";
 import { ROLES } from "../../src/constants/role.const";
 import faker from "faker";
-import { AddressDeliveryModel } from "../../src/graphql/modules/addressDelivery/addressDelivery.model";
+import { ProductToppingModel } from "../../src/graphql/modules/productTopping/productTopping.model";
 import { getAdminContext } from "../utils/context";
 
-let addressDelivery: any = {};
+let productTopping: any = {};
 let data = {
   name: faker.name.jobTitle(),
 };
 let context = getAdminContext();
 
-describe("# Test getAllAddressDelivery", () => {
+describe("# Test getAllProductTopping", () => {
   it("shold return an array", async (done) => {
-    let result = await addressDeliveryResolver.Query.getAllAddressDelivery({}, {}, context);
+    let result = await productToppingResolver.Query.getAllProductTopping({}, {}, context);
 
     expect(result).to.be.an("object");
     expect(result.data).to.be.an("array");
@@ -26,15 +26,15 @@ describe("# Test getAllAddressDelivery", () => {
   });
 });
 
-describe("# Test createAddressDelivery", () => {
+describe("# Test createProductTopping", () => {
   it("shold return an array", async (done) => {
-    let result: any = await addressDeliveryResolver.Mutation.createAddressDelivery(
+    let result: any = await productToppingResolver.Mutation.createProductTopping(
       {},
       { data },
       context
     );
     result = result.toJSON();
-    addressDelivery = result;
+    productTopping = result;
 
     expect(result).to.be.an("object");
     expect(result.name).to.equal(data.name);
@@ -42,15 +42,15 @@ describe("# Test createAddressDelivery", () => {
   });
 });
 
-describe("# Test getOneAddressDelivery", () => {
+describe("# Test getOneProductTopping", () => {
   it("shold return an object", async (done) => {
-    let result: any = await addressDeliveryResolver.Query.getOneAddressDelivery(
+    let result: any = await productToppingResolver.Query.getOneProductTopping(
       {},
-      { id: addressDelivery._id },
+      { id: productTopping._id },
       context
     );
 
-    console.log(addressDelivery);
+    console.log(productTopping);
     console.log(result);
 
     result = result.toJSON();
@@ -61,19 +61,19 @@ describe("# Test getOneAddressDelivery", () => {
   });
 });
 
-describe("# Test updateAddressDelivery", () => {
+describe("# Test updateProductTopping", () => {
   it("shold return an object", async (done) => {
     data.name = faker.name.title();
-    let result: any = await addressDeliveryResolver.Mutation.updateAddressDelivery(
+    let result: any = await productToppingResolver.Mutation.updateProductTopping(
       {},
       {
-        id: addressDelivery._id,
+        id: productTopping._id,
         data: data,
       },
       context
     );
     result = result.toJSON();
-    addressDelivery = result;
+    productTopping = result;
 
     expect(result).to.be.an("object");
     expect(result.name).to.equal(data.name);
@@ -81,27 +81,27 @@ describe("# Test updateAddressDelivery", () => {
   });
 });
 
-describe("# Test deleteOneAddressDelivery", () => {
+describe("# Test deleteOneProductTopping", () => {
   it("shold return an object", async (done) => {
     data.name = faker.name.title();
-    let result: any = await addressDeliveryResolver.Mutation.deleteOneAddressDelivery(
+    let result: any = await productToppingResolver.Mutation.deleteOneProductTopping(
       {},
       {
-        id: addressDelivery._id,
+        id: productTopping._id,
       },
       context
     );
     result = result.toJSON();
 
     expect(result).to.be.an("object");
-    expect(result.id).to.equal(addressDelivery.id);
+    expect(result.id).to.equal(productTopping.id);
     done();
   });
 });
 
-describe("# Test deleteManyAddressDelivery", () => {
+describe("# Test deleteManyProductTopping", () => {
   it("shold return an object", async (done) => {
-    let records = await AddressDeliveryModel.create([
+    let records = await ProductToppingModel.create([
       {
         name: faker.name.title(),
       },
@@ -115,7 +115,7 @@ describe("# Test deleteManyAddressDelivery", () => {
 
     let ids = records.map((r) => r.get("id"));
 
-    let result: any = await addressDeliveryResolver.Mutation.deleteManyAddressDelivery(
+    let result: any = await productToppingResolver.Mutation.deleteManyProductTopping(
       {},
       {
         ids: ids,

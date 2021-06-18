@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "../form/button";
 import useDebounce from "../../../../lib/hooks/useDebounce";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import useScreen from "../../../../lib/hooks/useScreen";
+import useDevice from "../../../../lib/hooks/useDevice";
 interface Propstype extends FormControlProps {
   options?: { value: any; label: string; icon?: JSX.Element }[];
   native?: boolean;
@@ -117,28 +117,29 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
       }
     }
   }
+  const { isMobile } = useDevice();
   return (
     <div className={`relative group w-full ${props.className || ""}`}>
-      {chevron && (
+      {!isMobile && (
         <>
           {!isLastLeft && (
             <button
-              className={`z-100 focus:outline-none absolute left-0 my-0 bottom-1 p-4 bg-primary-light text-primary transition-all duration-300 opacity-100 sm:opacity-0 group-hover:opacity-80
-              hover:opacity-100 hover:bg-primary hover:text-white`}
+              className={`z-100 focus:outline-none absolute left-0 my-0 bottom-0 py-2 hover:bg-primary-light rounded-full  text-primary transition-all duration-300 opacity-0 group-hover:opacity-80
+              hover:opacity-100 hover:text-primary-dark`}
               onClick={() => scrollTo(true)}
             >
-              <i className="">
+              <i className="text-32">
                 <FaChevronLeft />
               </i>
             </button>
           )}
           {!isLastRight && (
             <button
-              className={`z-100 focus:outline-none absolute  right-0 my-0 bottom-1 p-4 bg-primary-light text-primary transition-all duration-300 opacity-100 sm:opacity-0 group-hover:opacity-80
-              hover:opacity-100 hover:bg-primary hover:text-white`}
+              className={`z-100 focus:outline-none absolute  right-0 my-0 bottom-0 py-2 hover:bg-primary-light rounded-full text-primary transition-all duration-300 opacity-0 group-hover:opacity-80
+              hover:opacity-100 hover:text-primary-dark`}
               onClick={() => scrollTo(false)}
             >
-              <i className="">
+              <i className="text-32">
                 <FaChevronRight />
               </i>
             </button>
@@ -146,7 +147,9 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
         </>
       )}
       <div
-        className={`flex relative my-2  ${(chevron && "overflow-hidden") || " overflow-x-scroll"}`}
+        className={`flex relative my-2 border-b  ${
+          (isMobile && " overflow-x-scroll") || "overflow-hidden"
+        }`}
       >
         {props.options.map(
           (item) =>
@@ -162,7 +165,7 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
               />
             )) || (
               <p
-                className={`hover:text-gray-800 hover:bg-primary-light flex-1 px-2 py-4 tab whitespace-nowrap font-bold cursor-pointer transition-all duration-300 ${
+                className={`hover:text-gray-800 hover:bg-primary-light flex-1 px-2 py-3 tab whitespace-nowrap font-bold cursor-pointer transition-all duration-300 ${
                   (item.value !== value && "text-gray-400") || "text-gray-800"
                 }`}
                 key={item.value}

@@ -7,23 +7,27 @@ interface Propstype extends ReactProps {}
 const MustTryMenu = (props: Propstype) => {
   const tryFood = [
     {
-      img: "",
-      name: "Combo 2 người",
+      img:
+        "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
+      name: "Combo Phúc",
       price: 119000,
     },
     {
-      img: "",
-      name: "Combo 3 người",
+      img:
+        "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
+      name: "Combo Lộc",
       price: 119000,
     },
     {
-      img: "",
-      name: "Combo 4 người",
+      img:
+        "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
+      name: "Combo Thọ",
       price: 119000,
     },
     {
-      img: "",
-      name: "Combo 5 người",
+      img:
+        "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
+      name: "Combo Phúc Lộc Thọ",
       price: 119000,
     },
   ];

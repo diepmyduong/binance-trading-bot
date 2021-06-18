@@ -20,7 +20,6 @@ export type Food = {
   amount?: number;
 };
 export function CartProvider(props) {
-  const toast = useToast();
   const [cart, setCart] = useState<Food[]>([]);
   const [totalFood, setTotalFood] = useState(0);
   const [totalMoney, setTotalMoney] = useState(0);
@@ -33,7 +32,6 @@ export function CartProvider(props) {
     let newCart = cart;
     if (index !== -1) {
       newCart.splice(index, 1);
-      toast.info("Đã xóa sản phẩm khỏi giỏ hàng");
     } else {
       let cartProduct = newCart.find((x) => x.name == food.name);
       if (cartProduct) {
@@ -47,7 +45,6 @@ export function CartProvider(props) {
           price: food.price,
           amount: food.price,
         });
-        toast.success("Đã thêm sản phẩm vào giỏ hàng");
       }
     }
     setCart(cloneDeep(newCart));

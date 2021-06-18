@@ -13,7 +13,7 @@ if (fs.existsSync(path.join(__dirname, "../../.env"))) {
   console.log(".env.example not exists");
 }
 
-if (!process.env.FIREBASE) throw new Error("Chưa config firebase");
+// if (!process.env.FIREBASE) throw new Error("Chưa config firebase");
 if (!process.env.FIREBASE_VIEW) throw new Error("Chưa config firebase views");
 if (!process.env.MONGODB_URI) throw new Error("Missing Config MONGODB_URI");
 

@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { Redirect } from "../lib/helpers/redirect";
 
 export default function Page(props) {
-  const router = useRouter();
+  // const router = useRouter();
   return (
     <>
       <NextSeo title={`Trang chủ`} />
@@ -16,14 +16,14 @@ export default function Page(props) {
 }
 
 Page.Layout = DefaultLayout;
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { code } = context.query;
-  if (!code) Redirect(context.res, "/404");
-  return {
-    props: JSON.parse(
-      JSON.stringify({
-        code,
-      })
-    ),
-  };
-}
+// export async function getServerSideProps(context: GetServerSidePropsContext) {
+//   // const { code } = context.query;
+//   // console.log("server side", code);
+//   return {
+//     props: JSON.parse(
+//       JSON.stringify({
+//         // code: code || "3MSHOP",
+//       })
+//     ),
+//   };
+// }

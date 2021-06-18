@@ -7,6 +7,10 @@ import { useRouter } from "next/router";
 import { FaHistory, FaPercent, FaSignInAlt, FaUserAlt } from "react-icons/fa";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import { Spinner } from "../../../components/shared/utilities/spinner";
+import { Button } from "../../../components/shared/utilities/form/button";
+import { useAuth } from "../../../lib/providers/auth-provider";
+import CustomerLoginDialog from "../../../components/shared/utilities/dialog/customer-login-dialog";
+import { HiUserCircle } from "react-icons/hi";
 
 export interface HeaderPropsType extends ReactProps {
   title?: string;
@@ -15,8 +19,8 @@ export interface HeaderPropsType extends ReactProps {
   showAvatar?: boolean;
 }
 export function Header({ ...props }: HeaderPropsType) {
-  const { shop } = useShopContext();
-  // const [isOpenMenu, setIsOpenMenu] = useState(false);
+  const { shop, customer, cunstomerLogin, customerLogout } = useShopContext();
+  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const menus = [
     {
@@ -42,7 +46,7 @@ export function Header({ ...props }: HeaderPropsType) {
     {
       label: "Đăng xuất",
       icon: <FaSignInAlt />,
-      // onClick: () => logout(),
+      onClick: () => customerLogout(),
     },
   ];
   const userRef = useRef<any>();
@@ -50,31 +54,21 @@ export function Header({ ...props }: HeaderPropsType) {
     <>
       <header className={`fixed top-0 w-screen shadow z-200 bg-white`}>
         <div className="main-container h-14 flex justify-between items-center">
-          {/* <Button
-            onClick={() => {
-              setIsOpenMenu(true);
-            }}
-            className=" px-0"
-          >
-            <i className="text-2xl text-gray-600 md:hidden ">
-              <HiMenu />
-            </i>
-          </Button> */}
           {(shop && (
             <Link href="/">
               <img src={shop.shopLogo || ""} className="h-10 w-10 object-contain" />
             </Link>
           )) || <Spinner />}
-          {/* <Menu isOpenMenu={isOpenMenu} setIsOpenMenu={setIsOpenMenu} /> */}
-          {/* <div className="">
-            <Button href="/quotation" text="Tạo báo giá" accent small />
-          </div> */}
-          <button className="btn px-2" ref={userRef}>
-            <Img avatar src="/assets/default/avatar.png" className="w-10" />
+          {!customer && <Button text="Đăng nhâp" primary small onClick={() => setIsOpen(true)} />}
+          <button className={`btn px-2 ${!customer ? "hidden" : ""}`} ref={userRef}>
+            {/* <Img avatar src="/assets/default/avatar.png" className="w-10" /> */}
+            <i className="text-40">
+              <HiUserCircle />
+            </i>
           </button>
           <Dropdown reference={userRef}>
             <Dropdown.Item>
-              <div className="w-full font-semibold text-center">086 9698 360</div>
+              <div className="w-full font-semibold text-center">{customer}</div>
             </Dropdown.Item>
             {menus.map((item, index) => {
               return (
@@ -90,6 +84,16 @@ export function Header({ ...props }: HeaderPropsType) {
             })}
           </Dropdown>
         </div>
+        <CustomerLoginDialog
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          onConfirm={(val) => {
+            if (val) {
+              cunstomerLogin(val);
+              setIsOpen(false);
+            }
+          }}
+        />
       </header>
     </>
   );

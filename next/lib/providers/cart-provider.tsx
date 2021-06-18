@@ -33,10 +33,16 @@ export function CartProvider(props) {
     if (index !== -1) {
       newCart.splice(index, 1);
     } else {
-      let cartProduct = newCart.find((x) => x.name == food.name);
-      if (cartProduct) {
-        cartProduct.qty = food.qty;
-        cartProduct.amount = cartProduct.price * cartProduct.qty;
+      let foodCart = newCart.find((x) => x.name == food.name);
+      if (foodCart) {
+        console.log(foodCart, food);
+
+        if (foodCart.qty) {
+          foodCart.qty = food.qty;
+        } else {
+          foodCart.qty += 1;
+        }
+        foodCart.amount = foodCart.price * foodCart.qty;
       } else {
         newCart.push({
           name: food.name,

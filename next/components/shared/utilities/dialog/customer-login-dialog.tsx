@@ -19,10 +19,10 @@ const CustomerLoginDialog = (props: Propstype) => {
       onSubmit={(data) => props.onConfirm(data.phoneUser)}
       className="main-container mb-4"
     >
-      <Field label="Số điện thoại" name="phoneUser">
+      <Field label="Số điện thoại" name="phoneUser" className="mt-3">
         <Input type="tel"></Input>
       </Field>
-      <Button text="Xác nhận" submit primary />
+      <Button text="Đăng nhập" className="w-full" submit primary />
     </Form>
   );
 };

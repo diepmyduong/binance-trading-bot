@@ -35,10 +35,10 @@ const MustTryMenu = (props: Propstype) => {
   return (
     <div className="main-container">
       <h3 className="font-semibold pb-2">Nhất định phải thử</h3>
-      <div className="flex flex-wrap text-sm gap-3">
+      <div className="grid grid-cols-2">
         {tryFood.map((item, index) => (
           <div
-            className="flex-1"
+            className="col-span-1"
             key={index}
             onClick={() => {
               handleChange(-1, item);

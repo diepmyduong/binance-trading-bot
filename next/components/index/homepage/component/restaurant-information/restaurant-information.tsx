@@ -16,10 +16,10 @@ const RestaurantInformation = (props: Propstype) => {
         ratio169
       />
       <DefaultInfomation
-        className="absolute left-3 p-3 top-32 w-11/12"
+        className="center-item p-3 top-32 w-11/12"
         info={{ name: props.shop.shopName, address: props.shop.address }}
       />
-      <MoreInfomation className="pt-20" />
+      <MoreInfomation className="sm:pt-0 pt-20" />
       <BannerPromtion />
     </div>
   );

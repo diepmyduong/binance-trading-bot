@@ -7,7 +7,8 @@
 .dialog-wrapper {
   &.mobile {
     .dialog {
-      width: 100vw !important;
+      width: 100% !important;
+      max-width: 578px;
       max-width: initial !important;
       border-radius: 0 !important;
       position: absolute;

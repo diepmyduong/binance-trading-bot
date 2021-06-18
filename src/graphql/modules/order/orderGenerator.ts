@@ -21,6 +21,7 @@ import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { ICustomer } from "../customer/customer.model";
 import { IMember, MemberModel } from "../member/member.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
+import { OrderItemTopping } from "../orderItem/types/orderItemTopping.schema";
 import { IProduct, ProductModel } from "../product/product.model";
 import { SettingHelper } from "../setting/setting.helper";
 import { ShopConfigModel } from "../shopConfig/shopConfig.model";
@@ -37,6 +38,7 @@ import {
 type OrderItemInput = {
   productId: string;
   quantity: number;
+  toppings: OrderItemTopping[];
 };
 export type CreateOrderInput = {
   isPrimary: boolean;
@@ -353,6 +355,7 @@ export class OrderGenerator {
     this.order.itemLength = maxBy(this.orderItems, "productLength").productLength;
     this.order.itemWidth = maxBy(this.orderItems, "productWidth").productWidth;
     this.order.itemWeight = sumBy(this.orderItems, (i) => i.productWeight * i.qty);
+    this.order.toppingAmount = sumBy(this.orderItems, "toppingAmount");
   }
 
   private async getProductFromOrderInput(orderInput: CreateOrderInput) {
@@ -368,6 +371,7 @@ export class OrderGenerator {
 
   private parseOrderItem(input: OrderItemInput) {
     const product = this.products[input.productId];
+    const toppingAmount = sumBy(input.toppings, "price");
     const orderItem = new OrderItemModel({
       orderId: this.order._id,
       productId: product.id,
@@ -376,7 +380,7 @@ export class OrderGenerator {
       isCrossSale: product.isCrossSale,
       basePrice: product.basePrice,
       qty: input.quantity,
-      amount: product.basePrice * input.quantity,
+      amount: (product.basePrice + toppingAmount) * input.quantity,
       productWeight: product.weight,
       productHeight: product.height,
       productLength: product.length,
@@ -386,6 +390,8 @@ export class OrderGenerator {
       commission2: product.commission2,
       commission3: product.commission3,
       orderType: this.order.orderType,
+      toppings: input.toppings,
+      toppingAmount: toppingAmount,
     });
     // Điểm thưởng khách hàng
     if (product.enabledCustomerBonus)

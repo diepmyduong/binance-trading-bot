@@ -35,7 +35,7 @@ const schema = gql`
     "Thành tiền"
     amount: Float
     "Mã chiến dịch"
-    campaignId:ID
+    campaignId: ID
     "Mã kết quả chiến dịch"
     campaignSocialResultId: String
 

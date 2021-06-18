@@ -13,7 +13,23 @@ export function Footer() {
   return (
     <footer className={` w-full  min-h-2xs bg-white text-gray-600`}>
       <div className="main-container md:h-60 pt-10 flex flex-col md:flex-row items-start justify-between">
-        <div className="flex flex-col items-start w-full md:w-4/12 ">
+        <div className="grid grid-cols-2 md:grid-cols-4 w-full md:w-8/12 items-start py-2 text-sm ">
+          {menuFooter.map((item) => {
+            return (
+              <div className="mx-8 pt-4 md:pt-0 flex flex-col" key={item.title}>
+                <h1 className="pb-3 font-semibold ">{item.title}</h1>
+                {item.submenu.map((subitem) => {
+                  return (
+                    <Link href={subitem.link} key={subitem.subtitle}>
+                      <div className="py-1 text-xs cursor-pointer">{subitem.subtitle}</div>
+                    </Link>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex flex-col items-start w-full md:w-4/12 my-4">
           <button className="flex items-start md:ml-0">
             <Link href="/">
               <img src="/assets/img/logo.png" className="h-8 p-1" />
@@ -23,32 +39,20 @@ export function Footer() {
             Chúng tôi là một “đạo quân” quả cảm với những “chiến binh” mang trong mình những giá trị
             chính trực, tử tế và tích cực. Chúng tôi phối hợp ăn ý trong suốt quá trình từ gặp gỡ
             đối tác, đánh giá phân tích, đưa ra ý tưởng đến hiện thực hoá các bản đề xuất với sự cam
-            kết chất lượng cao nhất. Tại Apex, mọi vị trí đều làm việc và cống hiến với tinh thần:
-            Mình là một phần quan trọng của dự án, bất kỳ dự án nào khi đã được khách hàng tin tưởng
-            chọn Apex thực hiện đều là dự án của chính Apex, đều đòi hỏi sự toàn tâm, toàn lực để
-            mang đến thành công chung
+            kết chất lượng cao nhất. Tại 3M Shop, mọi vị trí đều làm việc và cống hiến với tinh
+            thần: Mình là một phần quan trọng của dự án, bất kỳ dự án nào khi đã được khách hàng tin
+            tưởng chọn 3M Shop thực hiện đều là dự án của chính 3M Shop, đều đòi hỏi sự toàn tâm,
+            toàn lực để mang đến thành công chung
           </div>
           <div className="flex items-start justify-center text-xl  pt-3">
             {iconSocial.map((item) => {
-              return <i className="mx-2">{item.icon}</i>;
+              return (
+                <i key={item.title} className="mx-2">
+                  {item.icon}
+                </i>
+              );
             })}
           </div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 w-full md:w-8/12 items-start py-2 text-sm ">
-          {menuFooter.map((item) => {
-            return (
-              <div className="mx-8 pt-4 md:pt-0 flex flex-col">
-                <h1 className="pb-3 font-semibold ">{item.title}</h1>
-                {item.submenu.map((subitem) => {
-                  return (
-                    <Link href={subitem.link}>
-                      <div className="py-1 text-xs cursor-pointer">{subitem.subtitle}</div>
-                    </Link>
-                  );
-                })}
-              </div>
-            );
-          })}
         </div>
       </div>
     </footer>
@@ -58,7 +62,7 @@ const menuFooter = [
   {
     title: "Home",
     submenu: [
-      { subtitle: "APEX", link: "/" },
+      { subtitle: "3M Shop", link: "/" },
       { subtitle: "Sản phẩm", link: "/" },
       { subtitle: "Thống kê", link: "/" },
       { subtitle: "Tài khoản", link: "/" },

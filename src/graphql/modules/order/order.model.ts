@@ -35,6 +35,10 @@ export enum OrderType {
   SHOP = "SHOP", // Đơn bưu cục,
   CROSSSALE = "CROSSSALE", // Bán chéo,
 }
+export enum PickupMethod {
+  DELIVERY = "DELIVERY", // Giao hàng
+  STORE = "STORE", // Nhận tại cửa hàng
+}
 
 // export const ShipMethods = [
 //   { label: "Tự liên hệ", value: ShipMethod.NONE },
@@ -64,6 +68,7 @@ export type IOrder = BaseDocument & {
   items?: IOrderItem[]; // danh sách sản phẩm trong đơn
   amount?: number; // Thành tiền
   subtotal?: number; // Tổng tiền hàng
+  toppingAmount?: number; // Tổng tiền topping
   itemCount?: number; // Số lượng sản phẩm
   sellerId?: string; // Chủ shop bán
   sellerCode?: string; // Mã chủ shop bán
@@ -117,6 +122,9 @@ export type IOrder = BaseDocument & {
   driverName?: string; // Tên tài xế
   driverPhone?: string; // Điện thoại tài xế
   driverLicense?: string; // Biển số xe tài xế
+
+  pickupMethod?: PickupMethod; // Phương thức nhận hàng
+  pickupTime?: Date; // Thời gian nhận hàng
 };
 
 const orderSchema = new Schema(
@@ -129,6 +137,9 @@ const orderSchema = new Schema(
       required: true,
     },
     amount: { type: Number, default: 0, min: 0 },
+    subtotal: { type: Number, default: 0, min: 0 },
+    toppingAmount: { type: Number, default: 0, min: 0 },
+    itemCount: { type: Number, default: 0, min: 0 },
     sellerId: { type: Schema.Types.ObjectId, ref: "Member" },
     sellerCode: { type: String }, // Mã chủ shop bán
     sellerName: { type: String }, // Chủ shop bán
@@ -172,8 +183,6 @@ const orderSchema = new Schema(
       enum: Object.values(PaymentMethod),
       required: true,
     },
-    subtotal: { type: Number, default: 0, min: 0 },
-    itemCount: { type: Number, default: 0, min: 0 },
 
     oldAddressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse" },
     addressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse" },

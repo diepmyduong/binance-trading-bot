@@ -24,32 +24,34 @@ const MoreInfomation = (props: Propstype) => {
     },
   ];
   return (
-    <div className={` main-container   ${props.className}`}>
-      <div className="flex justify-between items-center py-2 border-b">
-        <p>Có 23 chi nhánh</p>
-        <p className="text-primary cursor-pointer font-semibold">Xem chi nhánh khác</p>
-      </div>
-      <div className="flex items-center justify-between  py-2  border-b">
-        <p className="flex items-center">
-          <i className="text-primary p-0.5 border rounded-full text-10 border-primary mr-1">
-            {<FaPercent />}
-          </i>{" "}
-          Giảm 40k cho đơn từ 150k
-        </p>
-        <p className="text-primary cursor-pointer font-semibold">Xem thêm</p>
-      </div>
-      <div className="flex justify-between items-center  py-2">
-        <Rating numRated={344} rating={4.8} />
-        <div className="flex items-center">
-          <i className="text-lg">
-            <HiShoppingCart />
-          </i>
-          <p className="text-gray-400"> (688+)</p>
+    <>
+      <div className={` main-container   ${props.className}`}>
+        <div className="flex justify-between items-center py-2 border-b">
+          <p>Có 23 chi nhánh</p>
+          <p className="text-primary cursor-pointer font-semibold">Xem chi nhánh khác</p>
         </div>
-        <p className="text-primary cursor-pointer font-semibold">Xem 365 bình luận</p>
+        <div className="flex items-center justify-between  py-2  border-b">
+          <p className="flex items-center">
+            <i className="text-primary p-0.5 border rounded-full text-10 border-primary mr-1">
+              {<FaPercent />}
+            </i>{" "}
+            Giảm 40k cho đơn từ 150k
+          </p>
+          <p className="text-primary cursor-pointer font-semibold">Xem thêm</p>
+        </div>
+        <div className="flex justify-between items-center  py-2">
+          <Rating numRated={344} rating={4.8} />
+          <div className="flex items-center">
+            <i className="text-lg">
+              <HiShoppingCart />
+            </i>
+            <p className="text-gray-400"> (688+)</p>
+          </div>
+          <p className="text-primary cursor-pointer font-semibold">Xem 365 bình luận</p>
+        </div>
       </div>
       <EmotionsEvaluate reactions={reactions} />
-    </div>
+    </>
   );
 };
 

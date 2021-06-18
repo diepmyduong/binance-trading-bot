@@ -1,24 +1,29 @@
 import React, { useState } from "react";
 import { Img } from "../../../../shared/utilities/img";
 import { Swiper, SwiperSlide } from "swiper/react";
-import SwiperCore, { Pagination } from "swiper/core";
+import SwiperCore, { Pagination, Autoplay } from "swiper/core";
 // install Swiper modules
-SwiperCore.use([Pagination]);
+SwiperCore.use([Pagination, Autoplay]);
 interface Propstype extends ReactProps {}
 const BannerPromtion = (props: Propstype) => {
   const promotions = [
     {
-      img: "",
+      img:
+        "https://file.hstatic.net/200000043306/file/banner_web_mobile_83c075fe49b44d8a8267ccd829a8748d.png",
       name: "",
       code: "",
     },
     {
-      img: "",
+      img:
+        "https://file.hstatic.net/200000043306/file/banner_web_mobile_83c075fe49b44d8a8267ccd829a8748d.png",
+
       name: "",
       code: "",
     },
     {
-      img: "",
+      img:
+        "https://file.hstatic.net/200000043306/file/banner_web_mobile_83c075fe49b44d8a8267ccd829a8748d.png",
+
       name: "",
       code: "",
     },
@@ -27,14 +32,16 @@ const BannerPromtion = (props: Propstype) => {
     <div className={`mt-4 ${props.className} `}>
       <Swiper
         spaceBetween={10}
-        slidesPerView={1}
-        onSlideChange={() => console.log("slide change")}
-        onSwiper={(swiper) => console.log(swiper)}
+        loop={true}
+        autoplay={{
+          delay: 5000,
+          disableOnInteraction: false,
+        }}
         pagination={{ clickable: true }}
       >
         {promotions.map((item, index) => (
           <SwiperSlide key={index}>
-            <Img key={index} src={item.img || "/assets/default/default.png"} ratio169 />
+            <img key={index} src={item.img || "/assets/default/default.png"} />
           </SwiperSlide>
         ))}
       </Swiper>

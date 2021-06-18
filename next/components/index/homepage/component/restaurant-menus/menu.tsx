@@ -22,7 +22,7 @@ const Menu = (props: PropsType) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [detailItem, setDetailItem] = useState<any>(null);
   return (
-    <div id={props.title} className="relative menu">
+    <div id={props.title} className="relative menu main-container ">
       <div className=" absolute -top-28 menu-container"></div>
       <p className="font-semibold text-primary">{props.title}</p>
       {props.list.map((item, index) => (
@@ -40,7 +40,7 @@ const Menu = (props: PropsType) => {
             <p className="text-gray-400 text-sm">{item.des}</p>
             <Price price={item.price} textDanger />
           </div>
-          <Img className="w-24 h-24 rounded-sm" />
+          <Img src={item.img} className="w-24 h-24 rounded-sm" />
         </div>
       ))}
       <Form

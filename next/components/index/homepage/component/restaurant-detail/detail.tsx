@@ -5,6 +5,7 @@ import { Button } from "../../../../shared/utilities/form/button";
 import { Label } from "../../../../shared/utilities/form/label";
 import { Radio } from "../../../../shared/utilities/form/radio";
 import { Img } from "../../../../shared/utilities/img";
+import { useCartContext } from "../../../../../lib/providers/cart-provider";
 
 interface PropsType extends ReactProps {
   item: {
@@ -19,6 +20,8 @@ interface PropsType extends ReactProps {
   onClose: () => void;
 }
 export function RestaurantDetail({ item, handleChange, onClose }: PropsType) {
+  const { cart } = useCartContext();
+
   return (
     <div className="w-full h-full relative rounded bg-white">
       <div

@@ -5,8 +5,10 @@ export class FirebaseHelper {
   app: admin.app.App;
   constructor() {
     let config = configs.firebase;
-    config.credential = admin.credential.cert(config.credential);
-    this.app = admin.initializeApp(config);
+    try {
+      config.credential = admin.credential.cert(config.credential);
+      this.app = admin.initializeApp(config);
+    } catch (err) {}
   }
 
   get messaging() {

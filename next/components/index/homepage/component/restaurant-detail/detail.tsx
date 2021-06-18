@@ -20,7 +20,7 @@ interface PropsType extends ReactProps {
 }
 export function RestaurantDetail({ item, handleChange, onClose }: PropsType) {
   return (
-    <div className="w-full h-full relative rounded">
+    <div className="w-full h-full relative rounded bg-white">
       <div
         className="w-8 h-8 absolute top-2 right-2 z-200 bg-white rounded-full flex items-center justify-center"
         onClick={() => onClose()}
@@ -29,7 +29,7 @@ export function RestaurantDetail({ item, handleChange, onClose }: PropsType) {
           <HiOutlineX />
         </i>
       </div>
-      <Img src={"https://i.imgur.com/a8BAycP.png"} className="w-full" ratio169 />
+      <Img src={item.img} className="w-full" ratio169 />
       <div className="sticky overflow-auto h-full">
         <h2 className="px-4 pt-4 text-xl">{item.name}</h2>
         <div className="px-4 text-xs text-gray-600 py-1 flex items-center space-x-1">

@@ -48,8 +48,7 @@ const Menu = (props: PropsType) => {
         isOpen={openDialog}
         mobileMode
         onClose={() => setOpenDialog(false)}
-        style={{ height: "calc(83vh)", padding: 0 }}
-        className="z-500 rounded"
+        className="z-400 rounded w-full"
       >
         <RestaurantDetail
           item={detailItem}

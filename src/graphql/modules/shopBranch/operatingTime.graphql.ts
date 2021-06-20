@@ -13,7 +13,7 @@ export default {
       "Khung thời gian"
       timeFrames: [[String]]
       "Có mở cửa"
-      isOpen: boolean; // 
+      isOpen: Boolean
     }
   `,
   resolver: {},

@@ -50,14 +50,7 @@ const Menu = (props: PropsType) => {
         onClose={() => setOpenDialog(false)}
         className="z-400 rounded w-full"
       >
-        <RestaurantDetail
-          item={detailItem}
-          onClose={() => setOpenDialog(false)}
-          handleChange={() => {
-            handleChange(-1, detailItem);
-            setOpenDialog(false);
-          }}
-        ></RestaurantDetail>
+        <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
       </Form>
     </div>
   );

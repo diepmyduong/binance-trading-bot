@@ -2,6 +2,7 @@ import { useState } from "react";
 import { HiChevronRight, HiDocumentAdd } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { useCartContext } from "../../../lib/providers/cart-provider";
+import { Accordion } from "../../shared/utilities/accordion/accordion";
 import { Button } from "../../shared/utilities/form/button";
 import { Field } from "../../shared/utilities/form/field";
 import { Form } from "../../shared/utilities/form/form";
@@ -13,7 +14,7 @@ import { TicketVoucher } from "./component/ticket-voucher";
 export function PaymentPage() {
   const [openDialog, setOpenDialog] = useState(false);
   const { cart, totalFood, totalMoney } = useCartContext();
-  console.log("cart,cart", cart);
+  const [voucherApplied, setVoucherApplied] = useState(null);
   return (
     <>
       <div className="text-gray-700 ">
@@ -71,16 +72,31 @@ export function PaymentPage() {
             <div className="text-accent">{NumberPipe(40000)}đ</div>
           </div>
         </div>
-        <div className="px-4 py-6 flex w-full overflow-auto">
-          {dataVoucher.map((item, index) => {
-            return <TicketVoucher item={item} index={index} />;
-          })}
-        </div>
+        <Accordion isOpen={voucherApplied === null}>
+          <div className="px-4 py-6 flex w-full overflow-auto">
+            {dataVoucher.map((item, index) => {
+              return (
+                <TicketVoucher
+                  item={item}
+                  index={index}
+                  onClick={() => setVoucherApplied(item.title)}
+                />
+              );
+            })}
+          </div>
+        </Accordion>
         <div className="sticky shadow-2xl bottom-0 px-4 py-4 bg-white mt-2">
           <div className="flex items-center justify-between">
             <p className="">Thanh toán COD</p>
             <p className="">|</p>
-            <Button text="Mã khuyến mãi" textPrimary className="px-0" />
+            {voucherApplied != null ? (
+              <div className="flex items-center justify-between px-2">
+                <p className="">{voucherApplied}</p>
+                <Button text="Xóa" textDanger onClick={() => setVoucherApplied(null)} />
+              </div>
+            ) : (
+              <Button text="Mã khuyến mãi" textPrimary className="px-0" />
+            )}
           </div>
           <div className="w-full pt-2">
             <Button text={`Thanh toán ${NumberPipe(189000)}đ`} primary className="w-full" />

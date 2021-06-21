@@ -6,6 +6,7 @@ import { Label } from "../../../../shared/utilities/form/label";
 import { Radio } from "../../../../shared/utilities/form/radio";
 import { Img } from "../../../../shared/utilities/img";
 import { useCartContext } from "../../../../../lib/providers/cart-provider";
+import { useState } from "react";
 
 interface PropsType extends ReactProps {
   item: {
@@ -16,12 +17,11 @@ interface PropsType extends ReactProps {
     img: string;
     rating?: number | string;
   };
-  handleChange: () => void;
   onClose: () => void;
 }
-export function RestaurantDetail({ item, handleChange, onClose }: PropsType) {
-  const { cart } = useCartContext();
-
+export function RestaurantDetail({ item, onClose }: PropsType) {
+  const { cart, handleChange } = useCartContext();
+  const [count, setCount] = useState(1);
   return (
     <div className="w-full h-full relative rounded bg-white">
       <div
@@ -96,13 +96,14 @@ export function RestaurantDetail({ item, handleChange, onClose }: PropsType) {
           })}
         </div>
         <div className="relative bg-white bottom-0 w-full px-4 my-2 flex items-center space-x-7">
-          <IncreaseButton />
+          <IncreaseButton onChange={(count) => setCount(count)} />
           <Button
             primary
-            text={`Thêm ${NumberPipe(item.price)}`}
+            text={`${count > 0 ? `Thêm ${NumberPipe(item.price * count)}` : "Xóa"}`}
             className="w-full"
             onClick={() => {
-              handleChange();
+              handleChange(count);
+              onClose();
             }}
           />
         </div>

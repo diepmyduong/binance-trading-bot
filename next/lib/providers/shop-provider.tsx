@@ -8,6 +8,7 @@ export const ShopContext = createContext<
 export function ShopProvider(props) {
   const router = useRouter();
   const [shop, setShop] = useState<Shop>();
+  // const [homeShop, setHomeShop] = useState<string>();
   const [customer, setCustomer] = useState<any>();
   async function getShop() {
     let res = await ShopService.getShopData();

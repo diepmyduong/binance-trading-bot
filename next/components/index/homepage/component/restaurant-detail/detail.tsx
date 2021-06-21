@@ -7,6 +7,10 @@ import { Radio } from "../../../../shared/utilities/form/radio";
 import { Img } from "../../../../shared/utilities/img";
 import { useCartContext } from "../../../../../lib/providers/cart-provider";
 import { useState } from "react";
+import { Form } from "../../../../shared/utilities/form/form";
+import { Field } from "../../../../shared/utilities/form/field";
+import { Textarea } from "../../../../shared/utilities/form/textarea";
+import { SaveButtonGroup } from "../../../../shared/utilities/save-button-group";
 
 interface PropsType extends ReactProps {
   item: {
@@ -21,9 +25,10 @@ interface PropsType extends ReactProps {
 }
 export function RestaurantDetail({ item, onClose }: PropsType) {
   const { cart, handleChange } = useCartContext();
+  const [openDialog, setOpenDialog] = useState(false);
   const [count, setCount] = useState(1);
   return (
-    <div className="w-full h-full relative rounded bg-white">
+    <div className="w-full h-full rounded bg-white">
       <div
         className="w-8 h-8 absolute top-2 right-2 z-200 bg-white rounded-full flex items-center justify-center"
         onClick={() => onClose()}
@@ -44,7 +49,13 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
           <div className="">{`Đã bán ${item.sold}`}</div>
         </div>
         <p className="px-4 text-xs text-gray-300">{item.des}</p>
-        <Button text="+ Lời nhắn cho cửa hàng" textPrimary className="py-2 text-xs" unfocusable />
+        <Button
+          text="+ Lời nhắn cho cửa hàng"
+          textPrimary
+          className="py-2 text-xs"
+          unfocusable
+          onClick={() => setOpenDialog(true)}
+        />
         <div className="bg-primary-light  px-4 py-2">
           <h2 className="font-bold text-sm">Các món ăn kèm</h2>
           <p className="pt-1 text-xs">Chọn ít nhất 1 món</p>
@@ -95,19 +106,34 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
             );
           })}
         </div>
-        <div className="relative bg-white bottom-0 w-full px-4 my-2 flex items-center space-x-7">
-          <IncreaseButton onChange={(count) => setCount(count)} />
-          <Button
-            primary
-            text={`${count > 0 ? `Thêm ${NumberPipe(item.price * count)}` : "Xóa"}`}
-            className="w-full"
-            onClick={() => {
-              handleChange(count);
-              onClose();
-            }}
-          />
-        </div>
       </div>
+      <div className="sticky shadow-2xl bg-white -bottom-7 w-full px-4 py-4 flex items-center space-x-7">
+        <IncreaseButton onChange={(count) => setCount(count)} />
+        <Button
+          primary
+          text={`${count > 0 ? `Thêm ${NumberPipe(item.price * count)}` : "Xóa"}`}
+          className="w-full"
+          onClick={() => {
+            handleChange(-1, item);
+            onClose();
+          }}
+        />
+      </div>
+      <Form
+        dialog
+        mobileMode
+        isOpen={openDialog}
+        onClose={() => setOpenDialog(false)}
+        onSubmit={() => {
+          setOpenDialog(false);
+        }}
+        className="px-4 pt-4"
+      >
+        <Field label="Lời nhắn của khác hàng" name="note">
+          <Textarea placeholder="Nhập Lời nhắn của khác hàng" />
+        </Field>
+        <SaveButtonGroup disableCancle />
+      </Form>
     </div>
   );
 }

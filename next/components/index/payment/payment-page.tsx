@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HiChevronRight, HiDocumentAdd } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { useCartContext } from "../../../lib/providers/cart-provider";
@@ -15,6 +15,9 @@ export function PaymentPage() {
   const [openDialog, setOpenDialog] = useState(false);
   const { cart, totalFood, totalMoney } = useCartContext();
   const [voucherApplied, setVoucherApplied] = useState(null);
+  useEffect(() => {
+    setVoucherApplied(null);
+  }, []);
   return (
     <>
       <div className="text-gray-700 ">
@@ -72,7 +75,7 @@ export function PaymentPage() {
             <div className="text-accent">{NumberPipe(40000)}đ</div>
           </div>
         </div>
-        <Accordion isOpen={voucherApplied === null}>
+        {voucherApplied === null && (
           <div className="px-4 py-6 flex w-full overflow-auto">
             {dataVoucher.map((item, index) => {
               return (
@@ -84,12 +87,12 @@ export function PaymentPage() {
               );
             })}
           </div>
-        </Accordion>
+        )}
         <div className="sticky shadow-2xl bottom-0 px-4 py-4 bg-white mt-2">
           <div className="flex items-center justify-between">
             <p className="">Thanh toán COD</p>
             <p className="">|</p>
-            {voucherApplied != null ? (
+            {voucherApplied !== null ? (
               <div className="flex items-center justify-between px-2">
                 <p className="">{voucherApplied}</p>
                 <Button text="Xóa" textDanger onClick={() => setVoucherApplied(null)} />

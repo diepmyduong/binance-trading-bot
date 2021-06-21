@@ -108,6 +108,9 @@ export function PaymentPage() {
         mobileMode
         isOpen={openDialog}
         onClose={() => setOpenDialog(false)}
+        onSubmit={() => {
+          setOpenDialog(false);
+        }}
         className="px-4 pt-4"
       >
         <Field label="Ghi chú" name="note">

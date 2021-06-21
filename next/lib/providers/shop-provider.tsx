@@ -1,9 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Shop, ShopService } from "../repo/shop.repo";
-import { Redirect } from "../helpers/redirect";
 import { useRouter } from "next/router";
-import CustomerLoginDialog from "../../components/shared/utilities/dialog/customer-login-dialog";
-import router from "../../../src/routers/index";
 
 export const ShopContext = createContext<
   Partial<{ shop: Shop; customer: any; cunstomerLogin: Function; customerLogout: Function }>

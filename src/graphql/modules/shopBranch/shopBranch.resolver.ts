@@ -4,6 +4,7 @@ import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { Context } from "../../context";
+import { OperatingTimeStatus } from "./operatingTime.graphql";
 import { ShopBranchModel } from "./shopBranch.model";
 import { shopBranchService } from "./shopBranch.service";
 
@@ -28,7 +29,7 @@ const Mutation = {
     data.operatingTimes = times(7, (i) => ({
       day: i + 1,
       timeFrames: [["07:00", "21:00"]],
-      isOpen: true,
+      status: OperatingTimeStatus.OPEN,
     }));
     return await shopBranchService.create(data);
   },

@@ -49,3 +49,10 @@ export function ShopProvider(props) {
 }
 
 export const useShopContext = () => useContext(ShopContext);
+export const ShopConsumer = ({
+  children,
+}: {
+  children: (props: Partial<{ shop: Shop }>) => any;
+}) => {
+  return <ShopContext.Consumer>{children}</ShopContext.Consumer>;
+};

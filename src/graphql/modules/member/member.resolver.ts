@@ -18,6 +18,8 @@ import { BranchLoader } from "../branch/branch.model";
 import { OrderModel } from "../order/order.model";
 import { PositionLoader } from "../position/position.model";
 import { SettingHelper } from "../setting/setting.helper";
+import { ShopConfigModel } from "../shopConfig/shopConfig.model";
+import { shopConfigService } from "../shopConfig/shopConfig.service";
 import { MemberHelper } from "./member.helper";
 import { IMember, MemberLoader, MemberModel } from "./member.model";
 import { memberService } from "./member.service";
@@ -53,11 +55,14 @@ const Mutation = {
     data.uid = fbUser.uid;
     data.code = data.code ? data.code : await memberService.generateCode();
     const helper = new MemberHelper(new MemberModel(data));
-
     await Promise.all([
       AddressHelper.setProvinceName(helper.member),
       AddressHelper.setDistrictName(helper.member),
       AddressHelper.setWardName(helper.member),
+      ShopConfigModel.create({
+        memberId: helper.member._id,
+        ...shopConfigService.getDefaultConfig(),
+      }),
     ]);
     helper.setActivedAt();
     return await helper.member.save();

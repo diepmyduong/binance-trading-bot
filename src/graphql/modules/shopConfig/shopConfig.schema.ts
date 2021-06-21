@@ -7,9 +7,20 @@ const schema = gql`
   }
 
   input UpdateShopConfigInput {
-    "Token vnpost"
-    # vnpostToken: String
-    empty: Mixed
+    "Thời gian chuẩn bị"
+    shipPreparationTime: String
+    "Khoản cách giao hàng mặc định"
+    shipDefaultDistance: Int
+    "Phí giao hàng mặc định"
+    shipDefaultFee: Float
+    "Phí ship cộng thêm mỗi km"
+    shipNextFee: Float
+    "Phí ship dưới 1 km"
+    shipOneKmFee: Float
+    "Bật phí ship dưới 1 km"
+    shipUseOneKmFee: Boolean
+    "Ghi chú cho shipper"
+    shipNote: String
   }
 
   type ShopConfig {
@@ -25,6 +36,20 @@ const schema = gql`
     vnpostPhone: String
     "Tên người dùng VNPost"
     vnpostName: String
+    "Thời gian chuẩn bị"
+    shipPreparationTime: String
+    "Khoản cách giao hàng mặc định"
+    shipDefaultDistance: Int
+    "Phí giao hàng mặc định"
+    shipDefaultFee: Float
+    "Phí ship cộng thêm mỗi km"
+    shipNextFee: Float
+    "Phí ship dưới 1 km"
+    shipOneKmFee: Float
+    "Bật phí ship dưới 1 km"
+    shipUseOneKmFee: Boolean
+    "Ghi chú cho shipper"
+    shipNote: String
   }
 `;
 

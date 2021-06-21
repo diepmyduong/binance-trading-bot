@@ -5,10 +5,19 @@ const Schema = mongoose.Schema;
 
 export type IShopConfig = BaseDocument & {
   memberId?: string; // Mã chủ shop
+  // VNPOST config
   vnpostToken?: string; // Token vnpost
   vnpostCode?: string; // Mã CRM VNPost
   vnpostPhone?: string; // Điện thoại VNPost
   vnpostName?: string; // Tên người dùng VNPost
+  // Shopping config
+  shipPreparationTime?: string; // Thời gian chuẩn bị
+  shipDefaultDistance?: number; // Khoản cách giao hàng mặc định
+  shipDefaultFee?: number; // Phí giao hàng mặc định
+  shipNextFee?: number; // Phí ship cộng thêm mỗi km
+  shipOneKmFee?: number; // Phí ship dưới 1 km
+  shipUseOneKmFee?: boolean; // Bật phí ship dưới 1 km
+  shipNote?: string; // Ghi chú cho shipper
 };
 
 const shopConfigSchema = new Schema(
@@ -18,6 +27,13 @@ const shopConfigSchema = new Schema(
     vnpostCode: { type: String },
     vnpostPhone: { type: String },
     vnpostName: { type: String },
+    shipPreparationTime: { type: String },
+    shipDefaultDistance: { type: Number, default: 0, min: 0 },
+    shipDefaultFee: { type: Number, default: 0, min: 0 },
+    shipNextFee: { type: Number, default: 0, min: 0 },
+    shipOneKmFee: { type: Number, default: 0, min: 0 },
+    shipUseOneKmFee: { type: Boolean, default: false },
+    shipNote: { type: String },
   },
   { timestamps: true }
 );

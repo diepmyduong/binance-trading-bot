@@ -13,7 +13,7 @@ export function ImageDialog({ className = "", style = {}, ...props }: PropsType)
       {props.image && (
         <img
           className={`${props.onClick ? "cursor-pointer" : ""} ${className}`}
-          style={{ maxWidth: "86vw", ...style }}
+          style={{ maxWidth: "32rem", ...style }}
           src={props.image}
           onClick={props.onClick}
         />

@@ -1,16 +1,14 @@
 import Link from "next/link";
 import React, { useState } from "react";
-import { Img } from "../../../components/shared/utilities/img";
 import { useRef } from "react";
 import { Dropdown } from "../../../components/shared/utilities/popover/dropdown";
 import { useRouter } from "next/router";
 import { FaHistory, FaPercent, FaSignInAlt, FaUserAlt } from "react-icons/fa";
 import { useShopContext } from "../../../lib/providers/shop-provider";
-import { Spinner } from "../../../components/shared/utilities/spinner";
 import { Button } from "../../../components/shared/utilities/form/button";
 import { useAuth } from "../../../lib/providers/auth-provider";
 import CustomerLoginDialog from "../../../components/shared/utilities/dialog/customer-login-dialog";
-import { HiUserCircle } from "react-icons/hi";
+import { HiOutlineUserCircle } from "react-icons/hi";
 
 export interface HeaderPropsType extends ReactProps {
   title?: string;
@@ -52,22 +50,23 @@ export function Header({ ...props }: HeaderPropsType) {
   const userRef = useRef<any>();
   return (
     <>
-      <header className={`fixed top-0 w-screen  z-100`}>
-        <div className="main-container h-14 flex justify-between items-center max-w-lg shadow bg-white px-4">
+      <header className={`fixed top-0 w-full z-200`}>
+        <div className="w-full mx-auto h-14 flex justify-between items-center max-w-lg shadow bg-white px-4">
           <Link href="#">
             <img src={shop.shopLogo || ""} className="h-10 w-10 object-contain" />
           </Link>
           {!customer && <Button text="Đăng nhâp" primary small onClick={() => setIsOpen(true)} />}
-          <button className={`btn px-2 ${!customer ? "hidden" : ""}`} ref={userRef}>
+          <button
+            className={`btn flex items-center px-2 ${!customer ? "hidden" : ""}`}
+            ref={userRef}
+          >
             {/* <Img avatar src="/assets/default/avatar.png" className="w-10" /> */}
-            <i className="text-40">
-              <HiUserCircle />
+            <i className="text-40 text-gray-400">
+              <HiOutlineUserCircle />
             </i>
+            <div className="w-full font-semibold text-center">{customer}</div>
           </button>
           <Dropdown reference={userRef}>
-            <Dropdown.Item>
-              <div className="w-full font-semibold text-center">{customer}</div>
-            </Dropdown.Item>
             {menus.map((item, index) => {
               return (
                 <Dropdown.Item

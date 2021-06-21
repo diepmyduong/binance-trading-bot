@@ -8,7 +8,7 @@ interface PropsType extends ReactProps {
   className?: string;
 }
 export function IncreaseButton({ onDecrease, onIncrease, onChange, className }: PropsType) {
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(1);
   const handleClick = (number) => {
     if (amount + number >= 0) {
       setAmount(amount + number);

@@ -1,25 +1,23 @@
 import { useState } from "react";
 import { HiChevronRight, HiDocumentAdd } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
+import { useCartContext } from "../../../lib/providers/cart-provider";
 import { Button } from "../../shared/utilities/form/button";
 import { Field } from "../../shared/utilities/form/field";
 import { Form } from "../../shared/utilities/form/form";
-import { Input } from "../../shared/utilities/form/input";
-import { Select } from "../../shared/utilities/form/select";
 import { Textarea } from "../../shared/utilities/form/textarea";
 import { SaveButtonGroup } from "../../shared/utilities/save-button-group";
-import { TabButtonGroup } from "../../shared/utilities/tab-button-group/tab-button-group";
-import { TabGroup } from "../../shared/utilities/tab/tab-group";
 import { InforPayment } from "./component/infor-payment";
 import { TicketVoucher } from "./component/ticket-voucher";
 
 export function PaymentPage() {
   const [openDialog, setOpenDialog] = useState(false);
+  const { cart, totalFood, totalMoney } = useCartContext();
+  console.log("cart,cart", cart);
   return (
     <>
       <div className="text-gray-700 ">
         <InforPayment />
-
         <div className="mt-1 bg-white">
           <div className="flex px-4 items-center justify-between pt-2">
             <p className="font-bold">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
@@ -28,18 +26,18 @@ export function PaymentPage() {
             </i>
           </div>
           <div className="">
-            {data.map((item, index) => {
+            {cart.map((item, index) => {
               return (
                 <div className="flex px-4 items-start border-b border-gray-300 py-3" key={index}>
                   <div className="font-bold text-primary flex items-center">
-                    <p className="min-w-5 text-center">{item.count}</p>
+                    <p className="min-w-5 text-center">{item.qty}</p>
                     <p className="px-2">X</p>
                   </div>
                   <div className="flex-1">
-                    <p className="">{item.title}</p>
+                    <p className="">{item.name}</p>
                     <p className=" text-gray-500">{item.note}</p>
                   </div>
-                  <div className="font-bold">{NumberPipe(item.price)}đ</div>
+                  <div className="font-bold">{NumberPipe(item.amount)}đ</div>
                 </div>
               );
             })}
@@ -58,9 +56,9 @@ export function PaymentPage() {
         <div className="px-4 py-4 mt-1 bg-white ">
           <div className="flex justify-between items-center">
             <div className="">
-              Tạm tính: <span className="font-bold">2 món</span>
+              Tạm tính: <span className="font-bold">{totalFood} món</span>
             </div>
-            <div className="">{NumberPipe(519000)}đ</div>
+            <div className="">{NumberPipe(totalMoney)}đ</div>
           </div>
           <div className="flex justify-between items-center">
             <div className="">
@@ -104,21 +102,6 @@ export function PaymentPage() {
     </>
   );
 }
-
-const data = [
-  {
-    title: "Rau má đậu xanh",
-    count: 12,
-    note: "Không đá ít đường",
-    price: 119000,
-  },
-  {
-    title: "Cơm đùi gà quay",
-    count: 2,
-    note: "Không cơm ít gà",
-    price: 119000,
-  },
-];
 
 const dataVoucher = [
   {

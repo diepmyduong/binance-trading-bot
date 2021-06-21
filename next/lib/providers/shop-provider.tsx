@@ -1,9 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Shop, ShopService } from "../repo/shop.repo";
-import { Redirect } from "../helpers/redirect";
 import { useRouter } from "next/router";
-import CustomerLoginDialog from "../../components/shared/utilities/dialog/customer-login-dialog";
-import router from "../../../src/routers/index";
 
 export const ShopContext = createContext<
   Partial<{ shop: Shop; customer: any; cunstomerLogin: Function; customerLogout: Function }>
@@ -11,6 +8,7 @@ export const ShopContext = createContext<
 export function ShopProvider(props) {
   const router = useRouter();
   const [shop, setShop] = useState<Shop>();
+  // const [homeShop, setHomeShop] = useState<string>();
   const [customer, setCustomer] = useState<any>();
   async function getShop() {
     let res = await ShopService.getShopData();
@@ -51,3 +49,10 @@ export function ShopProvider(props) {
 }
 
 export const useShopContext = () => useContext(ShopContext);
+export const ShopConsumer = ({
+  children,
+}: {
+  children: (props: Partial<{ shop: Shop }>) => any;
+}) => {
+  return <ShopContext.Consumer>{children}</ShopContext.Consumer>;
+};

@@ -6,7 +6,6 @@ import { Redirect } from "../lib/helpers/redirect";
 import { MemberModel } from "../../dist/graphql/modules/member/member.model";
 
 export default function Page(props) {
-  // const router = useRouter();
   return (
     <>
       <NextSeo title={`Trang chủ`} />
@@ -25,6 +24,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   return {
     props: JSON.parse(
       JSON.stringify({
+        code,
         shopName,
         shopLogo,
       })

@@ -14,7 +14,7 @@ export type IProductTopping = BaseDocument & {
   options?: ToppingOption[]; // Những lựa chọn
 };
 
-const productToppingSchema = new Schema(
+export const ProductToppingSchema = new Schema(
   {
     memberId: { type: Schema.Types.ObjectId, ref: "Member", required: true },
     name: { type: String, required: true },
@@ -26,12 +26,12 @@ const productToppingSchema = new Schema(
   { timestamps: true }
 );
 
-productToppingSchema.index({ name: "text" }, { weights: { name: 2 } });
+ProductToppingSchema.index({ name: "text" }, { weights: { name: 2 } });
 
-export const ProductToppingHook = new ModelHook<IProductTopping>(productToppingSchema);
+export const ProductToppingHook = new ModelHook<IProductTopping>(ProductToppingSchema);
 export const ProductToppingModel: mongoose.Model<IProductTopping> = MainConnection.model(
   "ProductTopping",
-  productToppingSchema
+  ProductToppingSchema
 );
 
 export const ProductToppingLoader = ModelLoader<IProductTopping>(

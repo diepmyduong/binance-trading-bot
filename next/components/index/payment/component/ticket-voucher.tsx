@@ -1,6 +1,6 @@
 import { Button } from "../../../shared/utilities/form/button";
 
-export function TicketVoucher({ item, index }) {
+export function TicketVoucher({ item, index, onClick }) {
   return (
     <div className="min-w-xs flex items-center ml-4" key={index}>
       <div className="h-full w-2 bg-primary rounded-l-2xl"></div>
@@ -12,7 +12,7 @@ export function TicketVoucher({ item, index }) {
         <Button text="Xem chi tiết" textPrimary className="px-0" />
       </div>
       <div className="rounded-2xl flex items-center justify-center bg-white h-full px-4 border-l-2 border-dashed">
-        <Button text="Chọn" className="px-0" textPrimary />
+        <Button text="Chọn" className="px-0" textPrimary onClick={() => onClick()} />
       </div>
     </div>
   );

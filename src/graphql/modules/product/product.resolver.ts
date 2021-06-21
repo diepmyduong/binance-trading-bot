@@ -1,4 +1,5 @@
-import { set, isNull, isUndefined } from "lodash";
+import { isNull, isUndefined, set } from "lodash";
+
 import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
@@ -10,7 +11,6 @@ import { CollaboratorProductModel } from "../collaboratorProduct/collaboratorPro
 import { CrossSaleModel } from "../crossSale/crossSale.model";
 import { MemberLoader } from "../member/member.model";
 import { OrderItemModel } from "../orderItem/orderItem.model";
-import { ProductToppingLoader } from "../productTopping/productTopping.model";
 import { ProductHelper } from "./product.helper";
 import { IProduct, ProductLoader, ProductModel, ProductType } from "./product.model";
 import { productService } from "./product.service";
@@ -124,7 +124,6 @@ const Mutation = {
 const Product = {
   category: GraphQLHelper.loadById(CategoryLoader, "categoryId"),
   member: GraphQLHelper.loadById(MemberLoader, "memberId"),
-  toppings: GraphQLHelper.loadManyById(ProductToppingLoader, "toppingIds"),
   crossSaleOrdered: GraphQLHelper.requireRoles(ROLES.ADMIN_EDITOR_MEMBER),
   collaboratorProduct: async (root: IProduct, args: any, context: Context) => {
     let collaProduct = null;

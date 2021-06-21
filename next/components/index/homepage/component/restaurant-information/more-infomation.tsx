@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaPercent } from "react-icons/fa";
 import { HiShoppingCart, HiStar } from "react-icons/hi";
 import { Package, SmileIcon, MoneyBag } from "../../../../../public/assets/svg/svg";
 import Rating from "../../../../shared/utilities/infomation/rating";
 import EmotionsEvaluate from "./emotions-evaluate";
+import BranchDialog from "../branch/branch-dialog";
 interface Propstype extends ReactProps {}
 const MoreInfomation = (props: Propstype) => {
   const reactions = [
@@ -23,12 +24,18 @@ const MoreInfomation = (props: Propstype) => {
       icon: MoneyBag,
     },
   ];
+  const [showBranchs, setShowBranchs] = useState(false);
   return (
     <>
       <div className={` main-container   ${props.className}`}>
         <div className="flex justify-between items-center py-2 border-b">
           <p>Có 23 chi nhánh</p>
-          <p className="text-primary cursor-pointer font-semibold">Xem chi nhánh khác</p>
+          <p
+            className="text-primary cursor-pointer font-semibold"
+            onClick={() => setShowBranchs(true)}
+          >
+            Xem chi nhánh khác
+          </p>
         </div>
         <div className="flex items-center justify-between  py-2  border-b">
           <p className="flex items-center">
@@ -51,6 +58,7 @@ const MoreInfomation = (props: Propstype) => {
         </div>
       </div>
       <EmotionsEvaluate reactions={reactions} />
+      <BranchDialog isOpen={showBranchs} onClose={() => setShowBranchs(false)} />
     </>
   );
 };

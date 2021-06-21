@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 import { LocationSchema } from "../addressStorehouse/types/location.type";
+import { OperatingTime, OperatingTimeSchema } from "./operatingTime.graphql";
 const Schema = mongoose.Schema;
 
 export type IShopBranch = BaseDocument & {
@@ -20,6 +21,8 @@ export type IShopBranch = BaseDocument & {
   activated?: boolean; // hiệu lực hay không hiệu lực
   location?: any; // Toạ độ
   coverImage?: string; // Hình ảnh cover
+
+  operatingTimes?: OperatingTime[]; // Thời gian hoạt động
 };
 
 const shopBranchSchema = new Schema(
@@ -39,6 +42,7 @@ const shopBranchSchema = new Schema(
     activated: { type: Boolean, default: false },
     location: { type: LocationSchema, required: true },
     coverImage: { type: String },
+    operatingTimes: { type: [OperatingTimeSchema], default: [] },
   },
   { timestamps: true }
 );

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
+import { IProductTopping, ProductToppingSchema } from "../productTopping/productTopping.model";
 const Schema = mongoose.Schema;
 export enum ProductType {
   RETAIL = "RETAIL", // Sản phẩm bán lẻ
@@ -44,7 +45,7 @@ export type IProduct = BaseDocument & {
 
   viewCount: number;
 
-  toppingIds: string[]; // Các topping cho sản phẩm
+  toppings: IProductTopping[]; // Các topping cho sản phẩm
 };
 
 const productSchema = new Schema(
@@ -86,7 +87,7 @@ const productSchema = new Schema(
     weight: { type: Number, default: 1 }, // cân nặng
 
     viewCount: { type: Number, default: 0 }, //số lượng người xem
-    toppingIds: { type: [{ type: Schema.Types.ObjectId, ref: "ProductTopping" }], default: [] },
+    toppings: { type: [ProductToppingSchema], default: [] },
   },
   { timestamps: true }
 );

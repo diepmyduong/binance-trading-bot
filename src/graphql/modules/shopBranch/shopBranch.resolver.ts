@@ -1,3 +1,4 @@
+import { times } from "async";
 import { set } from "lodash";
 import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
@@ -24,6 +25,11 @@ const Mutation = {
     context.auth([ROLES.MEMBER]);
     const { data } = args;
     data.memberId = context.id;
+    data.operatingTimes = times(7, (i) => ({
+      day: i + 1,
+      timeFrames: [["07:00", "21:00"]],
+      isOpen: true,
+    }));
     return await shopBranchService.create(data);
   },
   updateShopBranch: async (root: any, args: any, context: Context) => {

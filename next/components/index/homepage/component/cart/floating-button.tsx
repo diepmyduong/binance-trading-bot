@@ -9,7 +9,7 @@ interface Propstype extends ReactProps {
 
 const FloatingButton = (props: Propstype) => {
   return (
-    <div className="w-full fixed bottom-2 left-0 flex flex-col items-center">
+    <div className="w-full fixed bottom-2 left-0 flex flex-col items-center z-100">
       <div className="max-w-lg flex flex-col items-center w-full px-4">
         <div
           className={`z-50 flex text-sm btn-primary mx-4 w-full`}

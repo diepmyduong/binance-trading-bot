@@ -40,9 +40,9 @@ const MoreInfomation = (props: Propstype) => {
           <p className="text-primary cursor-pointer font-semibold">Xem thêm</p>
         </div>
         <div className="flex justify-between items-center  py-2">
-          <Rating numRated={344} rating={4.8} />
           <div className="flex items-center">
-            <i className="text-lg">
+            <Rating numRated={344} rating={4.8} />
+            <i className="text-lg ml-3">
               <HiShoppingCart />
             </i>
             <p className="text-gray-400"> (688+)</p>

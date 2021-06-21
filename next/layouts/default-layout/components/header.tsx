@@ -50,7 +50,7 @@ export function Header({ ...props }: HeaderPropsType) {
   const userRef = useRef<any>();
   return (
     <>
-      <header className={`fixed top-0 w-full z-200`}>
+      <header className={`fixed top-0 w-full z-100`}>
         <div className="w-full mx-auto h-14 flex justify-between items-center max-w-lg shadow bg-white px-4">
           <Link href="#">
             <img src={shop.shopLogo || ""} className="h-10 w-10 object-contain" />

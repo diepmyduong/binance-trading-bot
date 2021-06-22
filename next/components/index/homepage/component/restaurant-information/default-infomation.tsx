@@ -1,6 +1,6 @@
 import React from "react";
 import { Img } from "../../../../shared/utilities/img";
-import StatusTime from "../branch/status-time";
+import StatusTime from "../../../../shared/infomation/status-time";
 interface Propstype extends ReactProps {
   info: {
     name: string;

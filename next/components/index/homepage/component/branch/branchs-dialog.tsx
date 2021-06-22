@@ -1,7 +1,8 @@
 import React from "react";
+import { Dialog, DialogPropsType } from "../../../../shared/utilities/dialog/dialog";
 import Branch from "./branch";
-
-const Branchs = (props) => {
+interface Propstype extends DialogPropsType {}
+const BranchsDialog = (props: Propstype) => {
   const branchs = [
     {
       place: "Quận 1",
@@ -47,15 +48,17 @@ const Branchs = (props) => {
     },
   ];
   return (
-    <div
-      className="flex flex-col text-sm sm:text-base overscroll-y-auto"
-      style={{ maxHeight: `calc(100vh - 300px)` }}
-    >
-      {branchs.map((item, index) => (
-        <Branch branch={item} key={index} />
-      ))}
-    </div>
+    <Dialog isOpen={props.isOpen} onClose={props.onClose} width="180px" title="Chọn chi nhánh">
+      <div
+        className="flex flex-col text-sm sm:text-base overscroll-y-auto"
+        style={{ maxHeight: `calc(100vh - 300px)` }}
+      >
+        {branchs.map((item, index) => (
+          <Branch branch={item} key={index} />
+        ))}
+      </div>
+    </Dialog>
   );
 };
 
-export default Branchs;
+export default BranchsDialog;

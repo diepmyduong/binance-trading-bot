@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { FaPercent } from "react-icons/fa";
 import { HiShoppingCart, HiStar } from "react-icons/hi";
 import { Package, SmileIcon, MoneyBag } from "../../../../../public/assets/svg/svg";
-import Rating from "../../../../shared/utilities/infomation/rating";
+import Rating from "../../../../shared/infomation/rating";
 import EmotionsEvaluate from "./emotions-evaluate";
-import BranchDialog from "../branch/branch-dialog";
+import BranchsDialog from "../branch/branchs-dialog";
+import PromotionsDialog from "../promotion/promotions-dialog";
 interface Propstype extends ReactProps {}
 const MoreInfomation = (props: Propstype) => {
   const reactions = [
@@ -25,6 +26,7 @@ const MoreInfomation = (props: Propstype) => {
     },
   ];
   const [showBranchs, setShowBranchs] = useState(false);
+  const [showPromotions, setShowPromotions] = useState(false);
   return (
     <>
       <div className={` main-container   ${props.className}`}>
@@ -44,7 +46,12 @@ const MoreInfomation = (props: Propstype) => {
             </i>{" "}
             Giảm 40k cho đơn từ 150k
           </p>
-          <p className="text-primary cursor-pointer font-semibold">Xem thêm</p>
+          <p
+            className="text-primary cursor-pointer font-semibold"
+            onClick={() => setShowPromotions(true)}
+          >
+            Xem thêm
+          </p>
         </div>
         <div className="flex justify-between items-center  py-2">
           <div className="flex items-center">
@@ -58,7 +65,8 @@ const MoreInfomation = (props: Propstype) => {
         </div>
       </div>
       <EmotionsEvaluate reactions={reactions} />
-      <BranchDialog isOpen={showBranchs} onClose={() => setShowBranchs(false)} />
+      <BranchsDialog isOpen={showBranchs} onClose={() => setShowBranchs(false)} />
+      <PromotionsDialog isOpen={showPromotions} onClose={() => setShowPromotions(false)} />
     </>
   );
 };

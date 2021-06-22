@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Rating from "../../../../shared/utilities/infomation/rating";
+import Rating from "../../../../shared/infomation/rating";
 import { NumberPipe } from "../../../../../lib/pipes/number";
 import { Img } from "../../../../shared/utilities/img";
-import Price from "../../../../shared/utilities/infomation/price";
+import Price from "../../../../shared/infomation/price";
 import { useCartContext } from "../../../../../lib/providers/cart-provider";
 import { Form } from "../../../../shared/utilities/form/form";
 import { RestaurantDetail } from "../restaurant-detail/detail";

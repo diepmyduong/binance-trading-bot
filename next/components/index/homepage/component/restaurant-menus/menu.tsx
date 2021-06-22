@@ -6,6 +6,7 @@ import Price from "../../../../shared/utilities/infomation/price";
 import { useCartContext } from "../../../../../lib/providers/cart-provider";
 import { Form } from "../../../../shared/utilities/form/form";
 import { RestaurantDetail } from "../restaurant-detail/detail";
+import { useRouter } from "next/router";
 interface PropsType extends ReactProps {
   list: {
     name: string;
@@ -19,6 +20,8 @@ interface PropsType extends ReactProps {
 }
 const Menu = (props: PropsType) => {
   const { handleChange } = useCartContext();
+  const router = useRouter();
+  const query = router.query;
   const [openDialog, setOpenDialog] = useState(false);
   const [detailItem, setDetailItem] = useState<any>(null);
   return (
@@ -32,6 +35,7 @@ const Menu = (props: PropsType) => {
           onClick={() => {
             setOpenDialog(true);
             setDetailItem(item);
+            router.push({ query: { ...query, productId: item.name }, path: "/" });
           }}
         >
           <div className="flex-1">
@@ -43,7 +47,7 @@ const Menu = (props: PropsType) => {
           <Img src={item.img} className="w-24 h-24 rounded-sm" />
         </div>
       ))}
-      <Form
+      {/* <Form
         dialog
         isOpen={openDialog}
         mobileMode
@@ -51,7 +55,7 @@ const Menu = (props: PropsType) => {
         className="z-400 rounded w-full"
       >
         <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
-      </Form>
+      </Form> */}
     </div>
   );
 };

@@ -9,14 +9,15 @@ export default function Page(props) {
   return (
     <>
       <NextSeo title={`Trang chủ`} />
-      <Homepage />
+      <Homepage productId={props.productId} />
     </>
   );
 }
 
 Page.Layout = DefaultLayout;
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { code = "3MSHOP" } = context.query;
+  const { code = "3MSHOP", productId } = context.query;
+  console.log(productId);
   // if (!code) Redirect(context.res, "/404");
   const shop = await MemberModel.findOne({ code }, "shopName shopLogo");
   const { shopName, shopLogo } = shop;
@@ -25,6 +26,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     props: JSON.parse(
       JSON.stringify({
         code,
+        productId,
         shopName,
         shopLogo,
       })

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import Rating from "../../../../shared/utilities/infomation/rating";
+import Rating from "../../../../shared/infomation/rating";
 import { NumberPipe } from "../../../../../lib/pipes/number";
 import { Img } from "../../../../shared/utilities/img";
-import Price from "../../../../shared/utilities/infomation/price";
+import Price from "../../../../shared/infomation/price";
 import { useCartContext } from "../../../../../lib/providers/cart-provider";
 import { Form } from "../../../../shared/utilities/form/form";
 import { RestaurantDetail } from "../restaurant-detail/detail";
+import { useRouter } from "next/router";
 interface PropsType extends ReactProps {
   list: {
     name: string;
@@ -19,19 +20,22 @@ interface PropsType extends ReactProps {
 }
 const Menu = (props: PropsType) => {
   const { handleChange } = useCartContext();
+  const router = useRouter();
+  const query = router.query;
   const [openDialog, setOpenDialog] = useState(false);
   const [detailItem, setDetailItem] = useState<any>(null);
   return (
-    <div id={props.title} className="relative menu main-container ">
+    <div id={props.title} className="relative menu main-container border-b mt-4">
       <div className=" absolute -top-28 menu-container"></div>
       <p className="font-semibold text-primary">{props.title}</p>
       {props.list.map((item, index) => (
         <div
           key={index}
-          className="flex py-2 items-center"
+          className="flex items-center py-2 hover:bg-primary-light cursor-pointer border-t"
           onClick={() => {
             setOpenDialog(true);
             setDetailItem(item);
+            router.push({ query: { ...query, productId: item.name }, path: "/" });
           }}
         >
           <div className="flex-1">
@@ -43,7 +47,7 @@ const Menu = (props: PropsType) => {
           <Img src={item.img} className="w-24 h-24 rounded-sm" />
         </div>
       ))}
-      <Form
+      {/* <Form
         dialog
         isOpen={openDialog}
         mobileMode
@@ -51,7 +55,7 @@ const Menu = (props: PropsType) => {
         className="z-400 rounded w-full"
       >
         <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
-      </Form>
+      </Form> */}
     </div>
   );
 };

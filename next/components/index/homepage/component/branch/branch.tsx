@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "../../../../shared/utilities/form/button";
-import StatusTime from "./status-time";
+import StatusTime from "../../../../shared/infomation/status-time";
 interface Propstype extends ReactProps {
   branch: { place: string; address: string; isActive: boolean; openAt: string; closeAt: string };
 }

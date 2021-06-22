@@ -14,7 +14,6 @@ const schema = gql`
     createProduct(data: CreateProductInput!): Product
     updateProduct(id: ID!, data: UpdateProductInput!): Product
     deleteOneProduct(id: ID!): Product
-    deleteManyProduct(ids: [ID]): Int
     importProducts(file: Upload!): String
     increaseViewCount(productId: ID!): Product
   }
@@ -25,10 +24,10 @@ const schema = gql`
     code: String
     name: String!
     basePrice: Float!
+    categoryId: ID!
     subtitle: String
     intro: String
     image: String!
-    categoryId: ID
     allowSale: Boolean
     isCrossSale: Boolean 
     crossSaleInventory: Int

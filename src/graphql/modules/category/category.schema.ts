@@ -11,17 +11,28 @@ const schema = gql`
     createCategory(data: CreateCategoryInput!): Category
     updateCategory(id: ID!, data: UpdateCategoryInput!): Category
     deleteOneCategory(id: ID!): Category
-    deleteManyCategory(ids: [ID]): Int
   }
 
   input CreateCategoryInput {
+    "Tên danh mục"
     name: String!
+    "Mã danh mục"
     code: String
+    "Mã sản phẩm"
+    productIds: [ID]
+    "Độ ưu tiên"
+    priority: Int
   }
 
   input UpdateCategoryInput {
+    "Tên danh mục"
     name: String
+    "Mã danh mục"
     code: String
+    "Mã sản phẩm"
+    productIds: [ID]
+    "Độ ưu tiên"
+    priority: Int
   }
 
   type Category {
@@ -29,14 +40,18 @@ const schema = gql`
     createdAt: DateTime
     updatedAt: DateTime
 
+    "Mã thành viên quản lý danh mục"
+    memberId: ID
     "Tên danh mục"
     name: String
     "Mã danh mục"
     code: String
     "Danh mục sản phẩm chính"
     isPrimary: Boolean
-    "Mã thành viên quản lý danh mục"
-    memberId: ID
+    "Mã sản phẩm"
+    productIds: [ID]
+    "Độ ưu tiên"
+    priority: Int
   }
 
   type CategoryPageData {

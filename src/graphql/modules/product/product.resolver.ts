@@ -5,7 +5,7 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
-import { CategoryLoader } from "../category/category.model";
+import { CategoryLoader, CategoryModel } from "../category/category.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { CollaboratorProductModel } from "../collaboratorProduct/collaboratorProduct.model";
 import { CrossSaleModel } from "../crossSale/crossSale.model";
@@ -51,73 +51,57 @@ const Query = {
 
 const Mutation = {
   createProduct: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+    AuthHelper.acceptRoles(context, [ROLES.MEMBER]);
     let data: IProduct = args.data;
-
+    data.isCrossSale = false;
+    data.isPrimary = false;
+    data.memberId = context.sellerId;
     data.code = data.code || (await ProductHelper.generateCode());
-
-    if (data.basePrice <= 0) ErrorHelper.requestDataInvalid("giá bán");
-
-    if (context.isMember()) {
-      set(data, "isPrimary", false);
-      set(data, "memberId", context.id);
-    } else {
-      set(data, "isPrimary", true);
-    }
-
-    data.type = data.type || ProductType.RETAIL;
-
-    const product = new ProductModel(data);
-    return await product.save();
+    data.type = ProductType.RETAIL;
+    const product = await ProductModel.create(data);
+    await CategoryModel.updateOne(
+      { _id: product.categoryId },
+      { $addToSet: { productIds: product._id } }
+    );
   },
 
   updateProduct: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+    AuthHelper.acceptRoles(context, [ROLES.MEMBER]);
     const { id, data } = args;
-    if (context.isMember()) {
-      const product = await ProductModel.findById(id);
-      if (product.memberId.toString() != context.id) {
-        throw ErrorHelper.permissionDeny();
-      }
-      resolveArgs(data);
-      // bỏ thuộc tính isPrimary , lấy các thuộc tính còn lại
-      return product.updateOne({ $set: data });
-    }
-    return await productService.updateOne(id, data).then(async (res: IProduct) => {
-      ProductLoader.clear(res.id);
-      await CrossSaleModel.updateMany(
-        { productId: res._id },
-        { $set: { productName: res.name, allowSale: res.allowSale } }
+    const product = await protectDoc(id, context);
+    const res = (await productService.updateOne(id, data)) as IProduct;
+    ProductLoader.clear(res.id);
+    await CrossSaleModel.updateMany(
+      { productId: res._id },
+      { $set: { productName: res.name, allowSale: res.allowSale } }
+    );
+    if (res.categoryId.toString() != product.categoryId.toString()) {
+      await CategoryModel.updateOne(
+        { _id: product.categoryId },
+        { $pull: { productIds: product._id } }
       );
-      return res;
-    });
+      await CategoryModel.updateOne(
+        { _id: res.categoryId },
+        { $addToSet: { productIds: product._id } }
+      );
+    }
+    return res;
   },
 
   deleteOneProduct: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
+    AuthHelper.acceptRoles(context, [ROLES.MEMBER]);
     const { id } = args;
-    const { tokenData } = context;
-
-    //
-    if (context.isMember()) {
-      const product = await ProductModel.findById(id);
-      if (product.memberId.toString() != tokenData._id) {
-        throw ErrorHelper.permissionDeny();
-      }
-    }
+    const product = await protectDoc(id, context);
     const orderItemCount = await OrderItemModel.count({ productId: id });
     if (orderItemCount > 0) throw Error("Không thể xoá. Sản phẩm đã có đơn hàng");
     return await productService.deleteOne(id).then(async (res: IProduct) => {
       await CrossSaleModel.remove({ productId: res._id }).exec();
+      await CategoryModel.updateOne(
+        { _id: res.categoryId },
+        { $pull: { productIds: product._id } }
+      );
       return res;
     });
-  },
-
-  deleteManyProduct: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, [ROLES.ADMIN]);
-    const { ids } = args;
-    let result = await productService.deleteMany(ids);
-    return result;
   },
 };
 
@@ -151,3 +135,8 @@ export default {
   Mutation,
   Product,
 };
+async function protectDoc(id: any, context: Context) {
+  const product = await ProductModel.findById(id);
+  if (product.memberId.toString() != context.sellerId) throw ErrorHelper.permissionDeny();
+  return product;
+}

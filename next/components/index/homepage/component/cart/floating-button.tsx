@@ -9,17 +9,17 @@ interface Propstype extends ReactProps {
 
 const FloatingButton = (props: Propstype) => {
   return (
-    <div className="w-full fixed bottom-2 left-0 flex flex-col items-center z-100">
+    <div className="w-full fixed bottom-5 left-0 flex flex-col items-center z-100">
       <div className="max-w-lg flex flex-col items-center w-full px-4">
-        <div
-          className={`z-50 flex text-sm btn-primary mx-4 w-full`}
+        <button
+          className={`z-50 flex text-sm btn-primary mx-4 w-full max-w-xs`}
           onClick={() => props.onClick()}
         >
-          <p className="flex-1">Giỏ hàng</p>
-          <p className="flex-1 text-right whitespace-nowrap pl-4">
+          <span className="flex-1">Giỏ hàng</span>
+          <span className="flex-1 text-right whitespace-nowrap pl-4">
             {props.totalFood} món - {NumberPipe(props.totalMoney, true)}
-          </p>
-        </div>
+          </span>
+        </button>
       </div>
     </div>
   );

@@ -92,7 +92,7 @@ export function Dialog({
 
   let el = (
     <div
-      className={`dialog-wrapper ${wrapperClass} ${mobileMode && isMobile ? "mobile" : " mobile "}`}
+      className={`dialog-wrapper ${wrapperClass} ${!mobileMode && !isMobile ? "" : "mobile"}`}
       style={{ ...style }}
       onMouseDown={(e) => {
         e.stopPropagation();

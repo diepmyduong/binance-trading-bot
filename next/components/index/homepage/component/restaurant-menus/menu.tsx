@@ -22,13 +22,13 @@ const Menu = (props: PropsType) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [detailItem, setDetailItem] = useState<any>(null);
   return (
-    <div id={props.title} className="relative menu main-container ">
+    <div id={props.title} className="relative menu main-container border-b mt-4">
       <div className=" absolute -top-28 menu-container"></div>
       <p className="font-semibold text-primary">{props.title}</p>
       {props.list.map((item, index) => (
         <div
           key={index}
-          className="flex py-2 items-center"
+          className="flex items-center py-2 hover:bg-primary-light cursor-pointer border-t"
           onClick={() => {
             setOpenDialog(true);
             setDetailItem(item);

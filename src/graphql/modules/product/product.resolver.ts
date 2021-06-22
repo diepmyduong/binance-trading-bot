@@ -63,6 +63,7 @@ const Mutation = {
       { _id: product.categoryId },
       { $addToSet: { productIds: product._id } }
     );
+    return product;
   },
 
   updateProduct: async (root: any, args: any, context: Context) => {

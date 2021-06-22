@@ -3,11 +3,19 @@ import { Shop, ShopService } from "../repo/shop.repo";
 import { useRouter } from "next/router";
 
 export const ShopContext = createContext<
-  Partial<{ shop: Shop; customer: any; cunstomerLogin: Function; customerLogout: Function }>
+  Partial<{
+    shop: Shop;
+    customer: any;
+    productIdSelected: any;
+    setProductIdSelected: any;
+    cunstomerLogin: Function;
+    customerLogout: Function;
+  }>
 >({});
 export function ShopProvider(props) {
   const router = useRouter();
   const [shop, setShop] = useState<Shop>();
+  const [productIdSelected, setProductIdSelected] = useState<any>(null);
   // const [homeShop, setHomeShop] = useState<string>();
   const [customer, setCustomer] = useState<any>();
   async function getShop() {
@@ -42,7 +50,16 @@ export function ShopProvider(props) {
     }
   }, []);
   return (
-    <ShopContext.Provider value={{ shop, customer, cunstomerLogin, customerLogout }}>
+    <ShopContext.Provider
+      value={{
+        shop,
+        customer,
+        cunstomerLogin,
+        customerLogout,
+        productIdSelected,
+        setProductIdSelected,
+      }}
+    >
       {props.children}
     </ShopContext.Provider>
   );

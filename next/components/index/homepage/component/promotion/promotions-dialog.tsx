@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogPropsType } from "../../../../shared/utilities/dialog/dialog";
 import { Input } from "../../../../shared/utilities/form/input";
 import { Button } from "../../../../shared/utilities/form/button";
 import Promotion from "./promotion";
-import { TabGroup } from "../../../../shared/utilities/tab/tab-group";
+import { TabButtonGroup } from "../../../../shared/utilities/tab-button-group/tab-button-group";
+import SwitchTabs from "../../../../shared/utilities/tab/switch-tabs";
+import useScreen from "../../../../../lib/hooks/useScreen";
 interface Propstype extends DialogPropsType {}
 const PromotionsDialog = (props: Propstype) => {
   const promotions = [
@@ -38,29 +40,42 @@ const PromotionsDialog = (props: Propstype) => {
       dated: "6/8/2021",
     },
   ];
+  const [value, setValue] = useState(0);
+  const screenSm = useScreen("sm");
   return (
     <Dialog isOpen={props.isOpen} onClose={props.onClose} title="Mã khuyến mãi">
-      <div className="flex flex-col text-sm sm:text-base overscroll-y-auto main-container">
-        <div className="flex my-4 relative">
+      <SwitchTabs
+        className="p-4"
+        onChange={(val) => setValue(val)}
+        value={value}
+        options={
+          (screenSm && [
+            { label: "Khuyến mãi của quán", value: 0 },
+            { label: "Khuyến mãi của tôi", value: 1 },
+          ]) || [
+            { label: "KM của quán", value: 0 },
+            { label: "KM của tôi", value: 1 },
+          ]
+        }
+      />
+      <div className="flex flex-col text-sm sm:text-base overscroll-y-auto px-4 bg-primary-light h-full min-h-xs">
+        <div className="flex my-4 border-group rounded-md h-12">
           <Input placeholder="Nhập mã giảm giá ở đây" />{" "}
-          <Button className="absolute right-0" primary text="Áp dụng" />
+          <Button className="h-12 whitespace-nowrap" primary text="Áp dụng" />
         </div>
-        <TabGroup>
-          <TabGroup.Tab label="Khuyến mãi của quán">
-            <div className="my-4">
-              {promotions.map((item, index) => (
-                <Promotion key={index} promotion={item} />
-              ))}
-            </div>
-          </TabGroup.Tab>
-          <TabGroup.Tab label="Khuyến mãi của tôi">
-            <div className="my-4">
-              {promotions.map((item, index) => (
-                <Promotion key={index} promotion={item} />
-              ))}
-            </div>
-          </TabGroup.Tab>
-        </TabGroup>
+        {(value === 0 && (
+          <div className="mb-4">
+            {promotions.map((item, index) => (
+              <Promotion key={index} promotion={item} />
+            ))}
+          </div>
+        )) || (
+          <div className="mb-4">
+            {promotions.map((item, index) => (
+              <Promotion key={index} promotion={item} />
+            ))}
+          </div>
+        )}
       </div>
     </Dialog>
   );

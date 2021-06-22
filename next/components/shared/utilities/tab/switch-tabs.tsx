@@ -37,7 +37,7 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
   }
   const debounceValue = useDebounce(props.value, 200);
   useEffect(() => {
-    if (!clickToView) {
+    if (!clickToView && chevron) {
       setValue(debounceValue);
       let selected = document.getElementsByClassName("tab")[debounceValue];
       selected.scrollIntoView({
@@ -120,7 +120,7 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
   const { isMobile } = useDevice();
   return (
     <div className={`relative group w-full ${props.className || ""}`}>
-      {!isMobile && (
+      {!isMobile && chevron && (
         <>
           {!isLastLeft && (
             <button
@@ -147,32 +147,34 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
         </>
       )}
       <div
-        className={`flex relative my-2 border-b  ${
+        className={`flex relative my-2 border-b   ${
           (isMobile && " overflow-x-scroll") || "overflow-hidden"
-        }`}
+        } ${!native && " border-group rounded-md "}`}
       >
         {props.options.map(
-          (item) =>
+          (item, index) =>
             (!native && (
-              <Button
+              <button
                 className={`flex-1 p-2 tab whitespace-nowrap ${
-                  !native && item.value === value && "btn-info"
-                } ${(item.value !== value && "text-gray-400") || "text-primary"}`}
-                onClick={() => handleChangeTab(item.value)}
-                key={item.value}
-                text={item.label}
-                icon={item.icon}
-              />
+                  item.value === props.value ? "btn-primary" : "btn-outline"
+                }`}
+                onClick={() => props.onChange(item.value)}
+                key={index}
+              >
+                {item.label}
+              </button>
             )) || (
-              <p
-                className={`hover:text-gray-800 hover:bg-primary-light flex-1 px-2 py-3 tab whitespace-nowrap font-bold cursor-pointer transition-all duration-300 ${
+              <a
+                className={`${
+                  chevron && "tab "
+                } hover:text-gray-800 hover:bg-primary-light flex-1 px-2 py-3 whitespace-nowrap font-bold cursor-pointer transition-all duration-300 ${
                   (item.value !== value && "text-gray-400") || "text-gray-800"
                 }`}
                 key={item.value}
                 onClick={() => handleChangeTab(item.value)}
               >
                 {item.label}
-              </p>
+              </a>
             )
         )}
         {native && (

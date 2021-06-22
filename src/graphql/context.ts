@@ -60,7 +60,16 @@ export class Context {
     return get(this.tokenData, "_id");
   }
   get sellerId() {
-    return get(this.tokenData, "sellerId");
+    switch (this.tokenData.role) {
+      case ROLES.STAFF:
+      case ROLES.ANONYMOUSE:
+      case ROLES.CUSTOMER:
+        return get(this.tokenData, "memberId");
+      case ROLES.MEMBER:
+        return this.id;
+      default:
+        return get(this.tokenData, "sellerId");
+    }
   }
   get pageId() {
     return get(this.tokenData, "pageId");
@@ -84,7 +93,6 @@ export class Context {
       }
 
       if (token === "null") token = null;
-
       if (token) {
         const decodedToken: any = TokenHelper.decodeToken(token);
         this.isAuth = true;

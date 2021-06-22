@@ -1,4 +1,5 @@
 import { ErrorHelper } from "../../../../base/error";
+import { ROLES } from "../../../../constants/role.const";
 import { firebaseHelper, UtilsHelper } from "../../../../helpers";
 import { ChatBotHelper } from "../../../../helpers/chatbot.helper";
 import { Context } from "../../../context";
@@ -8,6 +9,7 @@ import { CustomerModel } from "../customer.model";
 
 const Mutation = {
   loginCustomerByPhone: async (root: any, args: any, context: Context) => {
+    context.auth([ROLES.ANONYMOUSE]);
     let { phone, psid, pageId } = args;
 
     if (!phone) throw ErrorHelper.error("Chưa nhập số điện thoại");

@@ -27,7 +27,7 @@ export default {
         return {
           customer,
           token: TokenHelper.generateToken({
-            role: ROLES.ANONYMOUS,
+            role: ROLES.CUSTOMER,
             _id: customer._id,
             memberId: context.sellerId,
             username: customer.name,

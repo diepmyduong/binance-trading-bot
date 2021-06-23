@@ -1,5 +1,4 @@
-import { times } from "async";
-import { set } from "lodash";
+import { set, times } from "lodash";
 import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";

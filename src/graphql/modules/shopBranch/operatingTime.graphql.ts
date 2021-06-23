@@ -14,7 +14,7 @@ export type OperatingTime = {
 
 export const OperatingTimeSchema = new Schema({
   day: { type: Number, min: 1, max: 7, required: true },
-  timeFrames: { type: [{ type: [String] }] },
+  timeFrames: { type: [Schema.Types.Mixed] },
   status: {
     type: String,
     enum: Object.values(OperatingTimeStatus),
@@ -30,7 +30,7 @@ export default {
       "Ngày trong tuần"
       day: Int
       "Khung thời gian"
-      timeFrames: [[String]]
+      timeFrames: Mixed
       "Trạng thái hoạt động ${Object.values(OperatingTimeStatus)}"
       status: String
     }

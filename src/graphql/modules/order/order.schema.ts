@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { OrderStatus, PaymentMethod, ShipMethod } from "./order.model";
+import { OrderStatus, PaymentMethod, PickupMethod, ShipMethod } from "./order.model";
 
 const schema = gql`
   extend type Query {
@@ -166,6 +166,13 @@ const schema = gql`
     
     orderType: String
     orderTypeText: String
+
+    "Phương thức nhận hàng ${Object.values(PickupMethod)}"
+    pickupMethod: String
+    "Thời gian nhận hàng"
+    pickupTime: DateTime
+    "Mã chi nhánh"
+    shopBranchId: String
   }
 
 

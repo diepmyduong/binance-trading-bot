@@ -84,25 +84,7 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
         </div>
         <div className="">
           {data.sideDishes.map((item) => {
-            return (
-              <div className="flex items-center justify-between px-4 py-1 border-b border-gray-300">
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id={item.dish}
-                    name="sideDishes"
-                    className="inline form-checkbox"
-                  />
-                  <label
-                    htmlFor={item.dish}
-                    className="inline font-light text-sm ml-2 cursor-pointer"
-                  >
-                    {item.dish}
-                  </label>
-                </div>
-                <div className="text-sm text-gray-500">{NumberPipe(item.price)} đ</div>
-              </div>
-            );
+            return <OneDish item={item} />;
           })}
         </div>
         <div className="bg-primary-light px-4 py-2">
@@ -113,25 +95,7 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
         </div>
         <div className="">
           {data.obligatoryDishes.map((item) => {
-            return (
-              <div className="flex items-center justify-between px-4 py-1 border-b border-gray-300">
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id={item.dish}
-                    name="obligatoryDishes"
-                    className="inline form-checkbox"
-                  />
-                  <label
-                    htmlFor={item.dish}
-                    className="inline font-light text-sm ml-2 cursor-pointer"
-                  >
-                    {item.dish}
-                  </label>
-                </div>
-                <div className="text-sm text-gray-400">{NumberPipe(item.price)} đ</div>
-              </div>
-            );
+            return <OneDish item={item} />;
           })}
         </div>
       </div>
@@ -165,6 +129,25 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
     </div>
   );
 }
+
+const OneDish = ({ item }) => {
+  return (
+    <div className="flex items-center justify-between px-4 py-1 border-b border-gray-300">
+      <div className="flex items-center w-full">
+        <input
+          type="radio"
+          id={item.dish}
+          name="obligatoryDishes"
+          className="inline form-checkbox"
+        />
+        <label htmlFor={item.dish} className="inline font-light text-sm ml-2 cursor-pointer w-full">
+          {item.dish}
+        </label>
+      </div>
+      <div className="text-sm text-gray-400 min-w-max">{NumberPipe(item.price)} đ</div>
+    </div>
+  );
+};
 const data = {
   sideDishes: [
     {

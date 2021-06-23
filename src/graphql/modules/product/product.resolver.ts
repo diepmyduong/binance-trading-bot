@@ -17,28 +17,13 @@ import { productService } from "./product.service";
 
 const Query = {
   getAllProduct: async (root: any, args: any, context: Context) => {
-    // AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
-    // let seller = null;
-    const { q } = args;
-    if (context.isMember()) {
-      // neu ko co filter crossale thi lay ra san pham cua shop do
-      if (isNull(q.filter.isCrossSale) || isUndefined(q.filter.isCrossSale)) {
-        set(args, "q.filter.memberId", context.id);
-      } else {
-        if (q.filter.isCrossSale === false) {
-          set(args, "q.filter.memberId", context.id);
-        } else {
-          // neu co filter crossale thi lay ra san pham ko phai cua shop do
-          set(args, "q.filter.memberId", { $ne: context.id });
-        }
-      }
-      // console.log('q.filter', q.filter);
-    } else if (context.isCustomer() || context.isMessenger() || !context.isAuth) {
-      set(args, "q.filter.allowSale", true);
-      set(args, "q.filter.$or", [{ isPrimary: true }, { isCrossSale: true }]);
+    context.auth(ROLES.ANONYMOUS_CUSTOMER_MEMBER_EDITOR_ADMIN);
+    if (context.sellerId) {
+      set(args, "q.filter.memberId", context.sellerId);
     }
-    // console.log('role', get(context.tokenData, "role"))
-    // console.log('q', q);
+    if (context.isAnonymous() || context.isCustomer()) {
+      set(args, "q.filter.allowSale", true);
+    }
     return await productService.fetch(args.q);
   },
 

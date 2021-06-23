@@ -56,13 +56,16 @@ export class Context {
   isStaff() {
     return get(this.tokenData, "role") == ROLES.STAFF;
   }
+  isAnonymous() {
+    return get(this.tokenData, "role") == ROLES.ANONYMOUS;
+  }
   get id() {
     return get(this.tokenData, "_id");
   }
   get sellerId() {
     switch (this.tokenData.role) {
       case ROLES.STAFF:
-      case ROLES.ANONYMOUSE:
+      case ROLES.ANONYMOUS:
       case ROLES.CUSTOMER:
         return get(this.tokenData, "memberId");
       case ROLES.MEMBER:

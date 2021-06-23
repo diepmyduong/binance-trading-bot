@@ -2,7 +2,9 @@ import { set } from "lodash";
 import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
+import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
+import { ProductLoader } from "../product/product.model";
 import { CategoryHelper } from "./category.helper";
 import { CategoryModel } from "./category.model";
 import { categoryService } from "./category.service";
@@ -46,7 +48,9 @@ const Mutation = {
   },
 };
 
-const Category = {};
+const Category = {
+  products: GraphQLHelper.loadManyById(ProductLoader, "productIds"),
+};
 
 export default {
   Query,

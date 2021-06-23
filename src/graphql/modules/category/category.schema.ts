@@ -52,6 +52,8 @@ const schema = gql`
     productIds: [ID]
     "Độ ưu tiên"
     priority: Int
+
+    products: [Product]
   }
 
   type CategoryPageData {

@@ -9,8 +9,9 @@ import { shopBranchService } from "./shopBranch.service";
 
 const Query = {
   getAllShopBranch: async (root: any, args: any, context: Context) => {
-    if (context.isMember()) {
-      set(args, "q.filter.memberId", context.id);
+    context.auth(ROLES.ANONYMOUS_CUSTOMER_MEMBER_STAFF);
+    if (context.sellerId) {
+      set(args, "q.filter.memberId", context.sellerId);
     }
     return shopBranchService.fetch(args.q);
   },

@@ -13,6 +13,7 @@ const Menus = (props) => {
           name: "Combo Phúc",
           price: 119000,
           sold: 300,
+          code: "BNJ432",
           des: "Cơm + trứng + canh",
         },
         {
@@ -20,6 +21,7 @@ const Menus = (props) => {
             "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
           name: "Combo Lộc",
           price: 119000,
+          code: "BNJ432",
           sold: 300,
           des: "Cơm + trứng + canh",
         },
@@ -28,6 +30,7 @@ const Menus = (props) => {
             "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
           name: "Combo Thọ",
           price: 119000,
+          code: "BNJ432",
           sold: 300,
           des: "Cơm + trứng + canh",
         },
@@ -36,6 +39,7 @@ const Menus = (props) => {
             "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
           name: "Combo Phúc Lộc Thọ",
           price: 119000,
+          code: "BNJ432",
           sold: 300,
           des: "Cơm + trứng + canh",
         },
@@ -47,6 +51,7 @@ const Menus = (props) => {
         {
           name: "Cơm Sườn",
           sold: 300,
+          code: "BNJ432",
           des: "Cơm + trứng + canh",
           price: 49000,
           img:
@@ -55,6 +60,7 @@ const Menus = (props) => {
         {
           name: "Cơm Ba Rọi",
           sold: 300,
+          code: "BNJ432",
           des: "Cơm + trứng + canh",
           price: 49000,
           img:
@@ -63,6 +69,7 @@ const Menus = (props) => {
         {
           name: "Cơm Đùi Gà Nướng Ngũ Vị",
           sold: 300,
+          code: "BNJ432",
           des: "Cơm + trứng + canh",
           price: 49000,
           img:
@@ -76,6 +83,7 @@ const Menus = (props) => {
         {
           name: "Bì Thịt",
           sold: 300,
+          code: "BNJ432",
           des: "",
           price: 10000,
           img:
@@ -84,6 +92,7 @@ const Menus = (props) => {
         {
           name: "Chả Hấp",
           sold: 300,
+          code: "BNJ432",
           des: "",
           price: 5000,
           img:
@@ -92,6 +101,7 @@ const Menus = (props) => {
         {
           name: "Cơm Thêm",
           sold: 300,
+          code: "BNJ432",
           des: "",
           price: 49000,
           img:
@@ -100,6 +110,7 @@ const Menus = (props) => {
         {
           name: "Ốp La",
           sold: 300,
+          code: "BNJ432",
           des: "",
           price: 10000,
           img:
@@ -113,6 +124,7 @@ const Menus = (props) => {
         {
           name: "Canh rong biển thịt bầm",
           sold: 300,
+          code: "BNJ432",
           des: "",
           price: 15000,
           img:
@@ -126,6 +138,7 @@ const Menus = (props) => {
         {
           name: "Tắt xí muội",
           sold: 300,
+          code: "BNJ432",
           des: "",
           price: 15000,
           img:
@@ -134,6 +147,7 @@ const Menus = (props) => {
         {
           name: "Sâm bí đao hạt chia",
           sold: 300,
+          code: "BNJ432",
           des: "",
           price: 15000,
           img:
@@ -142,6 +156,7 @@ const Menus = (props) => {
         {
           name: "Coca-cola Tươi",
           sold: 300,
+          code: "BNJ432",
           des: "",
           price: 15000,
           img:
@@ -155,6 +170,7 @@ const Menus = (props) => {
         {
           name: "Cơm Cá kho tớp mỡ",
           sold: 300,
+          code: "BNJ432",
           des: "",
           price: 15000,
           img:
@@ -163,6 +179,7 @@ const Menus = (props) => {
         {
           name: "Cơm chả cá sốt mắm tỏi",
           sold: 300,
+          code: "BNJ432",
           des: "",
           price: 15000,
           img:
@@ -171,6 +188,7 @@ const Menus = (props) => {
         {
           name: "Chả cá kho gừng",
           sold: 300,
+          code: "BNJ432",
           des: "",
           price: 15000,
           img:
@@ -233,11 +251,11 @@ const Menus = (props) => {
   };
 
   return (
-    <div className="relative">
+    <>
       <SwitchTabs
         chevron
         value={isViewing}
-        className=" sticky top-10 bg-white z-20 pt-3"
+        className=" sticky top-14 bg-white z-20 shadow-sm"
         native
         options={[
           ...food.map((item, index) => {
@@ -246,10 +264,12 @@ const Menus = (props) => {
         ]}
         onChange={(val) => handleChange(val)}
       />
-      {food.map((item, index) => (
-        <Menu list={item.list} title={item.title} key={index} />
-      ))}
-    </div>
+      <div className="flex flex-col gap-2 bg-gray-200">
+        {food.map((item, index) => (
+          <Menu list={item.list} title={item.title} key={index} />
+        ))}
+      </div>
+    </>
   );
 };
 

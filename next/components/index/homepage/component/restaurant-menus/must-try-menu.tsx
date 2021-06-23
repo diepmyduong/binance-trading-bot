@@ -13,24 +13,28 @@ const MustTryMenu = (props: Propstype) => {
       img:
         "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
       name: "Combo Phúc",
+      code: "BNJ432",
       price: 119000,
     },
     {
       img:
         "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
       name: "Combo Lộc",
+      code: "BNJ432",
       price: 119000,
     },
     {
       img:
         "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
       name: "Combo Thọ",
+      code: "BNJ432",
       price: 119000,
     },
     {
       img:
         "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
       name: "Combo Phúc Lộc Thọ",
+      code: "BNJ432",
       price: 119000,
     },
   ];
@@ -40,17 +44,17 @@ const MustTryMenu = (props: Propstype) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [detailItem, setDetailItem] = useState<any>(null);
   return (
-    <div className="main-container">
-      <h3 className="font-semibold pb-2">Nhất định phải thử</h3>
-      <div className="grid grid-cols-2">
+    <div className="border-t-8 border-b-8 py-2">
+      <h3 className="font-semibold pb-2 px-4 text-lg text-primary">Nhất định phải thử</h3>
+      <div className="grid grid-cols-2 gap-2 px-4">
         {tryFood.map((item, index) => (
           <div
-            className="col-span-1"
+            className="col-span-1 hover:bg-primary-light transition-all duration-300 cursor-pointer"
             key={index}
             onClick={() => {
               setDetailItem(item);
               setOpenDialog(true);
-              router.push({ query: { ...query, productId: item.name }, path: "/" });
+              router.replace({ query: { ...query, productId: item.code }, path: "/" });
             }}
           >
             <Img src={item.img} ratio169 className="min-w-4xs rounded-sm" />

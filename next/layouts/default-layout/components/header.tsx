@@ -31,11 +31,11 @@ export function Header({ ...props }: HeaderPropsType) {
     //   icon: <HiOutlineUserCircle />,
     //   onClick: () => router.push("/"),
     // },
-    {
-      label: "Lịch sử đặt hàng",
-      icon: <FaHistory />,
-      onClick: () => router.push("#"),
-    },
+    // {
+    //   label: "Lịch sử đặt hàng",
+    //   icon: <FaHistory />,
+    //   onClick: () => router.push("#"),
+    // },
     {
       label: "Khuyến mãi",
       icon: <FaPercent />,
@@ -53,18 +53,25 @@ export function Header({ ...props }: HeaderPropsType) {
       <header className={`fixed top-0 w-full z-100`}>
         <div className="w-full mx-auto h-14 flex justify-between items-center max-w-lg shadow bg-white px-4">
           <Link href="#">
-            <img src={shop.shopLogo || ""} className="h-10 w-10 object-contain" />
+            <div className="flex items-center">
+              <img src={shop.shopLogo || ""} className="h-10 w-10 object-contain" />
+              <p className="text-ellipsis-2 font-semibold px-2 text-sm sm:text-base">
+                {shop.shopName}
+              </p>
+            </div>
           </Link>
           {!customer && <Button text="Đăng nhâp" primary small onClick={() => setIsOpen(true)} />}
           <button
-            className={`btn flex items-center px-2 ${!customer ? "hidden" : ""}`}
+            className={`btn text-primary bg-primary-light rounded-full flex items-center px-2 ${
+              !customer ? "hidden" : ""
+            }`}
             ref={userRef}
           >
             {/* <Img avatar src="/assets/default/avatar.png" className="w-10" /> */}
-            <i className="text-40 text-gray-400">
-              <HiOutlineUserCircle />
+            <i className="text-20">
+              <FaUserAlt />
             </i>
-            <div className="w-full font-semibold text-center">{customer}</div>
+            {customer}
           </button>
           <Dropdown reference={userRef}>
             {menus.map((item, index) => {

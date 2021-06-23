@@ -12,6 +12,7 @@ interface PropsType extends ReactProps {
     name: string;
     sold: number | string;
     des: string;
+    code: string;
     price: number;
     img: string;
     rating?: number | string;
@@ -25,17 +26,17 @@ const Menu = (props: PropsType) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [detailItem, setDetailItem] = useState<any>(null);
   return (
-    <div id={props.title} className="relative menu main-container border-b mt-4">
+    <div id={props.title} className="relative menu bg-white">
       <div className=" absolute -top-28 menu-container"></div>
-      <p className="font-semibold text-primary">{props.title}</p>
+      <p className="font-semibold text-primary py-2 pl-4 text-lg">{props.title}</p>
       {props.list.map((item, index) => (
         <div
           key={index}
-          className="flex items-center py-2 hover:bg-primary-light cursor-pointer border-t"
+          className="flex justify-evenly items-center py-2 px-4 hover:bg-primary-light cursor-pointer border-b transition-all duration-300"
           onClick={() => {
             setOpenDialog(true);
             setDetailItem(item);
-            router.push({ query: { ...query, productId: item.name }, path: "/" });
+            router.replace({ query: { ...query, productId: item.code }, path: "/" });
           }}
         >
           <div className="flex-1">
@@ -47,7 +48,7 @@ const Menu = (props: PropsType) => {
           <Img src={item.img} className="w-24 h-24 rounded-sm" />
         </div>
       ))}
-      {/* <Form
+      <Form
         dialog
         isOpen={openDialog}
         mobileMode
@@ -55,7 +56,7 @@ const Menu = (props: PropsType) => {
         className="z-400 rounded w-full"
       >
         <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
-      </Form> */}
+      </Form>
     </div>
   );
 };

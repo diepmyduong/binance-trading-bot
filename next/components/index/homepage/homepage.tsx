@@ -8,6 +8,7 @@ import { useShopContext } from "../../../lib/providers/shop-provider";
 import { Spinner } from "../../shared/utilities/spinner";
 import { Form } from "../../shared/utilities/form/form";
 import { RestaurantDetail } from "./component/restaurant-detail/detail";
+import { Footer } from "../../../layouts/default-layout/components/footer";
 
 interface PropsType extends ReactProps {
   productId?: string;
@@ -34,41 +35,44 @@ export function Homepage({ productId }: PropsType) {
     }
   }, [totalFood]);
   return (
-    <div className="z-0 bg-white text-gray-800">
-      {shop &&
-        ((
-          <>
-            <RestaurantInformation shop={shop} />
-            <RestaurantFood />
-          </>
-        ) || <Spinner />)}
-      {cart && cart.length > 0 && (
-        <FloatingButton
-          totalFood={totalFood}
-          totalMoney={totalMoney}
-          onClick={() => setShowDialogCart(true)}
+    <>
+      <div className={`z-0 relative bg-white text-gray-800`}>
+        {shop &&
+          ((
+            <>
+              <RestaurantInformation shop={shop} />
+              <RestaurantFood />
+            </>
+          ) || <Spinner />)}
+        {cart && cart.length > 0 && (
+          <FloatingButton
+            totalFood={totalFood}
+            totalMoney={totalMoney}
+            onClick={() => setShowDialogCart(true)}
+          />
+        )}
+        <CartDialog
+          isOpen={showDialogCart}
+          onClose={() => setShowDialogCart(false)}
+          cart={cart}
+          mobileMode
+          onChange={handleChange}
+          money={totalMoney}
         />
-      )}
-      <CartDialog
-        isOpen={showDialogCart}
-        onClose={() => setShowDialogCart(false)}
-        cart={cart}
-        onChange={handleChange}
-        money={totalMoney}
-      />
-      <Form
-        dialog
-        isOpen={openDialog}
-        mobileMode
-        onClose={() => {
-          setProductIdCode(null);
-          setOpenDialog(false);
-        }}
-        className="z-400 rounded w-full"
-      >
-        fsd
-        {/* <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail> */}
-      </Form>
-    </div>
+        {/* <Form
+          dialog
+          isOpen={openDialog}
+          mobileMode
+          onClose={() => {
+            setProductIdCode(null);
+            setOpenDialog(false);
+          }}
+          className="z-400 rounded w-full"
+        >
+          <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
+        </Form> */}
+      </div>
+      <Footer />
+    </>
   );
 }

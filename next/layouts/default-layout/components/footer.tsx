@@ -11,8 +11,9 @@ export function Footer() {
   ];
 
   return (
-    <footer className={` w-full  min-h-2xs bg-white text-gray-600`}>
-      <div className="main-container md:h-60 pt-10 flex flex-col md:flex-row items-start justify-between">
+    <footer className={` w-full max-w-lg mx-auto h-10 sm:h-18 bg-white text-gray-600 relative`}>
+      <p className="center-item py-2 sm:py-6 whitespace-nowrap">3M Marketing @ 2021</p>
+      {/* <div className="main-container md:h-60 pt-10 flex flex-col md:flex-row items-start justify-between">
         <div className="grid grid-cols-2 md:grid-cols-4 w-full md:w-8/12 items-start py-2 text-sm ">
           {menuFooter.map((item) => {
             return (
@@ -54,7 +55,7 @@ export function Footer() {
             })}
           </div>
         </div>
-      </div>
+      </div> */}
     </footer>
   );
 }

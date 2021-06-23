@@ -6,7 +6,7 @@ import { Label } from "../../../../shared/utilities/form/label";
 import { Radio } from "../../../../shared/utilities/form/radio";
 import { Img } from "../../../../shared/utilities/img";
 import { useCartContext } from "../../../../../lib/providers/cart-provider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form } from "../../../../shared/utilities/form/form";
 import { Field } from "../../../../shared/utilities/form/field";
 import { Textarea } from "../../../../shared/utilities/form/textarea";
@@ -27,10 +27,32 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
   const { cart, handleChange } = useCartContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [count, setCount] = useState(1);
+
+  function isInViewport(element) {
+    const rect = element.getBoundingClientRect();
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom / 2 <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  }
+
+  function dialogScrollEvent() {
+    let scrollCheckInterval = null;
+    let dialog = document.getElementsByClassName("form-dialog");
+    console.log("form-dialog", dialog);
+  }
+  useEffect(() => {
+    document.addEventListener("scroll", dialogScrollEvent);
+    return () => {
+      document.removeEventListener("scroll", dialogScrollEvent);
+    };
+  }, []);
   return (
-    <div className="w-full h-full rounded bg-white">
+    <div className="w-full h-full rounded bg-white form-dialog">
       <div
-        className="w-8 h-8 absolute top-2 right-2 z-200 bg-white rounded-full flex items-center justify-center"
+        className="w-8 h-8 absolute top-2 right-2 z-200 bg-white rounded-full flex items-center justify-center cursor-pointer"
         onClick={() => onClose()}
       >
         <i className=" text-2xl text-gray-600 ">
@@ -48,7 +70,7 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
           <div className="px-2">-</div>
           <div className="">{`Đã bán ${item.sold}`}</div>
         </div>
-        <p className="px-4 text-xs text-gray-300">{item.des}</p>
+        <p className="px-4 text-sm text-gray-500">{item.des}</p>
         <Button
           text="+ Lời nhắn cho cửa hàng"
           textPrimary
@@ -62,22 +84,7 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
         </div>
         <div className="">
           {data.sideDishes.map((item) => {
-            return (
-              <div className="flex items-center justify-between px-4 py-1 border-b border-gray-300">
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id={item.dish}
-                    name="sideDishes"
-                    className="inline form-checkbox"
-                  />
-                  <label htmlFor={item.dish} className="inline font-light text-sm ml-2">
-                    {item.dish}
-                  </label>
-                </div>
-                <div className="text-sm text-gray-400">{NumberPipe(item.price)}đ</div>
-              </div>
-            );
+            return <OneDish item={item} />;
           })}
         </div>
         <div className="bg-primary-light px-4 py-2">
@@ -88,30 +95,15 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
         </div>
         <div className="">
           {data.obligatoryDishes.map((item) => {
-            return (
-              <div className="flex items-center justify-between px-4 py-1 border-b border-gray-300">
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id={item.dish}
-                    name="obligatoryDishes"
-                    className="inline form-checkbox"
-                  />
-                  <label htmlFor={item.dish} className="inline font-light text-sm ml-2">
-                    {item.dish}
-                  </label>
-                </div>
-                <div className="text-sm text-gray-400">{NumberPipe(item.price)}đ</div>
-              </div>
-            );
+            return <OneDish item={item} />;
           })}
         </div>
       </div>
-      <div className="sticky shadow-2xl bg-white -bottom-7 w-full px-4 py-4 flex items-center space-x-7">
+      <div className="sticky shadow-2xl bg-white -bottom-0 w-full px-4 py-4 flex items-center space-x-7">
         <IncreaseButton onChange={(count) => setCount(count)} />
         <Button
           primary
-          text={`${count > 0 ? `Thêm ${NumberPipe(item.price * count)}` : "Xóa"}`}
+          text={`Thêm ${NumberPipe(item.price * count)} đ`}
           className="w-full"
           onClick={() => {
             handleChange(-1, item);
@@ -137,6 +129,25 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
     </div>
   );
 }
+
+const OneDish = ({ item }) => {
+  return (
+    <div className="flex items-center justify-between px-4 py-1 border-b border-gray-300">
+      <div className="flex items-center w-full">
+        <input
+          type="radio"
+          id={item.dish}
+          name="obligatoryDishes"
+          className="inline form-checkbox"
+        />
+        <label htmlFor={item.dish} className="inline font-light text-sm ml-2 cursor-pointer w-full">
+          {item.dish}
+        </label>
+      </div>
+      <div className="text-sm text-gray-400 min-w-max">{NumberPipe(item.price)} đ</div>
+    </div>
+  );
+};
 const data = {
   sideDishes: [
     {

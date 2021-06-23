@@ -10,7 +10,7 @@ interface PropsType extends ReactProps {
 export function IncreaseButton({ onDecrease, onIncrease, onChange, className }: PropsType) {
   const [amount, setAmount] = useState(1);
   const handleClick = (number) => {
-    if (amount + number >= 0) {
+    if (amount + number >= 1) {
       setAmount(amount + number);
     }
   };
@@ -19,11 +19,11 @@ export function IncreaseButton({ onDecrease, onIncrease, onChange, className }: 
   }, [amount]);
 
   return (
-    <div className={`flex items-center justify-center text-gray-500 ${className}`}>
-      <i className={`text-2xl ${amount > 0 && "text-primary"}`} onClick={() => handleClick(-1)}>
+    <div className={`flex items-center justify-center  text-primary ${className}`}>
+      <i className={`text-2xl text-gray-500`} onClick={() => handleClick(-1)}>
         <VscDiffRemoved />
       </i>
-      <p className={`text-lg px-3 `}>{amount}</p>
+      <p className={`text-lg px-3 text-gray-600`}>{amount}</p>
       <i className={`text-2xl text-primary`} onClick={() => handleClick(1)}>
         <VscDiffAdded />
       </i>

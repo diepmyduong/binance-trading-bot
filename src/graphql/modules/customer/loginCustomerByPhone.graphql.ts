@@ -17,7 +17,7 @@ export default {
   resolver: {
     Mutation: {
       loginCustomerByPhone: async (root: any, args: any, context: Context) => {
-        context.auth([ROLES.ANONYMOUSE]);
+        context.auth([ROLES.ANONYMOUS]);
         const { phone, name } = args;
         const customer = await CustomerModel.findOneAndUpdate(
           { phone, memberId: context.sellerId },
@@ -27,7 +27,7 @@ export default {
         return {
           customer,
           token: TokenHelper.generateToken({
-            role: ROLES.ANONYMOUSE,
+            role: ROLES.ANONYMOUS,
             _id: customer._id,
             memberId: context.sellerId,
             username: customer.name,

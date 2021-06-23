@@ -9,7 +9,7 @@ import { CustomerModel } from "../customer.model";
 
 const Mutation = {
   loginCustomerByPhone: async (root: any, args: any, context: Context) => {
-    context.auth([ROLES.ANONYMOUSE]);
+    context.auth([ROLES.ANONYMOUS]);
     let { phone, psid, pageId } = args;
 
     if (!phone) throw ErrorHelper.error("Chưa nhập số điện thoại");

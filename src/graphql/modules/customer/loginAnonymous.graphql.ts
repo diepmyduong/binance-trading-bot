@@ -19,7 +19,7 @@ export default {
         const shop = await MemberModel.findOne({ code: shopCode });
         if (!shop) throw ErrorHelper.permissionDeny();
         return TokenHelper.generateToken({
-          role: ROLES.ANONYMOUSE,
+          role: ROLES.ANONYMOUS,
           _id: Types.ObjectId().toHexString(),
           memberId: shop._id,
           username: "Khách vãng lai",

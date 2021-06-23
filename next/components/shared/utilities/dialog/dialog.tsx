@@ -26,10 +26,10 @@ export interface DialogPropsType extends ReactProps {
 
 const ROOT_ID = "dialog-root";
 export function Dialog({
-  wrapperClass = "fixed w-screen h-screen bottom-0 z-100 flex flex-col items-center v-scrollbar h-scrollbar overflow-y-scroll py-20",
+  wrapperClass = "fixed w-screen h-screen bottom-0 z-100 flex justify-center mx-auto overflow-y-scroll py-20",
   overlayClass = "fixed w-full h-full bottom-0 max-w-lg pointer-events-none",
   dialogClass = "relative bg-white shadow-md rounded m-auto md:max-w-lg",
-  headerClass = "relative flex justify-between px-4 py-1 box-content bg-white z-5 border-top rounded-t border-b border-gray-200",
+  headerClass = "relative flex justify-between px-4 py-1 box-content bg-white z-5 border-top rounded-t border-b border-gray-200 z-10",
   bodyClass = "relative bg-white rounded",
   footerClass = "relative flex px-4 pb-3 pt-2 bg-white z-5 rounded-b",
   mobileMode = true,
@@ -92,7 +92,7 @@ export function Dialog({
 
   let el = (
     <div
-      className={`dialog-wrapper ${wrapperClass} ${mobileMode && isMobile ? "mobile" : " mobile "}`}
+      className={`dialog-wrapper ${wrapperClass} ${!mobileMode && !isMobile ? "" : "mobile"}`}
       style={{ ...style }}
       onMouseDown={(e) => {
         e.stopPropagation();

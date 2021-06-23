@@ -9,6 +9,8 @@ export const CartContext = createContext<
     cart: Food[];
     setCart: Function;
     handleChange: Function;
+    branchSelecting: any;
+    setBranchSelecting: Function;
   }>
 >({});
 export type Food = {
@@ -23,6 +25,7 @@ export function CartProvider(props) {
   const [cart, setCart] = useState<Food[]>([]);
   const [totalFood, setTotalFood] = useState(0);
   const [totalMoney, setTotalMoney] = useState(0);
+  const [branchSelecting, setBranchSelecting] = useState(null);
   console.log("CartProvider", cart);
   useEffect(() => {
     setTotalFood(cart.reduce((count, item) => (count += item.qty), 0));
@@ -58,7 +61,17 @@ export function CartProvider(props) {
   useEffect(() => {}, []);
 
   return (
-    <CartContext.Provider value={{ totalFood, totalMoney, cart, setCart, handleChange }}>
+    <CartContext.Provider
+      value={{
+        totalFood,
+        totalMoney,
+        cart,
+        setCart,
+        handleChange,
+        branchSelecting,
+        setBranchSelecting,
+      }}
+    >
       {props.children}
     </CartContext.Provider>
   );

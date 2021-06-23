@@ -17,7 +17,7 @@ const RestaurantInformation = (props: Propstype) => {
         className="bannerShop"
       />
       <DefaultInfomation
-        className="center-item p-3 top-1/4 w-11/12"
+        className="center-item p-3 top-1/4 w-11/12 sm:mt-10"
         info={{ name: props.shop.shopName, address: props.shop.address }}
       />
       <MoreInfomation className="pt-20" />

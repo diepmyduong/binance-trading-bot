@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { VscDiffAdded, VscDiffRemoved } from "react-icons/vsc";
 
 interface PropsType extends ReactProps {
   onDecrease?: () => void;
   onIncrease?: () => void;
-  onChange?: () => void;
+  onChange?: (number) => void;
   className?: string;
 }
 export function IncreaseButton({ onDecrease, onIncrease, onChange, className }: PropsType) {
@@ -14,6 +14,9 @@ export function IncreaseButton({ onDecrease, onIncrease, onChange, className }: 
       setAmount(amount + number);
     }
   };
+  useEffect(() => {
+    onChange(amount);
+  }, [amount]);
 
   return (
     <div className={`flex items-center justify-center text-gray-500 ${className}`}>

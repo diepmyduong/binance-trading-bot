@@ -6,11 +6,28 @@ import { useEffect, useState } from "react";
 import CartDialog from "./component/cart/cart-dialog";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import { Spinner } from "../../shared/utilities/spinner";
+import { Form } from "../../shared/utilities/form/form";
+import { RestaurantDetail } from "./component/restaurant-detail/detail";
 
-export function Homepage() {
+interface PropsType extends ReactProps {
+  productId?: string;
+}
+export function Homepage({ productId }: PropsType) {
   const { shop } = useShopContext();
   const { cart, totalFood, totalMoney, handleChange } = useCartContext();
   const [showDialogCart, setShowDialogCart] = useState(false);
+  const [productIdCode, setProductIdCode] = useState(productId);
+  const [openDialog, setOpenDialog] = useState(false);
+  console.log(productId, productIdCode);
+
+  useEffect(() => {
+    if (productIdCode != null) setOpenDialog(true);
+  }, [productIdCode]);
+
+  useEffect(() => {
+    setProductIdCode(productId);
+  }, [productId]);
+
   useEffect(() => {
     if (totalFood === 0) {
       setShowDialogCart(false);
@@ -39,6 +56,19 @@ export function Homepage() {
         onChange={handleChange}
         money={totalMoney}
       />
+      <Form
+        dialog
+        isOpen={openDialog}
+        mobileMode
+        onClose={() => {
+          setProductIdCode(null);
+          setOpenDialog(false);
+        }}
+        className="z-400 rounded w-full"
+      >
+        fsd
+        {/* <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail> */}
+      </Form>
     </div>
   );
 }

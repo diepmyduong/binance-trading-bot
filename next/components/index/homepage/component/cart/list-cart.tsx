@@ -1,6 +1,6 @@
 import React from "react";
-import Price from "../../../../shared/utilities/infomation/price";
-import { Quantity } from "../../../../shared/utilities/infomation/quantity";
+import Price from "../../../../shared/infomation/price";
+import { Quantity } from "../../../../shared/infomation/quantity";
 import { Food } from "../../../../../lib/providers/cart-provider";
 import { useAlert } from "../../../../../lib/providers/alert-provider";
 interface Propstype extends ReactProps {

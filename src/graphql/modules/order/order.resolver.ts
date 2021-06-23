@@ -22,25 +22,18 @@ import { orderService } from "./order.service";
 const Query = {
   // neu la admin
   getAllOrder: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
-
-    if (context.isMember()) {
-      if (!isNull(args.q.filter.sellerId)) {
-        delete args.q.filter.sellerId;
-      }
-      set(args, "q.filter.sellerId", context.id);
-    } else if (context.isCustomer()) {
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER_STAFF_CUSTOMER);
+    if (context.sellerId) {
+      set(args, "q.filter.sellerId", context.sellerId);
+    }
+    if (context.isCustomer()) {
       set(args, "q.filter.buyerId", context.id);
-    } else {
-      if (args.q.filter) {
-        delete args.q.filter.isPrimary;
-      }
     }
 
     return orderService.fetch(args.q);
   },
   getOneOrder: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER_STAFF_CUSTOMER);
     const { id } = args;
     return await orderService.findOne({ _id: id });
   },

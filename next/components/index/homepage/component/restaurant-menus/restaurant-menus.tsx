@@ -5,7 +5,7 @@ interface PropsType extends ReactProps {}
 
 const RestaurantMenus = (props: PropsType) => {
   return (
-    <div className="bg-white mt-4 mb-10">
+    <div className="bg-white mt-4">
       <MustTryMenu />
       <Menus />
     </div>

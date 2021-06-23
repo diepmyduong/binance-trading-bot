@@ -34,8 +34,11 @@ export function DefaultLayout({ ...props }: PropsType) {
                       <DefaultHead />
                       <Header {...props} />
                       <div className="w-full max-w-lg mx-auto">
-                        <div className="w-full flex-1 mt-14 bg-bluegray-100">{props.children}</div>
+                        <div className="w-full flex-1 mt-14 bg-bluegray-100 text-gray-700">
+                          {props.children}
+                        </div>
                       </div>
+                      {/* <Footer /> */}
                     </>
                   </div>
                 )}

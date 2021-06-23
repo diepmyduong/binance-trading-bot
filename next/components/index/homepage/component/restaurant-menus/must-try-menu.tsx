@@ -40,9 +40,9 @@ const MustTryMenu = (props: Propstype) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [detailItem, setDetailItem] = useState<any>(null);
   return (
-    <div className="">
-      <h3 className="font-semibold pb-2 px-4">Nhất định phải thử</h3>
-      <div className="grid grid-cols-2 px-4">
+    <div className="border-t-8 border-b-8 py-2">
+      <h3 className="font-semibold pb-2 px-4 text-lg text-primary">Nhất định phải thử</h3>
+      <div className="grid grid-cols-2 gap-2 px-4">
         {tryFood.map((item, index) => (
           <div
             className="col-span-1 hover:bg-primary-light transition-all duration-300 cursor-pointer"

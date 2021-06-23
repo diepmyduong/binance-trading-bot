@@ -233,11 +233,11 @@ const Menus = (props) => {
   };
 
   return (
-    <div className="relative">
+    <>
       <SwitchTabs
         chevron
         value={isViewing}
-        className=" sticky top-10 bg-white z-20 pt-3"
+        className=" sticky top-14 bg-white z-20 shadow-sm"
         native
         options={[
           ...food.map((item, index) => {
@@ -246,10 +246,12 @@ const Menus = (props) => {
         ]}
         onChange={(val) => handleChange(val)}
       />
-      {food.map((item, index) => (
-        <Menu list={item.list} title={item.title} key={index} />
-      ))}
-    </div>
+      <div className="flex flex-col gap-2 bg-gray-200">
+        {food.map((item, index) => (
+          <Menu list={item.list} title={item.title} key={index} />
+        ))}
+      </div>
+    </>
   );
 };
 

@@ -147,7 +147,7 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
         </>
       )}
       <div
-        className={`flex relative my-2 border-b   ${
+        className={`flex relative border-b   ${
           (isMobile && " overflow-x-scroll") || "overflow-hidden"
         } ${!native && " border-group rounded-md "}`}
       >

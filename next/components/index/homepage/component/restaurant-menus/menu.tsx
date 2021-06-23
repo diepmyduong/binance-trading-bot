@@ -12,6 +12,7 @@ interface PropsType extends ReactProps {
     name: string;
     sold: number | string;
     des: string;
+    code: string;
     price: number;
     img: string;
     rating?: number | string;
@@ -35,7 +36,7 @@ const Menu = (props: PropsType) => {
           onClick={() => {
             setOpenDialog(true);
             setDetailItem(item);
-            router.push({ query: { ...query, productId: item.name }, path: "/" });
+            router.replace({ query: { ...query, productId: item.code }, path: "/" });
           }}
         >
           <div className="flex-1">

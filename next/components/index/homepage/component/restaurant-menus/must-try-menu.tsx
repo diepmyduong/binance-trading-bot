@@ -13,24 +13,28 @@ const MustTryMenu = (props: Propstype) => {
       img:
         "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
       name: "Combo Phúc",
+      code: "BNJ432",
       price: 119000,
     },
     {
       img:
         "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
       name: "Combo Lộc",
+      code: "BNJ432",
       price: 119000,
     },
     {
       img:
         "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
       name: "Combo Thọ",
+      code: "BNJ432",
       price: 119000,
     },
     {
       img:
         "https://product.hstatic.net/200000043306/product/combo-tho_75f95928d32648438ac8927bdbdcb06e_grande.png",
       name: "Combo Phúc Lộc Thọ",
+      code: "BNJ432",
       price: 119000,
     },
   ];
@@ -50,7 +54,7 @@ const MustTryMenu = (props: Propstype) => {
             onClick={() => {
               setDetailItem(item);
               setOpenDialog(true);
-              router.push({ query: { ...query, productId: item.name }, path: "/" });
+              router.replace({ query: { ...query, productId: item.code }, path: "/" });
             }}
           >
             <Img src={item.img} ratio169 className="min-w-4xs rounded-sm" />

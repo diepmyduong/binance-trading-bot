@@ -56,7 +56,7 @@ export function Homepage({ productId }: PropsType) {
         onChange={handleChange}
         money={totalMoney}
       />
-      <Form
+      {/* <Form
         dialog
         isOpen={openDialog}
         mobileMode
@@ -66,9 +66,8 @@ export function Homepage({ productId }: PropsType) {
         }}
         className="z-400 rounded w-full"
       >
-        fsd
-        {/* <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail> */}
-      </Form>
+         <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail> 
+      </Form> */}
     </div>
   );
 }

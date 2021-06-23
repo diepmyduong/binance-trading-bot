@@ -47,7 +47,7 @@ const Menu = (props: PropsType) => {
           <Img src={item.img} className="w-24 h-24 rounded-sm" />
         </div>
       ))}
-      {/* <Form
+      <Form
         dialog
         isOpen={openDialog}
         mobileMode
@@ -55,7 +55,7 @@ const Menu = (props: PropsType) => {
         className="z-400 rounded w-full"
       >
         <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
-      </Form> */}
+      </Form>
     </div>
   );
 };

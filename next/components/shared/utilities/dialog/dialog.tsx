@@ -120,12 +120,12 @@ export function Dialog({
           props.isOpen
             ? props.openAnimation
               ? props.openAnimation
-              : mobileMode && isMobile
+              : mobileMode
               ? "animate-slide-in-bottom"
               : "animate-scale-up"
             : props.closeAnimation
             ? props.closeAnimation
-            : mobileMode && isMobile
+            : mobileMode
             ? "animate-slide-out-bottom"
             : "animate-scale-down"
         }`}

@@ -12,6 +12,7 @@ interface PropsType extends ReactProps {
     name: string;
     sold: number | string;
     des: string;
+    code: string;
     price: number;
     img: string;
     rating?: number | string;
@@ -35,7 +36,7 @@ const Menu = (props: PropsType) => {
           onClick={() => {
             setOpenDialog(true);
             setDetailItem(item);
-            router.push({ query: { ...query, productId: item.name }, path: "/" });
+            router.replace({ query: { ...query, productId: item.code }, path: "/" });
           }}
         >
           <div className="flex-1">
@@ -47,7 +48,7 @@ const Menu = (props: PropsType) => {
           <Img src={item.img} className="w-24 h-24 rounded-sm" />
         </div>
       ))}
-      {/* <Form
+      <Form
         dialog
         isOpen={openDialog}
         mobileMode
@@ -55,7 +56,7 @@ const Menu = (props: PropsType) => {
         className="z-400 rounded w-full"
       >
         <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
-      </Form> */}
+      </Form>
     </div>
   );
 };

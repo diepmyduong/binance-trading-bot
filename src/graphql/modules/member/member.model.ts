@@ -17,6 +17,7 @@ export enum MemberType {
 
 export type IMember = BaseDocument & {
   username?: string; // Mã chủ shop
+  password?: string; // Mật khẩu chủ shop
   code?: string; // Mã chủ shop
   uid?: string; // UID Firebase
   name?: string; // Họ tên
@@ -64,7 +65,8 @@ const memberSchema = new Schema(
   {
     code: { type: String, required: true },
     username: { type: String, required: true },
-    uid: { type: String, required: true },
+    password: { type: String },
+    uid: { type: String },
     name: { type: String, required: true },
     avatar: { type: String },
     phone: { type: String, required: true },
@@ -148,7 +150,7 @@ memberSchema.index(
   }
 );
 memberSchema.index({ username: 1 }, { unique: true });
-memberSchema.index({ uid: 1 }, { unique: true });
+memberSchema.index({ uid: 1 });
 
 export const MemberHook = new ModelHook<IMember>(memberSchema);
 export const MemberModel: mongoose.Model<IMember> = MainConnection.model("Member", memberSchema);

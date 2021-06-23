@@ -56,11 +56,23 @@ export class Context {
   isStaff() {
     return get(this.tokenData, "role") == ROLES.STAFF;
   }
+  isAnonymous() {
+    return get(this.tokenData, "role") == ROLES.ANONYMOUS;
+  }
   get id() {
     return get(this.tokenData, "_id");
   }
   get sellerId() {
-    return get(this.tokenData, "sellerId");
+    switch (this.tokenData.role) {
+      case ROLES.STAFF:
+      case ROLES.ANONYMOUS:
+      case ROLES.CUSTOMER:
+        return get(this.tokenData, "memberId");
+      case ROLES.MEMBER:
+        return this.id;
+      default:
+        return get(this.tokenData, "sellerId");
+    }
   }
   get pageId() {
     return get(this.tokenData, "pageId");
@@ -84,7 +96,6 @@ export class Context {
       }
 
       if (token === "null") token = null;
-
       if (token) {
         const decodedToken: any = TokenHelper.decodeToken(token);
         this.isAuth = true;

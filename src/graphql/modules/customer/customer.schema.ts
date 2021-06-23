@@ -10,7 +10,6 @@ const schema = gql`
 
   extend type Mutation {
     loginCustomerByToken(idToken: String!, psid: String, pageId: String): CustomerLoginData
-    loginCustomerByPhone(phone: String!, psid: String, pageId: String): CustomerLoginData
     customerUpdateMe(data: CustomeUpdateMeInput!): Customer
   }
 
@@ -27,16 +26,13 @@ const schema = gql`
     longitude: Float,
   }
 
-  type CustomerLoginData {
-    customer: Customer
-    token: String
-  }
-
   type Customer {
     id: String
     createdAt: DateTime
     updatedAt: DateTime
 
+    "Mã chủ shop"
+    memberId: ID
     "Mã khách hàng"
     code: String
     "Tên khách hàng"

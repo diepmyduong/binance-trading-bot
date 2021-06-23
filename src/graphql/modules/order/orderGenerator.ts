@@ -1,7 +1,7 @@
-import { Dictionary, get, groupBy, keyBy, maxBy, sumBy } from "lodash";
+import { Dictionary, get, keyBy, maxBy, sumBy } from "lodash";
+import moment from "moment-timezone";
 import { Types } from "mongoose";
 
-import { ErrorHelper } from "../../../base/error";
 import { SettingKey } from "../../../configs/settingData";
 import { onOrderedProduct } from "../../../events/onOrderedProduct.event";
 import { VietnamPostHelper } from "../../../helpers";
@@ -10,7 +10,6 @@ import {
   PickupType,
 } from "../../../helpers/vietnamPost/resources/type";
 import { addressService } from "../address/address.service";
-import { AddressDeliveryModel } from "../addressDelivery/addressDelivery.model";
 import {
   AddressStorehouseModel,
   IAddressStorehouse,
@@ -19,11 +18,13 @@ import { CampaignModel } from "../campaign/campaign.model";
 import { CampaignSocialResultModel } from "../campaignSocialResult/campaignSocialResult.model";
 import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { ICustomer } from "../customer/customer.model";
-import { IMember, MemberModel } from "../member/member.model";
+import { IMember } from "../member/member.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
 import { OrderItemTopping } from "../orderItem/types/orderItemTopping.schema";
 import { IProduct, ProductModel } from "../product/product.model";
 import { SettingHelper } from "../setting/setting.helper";
+import { OperatingTimeStatus } from "../shopBranch/operatingTime.graphql";
+import { ShopBranchModel } from "../shopBranch/shopBranch.model";
 import { ShopConfigModel } from "../shopConfig/shopConfig.model";
 import { OrderHelper } from "./order.helper";
 import {
@@ -32,7 +33,7 @@ import {
   OrderStatus,
   OrderType,
   PaymentMethod,
-  ShipMethod,
+  PickupMethod,
 } from "./order.model";
 
 type OrderItemInput = {
@@ -55,6 +56,9 @@ export type CreateOrderInput = {
   note: string;
   latitude: number;
   longitude: number;
+  pickupMethod: PickupMethod;
+  shopBranchId: string;
+  pickupTime: Date;
 };
 export class OrderGenerator {
   order: IOrder;
@@ -70,11 +74,12 @@ export class OrderGenerator {
   ) {
     this.order = new OrderModel({
       code: "",
-      isPrimary: orderInput.isPrimary,
-      isCrossSale: !orderInput.isPrimary,
+      isPrimary: false,
+      isCrossSale: false,
       itemIds: [],
       amount: 0,
       subtotal: 0,
+      toppingAmount: 0,
       itemCount: 0,
       status: OrderStatus.PENDING,
       commission1: 0,
@@ -102,12 +107,15 @@ export class OrderGenerator {
       shipMethod: orderInput.shipMethod,
       paymentMethod: orderInput.paymentMethod,
       productIds: [],
-      addressDeliveryId: orderInput.addressDeliveryId,
+      // addressDeliveryId: orderInput.addressDeliveryId,
       note: orderInput.note,
       longitude: orderInput.longitude,
       latitude: orderInput.latitude,
       orderLogIds: [],
-      orderType: orderInput.isPrimary ? OrderType.POST : OrderType.CROSSSALE,
+      orderType: OrderType.SHOP,
+      shopBranchId: orderInput.shopBranchId,
+      pickupMethod: orderInput.pickupMethod,
+      pickupTime: orderInput.pickupTime,
     });
   }
   async generate() {
@@ -121,11 +129,11 @@ export class OrderGenerator {
   }
   private async setOrderSeller() {
     this.order.fromMemberId = this.seller._id;
-    if (!this.orderInput.isPrimary) {
-      const sellerIds = Object.keys(groupBy(Object.values(this.products), "memberId"));
-      if (sellerIds.length > 1) throw Error("Sản phẩm không cùng 1 cửa hàng");
-      this.seller = await MemberModel.findById(sellerIds[0]);
-    }
+    // if (!this.orderInput.isPrimary) {
+    //   const sellerIds = Object.keys(groupBy(Object.values(this.products), "memberId"));
+    //   if (sellerIds.length > 1) throw Error("Sản phẩm không cùng 1 cửa hàng");
+    //   this.seller = await MemberModel.findById(sellerIds[0]);
+    // }
     this.order.sellerId = this.seller._id;
     this.order.sellerCode = this.seller.code;
     this.order.sellerName = this.seller.shopName || this.seller.name;
@@ -164,40 +172,48 @@ export class OrderGenerator {
     this.order.amount = this.order.subtotal + this.order.shipfee;
   }
   private async calculateShipfee() {
-    switch (this.order.shipMethod) {
-      case ShipMethod.NONE:
-        this.order.shipfee = await SettingHelper.load(SettingKey.DELIVERY_ORDER_SHIP_FEE);
+    switch (this.order.pickupMethod) {
+      case PickupMethod.STORE:
+        this.order.shipfee = 0;
         return;
-      case ShipMethod.POST:
-        return await this.calculatePostShipFee();
-      case ShipMethod.VNPOST:
-        return await this.calculateVNPostShipFee();
+      case PickupMethod.DELIVERY:
+        return await this.calculatePickupDeliveryFee();
       default:
-        throw new Error("Phương thức vận chuyển chưa được hỗ trợ.");
+        throw new Error("Phương thức nhận hàng chưa được hỗ trợ.");
     }
   }
-  private async calculatePostShipFee() {
-    const storehouses = await AddressStorehouseModel.find({
-      _id: { $in: this.seller.addressStorehouseIds },
-      activated: true,
-    });
-    if (storehouses.length === 0) throw new Error("Chưa cấu hình chi nhánh kho");
-    if (!this.order.addressDeliveryId) throw new Error("Chưa chọn địa điểm nhận hàng");
-    const addressDeliveryNotExists =
-      this.seller.addressDeliveryIds.findIndex(
-        (id: any) => id.toString() == this.order.addressDeliveryId.toString()
-      ) === -1;
-    if (addressDeliveryNotExists) throw new Error("Mã địa điểm nhận không đúng");
-
-    const addressDelivery = await AddressDeliveryModel.findOne({
-      _id: this.order.addressDeliveryId,
-      activated: true,
-    });
-
-    if (!addressDelivery) {
-      throw ErrorHelper.mgRecoredNotFound("Địa điểm nhận hàng");
+  private async calculatePickupDeliveryFee() {
+    const [shopBranch, shopConfig, distance] = await Promise.all([
+      ShopBranchModel.findById(this.order.shopBranchId),
+      ShopConfigModel.findOne({ memberId: this.seller._id }),
+      this.calculateShopBranchDistance(
+        this.order.shopBranchId,
+        parseFloat(this.order.longitude),
+        parseFloat(this.order.latitude)
+      ),
+    ]);
+    const day = moment().day();
+    const operatingTime = shopBranch.operatingTimes.find((o) => o.day == day);
+    if (!shopBranch.isOpen || operatingTime.status == OperatingTimeStatus.CLOSED)
+      throw Error("Cửa hàng không mở cửa.");
+    if (operatingTime.status == OperatingTimeStatus.TIME_FRAME) {
+      var isOpen = false;
+      var toDate = moment();
+      for (const time of operatingTime.timeFrames) {
+        if (moment(time[0], "HH:mm").isBefore(toDate) && moment(time[1], "HH:mm").isAfter(toDate)) {
+          isOpen = true;
+          break;
+        }
+      }
+      if (!isOpen) throw Error("Cửa hàng không mở cửa.");
     }
-    this.order.shipfee = await SettingHelper.load(SettingKey.DELIVERY_POST_FEE);
+    if (distance < 1) {
+      this.order.shipfee = shopConfig.shipOneKmFee;
+    } else {
+      const nextDistance =
+        distance > shopConfig.shipDefaultDistance ? distance - shopConfig.shipDefaultDistance : 0;
+      this.order.shipfee = shopConfig.shipDefaultFee + shopConfig.shipNextFee * nextDistance;
+    }
   }
   private async calculateVNPostShipFee() {
     const [storehouses, addressStorehouse] = await Promise.all([
@@ -315,6 +331,36 @@ export class OrderGenerator {
       return res;
     });
   }
+  private async getNearestShopBranch() {
+    const longitude = this.order.longitude;
+    const latitude = this.order.latitude;
+    return await ShopBranchModel.aggregate([
+      { $match: { memberId: this.seller._id, isOpen: true } },
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          spherical: true,
+          distanceField: "distance",
+        },
+      },
+      { $sort: { distance: 1 } },
+    ]);
+  }
+  private async calculateShopBranchDistance(shopBranchId: string, lng: number, lat: number) {
+    return await ShopBranchModel.aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [lng, lat] },
+          spherical: true,
+          distanceField: "distance",
+        },
+      },
+      { $match: { _id: shopBranchId } },
+    ]).then((res) => parseFloat(((get(res, "0.distance", 0) as number) / 1000).toFixed(1)));
+  }
   private async setBuyerAddress() {
     return await Promise.all([
       addressService.setProvinceName(this.order, "buyerProvinceId", "buyerProvince"),
@@ -361,7 +407,7 @@ export class OrderGenerator {
   private async getProductFromOrderInput(orderInput: CreateOrderInput) {
     const productIds = orderInput.items.map((i) => i.productId).map(Types.ObjectId);
     const products = await ProductModel.find({ _id: { $in: productIds }, allowSale: true })
-      .then((res) => res.filter((p) => (orderInput.isPrimary ? p.isPrimary : p.isCrossSale)))
+      // .then((res) => res.filter((p) => (orderInput.isPrimary ? p.isPrimary : p.isCrossSale)))
       .then((res) => keyBy(res, "_id"));
     if (Object.values(products).length != orderInput.items.length) {
       throw Error("Không thể đặt hàng, sản phẩm không hợp lệ.");
@@ -391,7 +437,7 @@ export class OrderGenerator {
       commission3: product.commission3,
       orderType: this.order.orderType,
       toppings: input.toppings,
-      toppingAmount: toppingAmount,
+      toppingAmount: toppingAmount * input.quantity,
     });
     // Điểm thưởng khách hàng
     if (product.enabledCustomerBonus)

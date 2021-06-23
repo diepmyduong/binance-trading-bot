@@ -74,7 +74,7 @@ const productSchema = new Schema(
     enabledCustomerBonus: { type: Boolean, default: false },
     memberBonusFactor: { type: Number, default: 1 },
     customerBonusFactor: { type: Number, default: 1 },
-    categoryId: { type: Schema.Types.ObjectId, ref: "Category" },
+    categoryId: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     smsSyntax: { type: String },
     smsPhone: { type: String },
     priority: { type: Number, default: 0 },

@@ -125,6 +125,7 @@ export type IOrder = BaseDocument & {
 
   pickupMethod?: PickupMethod; // Phương thức nhận hàng
   pickupTime?: Date; // Thời gian nhận hàng
+  shopBranchId?: string; // Mã chi nhánh
 };
 
 const orderSchema = new Schema(
@@ -214,6 +215,10 @@ const orderSchema = new Schema(
     driverName: { type: String },
     driverPhone: { type: String },
     driverLicense: { type: String },
+
+    pickupMethod: { type: String, enum: Object.values(PickupMethod) },
+    pickupTime: { type: Date },
+    shopBranchId: { type: Schema.Types.ObjectId, ref: "ShopBranch" },
   },
   { timestamps: true }
 );

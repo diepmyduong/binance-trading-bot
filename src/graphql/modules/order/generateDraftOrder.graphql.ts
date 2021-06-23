@@ -7,7 +7,7 @@ import { Context } from "../../context";
 import { CustomerLoader } from "../customer/customer.model";
 import { MemberLoader } from "../member/member.model";
 import { OrderItemLoader } from "../orderItem/orderItem.model";
-import { IOrder } from "./order.model";
+import { IOrder, PickupMethod } from "./order.model";
 import { OrderGenerator } from "./orderGenerator";
 
 export default {
@@ -21,20 +21,33 @@ export default {
       invalidReason: String
     }
     input CreateDraftOrderInput {
-      isPrimary: Boolean!
+      "Sản phẩm"
       items: [OrderItemInput]!
-      buyerName: String
-      buyerPhone: String
+      "Tên người đặt"
+      buyerName: String!
+      "Điện thoại người đặt"
+      buyerPhone: String!
+      "Phương thức nhận hàng ${Object.values(PickupMethod)}"
+      pickupMethod: String!
+      "Chi nhánh"
+      shopBranchId: ID!
+      "Thời gian nhận hàng"
+      pickupTime: DateTime
+      "Địa chỉ nhận"
       buyerAddress: String
+      "Tỉnh / thành nhận"
       buyerProvinceId: String
+      "Quận / huyện nhận"
       buyerDistrictId: String
+      "Phường / xã nhận"
       buyerWardId: String
-      shipMethod: String!
-      paymentMethod: String!
-      addressDeliveryId: ID
-      note: String
+      "Toạ độ"
       latitude: Float
       longitude: Float
+      "Phương thức thanh toán"
+      paymentMethod: String!
+      "Ghi chú"
+      note: String
     }
     input OrderItemInput {
       productId: ID!

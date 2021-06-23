@@ -1,6 +1,7 @@
 import { get, set } from "lodash";
-import { SettingKey } from "../../../configs/settingData";
+import passwordHash from "password-hash";
 
+import { SettingKey } from "../../../configs/settingData";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper, ErrorHelper, firebaseHelper, UtilsHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
@@ -10,14 +11,13 @@ import {
   AddressDeliveryLoader,
   AddressDeliveryModel,
 } from "../addressDelivery/addressDelivery.model";
-import {
-  AddressStorehouseLoader,
-  AddressStorehouseModel,
-} from "../addressStorehouse/addressStorehouse.model";
+import { AddressStorehouseLoader } from "../addressStorehouse/addressStorehouse.model";
 import { BranchLoader } from "../branch/branch.model";
 import { OrderModel } from "../order/order.model";
 import { PositionLoader } from "../position/position.model";
 import { SettingHelper } from "../setting/setting.helper";
+import { ShopConfigModel } from "../shopConfig/shopConfig.model";
+import { shopConfigService } from "../shopConfig/shopConfig.service";
 import { MemberHelper } from "./member.helper";
 import { IMember, MemberLoader, MemberModel } from "./member.model";
 import { memberService } from "./member.service";
@@ -48,16 +48,20 @@ const Mutation = {
     if (member) {
       throw ErrorHelper.createUserError("Tên tài khoản này đã tồn tại");
     }
-
-    const fbUser = await firebaseHelper.createUser(data.username, password);
-    data.uid = fbUser.uid;
+    // const passwordHash = passwordHa
+    // const fbUser = await firebaseHelper.createUser(data.username, password);
+    // data.uid = fbUser.uid;
     data.code = data.code ? data.code : await memberService.generateCode();
+    data.password = passwordHash.generate(password);
     const helper = new MemberHelper(new MemberModel(data));
-
     await Promise.all([
       AddressHelper.setProvinceName(helper.member),
       AddressHelper.setDistrictName(helper.member),
       AddressHelper.setWardName(helper.member),
+      ShopConfigModel.create({
+        memberId: helper.member._id,
+        ...shopConfigService.getDefaultConfig(),
+      }),
     ]);
     helper.setActivedAt();
     return await helper.member.save();

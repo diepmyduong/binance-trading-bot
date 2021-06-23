@@ -20,6 +20,7 @@ const customerPageAccountSchema = new Schema({
 });
 
 export type ICustomer = BaseDocument & {
+  memberId?: string; // Mã chủ shop
   code?: string; // Mã khách hàng
   name?: string; // Tên khách hàng
   facebookName?: string; // Tên facebook
@@ -45,6 +46,7 @@ export type ICustomer = BaseDocument & {
 
 const customerSchema = new Schema(
   {
+    memberId: { type: Schema.Types.ObjectId, ref: "Member", required: true },
     code: { type: String, required: true },
     name: { type: String, required: true },
     facebookName: { type: String },
@@ -70,6 +72,8 @@ const customerSchema = new Schema(
   },
   { timestamps: true }
 );
+
+customerSchema.index({ phone: 1, memberId: 1 }, { unique: true });
 
 customerSchema.index(
   { name: "text", code: "text", facebookName: "text", phone: "text" },

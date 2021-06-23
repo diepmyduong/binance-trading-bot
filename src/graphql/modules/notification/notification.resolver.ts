@@ -13,7 +13,7 @@ import { notificationService } from "./notification.service";
 
 const Query = {
   getAllNotification: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_CUSTOMER);
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER_STAFF);
     if (context.isMember()) {
       _.set(args, "q.filter.target", NotificationTarget.MEMBER);
       _.set(args, "q.filter.memberId", context.id);
@@ -25,7 +25,7 @@ const Query = {
     return notificationService.fetch(args.q);
   },
   getOneNotification: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_CUSTOMER);
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER_STAFF);
     const { id } = args;
     return await notificationService.findOne({ _id: id });
   },

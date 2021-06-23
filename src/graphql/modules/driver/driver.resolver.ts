@@ -8,14 +8,14 @@ import { driverService } from "./driver.service";
 
 const Query = {
   getAllDriver: async (root: any, args: any, context: Context) => {
-    context.auth(ROLES.ADMIN_EDITOR_MEMBER);
-    if (context.isMember()) {
-      set(args, "q.filter.memberId", context.id);
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER_STAFF);
+    if (context.sellerId) {
+      set(args, "q.filter.memberId", context.sellerId);
     }
     return driverService.fetch(args.q);
   },
   getOneDriver: async (root: any, args: any, context: Context) => {
-    context.auth(ROLES.ADMIN_EDITOR_MEMBER);
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER_STAFF);
     const { id } = args;
     return await driverService.findOne({ _id: id });
   },

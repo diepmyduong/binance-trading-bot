@@ -1,16 +1,17 @@
-import { times } from "async";
-import { set } from "lodash";
+import { set, times } from "lodash";
 import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { Context } from "../../context";
+import { OperatingTimeStatus } from "./operatingTime.graphql";
 import { ShopBranchModel } from "./shopBranch.model";
 import { shopBranchService } from "./shopBranch.service";
 
 const Query = {
   getAllShopBranch: async (root: any, args: any, context: Context) => {
-    if (context.isMember()) {
-      set(args, "q.filter.memberId", context.id);
+    context.auth(ROLES.ANONYMOUS_CUSTOMER_MEMBER_STAFF);
+    if (context.sellerId) {
+      set(args, "q.filter.memberId", context.sellerId);
     }
     return shopBranchService.fetch(args.q);
   },
@@ -28,7 +29,7 @@ const Mutation = {
     data.operatingTimes = times(7, (i) => ({
       day: i + 1,
       timeFrames: [["07:00", "21:00"]],
-      isOpen: true,
+      status: OperatingTimeStatus.OPEN,
     }));
     return await shopBranchService.create(data);
   },

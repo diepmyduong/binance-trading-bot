@@ -21,6 +21,7 @@ export type IShopBranch = BaseDocument & {
   activated?: boolean; // hiệu lực hay không hiệu lực
   location?: any; // Toạ độ
   coverImage?: string; // Hình ảnh cover
+  isOpen?: boolean; //  Mở cửa
 
   operatingTimes?: OperatingTime[]; // Thời gian hoạt động
 };
@@ -43,6 +44,7 @@ const shopBranchSchema = new Schema(
     location: { type: LocationSchema, required: true },
     coverImage: { type: String },
     operatingTimes: { type: [OperatingTimeSchema], default: [] },
+    isOpen: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

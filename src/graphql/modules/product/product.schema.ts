@@ -14,7 +14,6 @@ const schema = gql`
     createProduct(data: CreateProductInput!): Product
     updateProduct(id: ID!, data: UpdateProductInput!): Product
     deleteOneProduct(id: ID!): Product
-    deleteManyProduct(ids: [ID]): Int
     importProducts(file: Upload!): String
     increaseViewCount(productId: ID!): Product
   }
@@ -22,37 +21,14 @@ const schema = gql`
   
 
   input CreateProductInput {
+    "Mã sản phẩm"
     code: String
+    "Tên sản phẩm"
     name: String!
+    "Giá sản phẩm"
     basePrice: Float!
-    subtitle: String
-    intro: String
-    image: String!
-    categoryId: ID
-    allowSale: Boolean
-    isCrossSale: Boolean 
-    crossSaleInventory: Int
-    type: String
-    smsSyntax: String
-    smsPhone: String
-    priority:Int
-    commission0: Float
-    commission1: Float
-    commission2: Float
-    commission3: Float
-    baseCommission: Float
-    enabledMemberBonus: Boolean
-    enabledCustomerBonus: Boolean
-    memberBonusFactor: Int
-    customerBonusFactor: Int
-    #delivery
-    weight: Int!
-    width: Int
-    length: Int
-    height: Int
-
-    "Các topping cho sản phẩm"
-    toppings: [CreateProductToppingInput]
+    "Mã danh mục"
+    categoryId: ID!
   }
 
   input UpdateProductInput {
@@ -80,7 +56,7 @@ const schema = gql`
     memberBonusFactor: Int
     customerBonusFactor: Int
     #delivery
-    weight: Int!
+    weight: Int
     width: Int
     length: Int
     height: Int

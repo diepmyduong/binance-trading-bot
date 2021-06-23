@@ -1,14 +1,15 @@
+import passwordHash from "password-hash";
+
 import { ROLES } from "../../../../constants/role.const";
-import { ErrorHelper, firebaseHelper } from "../../../../helpers";
-import { AuthHelper } from "../../../../helpers/auth.helper";
+import { ErrorHelper } from "../../../../helpers";
 import { Context } from "../../../context";
 import { MemberModel } from "../member.model";
 
 const Mutation = {
   updateMemberPassword: async (root: any, args: any, context: Context) => {
-    const { memberId, password } = args;
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-    if (context.tokenData.role == ROLES.MEMBER) AuthHelper.isOwner(context, memberId);
+    let { memberId, password } = args;
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER);
+    if (context.isMember()) memberId = context.sellerId;
     if (password.length < 6) {
       throw ErrorHelper.updateUserError("mật khẩu phải có ít nhất 6 ký tự");
     }
@@ -17,7 +18,9 @@ const Mutation = {
       throw ErrorHelper.mgRecoredNotFound("người dùng");
     }
     try {
-      return firebaseHelper.updateUser(member.uid, { password }).then((res) => member);
+      member.password = passwordHash.generate(password);
+      return member.save();
+      // return firebaseHelper.updateUser(member.uid, { password }).then((res) => member);
     } catch (error) {
       throw ErrorHelper.updateUserError(error);
     }

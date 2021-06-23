@@ -37,6 +37,8 @@ const schema = gql`
     location: Mixed!
     "Hình ảnh cover"
     coverImage: String
+    "Mở cửa"
+    isOpen: Boolean
   }
 
   input UpdateShopBranchInput {
@@ -62,6 +64,8 @@ const schema = gql`
     location: Mixed
     "Hình ảnh cover"
     coverImage: String
+    "Mở cửa"
+    isOpen: Boolean
   }
 
   type ShopBranch {
@@ -99,6 +103,8 @@ const schema = gql`
     location: Mixed
     "Hình ảnh cover"
     coverImage: String
+    "Mở cửa"
+    isOpen: Boolean
   }
 
   type ShopBranchPageData {

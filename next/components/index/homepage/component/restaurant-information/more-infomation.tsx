@@ -30,8 +30,8 @@ const MoreInfomation = (props: Propstype) => {
   const [showPromotions, setShowPromotions] = useState(false);
   return (
     <>
-      <div className={`px-4 ${props.className || ""}`}>
-        <div className="flex justify-between items-center border-b">
+      <div className={`${props.className || ""}`}>
+        <div className="flex justify-between items-center border-b px-4">
           <p>Có 23 chi nhánh</p>
           <Button
             textPrimary
@@ -40,7 +40,7 @@ const MoreInfomation = (props: Propstype) => {
             className="pr-0"
           />
         </div>
-        <div className="flex items-center justify-between border-b">
+        <div className="flex items-center justify-between border-b px-4 ">
           <p className="flex items-center">
             <i className="text-primary p-0.5 border rounded-full text-10 border-primary mr-1">
               {<FaPercent />}
@@ -54,7 +54,7 @@ const MoreInfomation = (props: Propstype) => {
             className="pr-0"
           />
         </div>
-        <div className="flex justify-between items-center ">
+        <div className="flex justify-between items-center px-4 ">
           <div className="flex items-center">
             <Rating numRated={344} rating={4.8} />
             <i className="text-lg ml-3">

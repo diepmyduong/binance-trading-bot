@@ -49,14 +49,16 @@ const BranchsDialog = (props: Propstype) => {
   ];
   return (
     <Dialog isOpen={props.isOpen} onClose={props.onClose} width="180px" title="Chọn chi nhánh">
-      <div
-        className="flex flex-col text-sm sm:text-base overscroll-y-auto"
-        style={{ maxHeight: `calc(100vh - 300px)` }}
-      >
-        {branchs.map((item, index) => (
-          <Branch branch={item} key={index} />
-        ))}
-      </div>
+      <Dialog.Body>
+        <div
+          className="flex flex-col text-sm sm:text-base overscroll-y-auto"
+          style={{ maxHeight: `calc(100vh - 250px)`, minHeight: `calc(100vh - 350px)` }}
+        >
+          {branchs.map((item, index) => (
+            <Branch branch={item} key={index} />
+          ))}
+        </div>
+      </Dialog.Body>
     </Dialog>
   );
 };

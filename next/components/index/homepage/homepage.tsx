@@ -36,7 +36,7 @@ export function Homepage({ productId }: PropsType) {
   }, [totalFood]);
   return (
     <>
-      <div className={`z-0 relative bg-white text-gray-800 ${cart.length > 0 && "pb-20 sm:pb-28"}`}>
+      <div className={`z-0 relative bg-white text-gray-800`}>
         {shop &&
           ((
             <>

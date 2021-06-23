@@ -44,39 +44,44 @@ const PromotionsDialog = (props: Propstype) => {
   const screenSm = useScreen("sm");
   return (
     <Dialog isOpen={props.isOpen} onClose={props.onClose} title="Mã khuyến mãi">
-      <SwitchTabs
-        className="p-4"
-        onChange={(val) => setValue(val)}
-        value={value}
-        options={
-          (screenSm && [
-            { label: "Khuyến mãi của quán", value: 0 },
-            { label: "Khuyến mãi của tôi", value: 1 },
-          ]) || [
-            { label: "KM của quán", value: 0 },
-            { label: "KM của tôi", value: 1 },
-          ]
-        }
-      />
-      <div className="flex flex-col text-sm sm:text-base overscroll-y-auto px-4 bg-primary-light h-full min-h-xs">
-        <div className="flex my-4 border-group rounded-md h-12">
-          <Input placeholder="Nhập mã giảm giá ở đây" />{" "}
-          <Button className="h-12 whitespace-nowrap" primary text="Áp dụng" />
+      <Dialog.Body>
+        <SwitchTabs
+          className="p-4"
+          onChange={(val) => setValue(val)}
+          value={value}
+          options={
+            (screenSm && [
+              { label: "Khuyến mãi của quán", value: 0 },
+              { label: "Khuyến mãi của tôi", value: 1 },
+            ]) || [
+              { label: "KM của quán", value: 0 },
+              { label: "KM của tôi", value: 1 },
+            ]
+          }
+        />
+        <div
+          className="flex flex-col text-sm sm:text-base overscroll-y-auto px-4 bg-primary-light h-full min-h-xs"
+          style={{ maxHeight: `calc(100vh - 250px)`, minHeight: `calc(100vh - 350px)` }}
+        >
+          <div className="flex my-4 border-group rounded-md h-12">
+            <Input placeholder="Nhập mã giảm giá ở đây" />{" "}
+            <Button className="h-12 whitespace-nowrap" primary text="Áp dụng" />
+          </div>
+          {(value === 0 && (
+            <div className="mb-4">
+              {promotions.map((item, index) => (
+                <Promotion key={index} promotion={item} />
+              ))}
+            </div>
+          )) || (
+            <div className="mb-4">
+              {promotions.map((item, index) => (
+                <Promotion key={index} promotion={item} />
+              ))}
+            </div>
+          )}
         </div>
-        {(value === 0 && (
-          <div className="mb-4">
-            {promotions.map((item, index) => (
-              <Promotion key={index} promotion={item} />
-            ))}
-          </div>
-        )) || (
-          <div className="mb-4">
-            {promotions.map((item, index) => (
-              <Promotion key={index} promotion={item} />
-            ))}
-          </div>
-        )}
-      </div>
+      </Dialog.Body>
     </Dialog>
   );
 };

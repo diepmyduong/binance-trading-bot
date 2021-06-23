@@ -18,13 +18,7 @@ const CartDialog = (props: Propstype) => {
   const { customer, cunstomerLogin } = useShopContext();
   const [showLogin, setShowLogin] = useState(false);
   return (
-    <Dialog
-      isOpen={props.isOpen}
-      onClose={props.onClose}
-      title={"Giỏ hàng của bạn"}
-      width="320px"
-      mobileMode={false}
-    >
+    <Dialog isOpen={props.isOpen} onClose={props.onClose} title={"Giỏ hàng của bạn"} width="320px">
       <Dialog.Body>
         <ListCart cart={props.cart} onChange={props.onChange} />
       </Dialog.Body>

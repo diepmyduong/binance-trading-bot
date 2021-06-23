@@ -129,7 +129,7 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
                     {item.dish}
                   </label>
                 </div>
-                <div className="text-sm text-gray-400">{NumberPipe(item.price)}đ</div>
+                <div className="text-sm text-gray-400">{NumberPipe(item.price)} đ</div>
               </div>
             );
           })}
@@ -139,7 +139,7 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
         <IncreaseButton onChange={(count) => setCount(count)} />
         <Button
           primary
-          text={`Thêm ${NumberPipe(item.price * count)}`}
+          text={`Thêm ${NumberPipe(item.price * count)} đ`}
           className="w-full"
           onClick={() => {
             handleChange(-1, item);

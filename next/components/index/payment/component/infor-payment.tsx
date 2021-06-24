@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import { Dialog } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
 import { Field } from "../../../shared/utilities/form/field";
 import { Form } from "../../../shared/utilities/form/form";
 import { Input } from "../../../shared/utilities/form/input";
 import { Select } from "../../../shared/utilities/form/select";
-import { TabButtonGroup } from "../../../shared/utilities/tab-button-group/tab-button-group";
+import BranchsDialog from "../../homepage/component/branch/branchs-dialog";
 
 export function InforPayment() {
   const initData = {
@@ -12,12 +13,23 @@ export function InforPayment() {
     phone: "0869698360",
     address: "749 Nguyễn Văn Linh Quận 7 TPHCM ",
   };
+  const [openDialog, setOpenDialog] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [times, setTimes] = useState([]);
+  const [branch, setBranch] = useState(
+    "110 Nguyễn Văn Linh, F. Tân Thuận Tây, Quận 7, Hồ Chí Minh"
+  );
   const generateTime = () => {
     var today = new Date();
     var time = today.getHours();
+    var min = today.getMinutes();
     var halfHours = ["00", "30"];
+    if (min < 30) {
+      halfHours = ["30", "00"];
+    } else {
+      halfHours = ["00", "30"];
+      time++;
+    }
     var timess = [];
     for (var i = time; i < 24; i++) {
       for (var j = 0; j < 2; j++) {
@@ -55,23 +67,35 @@ export function InforPayment() {
               <div className="pb-4">
                 <div className="font-bold">Quán chi nhánh 1</div>
                 <div className="flex items-start justify-between">
-                  <p className="">110 Nguyễn Văn Linh, F. Tân Thuận Tây, Quận 7, Hồ Chí Minh</p>
+                  <p className="font-medium">{branch}</p>
                   <Button
                     text="Đổi chi nhánh"
                     textPrimary
+                    unfocusable
                     className="px-0 py-0 min-w-max text-sm"
+                    onClick={() => setOpenDialog(true)}
                   />
                 </div>
                 <div className="flex items-center justify-between pt-6">
                   <p className="">Chọn thời gian lấy:</p>
-                  <Select
-                    options={times.map((item) => ({ value: item, label: item }))}
-                    className="w-28"
-                  />
+                  <Field>
+                    <Select
+                      options={times.map((item) => ({ value: item, label: item }))}
+                      className="w-32"
+                      searchable={false}
+                    />
+                  </Field>
                 </div>
               </div>
             )}
           </Form>
+          <BranchsDialog
+            onClose={() => setOpenDialog(false)}
+            isOpen={openDialog}
+            onSelect={(br) => {
+              setBranch(br);
+            }}
+          />
         </div>
       </div>
     </div>
@@ -110,3 +134,65 @@ const TabCustom = ({ onChange, tab }: PropType) => {
     </div>
   );
 };
+
+const selectBranch = () => {
+  return <div className=""></div>;
+};
+
+const dataListBranch = [
+  {
+    district: "Quận 1",
+    branch: [
+      {
+        address: "172 Hai Bà Trưng, phường Đa Kao, Quận 1, thành phố Hồ Chí Minh",
+        open: 9,
+        close: 21,
+      },
+    ],
+  },
+  {
+    district: "Quận 2",
+    branch: [
+      {
+        address: "65 đường Xuân Thủy, phường Thảo Điền, quận 2, Thành phố Hồ Chí Minh.",
+        open: 9,
+        close: 21,
+      },
+    ],
+  },
+  {
+    district: "Quận 3",
+    branch: [
+      {
+        address: "414C – 414D Nguyễn Thị Minh Khai, Phường 5, Quận 3, Thành phố Hồ Chí Minh ",
+        open: 9,
+        close: 21,
+      },
+      {
+        address: "Tầng trệt tòa nhà Số 538 đường CMT8, phường 11, quận 3, thành phố Hồ Chí Minh ",
+        open: 9,
+        close: 21,
+      },
+    ],
+  },
+  {
+    district: "Quận 4",
+    branch: [
+      {
+        address: "192, 194 đường Khánh Hội, phường 6, quận 4, thành phố Hồ Chí Minh",
+        open: 9,
+        close: 21,
+      },
+    ],
+  },
+  {
+    district: "Quận 6",
+    branch: [
+      {
+        address: "10 – 12 đường Hậu Giang, Phường 2, Quận 6, Thành phố Hồ Chí Minh",
+        open: 9,
+        close: 21,
+      },
+    ],
+  },
+];

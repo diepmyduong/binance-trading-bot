@@ -23,7 +23,7 @@ export function PaymentPage() {
       <div className="text-gray-700 ">
         <InforPayment />
         <div className="mt-1 bg-white">
-          <div className="flex px-4 items-center justify-between pt-2">
+          <div className="flex px-4 items-center justify-between py-2">
             <p className="font-bold">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
             <i className="">
               <HiChevronRight />

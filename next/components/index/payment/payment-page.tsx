@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
+import { FaPen } from "react-icons/fa";
 import { HiChevronRight, HiDocumentAdd } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { useCartContext } from "../../../lib/providers/cart-provider";
-import { Accordion } from "../../shared/utilities/accordion/accordion";
 import { Button } from "../../shared/utilities/form/button";
 import { Field } from "../../shared/utilities/form/field";
 import { Form } from "../../shared/utilities/form/form";
@@ -12,7 +12,6 @@ import { InforPayment } from "./component/infor-payment";
 import { TicketVoucher } from "./component/ticket-voucher";
 
 export function PaymentPage() {
-  const [openDialog, setOpenDialog] = useState(false);
   const { cart, totalFood, totalMoney } = useCartContext();
   const [voucherApplied, setVoucherApplied] = useState(null);
   useEffect(() => {
@@ -23,7 +22,7 @@ export function PaymentPage() {
       <div className="text-gray-700 ">
         <InforPayment />
         <div className="mt-1 bg-white">
-          <p className="font-bold px-4 py-2">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
+          <p className="font-semibold px-4 py-2">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
           <div className="">
             {cart.map((item, index) => {
               const last = cart.length - 1 == index;
@@ -46,16 +45,7 @@ export function PaymentPage() {
             })}
           </div>
         </div>
-        <Button
-          className="py-6 w-full mt-1 bg-white flex justify-start items-center"
-          onClick={() => setOpenDialog(true)}
-        >
-          <i className="text-3xl text-primary">
-            <HiDocumentAdd />
-          </i>
-          <p className="text-gray-400 ml-2">Nhập ghi chú</p>
-        </Button>
-
+        <InputNote />
         <div className="px-4 py-4 mt-1 bg-white ">
           <div className="flex justify-between items-center">
             <div className="">
@@ -105,15 +95,49 @@ export function PaymentPage() {
           </div>
         </div>
       </div>
+    </>
+  );
+}
+
+const InputNote = () => {
+  const [note, setNote] = useState({ note: "" });
+  const [openDialog, setOpenDialog] = useState(false);
+
+  return (
+    <>
+      <div className="mt-1">
+        {note.note != "" ? (
+          <div className="px-4 py-2 bg-white w-full">
+            <div className="flex items-center justify-between">
+              <p className="font-semibold">Ghi chú</p>
+              <i className="hover:text-primary cursor-pointer" onClick={() => setOpenDialog(true)}>
+                <FaPen />
+              </i>
+            </div>
+            <p className="">{note.note}</p>
+          </div>
+        ) : (
+          <Button
+            className="py-6 w-full mt-1 bg-white flex justify-start items-center"
+            onClick={() => setOpenDialog(true)}
+          >
+            <i className="text-3xl text-primary">
+              <HiDocumentAdd />
+            </i>
+            <p className="text-gray-400 ml-2">Nhập ghi chú</p>
+          </Button>
+        )}
+      </div>
       <Form
         dialog
-        mobileMode
         isOpen={openDialog}
         onClose={() => setOpenDialog(false)}
-        onSubmit={() => {
+        initialData={note}
+        onSubmit={(data) => {
+          setNote(data);
           setOpenDialog(false);
         }}
-        className="px-4 pt-4"
+        className="px-4 py-4"
       >
         <Field label="Ghi chú" name="note">
           <Textarea placeholder="Nhập ghi chú" />
@@ -122,7 +146,7 @@ export function PaymentPage() {
       </Form>
     </>
   );
-}
+};
 
 const dataVoucher = [
   {

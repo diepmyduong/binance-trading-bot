@@ -19,6 +19,7 @@ export function ShopProvider(props) {
   // const [homeShop, setHomeShop] = useState<string>();
   const [customer, setCustomer] = useState<any>();
   async function getShop() {
+    ShopService.loginAnonymous("3MSHOP");
     let res = await ShopService.getShopData();
     console.log(res);
     if (res) {

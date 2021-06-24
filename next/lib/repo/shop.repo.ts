@@ -75,5 +75,15 @@ export class ShopRepository extends CrudRepository<Shop> {
       })
       .then((res) => res.data["getShopData"] as Shop);
   }
+  async loginAnonymous(shopCode: "3MSHOP") {
+    return await this.apollo
+      .mutate({
+        mutation: this.gql`mutation{
+          loginAnonymous(shopCode:"3MSHOP")
+        }`,
+      })
+      .then((res) => console.log(res));
+    // .then((res) => res.data["loginAnonymous"] as string);
+  }
 }
 export const ShopService = new ShopRepository();

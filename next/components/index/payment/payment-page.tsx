@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
-import { HiChevronRight, HiDocumentAdd } from "react-icons/hi";
+import { HiChevronRight, HiChevronUp, HiDocumentAdd } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { useCartContext } from "../../../lib/providers/cart-provider";
 import { Button } from "../../shared/utilities/form/button";
@@ -19,7 +19,7 @@ export function PaymentPage() {
   }, []);
   return (
     <>
-      <div className="text-gray-700 ">
+      <div className="text-gray-700 h-screen">
         <InforPayment />
         <div className="mt-1 bg-white">
           <p className="font-semibold px-4 py-2">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
@@ -65,7 +65,7 @@ export function PaymentPage() {
           </div>
         </div>
         {voucherApplied === null && (
-          <div className="px-4 py-6 flex w-full overflow-auto">
+          <div className="px-4 py-6 flex w-full overflow-auto pb-32">
             {dataVoucher.map((item, index) => {
               return (
                 <TicketVoucher
@@ -77,27 +77,39 @@ export function PaymentPage() {
             })}
           </div>
         )}
-        <div className="sticky shadow-2xl bottom-0 px-4 py-4 bg-white mt-2">
-          <div className="flex items-center justify-between">
-            <p className="">Thanh toán COD</p>
-            <p className="">|</p>
-            {voucherApplied !== null ? (
-              <div className="flex items-center justify-between px-2">
-                <p className="">{voucherApplied}</p>
-                <Button text="Xóa" textDanger onClick={() => setVoucherApplied(null)} />
-              </div>
-            ) : (
-              <Button text="Mã khuyến mãi" textPrimary className="px-0" />
-            )}
-          </div>
-          <div className="w-full pt-2">
-            <Button text={`Thanh toán ${NumberPipe(189000)}đ`} primary className="w-full" />
-          </div>
-        </div>
+        <div className=""></div>
+        <ButtonPayment voucherApplied={voucherApplied} setVoucherApplied={setVoucherApplied} />
       </div>
     </>
   );
 }
+
+const ButtonPayment = ({ voucherApplied, setVoucherApplied }) => {
+  return (
+    <div className="fixed max-w-lg w-full shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
+      <div className="grid grid-cols-2 px-4 border-t border-b border-gray-100 items-center justify-between">
+        <div className="flex items-center justify-center font-semibold w-full border-r h-full border-gray-100">
+          <p className="text-center">Thanh toán COD</p>
+          <i className="ml-2 text-xl">
+            <HiChevronUp />
+          </i>
+        </div>
+
+        {voucherApplied !== null ? (
+          <div className="flex items-center justify-between px-2">
+            <p className="text-primary text-sm font-semibold text-center py-1">{voucherApplied}</p>
+            <Button text="Xóa" textDanger onClick={() => setVoucherApplied(null)} />
+          </div>
+        ) : (
+          <Button text="Mã khuyến mãi" textPrimary className="px-0" />
+        )}
+      </div>
+      <div className="w-full py-2 px-4">
+        <Button text={`Thanh toán ${NumberPipe(189000)}đ`} primary className="w-full" />
+      </div>
+    </div>
+  );
+};
 
 const InputNote = () => {
   const [note, setNote] = useState({ note: "" });

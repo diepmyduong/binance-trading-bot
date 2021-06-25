@@ -31,7 +31,17 @@ const Mutation = {
       timeFrames: [["07:00", "21:00"]],
       status: OperatingTimeStatus.OPEN,
     }));
-    return await shopBranchService.create(data);
+
+    return await shopBranchService.create({
+      shipPreparationTime: "30 phút",
+      shipDefaultDistance: 2,
+      shipDefaultFee: 15000,
+      shipNextFee: 5000,
+      shipOneKmFee: 0,
+      shipUseOneKmFee: true,
+      shipNote: "",
+      ...data,
+    });
   },
   updateShopBranch: async (root: any, args: any, context: Context) => {
     context.auth([ROLES.MEMBER]);

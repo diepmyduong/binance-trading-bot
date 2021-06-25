@@ -33,12 +33,7 @@ export function OrderDetailPage() {
         </div>
       </div>
       <div className="mt-1 bg-white">
-        <div className="flex px-4 items-center justify-between pt-2">
-          <p className="font-bold">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
-          <i className="">
-            <HiChevronRight />
-          </i>
-        </div>
+        <p className="font-bold px-4 py-2">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
         <div className="">
           {data.map((item, index) => {
             return (

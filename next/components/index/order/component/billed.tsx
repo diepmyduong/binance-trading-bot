@@ -2,13 +2,33 @@ import { HiChevronRight } from "react-icons/hi";
 import { NumberPipe } from "../../../../lib/pipes/number";
 import { Button } from "../../../shared/utilities/form/button";
 
-export function Billed({ item, index, status }) {
+interface PropsType extends ReactProps {
+  status: "Đang làm món" | "Đang giao" | "Đã giao" | "Đã hủy";
+  item?: any;
+  index: number;
+}
+export function Billed({ item, index, status }: PropsType) {
+  let style;
+  switch (status) {
+    case "Đang làm món":
+      style = "text-primary";
+      break;
+    case "Đang giao":
+      style = "text-warning";
+      break;
+    case "Đã giao":
+      style = "text-success";
+      break;
+    case "Đã hủy":
+      style = "text-danger";
+      break;
+  }
   return (
     <div className="w-full mt-1 bg-white text-sm" key={index}>
       <div className="flex items-center justify-between">
         <div className="p-2 flex flex-col">
           <div className="flex items-center justify-start">
-            <p className="text-primary font-bold text-sm">{status}</p>
+            <p className={`${style} font-bold text-sm`}>{status}</p>
             <p className="px-2">-</p>
             <p className="">24/12/2021</p>
           </div>

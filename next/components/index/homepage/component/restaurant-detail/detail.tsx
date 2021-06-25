@@ -119,7 +119,7 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
         onSubmit={() => {
           setOpenDialog(false);
         }}
-        className="px-4 pt-4"
+        className="px-4 py-4"
       >
         <Field label="Lời nhắn của khác hàng" name="note">
           <Textarea placeholder="Nhập Lời nhắn của khác hàng" />

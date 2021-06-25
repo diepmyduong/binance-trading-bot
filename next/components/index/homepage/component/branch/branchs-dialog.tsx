@@ -1,7 +1,9 @@
 import React from "react";
 import { Dialog, DialogPropsType } from "../../../../shared/utilities/dialog/dialog";
 import Branch from "./branch";
-interface Propstype extends DialogPropsType {}
+interface Propstype extends DialogPropsType {
+  onSelect?: (string) => void;
+}
 const BranchsDialog = (props: Propstype) => {
   const branchs = [
     {
@@ -52,10 +54,17 @@ const BranchsDialog = (props: Propstype) => {
       <Dialog.Body>
         <div
           className="flex flex-col text-sm sm:text-base overscroll-y-auto"
-          style={{ maxHeight: `calc(100vh - 250px)`, minHeight: `calc(100vh - 350px)` }}
+          style={{ maxHeight: `calc(100vh - 250px)`, minHeight: `calc(100vh - 100px)` }}
         >
           {branchs.map((item, index) => (
-            <Branch branch={item} key={index} />
+            <Branch
+              branch={item}
+              key={index}
+              onClick={() => {
+                props.onSelect(item.address);
+                props.onClose();
+              }}
+            />
           ))}
         </div>
       </Dialog.Body>

@@ -183,9 +183,8 @@ export class OrderGenerator {
     }
   }
   private async calculatePickupDeliveryFee() {
-    const [shopBranch, shopConfig, distance] = await Promise.all([
+    const [shopBranch, distance] = await Promise.all([
       ShopBranchModel.findById(this.order.shopBranchId),
-      ShopConfigModel.findOne({ memberId: this.seller._id }),
       this.calculateShopBranchDistance(
         this.order.shopBranchId,
         parseFloat(this.order.longitude),
@@ -208,11 +207,11 @@ export class OrderGenerator {
       if (!isOpen) throw Error("Cửa hàng không mở cửa.");
     }
     if (distance < 1) {
-      this.order.shipfee = shopConfig.shipOneKmFee;
+      this.order.shipfee = shopBranch.shipOneKmFee;
     } else {
       const nextDistance =
-        distance > shopConfig.shipDefaultDistance ? distance - shopConfig.shipDefaultDistance : 0;
-      this.order.shipfee = shopConfig.shipDefaultFee + shopConfig.shipNextFee * nextDistance;
+        distance > shopBranch.shipDefaultDistance ? distance - shopBranch.shipDefaultDistance : 0;
+      this.order.shipfee = shopBranch.shipDefaultFee + shopBranch.shipNextFee * nextDistance;
     }
   }
   private async calculateVNPostShipFee() {

@@ -92,7 +92,7 @@ export function Dialog({
 
   let el = (
     <div
-      className={`dialog-wrapper ${wrapperClass} ${!mobileMode && !isMobile ? "" : "mobile"}`}
+      className={`dialog-wrapper ${wrapperClass} ${!mobileMode ? "" : "mobile"}`}
       style={{ ...style }}
       onMouseDown={(e) => {
         e.stopPropagation();
@@ -146,7 +146,6 @@ export function Dialog({
       </div>
     </div>
   );
-
   return isOpen ? createPortal(el, document.getElementById(props.root || ROOT_ID)) : null;
 }
 

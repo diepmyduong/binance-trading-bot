@@ -40,13 +40,13 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
 
   function dialogScrollEvent() {
     let scrollCheckInterval = null;
-    let dialog = document.getElementsByClassName("form-dialog");
-    console.log("form-dialog", dialog);
+    console.log("dialogScrollEvent");
   }
   useEffect(() => {
-    document.addEventListener("scroll", dialogScrollEvent);
+    window.addEventListener("scroll", dialogScrollEvent);
+
     return () => {
-      document.removeEventListener("scroll", dialogScrollEvent);
+      window.removeEventListener("scroll", () => dialogScrollEvent);
     };
   }, []);
   return (
@@ -119,7 +119,7 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
         onSubmit={() => {
           setOpenDialog(false);
         }}
-        className="px-4 pt-4"
+        className="px-4 py-4"
       >
         <Field label="Lời nhắn của khác hàng" name="note">
           <Textarea placeholder="Nhập Lời nhắn của khác hàng" />

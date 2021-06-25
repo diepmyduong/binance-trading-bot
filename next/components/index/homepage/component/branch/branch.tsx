@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "../../../../shared/utilities/form/button";
 import StatusTime from "../../../../shared/infomation/status-time";
 interface Propstype extends ReactProps {
+  onClick?: () => void;
   branch: { place: string; address: string; isActive: boolean; openAt: string; closeAt: string };
 }
 const Branch = (props: Propstype) => {
@@ -16,7 +17,7 @@ const Branch = (props: Propstype) => {
           closeAt={props.branch.closeAt}
         />
       </div>
-      <Button outline primary text="Chọn" className="rounded-full" />
+      <Button outline primary text="Chọn" className="rounded-full" onClick={props.onClick} />
     </div>
   );
 };

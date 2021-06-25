@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { HiChevronRight, HiDocumentAdd } from "react-icons/hi";
+import { FaPen } from "react-icons/fa";
+import { HiChevronRight, HiChevronUp, HiDocumentAdd } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { useCartContext } from "../../../lib/providers/cart-provider";
-import { Accordion } from "../../shared/utilities/accordion/accordion";
 import { Button } from "../../shared/utilities/form/button";
 import { Field } from "../../shared/utilities/form/field";
 import { Form } from "../../shared/utilities/form/form";
@@ -12,7 +12,6 @@ import { InforPayment } from "./component/infor-payment";
 import { TicketVoucher } from "./component/ticket-voucher";
 
 export function PaymentPage() {
-  const [openDialog, setOpenDialog] = useState(false);
   const { cart, totalFood, totalMoney } = useCartContext();
   const [voucherApplied, setVoucherApplied] = useState(null);
   useEffect(() => {
@@ -20,19 +19,18 @@ export function PaymentPage() {
   }, []);
   return (
     <>
-      <div className="text-gray-700 ">
+      <div className="text-gray-700 h-screen">
         <InforPayment />
         <div className="mt-1 bg-white">
-          <div className="flex px-4 items-center justify-between pt-2">
-            <p className="font-bold">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
-            <i className="">
-              <HiChevronRight />
-            </i>
-          </div>
+          <p className="font-semibold px-4 py-2">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
           <div className="">
             {cart.map((item, index) => {
+              const last = cart.length - 1 == index;
               return (
-                <div className="flex px-4 items-start border-b border-gray-300 py-3" key={index}>
+                <div
+                  className={`flex px-4 items-start border-gray-300 py-3 ${!last && "border-b"}`}
+                  key={index}
+                >
                   <div className="font-bold text-primary flex items-center">
                     <p className="min-w-5 text-center">{item.qty}</p>
                     <p className="px-2">X</p>
@@ -47,16 +45,7 @@ export function PaymentPage() {
             })}
           </div>
         </div>
-        <Button
-          className="py-6 w-full mt-1 bg-white flex justify-start items-center"
-          onClick={() => setOpenDialog(true)}
-        >
-          <i className="text-3xl text-primary">
-            <HiDocumentAdd />
-          </i>
-          <p className="text-gray-400 ml-2">Nhập ghi chú</p>
-        </Button>
-
+        <InputNote />
         <div className="px-4 py-4 mt-1 bg-white ">
           <div className="flex justify-between items-center">
             <div className="">
@@ -76,7 +65,7 @@ export function PaymentPage() {
           </div>
         </div>
         {voucherApplied === null && (
-          <div className="px-4 py-6 flex w-full overflow-auto">
+          <div className="px-2 py-4 flex md:grid grid-cols-2 md:gap-2 w-full md:overflow-hidden overflow-auto mb-24">
             {dataVoucher.map((item, index) => {
               return (
                 <TicketVoucher
@@ -88,33 +77,79 @@ export function PaymentPage() {
             })}
           </div>
         )}
-        <div className="sticky shadow-2xl bottom-0 px-4 py-4 bg-white mt-2">
-          <div className="flex items-center justify-between">
-            <p className="">Thanh toán COD</p>
-            <p className="">|</p>
-            {voucherApplied !== null ? (
-              <div className="flex items-center justify-between px-2">
-                <p className="">{voucherApplied}</p>
-                <Button text="Xóa" textDanger onClick={() => setVoucherApplied(null)} />
-              </div>
-            ) : (
-              <Button text="Mã khuyến mãi" textPrimary className="px-0" />
-            )}
-          </div>
-          <div className="w-full pt-2">
-            <Button text={`Thanh toán ${NumberPipe(189000)}đ`} primary className="w-full" />
-          </div>
+        <div className="h-1"></div>
+        <ButtonPayment voucherApplied={voucherApplied} setVoucherApplied={setVoucherApplied} />
+      </div>
+    </>
+  );
+}
+
+const ButtonPayment = ({ voucherApplied, setVoucherApplied }) => {
+  return (
+    <div className="fixed max-w-lg w-full shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
+      <div className="grid grid-cols-2 px-4 border-t border-b border-gray-100 items-center justify-between">
+        <div className="flex items-center justify-center font-semibold w-full border-r h-full border-gray-100">
+          <p className="text-center">Thanh toán COD</p>
+          <i className="ml-2 text-xl">
+            <HiChevronUp />
+          </i>
         </div>
+
+        {voucherApplied !== null ? (
+          <div className="flex items-center justify-between px-2">
+            <p className="text-primary text-sm font-semibold text-center py-1">{voucherApplied}</p>
+            <Button text="Xóa" textDanger onClick={() => setVoucherApplied(null)} />
+          </div>
+        ) : (
+          <Button text="Mã khuyến mãi" textPrimary className="px-0" />
+        )}
+      </div>
+      <div className="w-full py-2 px-4">
+        <Button text={`Thanh toán ${NumberPipe(189000)}đ`} primary className="w-full" />
+      </div>
+    </div>
+  );
+};
+
+const InputNote = () => {
+  const [note, setNote] = useState({ note: "" });
+  const [openDialog, setOpenDialog] = useState(false);
+
+  return (
+    <>
+      <div className="mt-1">
+        {note.note != "" ? (
+          <div className="px-4 py-2 bg-white w-full">
+            <div className="flex items-center justify-between">
+              <p className="font-semibold">Ghi chú</p>
+              <i className="hover:text-primary cursor-pointer" onClick={() => setOpenDialog(true)}>
+                <FaPen />
+              </i>
+            </div>
+            <p className="">{note.note}</p>
+          </div>
+        ) : (
+          <Button
+            className="py-6 w-full mt-1 bg-white flex justify-start items-center"
+            onClick={() => setOpenDialog(true)}
+          >
+            <i className="text-3xl text-primary">
+              <HiDocumentAdd />
+            </i>
+            <p className="text-gray-400 ml-2">Nhập ghi chú</p>
+          </Button>
+        )}
       </div>
       <Form
         dialog
-        mobileMode
         isOpen={openDialog}
         onClose={() => setOpenDialog(false)}
-        onSubmit={() => {
+        initialData={note}
+        onSubmit={(data) => {
+          setNote(data);
           setOpenDialog(false);
         }}
-        className="px-4 pt-4"
+        className="px-4 py-4"
       >
         <Field label="Ghi chú" name="note">
           <Textarea placeholder="Nhập ghi chú" />
@@ -123,7 +158,7 @@ export function PaymentPage() {
       </Form>
     </>
   );
-}
+};
 
 const dataVoucher = [
   {

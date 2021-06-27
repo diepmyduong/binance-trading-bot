@@ -22,8 +22,15 @@ export type IShopBranch = BaseDocument & {
   location?: any; // Toạ độ
   coverImage?: string; // Hình ảnh cover
   isOpen?: boolean; //  Mở cửa
-
   operatingTimes?: OperatingTime[]; // Thời gian hoạt động
+  // Shopping config
+  shipPreparationTime?: string; // Thời gian chuẩn bị
+  shipDefaultDistance?: number; // Khoản cách giao hàng mặc định
+  shipDefaultFee?: number; // Phí giao hàng mặc định
+  shipNextFee?: number; // Phí ship cộng thêm mỗi km
+  shipOneKmFee?: number; // Phí ship dưới 1 km
+  shipUseOneKmFee?: boolean; // Bật phí ship dưới 1 km
+  shipNote?: string; // Ghi chú cho shipper
 };
 
 const shopBranchSchema = new Schema(
@@ -45,6 +52,13 @@ const shopBranchSchema = new Schema(
     coverImage: { type: String },
     operatingTimes: { type: [OperatingTimeSchema], default: [] },
     isOpen: { type: Boolean, default: false },
+    shipPreparationTime: { type: String },
+    shipDefaultDistance: { type: Number, default: 0, min: 0 },
+    shipDefaultFee: { type: Number, default: 0, min: 0 },
+    shipNextFee: { type: Number, default: 0, min: 0 },
+    shipOneKmFee: { type: Number, default: 0, min: 0 },
+    shipUseOneKmFee: { type: Boolean, default: false },
+    shipNote: { type: String },
   },
   { timestamps: true }
 );

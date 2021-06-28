@@ -11,6 +11,7 @@ import { CollaboratorProductModel } from "../collaboratorProduct/collaboratorPro
 import { CrossSaleModel } from "../crossSale/crossSale.model";
 import { MemberLoader } from "../member/member.model";
 import { OrderItemModel } from "../orderItem/orderItem.model";
+import { ProductLabelLoader } from "../productLabel/productLabel.model";
 import { ProductHelper } from "./product.helper";
 import { IProduct, ProductLoader, ProductModel, ProductType } from "./product.model";
 import { productService } from "./product.service";
@@ -95,6 +96,7 @@ const Product = {
   category: GraphQLHelper.loadById(CategoryLoader, "categoryId"),
   member: GraphQLHelper.loadById(MemberLoader, "memberId"),
   crossSaleOrdered: GraphQLHelper.requireRoles(ROLES.ADMIN_EDITOR_MEMBER),
+  labels: GraphQLHelper.loadManyById(ProductLabelLoader, "labelIds"),
   collaboratorProduct: async (root: IProduct, args: any, context: Context) => {
     let collaProduct = null;
     if (context.isCustomer()) {

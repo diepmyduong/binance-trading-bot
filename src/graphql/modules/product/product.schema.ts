@@ -36,6 +36,8 @@ const schema = gql`
     name: String
     basePrice: Float
     downPrice: Float
+    "Tỷ lệ giảm giá"
+    saleRate: Int
     subtitle: String
     intro: String
     image: String
@@ -64,6 +66,12 @@ const schema = gql`
 
     "Các topping cho sản phẩm"
     toppings: [UpdateProductToppingInput]
+    "Điểm đánh giá"
+    rating: Float
+    "Số lượng đã bán"
+    soldQty: Int
+    "Mã label"
+    labelIds: [ID]
   }
 
   type Product {
@@ -88,6 +96,8 @@ const schema = gql`
     basePrice: Float
     "Giá giảm"
     downPrice: Float
+    "Tỷ lệ giảm giá"
+    saleRate: Int
     "Mô tả ngắn"
     subtitle: String
     "Giới thiệu sản phẩm"
@@ -137,10 +147,17 @@ const schema = gql`
     weight: Int
     "Các topping cho sản phẩm"
     toppings: [ProductTopping]
+    "Điểm đánh giá"
+    rating: Float
+    "Số lượng đã bán"
+    soldQty: Int
+    "Mã label"
+    labelIds: [ID]
 
     category: Category
     member: Member
     collaboratorProduct: CollaboratorProduct
+    labels: [ProductLabel]
   }
 
   type ProductPageData {

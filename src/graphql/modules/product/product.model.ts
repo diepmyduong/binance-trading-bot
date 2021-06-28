@@ -17,35 +17,41 @@ export type IProduct = BaseDocument & {
   crossSaleOrdered?: number; // Tồn kho bán chéo
   type?: ProductType; // Loại sản phẩm
   basePrice?: number; // Gía bán
+  downPrice?: number; // Giá giảm
+  saleRate?: number; // Tỷ lệ giảm giá
   subtitle?: string; // Mô tả ngắn
   intro?: string; // Giới thiệu sản phẩm
   image?: string; // Hình ảnh đại diện
-  commission0: number; // Hoa hồng Mobifone
-  commission1: number; // Hoa hồng điểm bán
-  commission2: number; // Hoa hồng giới thiệu
-  commission3: number; // Hoa hồng kho
-  baseCommission: number; // Hoa hồng CHO ĐIỂM BÁN
-  enabledMemberBonus: boolean; // Thưởng cho điểm bán
-  enabledCustomerBonus: boolean; // Thưởng cho khách hàng
-  memberBonusFactor: number; // Hệ số thưởng điểm bán
-  customerBonusFactor: number; // Hệ số thưởng khách hàng
+  commission0?: number; // Hoa hồng Mobifone
+  commission1?: number; // Hoa hồng điểm bán
+  commission2?: number; // Hoa hồng giới thiệu
+  commission3?: number; // Hoa hồng kho
+  baseCommission?: number; // Hoa hồng CHO ĐIỂM BÁN
+  enabledMemberBonus?: boolean; // Thưởng cho điểm bán
+  enabledCustomerBonus?: boolean; // Thưởng cho khách hàng
+  memberBonusFactor?: number; // Hệ số thưởng điểm bán
+  customerBonusFactor?: number; // Hệ số thưởng khách hàng
   categoryId?: string; // Danh mục sản phẩm
   smsSyntax?: string; // Cú pháp SMS
   smsPhone?: string; // SMS tới số điện thoại
   priority: number; // độ ưu tiên
   allowSale?: boolean; // Mở bán
   memberId?: string; // Mã thành viên quản lý sản phẩm
-  qty: number;
-  outOfStock: boolean; //hết hàng
+  qty?: number;
+  outOfStock?: boolean; //hết hàng
 
-  width: number; // chiều rộng
-  length: number; // chiều dài
-  height: number; // chiều cao
-  weight: number; // cân nặng
+  width?: number; // chiều rộng
+  length?: number; // chiều dài
+  height?: number; // chiều cao
+  weight?: number; // cân nặng
 
-  viewCount: number;
+  viewCount?: number;
 
-  toppings: IProductTopping[]; // Các topping cho sản phẩm
+  toppings?: IProductTopping[]; // Các topping cho sản phẩm
+
+  rating?: number; // Điểm đánh giá
+  soldQty?: number; // Số lượng đã bán
+  labelIds?: string; // Mã label
 };
 
 const productSchema = new Schema(
@@ -62,6 +68,8 @@ const productSchema = new Schema(
       default: ProductType.RETAIL,
     },
     basePrice: { type: Number, default: 0 },
+    downPrice: { type: Number, default: 0 },
+    saleRate: { type: Number, default: 0 },
     subtitle: { type: String },
     intro: { type: String },
     image: { type: String },
@@ -88,6 +96,9 @@ const productSchema = new Schema(
 
     viewCount: { type: Number, default: 0 }, //số lượng người xem
     toppings: { type: [ProductToppingSchema], default: [] },
+    rating: { type: Number, default: 5, min: 1, max: 5 },
+    soldQty: { type: Number, default: 0 },
+    labelIds: { type: [{ type: Schema.Types.ObjectId, ref: "ProductLabel" }], default: [] },
   },
   { timestamps: true }
 );

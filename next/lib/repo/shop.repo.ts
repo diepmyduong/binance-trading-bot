@@ -75,11 +75,11 @@ export class ShopRepository extends CrudRepository<Shop> {
       })
       .then((res) => res.data["getShopData"] as Shop);
   }
-  async loginAnonymous(shopCode: "3MSHOP") {
+  async loginAnonymous(shopCode: string) {
     return await this.apollo
       .mutate({
         mutation: this.gql`mutation{
-          loginAnonymous(shopCode:"3MSHOP")
+          loginAnonymous(shopCode:"${shopCode}")
         }`,
       })
       // .then((res) => console.log(res));

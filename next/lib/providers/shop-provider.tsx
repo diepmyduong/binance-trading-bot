@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Shop, ShopService } from "../repo/shop.repo";
 import { useRouter } from "next/router";
 import { SetAnonymousToken } from "../graphql/auth.link";
+import { ProductService } from "../repo/product.repo";
 
 export const ShopContext = createContext<
   Partial<{
@@ -21,12 +22,17 @@ export function ShopProvider(props) {
   const [customer, setCustomer] = useState<any>();
   async function getShop() {
     if (props.code) {
+      console.log(props.code);
+
       let token = await ShopService.loginAnonymous(props.code);
       SetAnonymousToken(token);
     }
     if (props.shop) {
       setShop(props.shop);
     }
+    let res = await ProductService.getAll();
+    console.log(res);
+
     // let res = await ShopService.getShopData();
     // console.log(res);
     // if (res) {

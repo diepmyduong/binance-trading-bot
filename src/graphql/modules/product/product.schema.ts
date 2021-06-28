@@ -66,6 +66,10 @@ const schema = gql`
 
     "Các topping cho sản phẩm"
     toppings: [UpdateProductToppingInput]
+    "Điểm đánh giá"
+    rating: Float
+    "Số lượng đã bán"
+    soldQty: Int
   }
 
   type Product {
@@ -141,6 +145,10 @@ const schema = gql`
     weight: Int
     "Các topping cho sản phẩm"
     toppings: [ProductTopping]
+    "Điểm đánh giá"
+    rating: Float
+    "Số lượng đã bán"
+    soldQty: Int
 
     category: Category
     member: Member

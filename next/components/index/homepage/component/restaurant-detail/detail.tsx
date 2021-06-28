@@ -121,7 +121,7 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
           })}
         </div>
       </div>
-      <div className="sticky shadow-2xl bg-white -bottom-0 w-full px-4 py-4 flex items-center space-x-7">
+      <div className="fixed shadow-2xl bg-white -bottom-0 w-full px-4 py-4 flex items-center space-x-7">
         <IncreaseButton onChange={(count) => setCount(count)} />
         <Button
           primary

@@ -5,7 +5,7 @@ import MoreInfomation from "./more-infomation";
 import BannerPromtion from "./banner-promtion";
 import { Shop } from "../../../../../lib/repo/shop.repo";
 interface Propstype extends ReactProps {
-  shop: Shop;
+  shop: any;
 }
 
 const RestaurantInformation = (props: Propstype) => {
@@ -17,8 +17,8 @@ const RestaurantInformation = (props: Propstype) => {
         className="bannerShop"
       />
       <DefaultInfomation
-        className="center-item p-3 top-1/4 w-11/12 sm:mt-10"
-        info={{ name: props.shop.shopName, address: props.shop.address }}
+        className="center-item top-1/4 w-11/12 sm:mt-10"
+        info={{ name: props.shop.shopName }}
       />
       <MoreInfomation className="pt-20" />
       <BannerPromtion />

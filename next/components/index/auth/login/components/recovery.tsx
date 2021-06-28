@@ -11,7 +11,7 @@ interface PropsType extends ReactProps {
   setMode?: Function;
 }
 export function Recovery(props: PropsType) {
-  const { resetPasswordFirebaseEmail, throwErrorName, user } = useAuth();
+  const { resetPasswordFirebaseEmail, user } = useAuth();
   const toast = useToast();
   const alert = useAlert();
   const router = useRouter();
@@ -33,7 +33,7 @@ export function Recovery(props: PropsType) {
           });
       })
       .catch((err) => {
-        alert.error("Lỗi.", throwErrorName(err), "Xác nhận");
+        alert.error(`Gửi email khổi phục thất bại. ${err.message}`);
       });
   };
   return (

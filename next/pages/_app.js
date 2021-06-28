@@ -4,6 +4,7 @@ import { AlertProvider } from "../lib/providers/alert-provider";
 import { ToastProvider } from "../lib/providers/toast-provider";
 import { TooltipProvider } from "../lib/providers/tooltip-provider";
 import { AuthProvider } from "../lib/providers/auth-provider";
+import { CartProvider } from "../lib/providers/cart-provider";
 import "../style/style.scss";
 
 export default function App({ Component, pageProps }) {
@@ -24,9 +25,11 @@ export default function App({ Component, pageProps }) {
         <ToastProvider>
           <AlertProvider>
             <AuthProvider>
-              <Layout {...layoutProps}>
-                <Component {...pageProps} />
-              </Layout>
+              <CartProvider>
+                <Layout {...layoutProps}>
+                  <Component {...pageProps} />
+                </Layout>
+              </CartProvider>
             </AuthProvider>
           </AlertProvider>
         </ToastProvider>

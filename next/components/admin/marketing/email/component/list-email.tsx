@@ -1,18 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-  HiDocumentDuplicate,
-  HiMail,
-  HiOutlineMail,
-  HiOutlinePlusCircle,
-  HiPlus,
-  HiTrash,
-} from "react-icons/hi";
+import { HiDocumentDuplicate, HiOutlineMail, HiPlus, HiTrash } from "react-icons/hi";
 import { useAlert } from "../../../../../lib/providers/alert-provider";
 import { useToast } from "../../../../../lib/providers/toast-provider";
-import { Email } from "../../../../../lib/repo/email.repo";
-import { EmailType } from "../../../../../lib/repo/enum";
+import { Email, EmailType } from "../../../../../lib/repo/email.repo";
 import { Button } from "../../../../shared/utilities/form/button";
-import { Label } from "../../../../shared/utilities/form/label";
 import { Spinner } from "../../../../shared/utilities/spinner";
 import { useEmailContext } from "../providers/email-provider";
 import { FormEmail } from "./form-email";

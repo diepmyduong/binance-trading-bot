@@ -22,7 +22,7 @@
     "**/coverage": true
   },
   "editor.tabSize": 2,
-  "typescript.referencesCodeLens.enabled": true,
+  "typescript.referencesCodeLens.enabled": false,
   "appService.zipIgnorePattern": [".vscode{,/**}"],
   "appService.deploySubpath": "",
   "typescript.preferences.importModuleSpecifier": "relative",

@@ -7,6 +7,7 @@ import EmotionsEvaluate from "./emotions-evaluate";
 import BranchsDialog from "../branch/branchs-dialog";
 import PromotionsDialog from "../promotion/promotions-dialog";
 import { Button } from "../../../../shared/utilities/form/button";
+import { AiOutlineRight } from "react-icons/ai";
 interface Propstype extends ReactProps {}
 const MoreInfomation = (props: Propstype) => {
   const reactions = [
@@ -26,20 +27,10 @@ const MoreInfomation = (props: Propstype) => {
       icon: MoneyBag,
     },
   ];
-  const [showBranchs, setShowBranchs] = useState(false);
   const [showPromotions, setShowPromotions] = useState(false);
   return (
     <>
       <div className={`${props.className || ""}`}>
-        <div className="flex justify-between items-center border-b px-4">
-          <p>Có 23 chi nhánh</p>
-          <Button
-            textPrimary
-            onClick={() => setShowBranchs(true)}
-            text="Xem chi nhánh khác"
-            className="pr-0"
-          />
-        </div>
         <div className="flex items-center justify-between border-b px-4 ">
           <p className="flex items-center">
             <i className="text-primary p-0.5 border rounded-full text-10 border-primary mr-1">
@@ -51,7 +42,10 @@ const MoreInfomation = (props: Propstype) => {
             textPrimary
             onClick={() => setShowPromotions(true)}
             text=" Xem thêm"
-            className="pr-0"
+            className="pr-0 text-sm xs:text-base text-ellipsis"
+            icon={<AiOutlineRight />}
+            iconPosition="end"
+            iconClassName="text-gray-400"
           />
         </div>
         <div className="flex justify-between items-center px-4 ">
@@ -62,11 +56,17 @@ const MoreInfomation = (props: Propstype) => {
             </i>
             <p className="text-gray-400"> (688+)</p>
           </div>
-          <Button textPrimary text="Xem 365 bình luận" className="pr-0" />
+          <Button
+            textPrimary
+            text="Xem bình luận"
+            className="pr-0 text-sm xs:text-base text-ellipsis"
+            icon={<AiOutlineRight />}
+            iconPosition="end"
+            iconClassName="text-gray-400"
+          />
         </div>
       </div>
       <EmotionsEvaluate reactions={reactions} />
-      <BranchsDialog isOpen={showBranchs} onClose={() => setShowBranchs(false)} />
       <PromotionsDialog isOpen={showPromotions} onClose={() => setShowPromotions(false)} />
     </>
   );

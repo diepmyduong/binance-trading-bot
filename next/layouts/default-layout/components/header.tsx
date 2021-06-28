@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRef } from "react";
 import { Dropdown } from "../../../components/shared/utilities/popover/dropdown";
 import { useRouter } from "next/router";
@@ -9,6 +9,7 @@ import { Button } from "../../../components/shared/utilities/form/button";
 import { useAuth } from "../../../lib/providers/auth-provider";
 import CustomerLoginDialog from "../../../components/shared/utilities/dialog/customer-login-dialog";
 import { HiOutlineUserCircle } from "react-icons/hi";
+import { Img } from "../../../components/shared/utilities/img";
 
 export interface HeaderPropsType extends ReactProps {
   title?: string;
@@ -17,7 +18,7 @@ export interface HeaderPropsType extends ReactProps {
   showAvatar?: boolean;
 }
 export function Header({ ...props }: HeaderPropsType) {
-  const { shop, customer, cunstomerLogin, customerLogout } = useShopContext();
+  const { customer, cunstomerLogin, customerLogout, shop } = useShopContext();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const menus = [
@@ -52,14 +53,15 @@ export function Header({ ...props }: HeaderPropsType) {
     <>
       <header className={`fixed top-0 w-full z-100`}>
         <div className="w-full mx-auto h-14 flex justify-between items-center max-w-lg shadow bg-white px-4">
-          <Link href="#">
-            <div className="flex items-center">
-              <img src={shop.shopLogo || ""} className="h-10 w-10 object-contain" />
-              <p className="text-ellipsis-2 font-semibold px-2 text-sm sm:text-base">
-                {shop.shopName}
-              </p>
-            </div>
-          </Link>
+          <div
+            className="flex items-center cursor-pointer"
+            // onClick={() => router.push(`/?code=${shop.code}`)}
+          >
+            <Img src={shop.shopLogo || ""} className="h-10 w-10" />
+            <p className="text-ellipsis-2 font-semibold px-2 text-sm sm:text-base">
+              {shop.shopName}
+            </p>
+          </div>
           {!customer && <Button text="Đăng nhâp" primary small onClick={() => setIsOpen(true)} />}
           <button
             className={`btn text-primary bg-primary-light rounded-full flex items-center px-2 ${
@@ -68,7 +70,7 @@ export function Header({ ...props }: HeaderPropsType) {
             ref={userRef}
           >
             {/* <Img avatar src="/assets/default/avatar.png" className="w-10" /> */}
-            <i className="text-20">
+            <i className="text-20 pr-1">
               <FaUserAlt />
             </i>
             {customer}

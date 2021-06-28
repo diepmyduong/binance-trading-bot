@@ -29,8 +29,6 @@ const schema = gql`
     expiredDate: DateTime
     "Trạng thái voucher ${Object.values(CustomerVoucherStatus)}"
     status: String
-
-    voucher: ShopVoucher
   }
 
   type CustomerVoucherPageData {

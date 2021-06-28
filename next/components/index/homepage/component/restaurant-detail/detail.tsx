@@ -29,52 +29,61 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
   const [count, setCount] = useState(1);
   const [opacity, setOpacity] = useState("opacity-0");
   const ref = useRef(null);
+  const [intervalScroll, setIntervalScroll] = useState(0);
 
   function dialogScrollEvent() {
     let scrollCheckInterval = null;
-    let header = document.getElementsByClassName("form-dialog");
-    if (header) {
-      scrollCheckInterval = setInterval(() => {
-        if (header) {
-          const rect = header[0].getBoundingClientRect();
-          console.log("element", rect, ref);
-          if (header[0].clientHeight > 100) {
-            setOpacity("opacity-100");
-          }
-        }
-      }, 300);
-    }
+    scrollCheckInterval = setInterval(() => {
+      if (ref.current) {
+        let temp = parseInt(((ref.current.scrollTop / 215) * 10).toFixed(0)) * 10;
+        if (temp > 100) setOpacity("opacity-100");
+        else setOpacity("opacity-" + temp);
+      }
+    }, 300);
+    setIntervalScroll(scrollCheckInterval);
   }
   useEffect(() => {
     window.addEventListener("scroll", dialogScrollEvent);
 
     return () => {
-      window.removeEventListener("scroll", () => dialogScrollEvent);
+      clearInterval(intervalScroll);
     };
   }, []);
   return (
-    <div className="w-full h-full rounded bg-white">
-      <div
-        className="w-8 h-8 fixed top-2 right-2 z-200 bg-white rounded-full flex items-center justify-center cursor-pointer"
-        onClick={() => onClose()}
-      >
-        <i className="text-2xl text-gray-600 ">
-          <HiOutlineX />
-        </i>
+    <div ref={ref} className="w-full h-screen rounded bg-white overflow-y-auto">
+      <div className="relative w-full">
+        <div
+          className={`w-8 h-8 absolute right-2 top-2 z-200 rounded-full flex items-center justify-center cursor-pointer${
+            opacity == "opacity-100" ? "invisible" : "visible"
+          }`}
+          onClick={() => onClose()}
+        >
+          <i className="text-2xl text-gray-600 ">
+            <HiOutlineX />
+          </i>
+        </div>
       </div>
       <div
-        className={`z-50 ${opacity} fixed top-0 h-12 flex items-center justify-center w-full bg-white `}
+        className={`z-50 w-full ${opacity} fixed top-0 h-12 flex items-center justify-center max-w-lg bg-white `}
       >
-        <h2 className="text-xl text-center">{item.name}</h2>
+        <h2 className="text-xl text-center w-full flex-1">{item.name}</h2>
+        <div
+          className={`w-8 h-8 mr-2 z-200 rounded-full bg-gray-50 flex items-center justify-center cursor-pointer ${
+            opacity == "opacity-100" ? "visible" : "invisible"
+          }`}
+          onClick={() => onClose()}
+        >
+          <i className="text-2xl text-gray-600">
+            <HiOutlineX />
+          </i>
+        </div>
       </div>
-      <div className="w-full h-full sticky top-0">
+      <div className="w-full sticky top-0">
         <Img src={item.img} className="w-full" ratio169 />
       </div>
 
-      <div className="sticky overflow-auto h-full bg-white">
-        <h2 ref={ref} className="header-name px-4 pt-4 text-xl">
-          {item.name}
-        </h2>
+      <div ref={ref} className="sticky overflow-auto bg-white">
+        <h2 className="header-name px-4 pt-4 text-xl">{item.name}</h2>
         <div className="px-4 text-xs text-gray-600 py-1 flex items-center space-x-1">
           <i className="text-accent">
             <HiStar />

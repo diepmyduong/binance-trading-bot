@@ -18,6 +18,7 @@ export type IProduct = BaseDocument & {
   type?: ProductType; // Loại sản phẩm
   basePrice?: number; // Gía bán
   downPrice?: number; // Giá giảm
+  saleRate?: number; // Tỷ lệ giảm giá
   subtitle?: string; // Mô tả ngắn
   intro?: string; // Giới thiệu sản phẩm
   image?: string; // Hình ảnh đại diện
@@ -64,6 +65,7 @@ const productSchema = new Schema(
     },
     basePrice: { type: Number, default: 0 },
     downPrice: { type: Number, default: 0 },
+    saleRate: { type: Number, default: 0 },
     subtitle: { type: String },
     intro: { type: String },
     image: { type: String },

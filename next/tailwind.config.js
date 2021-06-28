@@ -32,14 +32,14 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          light: '#f0f8ff',
-          DEFAULT: '#3D9BE9',
-          dark: '#318ad4',
+          light: '#f7faff',
+          DEFAULT: '#0D57EF',
+          dark: '#0950e3',
         },
         accent: {
-          light: '#fffaf0',
-          DEFAULT: '#EC983E',
-          dark: '#e89a0c',
+          light: '#f2fcff',
+          DEFAULT: '#38D0FF',
+          dark: '#2dc0ed',
         },
         info: getSemanticColors(colors.blue),
         success: getSemanticColors(colors.green),

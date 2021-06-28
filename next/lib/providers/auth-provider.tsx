@@ -1,25 +1,37 @@
 import jwtDecode from "jwt-decode";
 import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
-import { ClearAuthToken, GetAuthToken, SetAuthToken } from "../graphql/auth.link";
+import {
+  ClearAuthToken,
+  ClearAuthTokenMember,
+  GetAuthToken,
+  GetAuthTokenMember,
+  SetAuthToken,
+  SetAuthTokenMember,
+} from "../graphql/auth.link";
 import { User, UserService } from "../repo/user.repo";
 import { firebase } from "../helpers/firebase";
+import { Member, MemberService } from "../repo/member.repo";
+import { GraphService } from "../repo/graph.repo";
 
 export const AuthContext = createContext<
   Partial<{
     user: User;
-    throwErrorName?: (any) => string;
     resetPasswordFirebaseEmail: (email: string) => Promise<any>;
     loginFirebaseEmail: (email: string, password: string) => Promise<any>;
     logout: () => Promise<any>;
-    loginMember: (username: string, password: string) => Promise<any>;
-    logoutMember: () => Promise<any>;
     updateUser: (data: User) => Promise<any>;
     updateUserPassword: (id: string, password: string) => Promise<any>;
     activeUser: (userId: string) => Promise<User>;
     blockUser: (userId: string) => Promise<User>;
+    member: Member;
+    checkMember: () => Promise<any>;
+    loginMemberByPassword: (username: string, password: string) => Promise<any>;
+    logoutMember: () => Promise<any>;
     redirectToAdminLogin: Function;
     redirectToAdmin: Function;
+    redirectToShopLogin: Function;
+    redirectToShop: Function;
     redirectToWebappLogin: Function;
     redirectToWebapp: Function;
   }>
@@ -30,6 +42,7 @@ export const PRE_LOGIN_PATHNAME = "pre-login-pathname";
 export function AuthProvider(props) {
   // undefined = chưa authenticated, null = chưa đăng nhập
   const [user, setUser] = useState<User>(undefined);
+  const [member, setMember] = useState<Member>(undefined);
   const router = useRouter();
   //authentication with firebase
   const throwErrorName = (err) => {
@@ -76,7 +89,25 @@ export function AuthProvider(props) {
   };
 
   const resetPasswordFirebaseEmail = async (email: string) => {
-    return await firebase.auth().sendPasswordResetEmail(email);
+    try {
+      let res = await firebase.auth().sendPasswordResetEmail(email);
+      return res;
+    } catch (err) {
+      let message = "";
+      switch (err.code) {
+        case "auth/email-already-in-use":
+          message = `Email "${email}" đã được sử dụng.`;
+        case "auth/invalid-email":
+          message = `Email "${email}" không hợp lệ.`;
+        case "auth/operation-not-allowed":
+          message = `Không thể thực hiện chức năng này.`;
+        case "auth/weak-password":
+          message = `Mật khẩu yếu.`;
+        default:
+          message = err.message;
+      }
+      throw new Error(message);
+    }
   };
 
   const loginFirebaseEmail = async (email: string, password: string) => {
@@ -90,7 +121,6 @@ export function AuthProvider(props) {
     } catch (err) {
       ClearAuthToken();
       setUser(null);
-      console.log("asdasd", err);
       let message = "";
       switch (err.code) {
         case "auth/user-not-found": {
@@ -119,6 +149,59 @@ export function AuthProvider(props) {
     await UserService.clearStore();
   };
 
+  const checkMember = async () => {
+    let memberToken = GetAuthTokenMember();
+    if (memberToken) {
+      if (member === undefined) {
+        try {
+          let res = await GraphService.mutate({
+            mutation: `
+              loginMember(idToken: "${memberToken}") {
+                member { ${MemberService.fullFragment} } token
+              }
+            `,
+          });
+          SetAuthTokenMember(res.data.g0.token);
+          setMember(res.data.g0.member);
+        } catch (err) {
+          ClearAuthTokenMember();
+          setMember(null);
+          throw err.message;
+        }
+      } else {
+        console.log("has member");
+        return member;
+      }
+    } else {
+      ClearAuthTokenMember();
+      setMember(null);
+    }
+  };
+
+  const loginMemberByPassword = async (username: string, password: string) => {
+    try {
+      let res = await GraphService.mutate({
+        mutation: `
+          loginMemberByPassword(username: "${username}", password: "${password}") {
+            member { ${MemberService.fullFragment} } token
+          }
+        `,
+      });
+      SetAuthTokenMember(res.data.g0.token);
+      setMember(res.data.g0.member);
+    } catch (err) {
+      ClearAuthTokenMember();
+      setMember(null);
+      throw err.message;
+    }
+  };
+
+  const logoutMember = async () => {
+    ClearAuthTokenMember();
+    setMember(null);
+    await MemberService.clearStore();
+  };
+
   const activeUser = async (userId) => {
     return UserService.activeUser(userId);
   };
@@ -130,6 +213,7 @@ export function AuthProvider(props) {
   const updateUserPassword = (id: string, password: string) => {
     return UserService.updateUserPassword(id, password);
   };
+
   const redirectToAdminLogin = () => {
     sessionStorage.setItem(PRE_LOGIN_PATHNAME, location.pathname);
     router.replace("/admin/login");
@@ -140,6 +224,21 @@ export function AuthProvider(props) {
     if (user) {
       if (pathname?.includes("/admin")) router.replace(pathname || "/admin");
       else router.replace("/admin");
+    } else {
+      router.replace("/");
+    }
+  };
+
+  const redirectToShopLogin = () => {
+    sessionStorage.setItem(PRE_LOGIN_PATHNAME, location.pathname);
+    router.replace("/shop/login");
+  };
+
+  const redirectToShop = () => {
+    let pathname = sessionStorage.getItem(PRE_LOGIN_PATHNAME);
+    if (member) {
+      if (pathname?.includes("/shop")) router.replace(pathname || "/shop");
+      else router.replace("/shop");
     } else {
       router.replace("/");
     }
@@ -165,12 +264,17 @@ export function AuthProvider(props) {
         activeUser,
         blockUser,
         updateUserPassword,
-        throwErrorName,
         loginFirebaseEmail,
         resetPasswordFirebaseEmail,
         logout,
+        member,
+        checkMember,
+        loginMemberByPassword,
+        logoutMember,
         redirectToAdminLogin,
         redirectToAdmin,
+        redirectToShopLogin,
+        redirectToShop,
         redirectToWebappLogin,
         redirectToWebapp,
       }}

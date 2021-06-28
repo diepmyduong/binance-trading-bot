@@ -1,7 +1,7 @@
 import { setContext } from "apollo-link-context";
 
 export function SetAuthToken(token: string) {
-  console.log("set token", token);
+  console.log("user token", token);
   localStorage.setItem("user-token", token);
 }
 
@@ -14,7 +14,7 @@ export function GetAuthToken() {
 }
 
 export function SetAuthTokenMember(token: string) {
-  console.log("set token", token);
+  console.log("member token", token);
   localStorage.setItem("member-token", token);
 }
 
@@ -45,8 +45,14 @@ export const AuthLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   return new Promise((resolve) => {
     let token = GetAuthToken();
-    if (!token) {
-      token = GetAnonymousToken();
+    if (location.pathname.startsWith("/shop")) {
+      token = GetAuthTokenMember();
+      console.log("shop token", token);
+    } else if (location.pathname.startsWith("/admin")) {
+      token = GetAuthToken();
+      console.log("admin token", token);
+    } else {
+      token = GetAuthToken() || GetAnonymousToken();
     }
     const ip = GetIP();
     const context = {

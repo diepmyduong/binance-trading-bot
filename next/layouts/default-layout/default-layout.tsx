@@ -8,20 +8,16 @@ import { DefaulLayoutProvider } from "./provider/default-layout-provider";
 import { useShopContext, ShopProvider, ShopConsumer } from "../../lib/providers/shop-provider";
 import { CartProvider } from "../../lib/providers/cart-provider";
 
-interface PropsType extends ReactProps, HeaderPropsType {}
-export function DefaultLayout({ ...props }: PropsType) {
+interface PropsType extends ReactProps, HeaderPropsType {
+  code?: string;
+  shop?: { shopName: string; shopLogo: string };
+}
+export function DefaultLayout({ code, shop, ...props }: PropsType) {
   const { user, redirectToWebappLogin } = useAuth();
-  const { shop } = useShopContext();
-
-  // useEffect(() => {
-  //   if (user === null) {
-  //     redirectToWebappLogin();
-  //   }
-  // }, [user]);
 
   return (
     <DefaulLayoutProvider>
-      <ShopProvider>
+      <ShopProvider code={code} shop={shop}>
         <CartProvider>
           <ShopConsumer>
             {({ shop }) => (

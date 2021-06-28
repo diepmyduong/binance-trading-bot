@@ -33,11 +33,21 @@ export function GetIP() {
 export function SetIP(ip: string) {
   return localStorage.setItem("user-ip", ip);
 }
+export function GetAnonymousToken() {
+  return sessionStorage.getItem("anonymous-token") || "";
+}
 
+export function SetAnonymousToken(token: string) {
+  console.log("set token", token);
+  sessionStorage.setItem("anonymous-token", token);
+}
 export const AuthLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   return new Promise((resolve) => {
-    const token = GetAuthToken();
+    let token = GetAuthToken();
+    if (!token) {
+      token = GetAnonymousToken();
+    }
     const ip = GetIP();
     const context = {
       headers: {

@@ -8,6 +8,7 @@ import BranchsDialog from "../branch/branchs-dialog";
 import PromotionsDialog from "../promotion/promotions-dialog";
 import { Button } from "../../../../shared/utilities/form/button";
 import { AiOutlineRight } from "react-icons/ai";
+import CommentsDialog from "../coments/comments-dialog";
 interface Propstype extends ReactProps {}
 const MoreInfomation = (props: Propstype) => {
   const reactions = [
@@ -28,6 +29,7 @@ const MoreInfomation = (props: Propstype) => {
     },
   ];
   const [showPromotions, setShowPromotions] = useState(false);
+  const [showComments, setShowComments] = useState(false);
   return (
     <>
       <div className={`${props.className || ""}`}>
@@ -63,11 +65,13 @@ const MoreInfomation = (props: Propstype) => {
             icon={<AiOutlineRight />}
             iconPosition="end"
             iconClassName="text-gray-400"
+            onClick={() => setShowComments(true)}
           />
         </div>
       </div>
       <EmotionsEvaluate reactions={reactions} />
       <PromotionsDialog isOpen={showPromotions} onClose={() => setShowPromotions(false)} />
+      <CommentsDialog isOpen={showComments} onClose={() => setShowComments(false)} />
     </>
   );
 };

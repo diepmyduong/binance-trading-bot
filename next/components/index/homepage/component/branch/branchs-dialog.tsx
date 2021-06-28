@@ -10,47 +10,46 @@ const BranchsDialog = (props: Propstype) => {
       place: "Quận 1",
       address: "172 Hai Bà Trưng, phường Đa Kao, Quận 1, thành phố Hồ Chí Minh",
       isActive: true,
-      openAt: "9:00",
-      closeAt: "21:00",
+      range: 1.2,
     },
     {
       place: "Quận 2",
       address: "65 đường Xuân Thủy, phường Thảo Điền, quận 2, Thành phố Hồ Chí Minh.",
+      range: 1.2,
       isActive: true,
-      openAt: "9:00",
-      closeAt: "21:00",
     },
     {
       place: "Quận 3",
       address: "414C – 414D Nguyễn Thị Minh Khai, Phường 5, Quận 3, Thành phố Hồ Chí Minh.",
       isActive: true,
-      openAt: "9:00",
-      closeAt: "21:00",
+      range: 1.2,
     },
     {
       place: "Quận 3",
       address: "Tầng trệt tòa nhà Số 538 đường CMT8, phường 11, quận 3, thành phố Hồ Chí Minh.",
+      range: 1.2,
       isActive: true,
-      openAt: "9:00",
-      closeAt: "21:00",
     },
     {
       place: "Quận 4",
       address: "192, 194 đường Khánh Hội, phường 6, quận 4, thành phố Hồ Chí Minh.",
+      range: 1.2,
       isActive: true,
-      openAt: "9:00",
-      closeAt: "21:00",
     },
     {
       place: "Quận 6",
       address: "10 – 12 đường Hậu Giang, Phường 2, Quận 6, Thành phố Hồ Chí Minh.",
+      range: 1.2,
       isActive: true,
-      openAt: "9:00",
-      closeAt: "21:00",
     },
   ];
   return (
-    <Dialog isOpen={props.isOpen} onClose={props.onClose} width="180px" title="Chọn chi nhánh">
+    <Dialog
+      isOpen={props.isOpen}
+      onClose={props.onClose}
+      width="180px"
+      title={`Chọn chi nhánh (${branchs.length})`}
+    >
       <Dialog.Body>
         <div
           className="flex flex-col text-sm sm:text-base overscroll-y-auto"

@@ -82,8 +82,8 @@ export class ShopRepository extends CrudRepository<Shop> {
           loginAnonymous(shopCode:"3MSHOP")
         }`,
       })
-      .then((res) => console.log(res));
-    // .then((res) => res.data["loginAnonymous"] as string);
+      // .then((res) => console.log(res));
+      .then((res) => res.data["loginAnonymous"] as string);
   }
 }
 export const ShopService = new ShopRepository();

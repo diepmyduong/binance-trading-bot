@@ -70,6 +70,8 @@ const schema = gql`
     rating: Float
     "Số lượng đã bán"
     soldQty: Int
+    "Mã label"
+    labelIds: [ID]
   }
 
   type Product {
@@ -149,10 +151,13 @@ const schema = gql`
     rating: Float
     "Số lượng đã bán"
     soldQty: Int
+    "Mã label"
+    labelIds: [ID]
 
     category: Category
     member: Member
     collaboratorProduct: CollaboratorProduct
+    labels: [ProductLabel]
   }
 
   type ProductPageData {

@@ -23,12 +23,17 @@ export function ShopProvider(props) {
   async function getShop() {
     if (props.code) {
       console.log(props.code);
-
       let token = await ShopService.loginAnonymous(props.code);
       SetAnonymousToken(token);
     }
     if (props.shop) {
       setShop(props.shop);
+      sessionStorage.setItem("shop", JSON.stringify(props.shop));
+    } else {
+      let shopStorage = sessionStorage.getItem("shop");
+      if (shopStorage) {
+        setShop(JSON.parse(shopStorage));
+      }
     }
     let res = await ProductService.getAll();
     console.log(res);

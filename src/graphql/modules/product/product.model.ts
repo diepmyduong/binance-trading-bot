@@ -17,6 +17,7 @@ export type IProduct = BaseDocument & {
   crossSaleOrdered?: number; // Tồn kho bán chéo
   type?: ProductType; // Loại sản phẩm
   basePrice?: number; // Gía bán
+  downPrice?: number; // Giá giảm
   subtitle?: string; // Mô tả ngắn
   intro?: string; // Giới thiệu sản phẩm
   image?: string; // Hình ảnh đại diện
@@ -62,6 +63,7 @@ const productSchema = new Schema(
       default: ProductType.RETAIL,
     },
     basePrice: { type: Number, default: 0 },
+    downPrice: { type: Number, default: 0 },
     subtitle: { type: String },
     intro: { type: String },
     image: { type: String },

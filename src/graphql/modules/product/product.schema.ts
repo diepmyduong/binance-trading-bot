@@ -35,6 +35,7 @@ const schema = gql`
     code: String
     name: String
     basePrice: Float
+    downPrice: Float
     subtitle: String
     intro: String
     image: String
@@ -85,6 +86,8 @@ const schema = gql`
     type: String
     "Gía bán"
     basePrice: Float
+    "Giá giảm"
+    downPrice: Float
     "Mô tả ngắn"
     subtitle: String
     "Giới thiệu sản phẩm"

@@ -18,30 +18,28 @@ export function DefaultLayout({ code, shop, ...props }: PropsType) {
   return (
     <DefaulLayoutProvider>
       <ShopProvider code={code} shop={shop}>
-        <CartProvider>
-          <ShopConsumer>
-            {({ shop }) => (
-              <>
-                {!shop ? (
-                  <Spinner />
-                ) : (
-                  <div className="flex flex-col min-h-screen relative">
-                    <>
-                      <DefaultHead />
-                      <Header {...props} />
-                      <div className="w-full max-w-lg mx-auto">
-                        <div className="w-full flex-1 mt-14 bg-bluegray-100 text-gray-700">
-                          {props.children}
-                        </div>
+        <ShopConsumer>
+          {({ shop }) => (
+            <>
+              {!shop ? (
+                <Spinner />
+              ) : (
+                <div className="flex flex-col min-h-screen relative">
+                  <>
+                    <DefaultHead />
+                    <Header {...props} code={code} />
+                    <div className="w-full max-w-lg mx-auto">
+                      <div className="w-full flex-1 mt-14 bg-bluegray-100 text-gray-700">
+                        {props.children}
                       </div>
-                      {/* <Footer /> */}
-                    </>
-                  </div>
-                )}
-              </>
-            )}
-          </ShopConsumer>
-        </CartProvider>
+                    </div>
+                    {/* <Footer /> */}
+                  </>
+                </div>
+              )}
+            </>
+          )}
+        </ShopConsumer>
       </ShopProvider>
     </DefaulLayoutProvider>
   );

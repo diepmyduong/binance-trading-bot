@@ -11,7 +11,7 @@ export default function Page(props) {
   return (
     (props.notFound && (
       <NoneLayout>
-        <NextSeo title={`Không tìm thấy shop`} />
+        <NextSeo title={`Không tìm thấy cửa hàng`} />
         <NotFoundShop />
       </NoneLayout>
     )) || (

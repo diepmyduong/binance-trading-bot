@@ -16,9 +16,10 @@ export interface HeaderPropsType extends ReactProps {
   search?: "invisible" | "show" | "hide";
   backgroundColor?: "white" | "primary";
   showAvatar?: boolean;
+  code?: string;
 }
-export function Header({ ...props }: HeaderPropsType) {
-  const { customer, cunstomerLogin, customerLogout, shop } = useShopContext();
+export function Header({ code, ...props }: HeaderPropsType) {
+  const { customer, cunstomerLogin, customerLogout, shop, shopCode } = useShopContext();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const menus = [
@@ -55,7 +56,7 @@ export function Header({ ...props }: HeaderPropsType) {
         <div className="w-full mx-auto h-14 flex justify-between items-center max-w-lg shadow bg-white px-4">
           <div
             className="flex items-center cursor-pointer"
-            // onClick={() => router.push(`/?code=${shop.code}`)}
+            onClick={() => router.push(`/?code=${shopCode}`)}
           >
             <Img src={shop.shopLogo || ""} className="h-10 w-10" />
             <p className="text-ellipsis-2 font-semibold px-2 text-sm sm:text-base">

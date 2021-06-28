@@ -167,7 +167,7 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
               <a
                 className={`${
                   chevron && "tab "
-                } hover:text-gray-800 hover:bg-primary-light flex-1 px-2 py-3 whitespace-nowrap font-bold cursor-pointer transition-all duration-300 ${
+                } text-center hover:text-gray-800 hover:bg-primary-light flex-1 px-2 py-3 whitespace-nowrap font-bold cursor-pointer transition-all duration-300 ${
                   (item.value !== value && "text-gray-400") || "text-gray-800"
                 }`}
                 key={item.value}

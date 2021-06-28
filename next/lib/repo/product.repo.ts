@@ -12,21 +12,14 @@ export interface Product extends BaseModel {
   id: string;
   code: string;
   name: string;
-  isPrimary: Boolean;
-  isCrossSale: Boolean;
+  isPrimary: boolean;
   type: string;
   basePrice: number;
-  subtitle: string;
+  subtitle?: string;
   image: string;
-  categoryId: string;
-  priority: number;
-  allowSale: Boolean;
-  outOfStock: Boolean;
-  width: number;
-  length: number;
-  height: number;
-  weight: number;
-  category: Category;
+  categoryId?: string;
+  priority?: number;
+  allowSale?: boolean;
 }
 export class ProductRepository extends CrudRepository<Product> {
   apiName: string = "Product";

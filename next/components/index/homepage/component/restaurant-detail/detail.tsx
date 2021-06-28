@@ -6,7 +6,7 @@ import { Label } from "../../../../shared/utilities/form/label";
 import { Radio } from "../../../../shared/utilities/form/radio";
 import { Img } from "../../../../shared/utilities/img";
 import { useCartContext } from "../../../../../lib/providers/cart-provider";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Form } from "../../../../shared/utilities/form/form";
 import { Field } from "../../../../shared/utilities/form/field";
 import { Textarea } from "../../../../shared/utilities/form/textarea";
@@ -27,20 +27,23 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
   const { cart, handleChange } = useCartContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [count, setCount] = useState(1);
-
-  function isInViewport(element) {
-    const rect = element.getBoundingClientRect();
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom / 2 <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-  }
+  const [opacity, setOpacity] = useState("opacity-0");
+  const ref = useRef(null);
 
   function dialogScrollEvent() {
     let scrollCheckInterval = null;
-    console.log("dialogScrollEvent");
+    let header = document.getElementsByClassName("form-dialog");
+    if (header) {
+      scrollCheckInterval = setInterval(() => {
+        if (header) {
+          const rect = header[0].getBoundingClientRect();
+          console.log("element", rect, ref);
+          if (header[0].clientHeight > 100) {
+            setOpacity("opacity-100");
+          }
+        }
+      }, 300);
+    }
   }
   useEffect(() => {
     window.addEventListener("scroll", dialogScrollEvent);
@@ -50,18 +53,28 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
     };
   }, []);
   return (
-    <div className="w-full h-full rounded bg-white form-dialog">
+    <div className="w-full h-full rounded bg-white">
       <div
-        className="w-8 h-8 absolute top-2 right-2 z-200 bg-white rounded-full flex items-center justify-center cursor-pointer"
+        className="w-8 h-8 fixed top-2 right-2 z-200 bg-white rounded-full flex items-center justify-center cursor-pointer"
         onClick={() => onClose()}
       >
-        <i className=" text-2xl text-gray-600 ">
+        <i className="text-2xl text-gray-600 ">
           <HiOutlineX />
         </i>
       </div>
-      <Img src={item.img} className="w-full" ratio169 />
-      <div className="sticky overflow-auto h-full">
-        <h2 className="px-4 pt-4 text-xl">{item.name}</h2>
+      <div
+        className={`z-50 ${opacity} fixed top-0 h-12 flex items-center justify-center w-full bg-white `}
+      >
+        <h2 className="text-xl text-center">{item.name}</h2>
+      </div>
+      <div className="w-full h-full sticky top-0">
+        <Img src={item.img} className="w-full" ratio169 />
+      </div>
+
+      <div className="sticky overflow-auto h-full bg-white">
+        <h2 ref={ref} className="header-name px-4 pt-4 text-xl">
+          {item.name}
+        </h2>
         <div className="px-4 text-xs text-gray-600 py-1 flex items-center space-x-1">
           <i className="text-accent">
             <HiStar />

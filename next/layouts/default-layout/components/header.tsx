@@ -23,21 +23,21 @@ export function Header({ code, ...props }: HeaderPropsType) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const menus = [
-    {
-      label: "Thông tin tài khoản",
-      icon: <FaUserAlt />,
-      onClick: () => router.push("#"),
-    },
+    // {
+    //   label: "Thông tin tài khoản",
+    //   icon: <FaUserAlt />,
+    //   onClick: () => router.push("#"),
+    // },
     // {
     //   label: "Quản lý tài khoản",
     //   icon: <HiOutlineUserCircle />,
     //   onClick: () => router.push("/"),
     // },
-    // {
-    //   label: "Lịch sử đặt hàng",
-    //   icon: <FaHistory />,
-    //   onClick: () => router.push("#"),
-    // },
+    {
+      label: "Lịch sử đặt hàng",
+      icon: <FaHistory />,
+      onClick: () => router.push("/order"),
+    },
     {
       label: "Khuyến mãi",
       icon: <FaPercent />,

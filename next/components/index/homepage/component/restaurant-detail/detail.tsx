@@ -20,10 +20,12 @@ interface PropsType extends ReactProps {
     price: number;
     img: string;
     rating?: number | string;
+    basePrice?: number;
   };
   onClose: () => void;
 }
 export function RestaurantDetail({ item, onClose }: PropsType) {
+  console.log("item", item);
   const { cart, handleChange } = useCartContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [count, setCount] = useState(1);
@@ -90,7 +92,7 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
           </i>
           <div className="font-bold">{"4.6"}</div>
           <div className="px-2">-</div>
-          <div className="">{`Đã bán ${item.sold}`}</div>
+          <div className="">{`Đã bán ${item.sold || 0}`}</div>
         </div>
         <p className="px-4 text-sm text-gray-500">{item.des}</p>
         <Button
@@ -121,11 +123,12 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
           })}
         </div>
       </div>
-      <div className="sticky shadow-2xl bg-white -bottom-0 w-full px-4 py-4 flex items-center space-x-7">
+      <div className="h-22"></div>
+      <div className="fixed shadow-2xl bg-white -bottom-0 max-w-lg w-full px-4 py-4 flex items-center space-x-7">
         <IncreaseButton onChange={(count) => setCount(count)} />
         <Button
           primary
-          text={`Thêm ${NumberPipe(item.price * count)} đ`}
+          text={`Thêm ${NumberPipe(item.basePrice * count)} đ`}
           className="w-full"
           onClick={() => {
             handleChange(-1, item);

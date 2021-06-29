@@ -38,9 +38,9 @@ const Menu = (props: PropsType) => {
                 <p>{item.name}</p>
                 <Rating rating={item.rating || 4.8} numRated={item.rating || 688} textSm />
                 <p className="text-gray-400 text-sm">{item.des}</p>
-                <Price price={item.price} textDanger />
+                <Price price={item.basePrice} textDanger />
               </div>
-              <Img src={item.img} className="w-24 h-24 rounded-sm" />
+              <Img src={item.image} className="w-24 h-24 rounded-sm" />
             </div>
           ))}
         </>

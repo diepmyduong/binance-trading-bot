@@ -3,6 +3,7 @@ import { NumberPipe } from "../../../lib/pipes/number";
 interface Propstype extends ReactProps {
   price: string | number;
   textDanger?: boolean;
+  downPrict?: string | number;
 }
 
 const Price = (props: Propstype) => {

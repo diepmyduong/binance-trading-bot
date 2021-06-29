@@ -10,7 +10,7 @@ const RestaurantMenus = (props: PropsType) => {
   return (
     <div className="bg-white mt-4">
       <MustTryMenu />
-      {productShop && <Menus cats={productShop} />}
+      {(productShop?.length > 0 && <Menus cats={productShop} />) || "Chưa có sản phẩm"}
     </div>
   );
 };

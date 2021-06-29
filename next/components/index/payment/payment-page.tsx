@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
+
+import { Swiper, SwiperSlide } from "swiper/react";
 import { HiChevronRight, HiChevronUp, HiDocumentAdd } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { useCartContext } from "../../../lib/providers/cart-provider";
@@ -64,22 +66,22 @@ export function PaymentPage() {
             <div className="text-accent">{NumberPipe(40000)}đ</div>
           </div>
         </div>
-        {voucherApplied === null ? (
-          <div className="px-2 py-4 flex md:grid grid-cols-2 md:gap-2 w-full md:overflow-hidden overflow-auto mb-24">
+        <div className="px-2 py-4 flex w-full md:overflow-hidden overflow-auto z-0">
+          <Swiper freeMode slidesPerView={"auto"} spaceBetween={2} className="pb-4">
             {dataVoucher.map((item, index) => {
               return (
-                <TicketVoucher
-                  item={item}
-                  index={index}
-                  onClick={() => setVoucherApplied(item.title)}
-                />
+                <SwiperSlide className="w-11/12 min-w-max" key={index}>
+                  <TicketVoucher
+                    item={item}
+                    index={index}
+                    onClick={() => setVoucherApplied(item.title)}
+                  />
+                </SwiperSlide>
               );
             })}
-          </div>
-        ) : (
-          <div className="h-28"></div>
-        )}
-        <div className="h-1"></div>
+          </Swiper>
+        </div>
+        <div className="h-24"></div>
         <ButtonPayment voucherApplied={voucherApplied} setVoucherApplied={setVoucherApplied} />
       </div>
     </>
@@ -88,7 +90,7 @@ export function PaymentPage() {
 
 const ButtonPayment = ({ voucherApplied, setVoucherApplied }) => {
   return (
-    <div className="fixed max-w-lg w-full shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
+    <div className="fixed max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
       <div className="grid grid-cols-2 px-4 border-t border-b border-gray-100 items-center justify-between">
         <div className="flex items-center justify-center font-semibold w-full border-r h-full border-gray-100">
           <p className="text-center">Thanh toán COD</p>
@@ -163,6 +165,30 @@ const InputNote = () => {
 };
 
 const dataVoucher = [
+  {
+    title: "Giảm 40k cho đơn từ 150k",
+    duedate: "6/8/2021",
+  },
+  {
+    title: "Giảm 40k cho đơn từ 150k",
+    duedate: "6/8/2021",
+  },
+  {
+    title: "Giảm 40k cho đơn từ 150k",
+    duedate: "6/8/2021",
+  },
+  {
+    title: "Giảm 40k cho đơn từ 150k",
+    duedate: "6/8/2021",
+  },
+  {
+    title: "Giảm 40k cho đơn từ 150k",
+    duedate: "6/8/2021",
+  },
+  {
+    title: "Giảm 40k cho đơn từ 150k",
+    duedate: "6/8/2021",
+  },
   {
     title: "Giảm 40k cho đơn từ 150k",
     duedate: "6/8/2021",

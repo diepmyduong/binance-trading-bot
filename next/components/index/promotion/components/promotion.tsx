@@ -1,6 +1,5 @@
 import React from "react";
-import { Img } from "../../../../shared/utilities/img";
-import { Button } from "../../../../shared/utilities/form/button";
+import { Img } from "../../../shared/utilities/img";
 interface Propstype extends ReactProps {
   promotion: any;
 }

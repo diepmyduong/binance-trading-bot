@@ -62,6 +62,7 @@ const CommentsDialog = (props: Propstype) => {
       onClose={props.onClose}
       title={`Danh sách bình luận (${comments.length})`}
       mobileSizeMode
+      slideFromBottom="all"
     >
       <Dialog.Body>
         <div

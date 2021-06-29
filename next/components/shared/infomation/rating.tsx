@@ -2,9 +2,10 @@ import React from "react";
 import { HiStar } from "react-icons/hi";
 interface Propstype extends ReactProps {
   rating: number | string;
-  numRated: number | string;
+  numRated?: number | string;
   textSm?: boolean;
   textLg?: boolean;
+  ratingTime?: string;
 }
 
 const Rating = (props: Propstype) => {
@@ -22,7 +23,8 @@ const Rating = (props: Propstype) => {
         <HiStar />
       </i>
       <span className="font-bold mx-1">{props.rating}</span>
-      <p className="text-gray-400"> ({props.numRated}+)</p>
+      {props.numRated && <p className="text-gray-400"> ({props.numRated}+)</p>}
+      {props.ratingTime && <p className="text-gray-400 text-sm"> {props.ratingTime}</p>}
     </div>
   );
 };

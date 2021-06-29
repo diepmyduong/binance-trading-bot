@@ -9,56 +9,49 @@ export interface ProductParam {
 }
 
 export interface Product extends BaseModel {
+  id: string;
   code: string;
   name: string;
-  images: string[];
-  youtubeLink: string;
+  isPrimary: boolean;
+  type: string;
   basePrice: number;
-  shortDesc: string;
-  description: string;
-  params: ProductParam[];
-  profitRate: number;
-  unit: string;
-  categoryId: string;
-  categoryIds: string[];
-  category: Category;
-  categories: Category[];
+  subtitle?: string;
+  image: string;
+  categoryId?: string;
+  priority?: number;
+  allowSale?: boolean;
 }
 export class ProductRepository extends CrudRepository<Product> {
   apiName: string = "Product";
   displayName: string = "sản phẩm";
   shortFragment: string = this.parseFragment(`
-    id: String
-    createdAt: DateTime
-    updatedAt: DateTime
-    images: [String]
-    code: String
-    name: String
-    basePrice: Int
-    shortDesc: String
-    profitRate: Int
-    categoryId: ID
-    category { id name profitRate parentProps }: Category
-    unit: string;
-    categoryIds: [ID]`);
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  code: String
+  name: String
+  isPrimary: Boolean
+  type: String
+  basePrice: Float
+  subtitle: String
+  intro: String
+  image: String
+  categoryId: ID
+  `);
   fullFragment: string = this.parseFragment(`
-    id: String
-    createdAt: DateTime
-    updatedAt: DateTime
-    code: String
-    name: String
-    images: [String]
-    youtubeLink: String
-    basePrice: Int
-    shortDesc: String
-    description: String
-    unit: string;
-    params { value label }: [ProductParam]
-    profitRate: Int
-    categoryId: ID
-    categoryIds: [ID]
-    category { id name profitRate parentProps }: Category
-    categories { id name code }: [Category]`);
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  code: String
+  name: String
+  isPrimary: Boolean
+  type: String
+  basePrice: Float
+  subtitle: String
+  intro: String
+  image: String
+  categoryId: ID
+  `);
 
   async copyProduct(productId: string, parentCategoryId: string): Promise<Product> {
     return await this.mutate({

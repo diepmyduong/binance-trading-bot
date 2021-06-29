@@ -1,3 +1,5 @@
+import isSameDay from "date-fns/isSameDay";
+import endOfDay from "date-fns/endOfDay";
 import format from "date-fns/format";
 import vi from "date-fns/locale/vi";
 import { forwardRef, MutableRefObject, useEffect, useRef, useState } from "react";
@@ -81,14 +83,14 @@ export function DatePicker({
     if (props.selectsRange) {
       setRange({
         startDate: date[0],
-        endDate: date[1],
+        endDate: date[1] ? endOfDay(new Date(date[1])) : null,
       });
       if (date[0] && date[1]) {
         ref.current.setOpen(false);
         if (props.onChange) {
           props.onChange({
             startDate: date[0],
-            endDate: date[1],
+            endDate: date[1] ? endOfDay(new Date(date[1])) : null,
           });
           setTimeout(() => {
             ref.current.input.focus();
@@ -134,10 +136,10 @@ export function DatePicker({
   const clearDate = () => {
     if (props.selectsRange) {
       setRange(null);
-      if (props.onChange) props.onChange(range);
+      if (props.onChange) props.onChange(null);
     } else {
       setValue(null);
-      if (props.onChange) props.onChange(range);
+      if (props.onChange) props.onChange(null);
     }
   };
 
@@ -170,7 +172,9 @@ export function DatePicker({
           value={
             range?.startDate
               ? `${format(range.startDate, "dd/MM/yyyy")}${
-                  range?.endDate ? ` - ${format(range.endDate, "dd/MM/yyyy")}` : ""
+                  range?.endDate && !isSameDay(range.startDate, range.endDate)
+                    ? ` - ${format(range.endDate, "dd/MM/yyyy")}`
+                    : ""
                 }`
               : ""
           }

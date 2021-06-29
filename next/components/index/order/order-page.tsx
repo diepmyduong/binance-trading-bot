@@ -1,10 +1,12 @@
 import { HiChevronRight } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { Button } from "../../shared/utilities/form/button";
+import SwitchTabs from "../../shared/utilities/tab/switch-tabs";
 import { TabGroup } from "../../shared/utilities/tab/tab-group";
 import { Billed } from "./component/billed";
 
 export function OrderPage() {
+  const status = ["Đang làm món", "Đang giao", "Đã giao", "Đã hủy"];
   return (
     <div className="w-full">
       <TabGroup>

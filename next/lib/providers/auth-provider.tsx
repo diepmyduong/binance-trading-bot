@@ -209,7 +209,7 @@ export function AuthProvider(props) {
           ${MemberService.fullFragment}
         }
       `,
-      variablesParams: `(data: UpdateMemberInput!)`,
+      variablesParams: `($data: UpdateMemberInput!)`,
       options: {
         variables: {
           data,
@@ -217,7 +217,7 @@ export function AuthProvider(props) {
       },
     })
       .then((res) => {
-        setMember(res.data.g0);
+        setMember({ ...member, ...data });
         return res.data.g0;
       })
       .catch((err) => {

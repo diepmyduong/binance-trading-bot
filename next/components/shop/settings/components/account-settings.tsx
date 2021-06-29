@@ -9,11 +9,24 @@ import { Input } from "../../../shared/utilities/form/input";
 
 export function AccountSettings() {
   const { member, memberUpdateMe } = useAuth();
+  const [submitting, setSubmitting] = useState(false);
   const [openChangepassword, setOpenChangePassword] = useState(false);
   const toast = useToast();
 
+  const onSubmit = async (data) => {
+    try {
+      setSubmitting(true);
+      await memberUpdateMe(data);
+      toast.success("Lưu thay đổi thành công");
+    } catch (err) {
+      toast.error("Lưu thay đổi thất bại. " + err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
-    <Form initialData={member} className="max-w-screen-sm">
+    <Form initialData={member} className="max-w-screen-sm animate-emerge" onSubmit={onSubmit}>
       <div className="text-gray-400 font-semibold mt-6 mb-4 pl-1 text-lg">Thông tin tài khoản</div>
       <Field label="Email đăng nhập" name="username" readonly>
         <Input className="h-12" />
@@ -34,7 +47,7 @@ export function AccountSettings() {
           text="Đổi mật khẩu"
           onClick={() => setOpenChangePassword(true)}
         />
-        <Button primary className="bg-gradient" text="Lưu thay đổi" />
+        <Button primary className="bg-gradient" text="Lưu thay đổi" submit isLoading={submitting} />
       </Form.Footer>
 
       <Form

@@ -14,6 +14,7 @@ export function GeneralSettings() {
   const avatarUploaderRef = useRef<any>();
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingMemberAvatar, setUploadingMemberAvatar] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [starRating, setStarRating] = useState<number>(4.7);
   const toast = useToast();
 
@@ -21,20 +22,34 @@ export function GeneralSettings() {
     // setStarRating(member.s)
   }, [member]);
 
+  const onSubmit = async (data) => {
+    toast.success("Chức năng chưa hoạt động");
+    return;
+    try {
+      setSubmitting(true);
+      await memberUpdateMe(data);
+      toast.success("Lưu thay đổi thành công");
+    } catch (err) {
+      toast.error("Lưu thay đổi thất bại. " + err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const onAvatarChange = async (image: string) => {
     try {
       setUploadingMemberAvatar(true);
       await memberUpdateMe({ image });
       toast.success("Cập nhật ảnh đại diện cửa hàng thành công");
     } catch (err) {
-      toast.success("Cập nhật ảnh đại diện cửa hàng thất bại. " + err.message);
+      toast.error("Cập nhật ảnh đại diện cửa hàng thất bại. " + err.message);
     } finally {
       setUploadingMemberAvatar(false);
     }
   };
 
   return (
-    <Form initialData={member} className="max-w-screen-sm">
+    <Form initialData={member} className="max-w-screen-sm animate-emerge" onSubmit={onSubmit}>
       <div className="text-gray-400 font-semibold mt-6 mb-4 pl-1 text-lg">Thông tin cơ bản</div>
       <div className="flex items-center mb-4">
         <Img className="w-14" src={member.shopLogo} avatar />
@@ -80,7 +95,6 @@ export function GeneralSettings() {
               {[1, 2, 3, 4, 5].map((star) => {
                 let width = "0";
                 const rest = starRating - star;
-                console.log(starRating, star, rest);
                 if (rest > 1) {
                   width = "100%";
                 } else if (rest > 0) {
@@ -88,7 +102,7 @@ export function GeneralSettings() {
                   width = (pecent > 100 ? 100 : pecent) + "%";
                 }
                 return (
-                  <div className="mr-2 relative">
+                  <div className="mr-2 relative" key={star}>
                     <i className="text-xl text-gray-400">
                       <RiStarFill />
                     </i>
@@ -117,10 +131,13 @@ export function GeneralSettings() {
       >
         <Input
           multi
-          className="h-12 inline-grid"
+          className="min-h-12 inline-grid"
           value={["😍 Phục vụ thân thiện (42)", "😋 Món ngon (27)", "💰 Giá tốt (19)"]}
         />
       </Field>
+      <Form.Footer className="justify-end gap-3">
+        <Button primary className="bg-gradient" text="Lưu thay đổi" submit isLoading={submitting} />
+      </Form.Footer>
     </Form>
   );
 }

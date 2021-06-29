@@ -64,7 +64,7 @@ export function PaymentPage() {
             <div className="text-accent">{NumberPipe(40000)}đ</div>
           </div>
         </div>
-        {voucherApplied === null && (
+        {voucherApplied === null ? (
           <div className="px-2 py-4 flex md:grid grid-cols-2 md:gap-2 w-full md:overflow-hidden overflow-auto mb-24">
             {dataVoucher.map((item, index) => {
               return (
@@ -76,6 +76,8 @@ export function PaymentPage() {
               );
             })}
           </div>
+        ) : (
+          <div className="h-28"></div>
         )}
         <div className="h-1"></div>
         <ButtonPayment voucherApplied={voucherApplied} setVoucherApplied={setVoucherApplied} />

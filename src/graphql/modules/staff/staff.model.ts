@@ -10,6 +10,7 @@ export type IStaff = BaseDocument & {
   name?: string; // Tên nhân viên
   phone?: string; // Điện thoại nhân viên
   avatar?: string; // Ảnh đại diện
+  address?: string; // Địa chỉ liên hệ
 };
 
 const staffSchema = new Schema(
@@ -20,6 +21,7 @@ const staffSchema = new Schema(
     name: { type: String, required: true },
     phone: { type: String },
     avatar: { type: String },
+    address: { type: String },
   },
   { timestamps: true }
 );

@@ -25,6 +25,8 @@ const schema = gql`
     phone: String
     "Ảnh đại diện"
     avatar: String
+    "Địa chỉ liên hệ"
+    address: String
   }
 
   input UpdateStaffInput {
@@ -36,6 +38,8 @@ const schema = gql`
     phone: String
     "Ảnh đại diện"
     avatar: String
+    "Địa chỉ liên hệ"
+    address: String
   }
 
   type Staff {
@@ -53,6 +57,8 @@ const schema = gql`
     phone: String
     "Ảnh đại diện"
     avatar: String
+    "Địa chỉ liên hệ"
+    address: String
   }
 
   type StaffPageData {

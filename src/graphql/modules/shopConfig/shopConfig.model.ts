@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
+
+import { BaseDocument, ModelHook, ModelLoader } from "../../../base/baseModel";
 import { MainConnection } from "../../../loaders/database";
-import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
+import { ShopBanner, ShopBannerSchema } from "./shopBanner.graphql";
+
 const Schema = mongoose.Schema;
 
 export type IShopConfig = BaseDocument & {
@@ -18,6 +21,8 @@ export type IShopConfig = BaseDocument & {
   shipOneKmFee?: number; // Phí ship dưới 1 km
   shipUseOneKmFee?: boolean; // Bật phí ship dưới 1 km
   shipNote?: string; // Ghi chú cho shipper
+  // Banner hiển thị
+  banners?: ShopBanner[]; // Banner của shop
 };
 
 const shopConfigSchema = new Schema(
@@ -34,6 +39,7 @@ const shopConfigSchema = new Schema(
     shipOneKmFee: { type: Number, default: 0, min: 0 },
     shipUseOneKmFee: { type: Boolean, default: false },
     shipNote: { type: String },
+    banners: { type: [ShopBannerSchema], default: [] },
   },
   { timestamps: true }
 );

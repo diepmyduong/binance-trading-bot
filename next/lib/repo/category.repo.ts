@@ -1,42 +1,61 @@
 import { BaseModel, CrudRepository } from "./crud.repo";
+import { Product } from "./product.repo";
 
 export interface Category extends BaseModel {
   name: string;
   code: string;
-  agency: boolean;
-  parentIds: string[];
-  subCategoryIds: string[];
-  profitRate: number;
-  properties: string[];
-  parentProps: string[];
-  parents: Category[];
-  subCategories: Category[];
+  isPrimary;
+  productIds: string;
+  priority: number;
+  products: Product[];
 }
 export class CategoryRepository extends CrudRepository<Category> {
   apiName: string = "Category";
   displayName: string = "danh mục sản phẩm";
   shortFragment: string = this.parseFragment(`
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  memberId: ID
+  name: String
+  code: String
+  isPrimary: Boolean
+  productIds: [ID]
+  priority: Int
+  products{
     id: String
-    createdAt: DateTime
-    updatedAt: DateTime
     code: String
     name: String
-    parentIds: [String]
-    subCategoryIds: [String]`);
+    isPrimary: Boolean
+    isCrossSale: Boolean
+    type: String
+    basePrice: Float
+    subtitle:String
+    intro:String
+    image:String
+    }: [Product]`);
   fullFragment: string = this.parseFragment(`
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  memberId: ID
+  name: String
+  code: String
+  isPrimary: Boolean
+  productIds: [ID]
+  priority: Int
+  products{
     id: String
-    createdAt: DateTime
-    updatedAt: DateTime
     code: String
     name: String
-    agency: Boolean
-    parentIds: [String]
-    subCategoryIds: [String]
-    profitRate: Float
-    properties: [String]
-    parentProps: [String]
-    parents { id name }: [Category]
-    subCategories { id name }: [Category]`);
+    isPrimary: Boolean
+    isCrossSale: Boolean
+    type: String
+    basePrice: Float
+    subtitle:String
+    intro:String
+    image:String
+    }: [Product]`);
 
   async copyCategory(categoryId: string, parentCategoryId: string): Promise<Category> {
     return await this.mutate({

@@ -34,3 +34,11 @@ export class EmailRepository extends CrudRepository<Email> {
 }
 
 export const EmailService = new EmailRepository();
+
+export enum EmailType {
+  CUSTOM = "CUSTOM", // Tuỳ chỉnh
+  ACTIVE_PASSWORD = "ACTIVE_PASSWORD", // Kích hoạt mật khẩu
+  GREETING_ACTIVATED = "GREETING_ACTIVATED", // Chào mừng kích hoạt thành công
+  ONETIME_OTP = "ONETIME_OTP", // Thông báo tạo mã OTP thành công
+  RESET_PASSWORD = "RESET_PASSWORD", // Thông báo yêu cầu reset mật khẩu
+}

@@ -1,6 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Shop, ShopService } from "../repo/shop.repo";
 import { useRouter } from "next/router";
+import { SetAnonymousToken } from "../graphql/auth.link";
+import { Product, ProductService } from "../repo/product.repo";
+import cloneDeep from "lodash/cloneDeep";
+import { Category, CategoryService } from "../repo/category.repo";
 
 export const ShopContext = createContext<
   Partial<{
@@ -10,22 +14,50 @@ export const ShopContext = createContext<
     setProductIdSelected: any;
     cunstomerLogin: Function;
     customerLogout: Function;
+    shopCode: string;
+    productShop: Category[];
   }>
 >({});
 export function ShopProvider(props) {
   const router = useRouter();
+  const [shopCode, setShopCode] = useState<string>();
   const [shop, setShop] = useState<Shop>();
   const [productIdSelected, setProductIdSelected] = useState<any>(null);
-  // const [homeShop, setHomeShop] = useState<string>();
+  const [productShop, setProductShop] = useState<Category[]>(null);
   const [customer, setCustomer] = useState<any>();
   async function getShop() {
-    let res = await ShopService.getShopData();
-    console.log(res);
-    if (res) {
-      setShop(res);
+    if (props.code) {
+      setShopCode(props.code);
+      sessionStorage.setItem("shopCode", props.code);
+      let token = await ShopService.loginAnonymous(props.code);
+      SetAnonymousToken(token);
     } else {
-      setShop(null);
+      let scode = sessionStorage.getItem("shopCode");
+      if (scode) {
+        setShopCode(scode);
+      }
     }
+    if (props.shop) {
+      setShop(props.shop);
+      sessionStorage.setItem("shop", JSON.stringify(props.shop));
+    } else {
+      let shopStorage = sessionStorage.getItem("shop");
+      if (shopStorage) {
+        setShop(JSON.parse(shopStorage));
+      }
+    }
+    let cats = await CategoryService.getAll();
+    console.log(cats);
+    if (cats) {
+      setProductShop(cloneDeep(cats.data));
+    }
+    // let res = await ShopService.getShopData();
+    // console.log(res);
+    // if (res) {
+    //   setShop(res);
+    // } else {
+    //   setShop(null);
+    // }
   }
   function cunstomerLogin(phone: string) {
     if (phone) {
@@ -53,11 +85,13 @@ export function ShopProvider(props) {
     <ShopContext.Provider
       value={{
         shop,
+        shopCode,
         customer,
         cunstomerLogin,
         customerLogout,
         productIdSelected,
         setProductIdSelected,
+        productShop,
       }}
     >
       {props.children}

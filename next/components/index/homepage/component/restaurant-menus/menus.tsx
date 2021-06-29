@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Menu from "./menu";
 import SwitchTabs from "../../../../shared/utilities/tab/switch-tabs";
-interface Propstype extends ReactProps {}
-const Menus = (props) => {
+import { Category } from "../../../../../lib/repo/category.repo";
+interface Propstype extends ReactProps {
+  cats: Category[];
+}
+const Menus = ({ cats, ...props }: Propstype) => {
   const food = [
     {
       title: "Combo",
@@ -258,15 +261,15 @@ const Menus = (props) => {
         className=" sticky top-14 bg-white z-20 shadow-sm"
         native
         options={[
-          ...food.map((item, index) => {
-            return { value: index, label: item.title };
+          ...cats.map((item, index) => {
+            return { value: index, label: item.name };
           }),
         ]}
         onChange={(val) => handleChange(val)}
       />
       <div className="flex flex-col gap-2 bg-gray-200">
-        {food.map((item, index) => (
-          <Menu list={item.list} title={item.title} key={index} />
+        {cats.map((item: Category, index: number) => (
+          <Menu list={item.products} title={item.name} key={index} />
         ))}
       </div>
     </>

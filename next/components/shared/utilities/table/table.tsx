@@ -91,12 +91,14 @@ export function Table({ className = "", style = {}, ...props }: TableProps) {
               key={index}
               className={`py-3 ${
                 index == 0 ? "pl-3 pr-2" : index == arr.length - 1 ? "pl-2 pr-3" : "px-2"
-              } ${col.orderBy ? "cursor-pointer hover:text-primary hover:bg-gray-100" : ""}`}
+              } ${col.orderBy ? "cursor-pointer hover:text-primary hover:bg-gray-100" : ""} ${
+                col.className || ""
+              }`}
               style={{ width: col.width ? col.width + "px" : "auto" }}
             >
               <div
                 className={`flex items-center ${
-                  col.center ? "justify-center" : col.right ? "justify-right" : "justify-left"
+                  col.center ? "justify-center" : col.right ? "justify-end" : "justify-start"
                 }`}
               >
                 {col.orderBy && col.orderBy == currentOrder?.property && (
@@ -137,14 +139,16 @@ export function Table({ className = "", style = {}, ...props }: TableProps) {
               selection && selectedItems.find((x) => x.id == item.id)
                 ? "bg-primary-light"
                 : "hover:bg-gray-50"
-            } ${index == tableItems.length - 1 ? "" : "border-gray-100"}`}
+            } ${index == tableItems.length - 1 ? "" : "border-gray-200"}`}
           >
             {columns.map((col, index, arr) => (
               <td
                 key={index}
                 className={`${
                   index == 0 ? "py-2 pl-3 pr-2" : index == arr.length - 1 ? "py-2 pl-2 pr-3" : "p-2"
-                } ${col.center ? "text-center" : col.right ? "text-right" : "text-left"}`}
+                } ${col.center ? "text-center" : col.right ? "text-right" : "text-left"} ${
+                  col.top ? "align-top" : col.bottom ? "align-bottom" : "align-middle"
+                } ${col.className || ""}`}
                 style={{ width: col.width ? col.width + "px" : "auto" }}
               >
                 {col.render(item)}
@@ -162,6 +166,8 @@ interface ColumnProps extends ReactProps {
   label?: string;
   center?: boolean;
   right?: boolean;
+  top?: boolean;
+  bottom?: boolean;
   width?: number;
   orderBy?: string;
   render?: (item: BaseModel, column?: ColumnProps) => React.ReactNode;
@@ -226,7 +232,7 @@ interface CellDateProps extends CellProps {
 }
 const CellDate = ({ value, className = "", style = {}, format = "dd-MM-yyyy" }: CellDateProps) => (
   <div className={`${className}`} style={{ ...style }}>
-    {formatDate(new Date(value), format)}
+    {value ? formatDate(new Date(value), format) : ""}
   </div>
 );
 CellDate.displayName = "CellDate";
@@ -351,6 +357,7 @@ const CellButton = ({
         {...props}
         icon={icon}
         innerRef={props.innerRef || ref}
+        hoverDanger={isDeleteButton}
         className={`text-xl px-3 ${className}`}
         href={
           props.href

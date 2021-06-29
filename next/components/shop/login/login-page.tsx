@@ -61,7 +61,7 @@ export default function ShopLoginPage() {
                     submit
                     primary
                     className="h-12"
-                    text="Đăng nhập quản trị"
+                    text="Đăng nhập cửa hàng"
                     isLoading={loading}
                   />
                 </>

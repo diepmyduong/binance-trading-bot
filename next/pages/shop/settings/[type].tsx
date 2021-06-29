@@ -1,6 +1,6 @@
 import { NextSeo } from "next-seo";
-import { SettingsPage } from "../../components/admin/management/settings/settings-page";
-import { ShopLayout } from "../../layouts/shop-layout/shop-layout";
+import { SettingsPage } from "../../../components/shop/settings/settings-page";
+import { ShopLayout } from "../../../layouts/shop-layout/shop-layout";
 
 export default function Page() {
   return (

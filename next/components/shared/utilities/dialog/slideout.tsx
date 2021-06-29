@@ -21,7 +21,7 @@ export function Slideout({
       onClose={props.onClose}
       openAnimation={placement == "left" ? "animate-slide-in-left" : "animate-slide-in-right"}
       closeAnimation={placement == "left" ? "animate-slide-out-left" : "animate-slide-out-right"}
-      mobileMode={false}
+      slideFromBottom="none"
     >
       {props.children}
     </Dialog>

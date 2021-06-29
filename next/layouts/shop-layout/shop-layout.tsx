@@ -9,7 +9,8 @@ import { DefaultHead } from "../default-head";
 import { Header } from "./components/header";
 import Sidebar from "./components/sidebar";
 
-export function ShopLayout() {
+interface PropsType extends ReactProps {}
+export function ShopLayout({ ...props }: PropsType) {
   const { member, checkMember, redirectToShopLogin } = useAuth();
 
   useEffect(() => {
@@ -29,8 +30,11 @@ export function ShopLayout() {
         <>
           <DefaultHead />
           {/* <Header /> */}
-          <div className="flex pt-14 w-full relative min-h-screen">
+          <div className="flex w-full relative min-h-screen">
             <Sidebar />
+            <div className="flex-1 flex flex-col pl-60">
+              <div className="p-6">{props.children}</div>
+            </div>
           </div>
         </>
       )}

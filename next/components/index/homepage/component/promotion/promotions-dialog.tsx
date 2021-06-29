@@ -43,7 +43,7 @@ const PromotionsDialog = (props: Propstype) => {
   const [value, setValue] = useState(0);
   const screenSm = useScreen("sm");
   return (
-    <Dialog isOpen={props.isOpen} onClose={props.onClose} title="Mã khuyến mãi">
+    <Dialog isOpen={props.isOpen} onClose={props.onClose} title="Mã khuyến mãi" mobileSizeMode>
       <Dialog.Body>
         <SwitchTabs
           className="p-4"

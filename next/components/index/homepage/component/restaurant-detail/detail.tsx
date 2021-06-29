@@ -135,7 +135,8 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
       </div>
       <Form
         dialog
-        mobileMode
+        slideFromBottom="none"
+        mobileSizeMode
         isOpen={openDialog}
         onClose={() => setOpenDialog(false)}
         onSubmit={() => {
@@ -143,8 +144,8 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
         }}
         className="px-4 py-4"
       >
-        <Field label="Lời nhắn của khác hàng" name="note">
-          <Textarea placeholder="Nhập Lời nhắn của khác hàng" />
+        <Field label="Lời nhắn của khách hàng" name="note">
+          <Textarea placeholder="Nhập Lời nhắn của khách hàng" />
         </Field>
         <SaveButtonGroup disableCancle />
       </Form>

@@ -55,22 +55,10 @@ export function Homepage({ productId }: PropsType) {
           isOpen={showDialogCart}
           onClose={() => setShowDialogCart(false)}
           cart={cart}
-          mobileMode
+          slideFromBottom="all"
           onChange={handleChange}
           money={totalMoney}
         />
-        {/* <Form
-          dialog
-          isOpen={openDialog}
-          mobileMode
-          onClose={() => {
-            setProductIdCode(null);
-            setOpenDialog(false);
-          }}
-          className="z-400 rounded w-full"
-        >
-          <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
-        </Form> */}
       </div>
       <Footer />
     </>

@@ -142,6 +142,7 @@ const InputNote = () => {
       </div>
       <Form
         dialog
+        mobileSizeMode
         isOpen={openDialog}
         onClose={() => setOpenDialog(false)}
         initialData={note}

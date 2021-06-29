@@ -137,6 +137,18 @@ export class MemberRepository extends CrudRepository<Member> {
     toMemberOrdersCount: Int
     deliveryDistricts: [String]
   `);
+
+  async updateMemberPassword(id: string, password: string) {
+    return await this.apollo.mutate({
+      mutation: this.gql`
+        mutation {
+          updateMemberPassword(memberId: "${id}", password: "${password}") {
+            id
+          }
+        }
+      `,
+    });
+  }
 }
 
 export const MemberService = new MemberRepository();

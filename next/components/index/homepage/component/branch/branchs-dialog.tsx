@@ -47,8 +47,9 @@ const BranchsDialog = (props: Propstype) => {
     <Dialog
       isOpen={props.isOpen}
       onClose={props.onClose}
-      width="180px"
       title={`Chọn chi nhánh (${branchs.length})`}
+      mobileSizeMode
+      slideFromBottom="all"
     >
       <Dialog.Body>
         <div

@@ -67,7 +67,7 @@ export function AlertDialog({
       dialogClass="relative bg-white shadow-md rounded m-auto p-5"
       isOpen={props.isOpen}
       onClose={onClose}
-      mobileMode={false}
+      slideFromBottom="none"
     >
       <div className="flex md:flex-col md:items-center mt-2">
         <i className={`text-5xl opacity-75 text-${iconColors[type]}`}>{icons[type]}</i>

@@ -134,7 +134,7 @@ export function Input({
     >
       {!!props.prefix && (
         <div
-          className={`flex-shrink-0 flex justify-center items-center min-w-10 self-stretch text-gray-400 ${
+          className={`flex-shrink-0 flex justify-center items-center min-w-10 self-stretch text-gray-600 ${
             typeof props.prefix == "string" ? "px-2" : ""
           } ${prefixClassName}`}
           onClick={() => {
@@ -210,7 +210,7 @@ export function Input({
       )}
       {!!props.suffix && (
         <div
-          className={`flex-shrink-0 flex justify-center items-center min-w-10 self-stretch text-gray-400 ${
+          className={`flex-shrink-0 flex justify-center items-center min-w-10 self-stretch text-gray-600 ${
             typeof props.suffix == "string" ? "px-2" : ""
           } ${suffixClassName}`}
           onClick={() => {

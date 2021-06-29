@@ -47,10 +47,10 @@ const Menu = (props: PropsType) => {
       )) || <span className="text-center w-full pl-3">Chưa có sản phẩm cho danh mục này</span>}
       <Form
         dialog
+        mobileSizeMode
         isOpen={openDialog}
-        mobileMode
+        slideFromBottom="all"
         onClose={() => setOpenDialog(false)}
-        className="z-400 rounded w-full"
       >
         <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
       </Form>

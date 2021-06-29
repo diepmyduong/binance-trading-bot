@@ -20,6 +20,7 @@ interface PropsType extends ReactProps {
   noError?: boolean;
   noFocus?: boolean;
   constraints?: FieldConstraint;
+  description?: string;
   cols?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
   validate?: (value: any, data?: any) => Promise<string>;
 }
@@ -137,6 +138,9 @@ export function Field({ className = "", style = {}, ...props }: PropsType) {
           required={props.required}
           error={props.error || error}
         />
+      )}
+      {props.description && (
+        <div className="text-sm text-gray-600 pl-1 -mt-0.5 mb-1">{props.description}</div>
       )}
       {props.name && child
         ? cloneElement(child, {

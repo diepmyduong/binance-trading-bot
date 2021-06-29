@@ -24,11 +24,11 @@ export function DefaultLayout({ code, shop, ...props }: PropsType) {
               {!shop ? (
                 <Spinner />
               ) : (
-                <div className="flex flex-col min-h-screen relative">
+                <div className="flex flex-col min-h-screen relative bg-gray-800">
                   <>
                     <DefaultHead />
                     <Header {...props} code={code} />
-                    <div className="w-full max-w-lg mx-auto">
+                    <div className="w-full max-w-lg mx-auto shadow-lg">
                       <div className="w-full flex-1 mt-14 bg-bluegray-100 text-gray-700">
                         {props.children}
                       </div>

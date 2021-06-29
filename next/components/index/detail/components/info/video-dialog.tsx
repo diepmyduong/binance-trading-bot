@@ -12,7 +12,7 @@ interface PropsType extends ReactProps {
 const VideoDialog = (props: PropsType) => {
   const screenSm = useScreen("sm");
   return (
-    <Dialog isOpen={props.isOpen} onClose={props.onClose} mobileMode={false}>
+    <Dialog isOpen={props.isOpen} onClose={props.onClose} slideFromBottom="none">
       <div>
         {(screenSm && (
           <ReactPlayer

@@ -17,7 +17,7 @@ const CustomerLoginDialog = (props: Propstype) => {
       isOpen={props.isOpen}
       onClose={props.onClose}
       onSubmit={(data) => props.onConfirm(data.phoneUser)}
-      mobileMode={false}
+      slideFromBottom="none"
       className="main-container mb-4"
     >
       <Field label="Số điện thoại" name="phoneUser" className="mt-3">

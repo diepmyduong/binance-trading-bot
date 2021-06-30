@@ -5,9 +5,9 @@ const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhaGEiLCJ0eXAiOiJ1
 
 (async () => {
   const client = new Ahamove();
-  const result = await client.fetchAllServices("10.7828887", "106.704898");
-  result.filter(r => /\-(BIKE|EXPRESS)/.test(r._id)).forEach(service => console.log("ID", service._id, service.name_vi_vn));
-  // await estimateFeeMutilService(client);
+  // const result = await client.fetchAllServices("10.7828887", "106.704898");
+  // result.filter(r => /\-(BIKE|EXPRESS)/.test(r._id)).forEach(service => console.log("ID", service._id, service.name_vi_vn));
+  await estimateFeeMutilService(client);
   // const writeStream = fs.createWriteStream("ahamove-service.json");
   // writeStream.write(Buffer.from(JSON.stringify(result, null, 2)));
   // writeStream.end();
@@ -52,32 +52,17 @@ async function estimateFee(client) {
   }));
 }
 async function estimateFeeMutilService(client) {
-  console.log(await client.estimatedFeeMutilService({
+  const result = await client.estimatedFeeMutilService({
     "token": token,
     "order_time": parseInt((Date.now() / 1000).toFixed(0)),
     "path": [
-      {"lat":10.7692105, "lng":106.6637935, "address":"725 Hẻm số 7 Thành Thái, Phường 14, Quận 10, Hồ Chí Minh, Việt Nam", "short_address":"Quận 10", "name":"nmbmb", "remarks":"call me"}, 
-      {"lat":10.7828887, "lng":106.704898, "address":"Miss Ao Dai Building, 21 Nguyễn Trung Ngạn, Bến Nghé, Quận 1, Hồ Chí Minh, Vietnam", "name":"Bao"},
+      { "lat": 10.7692105, "lng": 106.6637935, "address": "725 Hẻm số 7 Thành Thái, Phường 14, Quận 10, Hồ Chí Minh, Việt Nam", "short_address": "Quận 10", "name": "nmbmb", "remarks": "call me" },
+      { "lat": 10.7828887, "lng": 106.704898, "address": "Miss Ao Dai Building, 21 Nguyễn Trung Ngạn, Bến Nghé, Quận 1, Hồ Chí Minh, Vietnam", "name": "Bao" },
     ],
-    // "service_id": "SGN-BIKE",
-    // "requests": [],
-    // "images": [],
-    // "promo_code": "KHUYENMAI",
-    // "remarks": "Call me when arrived",
     "payment_method": "CASH",
-    // "items": [
-    //   {
-    //     "_id": "TS",
-    //     "num": 2,
-    //     "name": "Sua tuoi",
-    //     "price": 15000
-    //   },
-    //   {
-    //     "_id": "ST",
-    //     "num": 2,
-    //     "name": "Sinh to lua mach",
-    //     "price": 30000
-    //   }
-    // ]
-  }, [{ "_id": "SGN-BIKE" }, { _id: "SGN-EXPRESS" }]));
+  }, [{ "_id": "SGN-BIKE" }, { _id: "SGN-EXPRESS" }]);
+  console.log(result);
+  const writeStream = fs.createWriteStream("ahamove-estimated-fee.json");
+  writeStream.write(Buffer.from(JSON.stringify(result, null, 2)));
+  writeStream.end();
 }

@@ -176,16 +176,8 @@ const orderSchema = new Schema(
 
     shipfee: { type: Number, default: 0, min: 0 },
     deliveryInfo: { type: DeliveryInfoSchema },
-    shipMethod: {
-      type: String,
-      enum: Object.values(ShipMethod),
-      required: true,
-    },
-    paymentMethod: {
-      type: String,
-      enum: Object.values(PaymentMethod),
-      required: true,
-    },
+    shipMethod: { type: String, enum: Object.values(ShipMethod) },
+    paymentMethod: { type: String, enum: Object.values(PaymentMethod), required: true },
 
     oldAddressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse" },
     addressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse" },

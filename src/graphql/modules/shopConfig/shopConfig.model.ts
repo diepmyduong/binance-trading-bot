@@ -24,8 +24,10 @@ export type IShopConfig = BaseDocument & {
   shipNote?: string; // Ghi chú cho shipper
   // Banner hiển thị
   banners?: ShopBanner[]; // Banner của shop
-  // Món ăn đặc sắc
   productGroups?: ShopProductGroup[]; // Nhóm sản phẩm của shop
+  rating?: number; // Đánh giá sao
+  ratingQty?: number; // Số lượng đánh giá
+  soldQty?: number; // Số lượng đã bán
 };
 
 const shopConfigSchema = new Schema(
@@ -44,6 +46,9 @@ const shopConfigSchema = new Schema(
     shipNote: { type: String },
     banners: { type: [ShopBannerSchema], default: [] },
     productGroups: { type: [ShopProductGroupSchema], default: [] },
+    rating: { type: Number, default: 0 },
+    ratingQty: { type: Number, default: 0 },
+    soldQty: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

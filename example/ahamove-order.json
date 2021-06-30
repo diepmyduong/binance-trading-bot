@@ -1,0 +1,88 @@
+{
+  "_id": "210UAKZW",
+  "currency": "VND",
+  "user_main_account": 0,
+  "user_bonus_account": 0,
+  "total_pay": 33000,
+  "distance": 5.81,
+  "duration": 1465,
+  "distance_fee": 33000,
+  "request_fee": 0,
+  "stop_fee": 0,
+  "vat_fee": 0,
+  "discount": 0,
+  "path": [
+    {
+      "lat": 10.72895809235913,
+      "lng": 106.72605908425982,
+      "address": "Đường B Bắc",
+      "name": "Chi nhánh quận 1",
+      "remarks": "Ghi chu",
+      "cash_collection": 33000,
+      "supplier_cod": 0,
+      "limit_call": true
+    },
+    {
+      "lat": 10.76247228322259,
+      "lng": 106.70831179043745,
+      "address": "Đường B Bắc",
+      "name": "Chi nhánh quận 1",
+      "supplier_cod": 0,
+      "pof_type": "photo",
+      "require_pof": true,
+      "enable_upload_pof": true
+    }
+  ],
+  "from_location": {
+    "type": "Point",
+    "coordinates": [
+      106.72605908425982,
+      10.72895809235913
+    ]
+  },
+  "requests": [],
+  "items": [
+    {
+      "_id": "60dc24a653534311bebd6272",
+      "name": "Hồng trà sữa",
+      "num": 1,
+      "price": 30000
+    },
+    {
+      "_id": "60dc24a653534311bebd6273",
+      "name": "Lục trà sữa",
+      "num": 2,
+      "price": 80000
+    }
+  ],
+  "total_fee": 33000,
+  "app": "AhaMove",
+  "service_id": "SGN-BIKE",
+  "city_id": "SGN",
+  "user_id": "84901403819",
+  "user_name": "3MShop",
+  "user_imei": null,
+  "create_time": 1625050131.4276426,
+  "order_time": 1625050131.4276426,
+  "delay_until": 1625050131.4276426,
+  "index": 8,
+  "status": "ASSIGNING",
+  "cod_commission_fee": 0,
+  "remarks": "Ghi chu",
+  "partner": "3mmarketing",
+  "polylines": "}nn`Aw|kjSbAk@yBkEsH{\\aRpEc}B|OqBxCyDtX~AdEoPjd@e\\|q@",
+  "online_pay": 0,
+  "notify_package_return": true,
+  "uniform_user_feedback": 2,
+  "pending_period": 100,
+  "payment_method": "CASH",
+  "timeout": 600,
+  "stoppoint_price": 0,
+  "special_request_price": 0,
+  "vat": 0,
+  "cod_commission_price": 0,
+  "distance_price": 33000,
+  "voucher_discount": 0,
+  "subtotal_price": 33000,
+  "total_price": 33000
+}

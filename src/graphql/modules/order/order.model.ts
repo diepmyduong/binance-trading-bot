@@ -29,6 +29,8 @@ export enum ShipMethod {
   POST = "POST", // Nhận hàng tại chi nhánh
   VNPOST = "VNPOST", // Vietnam Post
   NONE = "NONE", // Không vận chuyển
+  AHAMOVE = "AHAMOVE", // Ahamove
+  DRIVER = "DRIVER", // Tài xế nội bộ
 }
 export enum OrderType {
   POST = "POST", // Đơn bưu điện,
@@ -126,6 +128,8 @@ export type IOrder = BaseDocument & {
   pickupMethod?: PickupMethod; // Phương thức nhận hàng
   pickupTime?: Date; // Thời gian nhận hàng
   shopBranchId?: string; // Mã chi nhánh
+
+  confirmTime?: Date; // Thời gian confirm
 };
 
 const orderSchema = new Schema(
@@ -174,16 +178,8 @@ const orderSchema = new Schema(
 
     shipfee: { type: Number, default: 0, min: 0 },
     deliveryInfo: { type: DeliveryInfoSchema },
-    shipMethod: {
-      type: String,
-      enum: Object.values(ShipMethod),
-      required: true,
-    },
-    paymentMethod: {
-      type: String,
-      enum: Object.values(PaymentMethod),
-      required: true,
-    },
+    shipMethod: { type: String, enum: Object.values(ShipMethod) },
+    paymentMethod: { type: String, enum: Object.values(PaymentMethod), required: true },
 
     oldAddressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse" },
     addressStorehouseId: { type: Schema.Types.ObjectId, ref: "AddressStorehouse" },
@@ -219,6 +215,7 @@ const orderSchema = new Schema(
     pickupMethod: { type: String, enum: Object.values(PickupMethod) },
     pickupTime: { type: Date },
     shopBranchId: { type: Schema.Types.ObjectId, ref: "ShopBranch" },
+    confirmTime: { type: Date },
   },
   { timestamps: true }
 );

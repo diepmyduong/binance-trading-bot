@@ -23,6 +23,7 @@ const CartDialog = (props: Propstype) => {
       onClose={props.onClose}
       title={"Giỏ hàng của bạn"}
       mobileSizeMode
+      bodyClass="relative bg-white rounded"
       slideFromBottom="all"
     >
       <Dialog.Body>

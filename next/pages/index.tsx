@@ -6,22 +6,31 @@ import { Redirect } from "../lib/helpers/redirect";
 import { MemberModel } from "../../dist/graphql/modules/member/member.model";
 import NotFoundShop from "../components/index/not-found-shop/not-found-shop";
 import { NoneLayout } from "../layouts/none-layout/none-layout";
+import { HomeProvider } from "../components/index/homepage/providers/homepage-provider";
+import { useEffect } from "react";
 
 export default function Page(props) {
+  useEffect(() => {
+    sessionStorage.setItem("shop", JSON.stringify(props.shop));
+    sessionStorage.setItem("shopCode", props.code);
+  }, []);
   return (
     (props.notFound && (
-      <NoneLayout>
+      <>
         <NextSeo title={`Không tìm thấy cửa hàng`} />
         <NotFoundShop />
-      </NoneLayout>
+      </>
     )) || (
-      <DefaultLayout code={props.code} shop={props.shop}>
-        <NextSeo title={`Trang chủ`} />
-        <Homepage productId={props.productId} />
-      </DefaultLayout>
+      <>
+        <HomeProvider code={props.code} shop={props.shop}>
+          <NextSeo title={`Trang chủ`} />
+          <Homepage productId={props.productId} />
+        </HomeProvider>
+      </>
     )
   );
 }
+Page.Layout = DefaultLayout;
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { code = "3MSHOP", productId } = context.query;
   console.log(productId);

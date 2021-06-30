@@ -5,6 +5,7 @@ import Promotion from "./components/promotion";
 import { TabButtonGroup } from "../../shared/utilities/tab-button-group/tab-button-group";
 import SwitchTabs from "../../shared/utilities/tab/switch-tabs";
 import useScreen from "../../../lib/hooks/useScreen";
+import PromotionDetailDialog from "./components/promotion-detail.tsx/promotion-detail-dialog";
 interface Propstype extends ReactProps {}
 const PromotionsPage = (props: Propstype) => {
   const promotions = [
@@ -41,6 +42,7 @@ const PromotionsPage = (props: Propstype) => {
   ];
   const [value, setValue] = useState(0);
   const screenSm = useScreen("sm");
+  const [showDialog, setShowDialog] = useState(false);
   return (
     <div>
       <SwitchTabs
@@ -65,17 +67,18 @@ const PromotionsPage = (props: Propstype) => {
         {(value === 0 && (
           <div className="mb-4">
             {promotions.map((item, index) => (
-              <Promotion key={index} promotion={item} />
+              <Promotion key={index} promotion={item} onClick={() => setShowDialog(true)} />
             ))}
           </div>
         )) || (
           <div className="mb-4">
             {promotions.map((item, index) => (
-              <Promotion key={index} promotion={item} />
+              <Promotion key={index} promotion={item} onClick={() => setShowDialog(true)} />
             ))}
           </div>
         )}
       </div>
+      <PromotionDetailDialog isOpen={showDialog} onClose={() => setShowDialog(false)} />
     </div>
   );
 };

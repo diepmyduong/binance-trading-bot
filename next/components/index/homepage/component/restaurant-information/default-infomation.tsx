@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button } from "../../../../shared/utilities/form/button";
 import BranchsDialog from "../branch/branchs-dialog";
 import { AiOutlineRight } from "react-icons/ai";
+import { useCartContext } from "../../../../../lib/providers/cart-provider";
 interface Propstype extends ReactProps {
   info: {
     name: string;
@@ -9,12 +10,17 @@ interface Propstype extends ReactProps {
 }
 const DefaultInfomation = (props: Propstype) => {
   const [showBranchs, setShowBranchs] = useState(false);
+  const { branchSelecting, setBranchSelecting } = useCartContext();
+
   return (
     <div className={`bg-white p-3 pb-0 rounded-md shadow-lg text-center  ${props.className || ""}`}>
       <h2 className="text-xl font-semibold pb-2">{props.info.name}</h2>
       <p className="text-sm text-gray-400 pb-2 border-b">Thời gian làm món khoảng 15 phút</p>
       <div className="flex justify-between items-center">
-        <p>Có 23 chi nhánh</p>
+        <p className="whitespace-nowrap">
+          {" "}
+          {(!branchSelecting && "Có 23 chi nhánh") || branchSelecting}
+        </p>
         <Button
           textPrimary
           onClick={() => setShowBranchs(true)}
@@ -25,7 +31,11 @@ const DefaultInfomation = (props: Propstype) => {
           iconClassName="text-gray-400"
         />
       </div>
-      <BranchsDialog isOpen={showBranchs} onClose={() => setShowBranchs(false)} />
+      <BranchsDialog
+        isOpen={showBranchs}
+        onClose={() => setShowBranchs(false)}
+        onSelect={(val) => setBranchSelecting(val)}
+      />
     </div>
   );
 };

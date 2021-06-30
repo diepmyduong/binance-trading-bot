@@ -1,19 +1,9 @@
 import React, { useState } from "react";
-import { Food } from "../../../../../lib/providers/cart-provider";
 import { Dialog, DialogPropsType } from "../../../../shared/utilities/dialog/dialog";
-import { Button } from "../../../../shared/utilities/form/button";
-import { NumberPipe } from "../../../../../lib/pipes/number";
-import CustomerLoginDialog from "../../../../shared/utilities/dialog/customer-login-dialog";
-import { useShopContext } from "../../../../../lib/providers/shop-provider";
-import { useRouter } from "next/router";
-interface Propstype extends DialogPropsType {
-  cart: Food[];
-  onChange: Function;
-  money?: number | string;
-}
+import PromotionDetail from "./promotion-detail";
+interface Propstype extends DialogPropsType {}
 
-const CartDialog = (props: Propstype) => {
-  const router = useRouter();
+const PromotionDetailDialog = (props: Propstype) => {
   return (
     <Dialog
       isOpen={props.isOpen}
@@ -22,18 +12,11 @@ const CartDialog = (props: Propstype) => {
       mobileSizeMode
       slideFromBottom="all"
     >
-      <Dialog.Body></Dialog.Body>
-      <Dialog.Footer>
-        <Button
-          primary
-          large
-          text={`Thanh toán ${NumberPipe(props.money, true)}`}
-          className="w-full"
-          onClick={() => {}}
-        />
-      </Dialog.Footer>
+      <Dialog.Body>
+        <PromotionDetail />
+      </Dialog.Body>
     </Dialog>
   );
 };
 
-export default CartDialog;
+export default PromotionDetailDialog;

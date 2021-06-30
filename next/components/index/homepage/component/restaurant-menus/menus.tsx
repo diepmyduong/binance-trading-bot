@@ -213,10 +213,12 @@ const Menus = ({ cats, ...props }: Propstype) => {
   }
   function menuScrollEvent() {
     let scrollCheckInterval = null;
-    let menus = document.getElementsByClassName("menu");
-    if (!isClickView && menus && menus.length > 0) {
+    let menus = document.getElementById("menus");
+
+    let menulist = document.getElementsByClassName("menu");
+    if (!isClickView && menulist && menulist.length > 0 && menus && isInViewport(menus)) {
       scrollCheckInterval = setInterval(() => {
-        for (let index = 0; index < menus.length; index++) {
+        for (let index = 0; index < menulist.length; index++) {
           let position = isInViewport(menus[index]);
           if (position) {
             setTimeout(() => {
@@ -257,17 +259,20 @@ const Menus = ({ cats, ...props }: Propstype) => {
     <>
       <SwitchTabs
         chevron
+        id="menus"
         value={isViewing}
-        className=" sticky top-14 bg-white z-20 shadow-sm"
+        className=" sticky top-14 bg-white z-20 shadow-sm "
         native
         options={[
           ...cats.map((item, index) => {
-            return { value: index, label: item.name };
+            if (item.products && item.products.length > 0) {
+              return { value: index, label: item.name };
+            }
           }),
         ]}
         onChange={(val) => handleChange(val)}
       />
-      <div className="flex flex-col gap-2 bg-gray-200">
+      <div className="flex flex-col gap-2 bg-gray-200 ">
         {cats.map((item: Category, index: number) => (
           <Menu list={item.products} title={item.name} key={index} />
         ))}

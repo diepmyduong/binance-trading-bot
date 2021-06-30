@@ -22,7 +22,7 @@ const Menu = (props: PropsType) => {
     <div id={props.title} className="relative menu bg-white">
       <div className=" absolute -top-28 menu-container"></div>
       <p className="font-semibold text-primary py-2 pl-4 text-lg">{props.title}</p>
-      {(props.list.length > 0 && (
+      {props.list.length > 0 && (
         <>
           {props.list.map((item: Product, index: number) => (
             <div
@@ -44,7 +44,7 @@ const Menu = (props: PropsType) => {
             </div>
           ))}
         </>
-      )) || <span className="text-center w-full pl-3">Chưa có sản phẩm cho danh mục này</span>}
+      )}
       <Form
         dialog
         mobileSizeMode

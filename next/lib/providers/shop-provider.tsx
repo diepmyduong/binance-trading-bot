@@ -2,19 +2,20 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Shop, ShopService } from "../repo/shop.repo";
 import { useRouter } from "next/router";
 import { SetAnonymousToken } from "../graphql/auth.link";
-import { Product, ProductService } from "../repo/product.repo";
 import cloneDeep from "lodash/cloneDeep";
 import { Category, CategoryService } from "../repo/category.repo";
 
 export const ShopContext = createContext<
   Partial<{
     shop: Shop;
+    setShop: Function;
     customer: any;
     productIdSelected: any;
     setProductIdSelected: any;
     cunstomerLogin: Function;
     customerLogout: Function;
     shopCode: string;
+    setShopCode: Function;
     productShop: Category[];
   }>
 >({});
@@ -26,30 +27,30 @@ export function ShopProvider(props) {
   const [productShop, setProductShop] = useState<Category[]>(null);
   const [customer, setCustomer] = useState<any>();
   async function getShop() {
-    if (props.code) {
-      setShopCode(props.code);
-      sessionStorage.setItem("shopCode", props.code);
-      let token = await ShopService.loginAnonymous(props.code);
-      SetAnonymousToken(token);
+    let haveShop = "";
+    if (shopCode && shop) {
+      haveShop = shopCode;
+      sessionStorage.setItem("shopCode", shopCode);
+      sessionStorage.setItem("shop", JSON.stringify(shop));
     } else {
       let scode = sessionStorage.getItem("shopCode");
-      if (scode) {
-        setShopCode(scode);
-      }
-    }
-    if (props.shop) {
-      setShop(props.shop);
-      sessionStorage.setItem("shop", JSON.stringify(props.shop));
-    } else {
       let shopStorage = sessionStorage.getItem("shop");
-      if (shopStorage) {
+      if (scode && JSON.parse(shopStorage)) {
         setShop(JSON.parse(shopStorage));
+        setShopCode(scode);
+        haveShop = scode;
       }
     }
-    let cats = await CategoryService.getAll();
-    console.log(cats);
-    if (cats) {
-      setProductShop(cloneDeep(cats.data));
+    if (haveShop) {
+      console.log(haveShop);
+
+      let token = await ShopService.loginAnonymous(haveShop);
+      SetAnonymousToken(token);
+      let cats = await CategoryService.getAll();
+      console.log(cats);
+      if (cats) {
+        setProductShop(cloneDeep(cats.data));
+      }
     }
     // let res = await ShopService.getShopData();
     // console.log(res);
@@ -72,6 +73,11 @@ export function ShopProvider(props) {
       router.reload();
     }
   }
+
+  useEffect(() => {
+    let res = sessionStorage.getItem("shop");
+    console.log(res);
+  }, []);
   useEffect(() => {
     getShop();
     let phoneUser = localStorage.getItem("phoneUser");
@@ -92,6 +98,8 @@ export function ShopProvider(props) {
         productIdSelected,
         setProductIdSelected,
         productShop,
+        setShop,
+        setShopCode,
       }}
     >
       {props.children}

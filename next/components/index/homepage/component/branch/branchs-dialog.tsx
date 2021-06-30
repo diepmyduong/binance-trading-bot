@@ -1,6 +1,7 @@
 import React from "react";
 import { Dialog, DialogPropsType } from "../../../../shared/utilities/dialog/dialog";
 import Branch from "./branch";
+import { useCartContext } from "../../../../../lib/providers/cart-provider";
 interface Propstype extends DialogPropsType {
   onSelect?: (string) => void;
 }
@@ -50,6 +51,7 @@ const BranchsDialog = (props: Propstype) => {
       title={`Chọn chi nhánh (${branchs.length})`}
       mobileSizeMode
       slideFromBottom="all"
+      bodyClass="relative bg-white rounded"
     >
       <Dialog.Body>
         <div
@@ -61,7 +63,7 @@ const BranchsDialog = (props: Propstype) => {
               branch={item}
               key={index}
               onClick={() => {
-                props.onSelect(item.address);
+                props.onSelect(item.place);
                 props.onClose();
               }}
             />

@@ -41,7 +41,7 @@ export function Header({ code, ...props }: HeaderPropsType) {
     {
       label: "Khuyến mãi",
       icon: <FaPercent />,
-      onClick: () => router.push("#"),
+      onClick: () => router.push("/promotion"),
     },
     {
       label: "Đăng xuất",
@@ -58,9 +58,9 @@ export function Header({ code, ...props }: HeaderPropsType) {
             className="flex items-center cursor-pointer"
             onClick={() => router.push(`/?code=${shopCode}`)}
           >
-            <Img src={shop.shopLogo || ""} className="h-10 w-10" />
+            {shop && <Img src={shop.shopLogo || ""} className="h-10 w-10" />}
             <p className="text-ellipsis-2 font-semibold px-2 text-sm sm:text-base">
-              {shop.shopName}
+              {shop?.shopName}
             </p>
           </div>
           {!customer && <Button text="Đăng nhâp" primary small onClick={() => setIsOpen(true)} />}

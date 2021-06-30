@@ -5,7 +5,7 @@ import { Package, SmileIcon, MoneyBag } from "../../../../../public/assets/svg/s
 import Rating from "../../../../shared/infomation/rating";
 import EmotionsEvaluate from "./emotions-evaluate";
 import BranchsDialog from "../branch/branchs-dialog";
-import PromotionsDialog from "../promotion/promotions-dialog";
+import PromotionsDialog from "../../../promotion/promotions-page";
 import { Button } from "../../../../shared/utilities/form/button";
 import { AiOutlineRight } from "react-icons/ai";
 import CommentsDialog from "../coments/comments-dialog";
@@ -28,7 +28,6 @@ const MoreInfomation = (props: Propstype) => {
       icon: MoneyBag,
     },
   ];
-  const [showPromotions, setShowPromotions] = useState(false);
   const [showComments, setShowComments] = useState(false);
   return (
     <>
@@ -42,12 +41,12 @@ const MoreInfomation = (props: Propstype) => {
           </p>
           <Button
             textPrimary
-            onClick={() => setShowPromotions(true)}
             text=" Xem thêm"
             className="pr-0 text-sm xs:text-base text-ellipsis"
             icon={<AiOutlineRight />}
             iconPosition="end"
             iconClassName="text-gray-400"
+            href="/promotion"
           />
         </div>
         <div className="flex justify-between items-center px-4 ">
@@ -70,7 +69,6 @@ const MoreInfomation = (props: Propstype) => {
         </div>
       </div>
       <EmotionsEvaluate reactions={reactions} />
-      <PromotionsDialog isOpen={showPromotions} onClose={() => setShowPromotions(false)} />
       <CommentsDialog isOpen={showComments} onClose={() => setShowComments(false)} />
     </>
   );

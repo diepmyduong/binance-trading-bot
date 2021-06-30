@@ -12,7 +12,7 @@ const FloatingButton = (props: Propstype) => {
     <div className="w-full mt-3 sticky bottom-5 sm:bottom-7 left-0 flex flex-col items-center z-100">
       <div className="max-w-lg flex flex-col items-center w-full px-4">
         <button
-          className={`z-50 flex text-sm btn-primary mx-4 w-full max-w-xs sm:h-14`}
+          className={`z-50 flex text-sm btn-primary mx-4 w-full max-w-sm sm:h-14`}
           onClick={() => props.onClick()}
         >
           <span className="flex-1">Giỏ hàng</span>

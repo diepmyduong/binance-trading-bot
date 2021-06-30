@@ -13,7 +13,6 @@ interface PropsType extends ReactProps {
   title: string;
 }
 const Menu = (props: PropsType) => {
-  const { handleChange } = useCartContext();
   const router = useRouter();
   const query = router.query;
   const [openDialog, setOpenDialog] = useState(false);

@@ -15,7 +15,13 @@ interface PropsType extends ReactProps {
 }
 export function Homepage({ productId }: PropsType) {
   const { shop } = useShopContext();
-  const { cart, totalFood, totalMoney, handleChange } = useCartContext();
+  const {
+    cartProducts,
+    totalFood,
+    totalMoney,
+    changeProductQuantity,
+    removeProductFromCart,
+  } = useCartContext();
   const [showDialogCart, setShowDialogCart] = useState(false);
   const [productIdCode, setProductIdCode] = useState(productId);
   const [openDialog, setOpenDialog] = useState(false);
@@ -45,7 +51,7 @@ export function Homepage({ productId }: PropsType) {
             <RestaurantFood />
           </>
         )}
-        {cart && cart.length > 0 && (
+        {cartProducts && cartProducts.length > 0 && (
           <FloatingButton
             totalFood={totalFood}
             totalMoney={totalMoney}
@@ -55,10 +61,11 @@ export function Homepage({ productId }: PropsType) {
         <CartDialog
           isOpen={showDialogCart}
           onClose={() => setShowDialogCart(false)}
-          cart={cart}
+          cart={cartProducts}
           slideFromBottom="all"
-          onChange={handleChange}
           money={totalMoney}
+          onChange={changeProductQuantity}
+          onRemove={removeProductFromCart}
         />
       </div>
       <Footer />

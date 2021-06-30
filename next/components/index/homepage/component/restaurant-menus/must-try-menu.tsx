@@ -40,7 +40,6 @@ const MustTryMenu = (props: Propstype) => {
   ];
   const router = useRouter();
   const query = router.query;
-  const { handleChange } = useCartContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [detailItem, setDetailItem] = useState<any>(null);
   return (

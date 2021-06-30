@@ -1,19 +1,20 @@
 import React from "react";
 import Price from "../../../../shared/infomation/price";
 import { Quantity } from "../../../../shared/infomation/quantity";
-import { Food } from "../../../../../lib/providers/cart-provider";
-import { useAlert } from "../../../../../lib/providers/alert-provider";
+import { CartProduct } from "../../../../../lib/providers/cart-provider";
 interface Propstype extends ReactProps {
-  cart: Food[];
+  cart: CartProduct[];
   onChange: Function;
+  onRemove: Function;
 }
 
 const ListCart = (props: Propstype) => {
-  async function onChange(qty: number, index: number, item: Food) {
+  async function onChange(qty: number, item: CartProduct) {
+    console.log(qty);
     if (qty > 0) {
-      props.onChange(-1, { ...item, qty: qty });
+      props.onChange(item.product, qty);
     } else {
-      props.onChange(index);
+      props.onRemove(item.product);
     }
   }
   return (
@@ -26,12 +27,12 @@ const ListCart = (props: Propstype) => {
           <div className="leading-7">
             <p className="text-ellipsis">
               <span className="text-primary font-semibold">{item.qty} X </span>
-              {item.name}
+              {item.product.name}
             </p>
             <Price price={item.price} />
             {item.note && <p className="text-gray-500 text-ellipsis">Ghi chú: {item.note}</p>}
           </div>
-          <Quantity quantity={item.qty} setQuantity={(val) => onChange(val, index, item)} />
+          <Quantity quantity={item.qty} setQuantity={(val) => onChange(val, item)} />
         </div>
       ))}
     </div>

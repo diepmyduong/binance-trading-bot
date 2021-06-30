@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Food } from "../../../../../lib/providers/cart-provider";
+import { CartProduct } from "../../../../../lib/providers/cart-provider";
 import { Dialog, DialogPropsType } from "../../../../shared/utilities/dialog/dialog";
 import ListCart from "./list-cart";
 import { Button } from "../../../../shared/utilities/form/button";
@@ -8,9 +8,10 @@ import CustomerLoginDialog from "../../../../shared/utilities/dialog/customer-lo
 import { useShopContext } from "../../../../../lib/providers/shop-provider";
 import { useRouter } from "next/router";
 interface Propstype extends DialogPropsType {
-  cart: Food[];
+  cart: CartProduct[];
   onChange: Function;
   money?: number | string;
+  onRemove: Function;
 }
 
 const CartDialog = (props: Propstype) => {
@@ -27,7 +28,7 @@ const CartDialog = (props: Propstype) => {
       slideFromBottom="all"
     >
       <Dialog.Body>
-        <ListCart cart={props.cart} onChange={props.onChange} />
+        <ListCart cart={props.cart} onChange={props.onChange} onRemove={props.onRemove} />
       </Dialog.Body>
       <Dialog.Footer>
         <Button

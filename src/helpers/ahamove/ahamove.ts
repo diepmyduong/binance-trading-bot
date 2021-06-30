@@ -1,9 +1,13 @@
 import axios from "axios";
+import { configs } from "../../configs";
 import {
   ActiveChildAccountProps,
   AddChildAccountProps,
   AhamoveConfig,
   CreateOrderProps,
+  FetchOrderProps,
+  NotifyOrderProps,
+  Order,
   RegisUserAccountProps,
   RemoveChildAccountProps,
   UpdateProfileProps,
@@ -11,6 +15,7 @@ import {
 
 const host = "https://api.ahamove.com";
 const hostDev = "https://apistg.ahamove.com";
+const apiKey = configs.ahamove.apiKey;
 const apiKeyDev = "4cd543d3e4e4fbe97db216828c18644f77558275";
 
 export class Ahamove {
@@ -19,6 +24,9 @@ export class Ahamove {
   }
   get host() {
     return this.config.devMode ? hostDev : host;
+  }
+  get apiKey() {
+    return this.config.devMode ? apiKeyDev : apiKey;
   }
   async regisUserAccount(props: RegisUserAccountProps) {
     return await axios
@@ -66,22 +74,109 @@ export class Ahamove {
   }
   private handleException(): (reason: any) => PromiseLike<never> {
     return (err) => {
+      // console.log("error", err);
       if (err.response && err.response.data) {
-        throw Error(err.response.data.description);
+        throw Error(err.response.data.description || err.response.data.title);
       } else throw err;
     };
   }
 
   async createOrder(data: CreateOrderProps) {
     return await axios
-      .get(`${this.host}/v1/order/create`, { params: data })
+      .get(`${this.host}/v1/order/create`, {
+        params: { ...data, path: JSON.stringify(data.path), items: JSON.stringify(data.items) },
+      })
       .then((res) => res.data)
       .catch(this.handleException());
   }
   async estimatedFee(data: CreateOrderProps) {
     return await axios
-      .get(`${this.host}/v1/order/estimated_fee`, { params: data })
+      .get(`${this.host}/v1/order/estimated_fee`, {
+        params: { ...data, path: JSON.stringify(data.path), items: JSON.stringify(data.items) },
+      })
       .then((res) => res.data)
+      .catch(this.handleException());
+  }
+  async fetchAllServices(lat: string, lng: string, city_id?: string) {
+    return await axios
+      .get(`${this.host}/v1/order/service_types`, {
+        params: { lat, lng, city_id },
+      })
+      .then((res) => res.data)
+      .catch(this.handleException());
+  }
+  async estimatedFeeMutilService(data: CreateOrderProps, services: any[]) {
+    return await axios
+      .post(`${this.host}/v2/order/estimated_fee`, { ...data, services })
+      .then((res) => res.data)
+      .catch(this.handleException());
+  }
+  async cancelOrder(token: string, order_id: string, comment: string) {
+    return await axios
+      .get(`${this.host}/v1/order/cancel`, {
+        params: { token, order_id, comment },
+      })
+      .then((res) => res.data)
+      .catch(this.handleException());
+  }
+  async fetchAllOrder(props: FetchOrderProps) {
+    return await axios
+      .get(`${this.host}/v1/order/list`, {
+        params: props,
+      })
+      .then((res) => res.data as Order[])
+      .catch(this.handleException());
+  }
+  async fetchOrder(token: string, order_id: string) {
+    return await axios
+      .get(`${this.host}/v1/order/detail`, {
+        params: { token, order_id },
+      })
+      .then((res) => res.data as Order)
+      .catch(this.handleException());
+  }
+  async fetchCity(city_id: string, lat?: number, lng?: number) {
+    return await axios
+      .get(`${this.host}/v1/order/city_detail`, {
+        params: { city_id, lat, lng },
+      })
+      .then(
+        (res) =>
+          res.data as {
+            _id: string;
+            name: string;
+            name_vi_vn: string;
+            country_id: string;
+            location: {
+              type: string;
+              coordinates: number[];
+            };
+          }
+      )
+      .catch(this.handleException());
+  }
+  async getTrackingLink(token: string, order_id: string) {
+    return await axios
+      .get(`${this.host}/v1/order/shared_link`, {
+        params: { token, order_id },
+      })
+      .then((res) => res.data as { shared_link: string })
+      .catch(this.handleException());
+  }
+  async rateSupplier(token: string, order_id: string, rating: number, comment?: string) {
+    return await axios
+      .get(`${this.host}/v1/order/rate_supplier`, {
+        params: { token, order_id, rating, comment },
+      })
+      .then((res) => res.data as { shared_link: string })
+      .catch(this.handleException());
+  }
+  async notifyOrder(props: NotifyOrderProps) {
+    return await axios
+      .get(`${this.host}/v1/order/notify_order`, {
+        params: props,
+      })
+      .then((res) => res.data as { shared_link: string })
       .catch(this.handleException());
   }
 }

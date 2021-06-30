@@ -21,6 +21,7 @@ export type IShopConfig = BaseDocument & {
   shipOneKmFee?: number; // Phí ship dưới 1 km
   shipUseOneKmFee?: boolean; // Bật phí ship dưới 1 km
   shipNote?: string; // Ghi chú cho shipper
+  shipAhamoveToken?: string; // Token ship Ahamove
   // Banner hiển thị
   banners?: ShopBanner[]; // Banner của shop
 };
@@ -39,6 +40,7 @@ const shopConfigSchema = new Schema(
     shipOneKmFee: { type: Number, default: 0, min: 0 },
     shipUseOneKmFee: { type: Boolean, default: false },
     shipNote: { type: String },
+    shipAhamoveToken: { type: String },
     banners: { type: [ShopBannerSchema], default: [] },
   },
   { timestamps: true }

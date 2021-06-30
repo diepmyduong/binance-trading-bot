@@ -9,6 +9,7 @@ import CustomerCommissionJob from "./jobs/customerCommission.job";
 import OrderJob from "./jobs/order.job";
 import SyncSocialEngagementJob from "./jobs/syncSocialEngagement.job";
 import SendNotificationJob from "./jobs/sendNotification.job";
+import RefreshAhamoveTokenJob from "./jobs/refreshAhamoveToken.job";
 
 export function InitRepeatJobs() {
   console.log("Generate Repeat Jobs");
@@ -35,6 +36,11 @@ export function InitRepeatJobs() {
 
   SendNotificationJob.create({})
     .repeatEvery("5 seconds")
+    .unique({ name: SendNotificationJob.jobName })
+    .save();
+
+  RefreshAhamoveTokenJob.create({})
+    .repeatEvery("1 day", { skipImmediate: true })
     .unique({ name: SendNotificationJob.jobName })
     .save();
 }

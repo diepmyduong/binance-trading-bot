@@ -29,6 +29,8 @@ export enum ShipMethod {
   POST = "POST", // Nhận hàng tại chi nhánh
   VNPOST = "VNPOST", // Vietnam Post
   NONE = "NONE", // Không vận chuyển
+  AHAMOVE = "AHAMOVE", // Ahamove
+  DRIVER = "DRIVER", // Tài xế nội bộ
 }
 export enum OrderType {
   POST = "POST", // Đơn bưu điện,

@@ -265,9 +265,7 @@ const Menus = ({ cats, ...props }: Propstype) => {
         native
         options={[
           ...cats.map((item, index) => {
-            if (item.products && item.products.length > 0) {
-              return { value: index, label: item.name };
-            }
+            return { value: index, label: item.name };
           }),
         ]}
         onChange={(val) => handleChange(val)}

@@ -58,6 +58,8 @@ const schema = gql`
     mainAddressStorehouseId: ID
     mainAddressStorehouse: AddressStorehouse
     allowSale: Boolean
+
+    config: ShopConfig
   }
 `;
 

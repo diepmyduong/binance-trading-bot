@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { BaseDocument, ModelHook, ModelLoader } from "../../../base/baseModel";
 import { MainConnection } from "../../../loaders/database";
 import { ShopBanner, ShopBannerSchema } from "./shopBanner.graphql";
+import { ShopProductGroup, ShopProductGroupSchema } from "./shopProductGroup.graphql";
 
 const Schema = mongoose.Schema;
 
@@ -23,6 +24,8 @@ export type IShopConfig = BaseDocument & {
   shipNote?: string; // Ghi chú cho shipper
   // Banner hiển thị
   banners?: ShopBanner[]; // Banner của shop
+  // Món ăn đặc sắc
+  productGroups?: ShopProductGroup[]; // Nhóm sản phẩm của shop
 };
 
 const shopConfigSchema = new Schema(
@@ -40,6 +43,7 @@ const shopConfigSchema = new Schema(
     shipUseOneKmFee: { type: Boolean, default: false },
     shipNote: { type: String },
     banners: { type: [ShopBannerSchema], default: [] },
+    productGroups: { type: [ShopProductGroupSchema], default: [] },
   },
   { timestamps: true }
 );

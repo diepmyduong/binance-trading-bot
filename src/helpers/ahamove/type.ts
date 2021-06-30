@@ -52,7 +52,7 @@ export type Path = {
   apt_number?: string;
 };
 export type Order = {
-  id: string;
+  _id: string;
   status: string;
   service_id: string;
   city_id: string;

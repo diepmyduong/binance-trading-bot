@@ -8,7 +8,7 @@ import { IShopBranch, ShopBranchModel } from "../shopBranch/shopBranch.model";
 import { IShopConfig, ShopConfigModel } from "../shopConfig/shopConfig.model";
 import { IOrder, OrderModel, ShipMethod } from "./order.model";
 
-type DeliveryService = {
+export type DeliveryService = {
   shipMethod: ShipMethod;
   serviceId: string;
   serviceName: string;

@@ -169,5 +169,7 @@ export default gql`
 
     "Hóa đơn"
     useHoaDon: Boolean
+
+    sharedLink: String
   }
 `;

@@ -161,7 +161,7 @@ function getBillRequestData(order: IOrder): ICreateDeliveryOrderRequest {
     ReceiverWardId: order.deliveryInfo.receiverWardId,
 
     ReceiverAddressType: order.deliveryInfo.receiverAddressType,
-    ServiceName: order.deliveryInfo.serviceName,
+    ServiceName: order.deliveryInfo.serviceName as any,
 
     OrderCode: order.code,
     PackageContent: order.deliveryInfo.packageContent,

@@ -22,7 +22,7 @@ export type DeliveryInfo = {
 
   receiverAddressType: AddressType; // Kiểu địa chỉ người nhận: 1 Nhà riêng, 2: Cơ quan Nếu không có thông tin thì để null
 
-  serviceName: ServiceCode; //"BK"; // tên dịch vụ *
+  serviceName: string;
 
   orderCode: string; // mã đơn hàng
   packageContent: string; //"Món hàng A + Món hàng B"; // nội dung hàng
@@ -62,46 +62,42 @@ export type DeliveryInfo = {
   statusText: string;
 
   partnerFee: number; // Phí giao hàng trả cho đối tác
+  sharedLink: string; // Link chia sẻ
 };
 
 export const DeliveryInfoSchema = new Schema({
-  senderFullname: { type: Schema.Types.String, required: true }, // tên người gửi *
-  senderTel: { type: Schema.Types.String, required: true }, // Số điện thoại người gửi * (maxlength: 50)
-  senderAddress: { type: Schema.Types.String, required: true }, // địa chỉ gửi *
-  senderWardId: { type: Schema.Types.String, required: true }, // mã phường người gửi *
-  senderProvinceId: { type: Schema.Types.String, required: true }, // mã tỉnh người gửi *
-  senderDistrictId: { type: Schema.Types.String, required: true }, // mã quận người gửi *
+  senderFullname: { type: Schema.Types.String }, // tên người gửi *
+  senderTel: { type: Schema.Types.String }, // Số điện thoại người gửi * (maxlength: 50)
+  senderAddress: { type: Schema.Types.String }, // địa chỉ gửi *
+  senderWardId: { type: Schema.Types.String }, // mã phường người gửi *
+  senderProvinceId: { type: Schema.Types.String }, // mã tỉnh người gửi *
+  senderDistrictId: { type: Schema.Types.String }, // mã quận người gửi *
 
-  receiverFullname: { type: Schema.Types.String, required: true }, // tên người nhận *
-  receiverAddress: { type: Schema.Types.String, required: true }, // địa chỉ nhận *
-  receiverTel: { type: Schema.Types.String, required: true }, // phone người nhận *
-  receiverProvinceId: { type: Schema.Types.String, required: true }, // mã tỉnh người nhận *
-  receiverDistrictId: { type: Schema.Types.String, required: true }, // mã quận người nhận *
-  receiverWardId: { type: Schema.Types.String, required: true }, // mã phường người nhận *
+  receiverFullname: { type: Schema.Types.String }, // tên người nhận *
+  receiverAddress: { type: Schema.Types.String }, // địa chỉ nhận *
+  receiverTel: { type: Schema.Types.String }, // phone người nhận *
+  receiverProvinceId: { type: Schema.Types.String }, // mã tỉnh người nhận *
+  receiverDistrictId: { type: Schema.Types.String }, // mã quận người nhận *
+  receiverWardId: { type: Schema.Types.String }, // mã phường người nhận *
 
   receiverAddressType: {
     type: Schema.Types.String,
     enum: Object.values(AddressType),
   }, // Kiểu địa chỉ người nhận: 1 Nhà riêng, 2: Cơ quan Nếu không có thông tin thì để null
 
-  serviceName: {
-    type: Schema.Types.String,
-    enum: Object.values(ServiceCode),
-    default: ServiceCode.DONG_GIA,
-    // required: true,
-  }, //"BK"; // tên dịch vụ *
+  serviceName: { type: Schema.Types.String },
 
   orderCode: { type: Schema.Types.String }, // mã đơn hàng
   packageContent: { type: Schema.Types.String }, //"Món hàng A + Món hàng B"; // nội dung hàng
 
-  weightEvaluation: { type: Schema.Types.Number, min: 1, required: true }, // cân nặng *
+  weightEvaluation: { type: Schema.Types.Number, min: 1 }, // cân nặng *
   widthEvaluation: { type: Schema.Types.Number, min: 0 }, // chiều rộng
   lengthEvaluation: { type: Schema.Types.Number, min: 0 }, // chiều dài
   heightEvaluation: { type: Schema.Types.Number, min: 0 }, // chiều cao
 
   codAmountEvaluation: { type: Schema.Types.Number, min: 0 }, // tiền thu hộ tạm tính
 
-  isPackageViewable: { type: Schema.Types.Boolean, required: true }, // cho xem hàng
+  isPackageViewable: { type: Schema.Types.Boolean }, // cho xem hàng
 
   pickupType: {
     type: Schema.Types.Number,
@@ -134,4 +130,5 @@ export const DeliveryInfoSchema = new Schema({
   statusText: { type: Schema.Types.String },
 
   partnerFee: { type: Schema.Types.Number }, // phí phải trả cho vnpost
+  sharedLink: { type: String },
 });

@@ -18,7 +18,17 @@ const hostDev = "https://apistg.ahamove.com";
 const apiKey = configs.ahamove.apiKey;
 const apiKeyDev = "4cd543d3e4e4fbe97db216828c18644f77558275";
 
+const statusText = {
+  IDLE: "Đã tạo đơn",
+  ASSIGNING: "Đang tìm tài xế",
+  ACCEPTED: "Tài xế đang láy món",
+  "IN PROCESS": "Món đang được giao",
+  COMPLETED: "Món đã được giao",
+  CANCELLED: "Đơn hàng đã huỷ",
+};
+
 export class Ahamove {
+  public static StatusText = statusText;
   constructor(public config: AhamoveConfig) {
     this.config = { devMode: true, apiKey: apiKeyDev, ...config };
   }
@@ -86,7 +96,15 @@ export class Ahamove {
       .get(`${this.host}/v1/order/create`, {
         params: { ...data, path: JSON.stringify(data.path), items: JSON.stringify(data.items) },
       })
-      .then((res) => res.data)
+      .then(
+        (res) =>
+          res.data as {
+            order_id: string;
+            status: string;
+            shared_link: string;
+            order: Order;
+          }
+      )
       .catch(this.handleException());
   }
   async estimatedFee(data: CreateOrderProps) {

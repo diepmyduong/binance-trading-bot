@@ -7,7 +7,7 @@ export default function Page() {
 
   useEffect(() => {
     router.replace("/shop/settings");
-  });
+  }, []);
   return null;
 }
 

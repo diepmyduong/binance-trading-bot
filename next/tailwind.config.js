@@ -213,11 +213,11 @@ module.exports = {
           from: { opacity: 0, transform: 'translateY(4px)' },
           to: { opacity: 1, transform: 'translateY(0)' }
         },
-        slideUp: {
+        slideInBottom: {
           from: { opacity: 0, transform: 'translateY(100%)' },
           to: { opacity: 1, transform: 'translateY(0)' }
         },
-        slideDown: {
+        slideOutBottom: {
           from: { opacity: 1, transform: 'translateY(0)' },
           to: { opacity: 0, transform: 'translateY(100%)' }
         },
@@ -258,8 +258,8 @@ module.exports = {
          emerge: 'emerge 0.2s ease-in',
          fade: 'fade .2s ease-out forwards',
          'emerge-up': 'emergeUp .2s ease-in',
-         'slide-up': 'slideUp .2s ease-in',
-         'slide-down': 'slideDown .2s ease-out forwards',
+         'slide-in-bottom': 'slideInBottom .2s ease-in',
+         'slide-out-bottom': 'slideOutBottom .2s ease-out forwards',
          'scale-up': 'scaleUp .2s ease-in',
          'scale-down': 'scaleDown .2s ease-out forwards',
          'slide-in-left': 'slideInLeft .2s ease-in',

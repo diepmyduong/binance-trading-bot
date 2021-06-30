@@ -65,10 +65,10 @@ const MustTryMenu = (props: Propstype) => {
       </div>
       <Form
         dialog
+        mobileSizeMode
         isOpen={openDialog}
-        mobileMode
+        slideFromBottom="all"
         onClose={() => setOpenDialog(false)}
-        className="z-400 rounded w-full"
       >
         <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
       </Form>

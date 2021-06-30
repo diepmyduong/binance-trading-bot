@@ -51,6 +51,7 @@ const Mutation = {
           { new: true }
         ),
       ]);
+      return member;
     });
   },
 };

@@ -29,6 +29,8 @@ const schema = gql`
     shopName: String
     "Logo cửa hàng"
     shopLogo: String
+    "Hình cover cửa hàng"
+    shopCover: String
     "Địa chỉ"
     address: String
     "Mã Tỉnh/thành"
@@ -56,6 +58,8 @@ const schema = gql`
     mainAddressStorehouseId: ID
     mainAddressStorehouse: AddressStorehouse
     allowSale: Boolean
+
+    config: ShopConfig
   }
 `;
 

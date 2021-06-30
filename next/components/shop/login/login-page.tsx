@@ -7,6 +7,7 @@ import { Button } from "../../shared/utilities/form/button";
 import { Field } from "../../shared/utilities/form/field";
 import { Form, FormConsumer } from "../../shared/utilities/form/form";
 import { Input } from "../../shared/utilities/form/input";
+import { Label } from "../../shared/utilities/form/label";
 import { Spinner } from "../../shared/utilities/spinner";
 
 export default function ShopLoginPage() {
@@ -39,7 +40,7 @@ export default function ShopLoginPage() {
           <Spinner />
         ) : (
           <Form
-            className="bg-white shadow-xl p-6 w-5/12 max-w-screen-xs flex flex-col"
+            className="p-6 w-5/12 max-w-screen-xs flex flex-col"
             onSubmit={async (data) => {
               await login(data);
             }}
@@ -48,11 +49,21 @@ export default function ShopLoginPage() {
             <h2 className="text-2xl text-center font-semibold text-primary uppercase mt-2 mb-6">
               Đăng nhập
             </h2>
+            <Label className="mb-3 text-base" text="Email đăng nhập" />
             <Field className="mb-1" name="username" required>
-              <Input className="h-12" placeholder="Email đăng nhập" autoFocus />
+              <Input
+                className="h-14 shadow-md rounded-md border-0"
+                placeholder="Email đăng nhập"
+                autoFocus
+              />
             </Field>
+            <Label className="mb-3 text-base" text="Mật khẩu" />
             <Field className="mb-1" name="password" required>
-              <Input className="h-12" type="password" placeholder="Mật khẩu" />
+              <Input
+                className="h-14 shadow-md rounded-md border-0"
+                type="password"
+                placeholder="Mật khẩu"
+              />
             </Field>
             <FormConsumer>
               {({ loading }) => (
@@ -60,8 +71,8 @@ export default function ShopLoginPage() {
                   <Button
                     submit
                     primary
-                    className="h-12"
-                    text="Đăng nhập quản trị"
+                    className="mt-4 h-14 bg-gradient shadow"
+                    text="Đăng nhập cửa hàng"
                     isLoading={loading}
                   />
                 </>

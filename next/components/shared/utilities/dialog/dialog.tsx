@@ -15,7 +15,8 @@ export interface DialogPropsType extends ReactProps {
   icon?: JSX.Element;
   width?: string;
   maxWidth?: string;
-  mobileMode?: boolean;
+  mobileSizeMode?: boolean;
+  slideFromBottom?: "none" | "mobile-only" | "all";
   openAnimation?: string;
   closeAnimation?: string;
   root?: string;
@@ -26,15 +27,16 @@ export interface DialogPropsType extends ReactProps {
 
 const ROOT_ID = "dialog-root";
 export function Dialog({
-  wrapperClass = "fixed w-screen h-screen bottom-0 z-100 flex justify-center mx-auto form-dialog overflow-y-scroll py-20",
-  overlayClass = "fixed w-full h-full bottom-0 max-w-lg pointer-events-none",
-  dialogClass = "relative bg-white shadow-md rounded m-auto md:max-w-lg",
-  headerClass = "relative flex justify-between px-4 py-1 box-content bg-white z-5 border-top rounded-t border-b border-gray-200 z-10",
-  bodyClass = "relative bg-white rounded",
+  wrapperClass = "fixed w-screen h-screen top-0 left-0 z-100 flex flex-col items-center overflow-y-scroll py-20",
+  overlayClass = "fixed w-full h-full top-0 left-auto pointer-events-none",
+  dialogClass = "relative bg-white shadow-md rounded m-auto",
+  headerClass = "relative flex justify-between px-4 py-1 box-content bg-white z-5 border-top rounded-t border-b border-gray-200",
+  bodyClass = "relative p-4 bg-white rounded",
   footerClass = "relative flex px-4 pb-3 pt-2 bg-white z-5 rounded-b",
-  mobileMode = true,
+  slideFromBottom = "mobile-only",
   width = "auto",
-  maxWidth = "32rem",
+  mobileSizeMode = false,
+  maxWidth = "86vw",
   title = "",
   icon = null,
   style = {},
@@ -90,9 +92,13 @@ export function Dialog({
     ];
   }
 
+  const inMobileMode = (slideFromBottom == "mobile-only" && isMobile) || slideFromBottom == "all";
+
   let el = (
     <div
-      className={`dialog-wrapper ${wrapperClass} ${!mobileMode ? "" : "mobile"}`}
+      className={`dialog-wrapper ${wrapperClass} ${
+        inMobileMode ? "mobile" : "not-in-mobile0-mode"
+      }`}
       style={{ ...style }}
       onMouseDown={(e) => {
         e.stopPropagation();
@@ -110,7 +116,7 @@ export function Dialog({
       <div
         className={`dialog-overlay ${overlayClass} ${
           props.isOpen ? "animate-emerge" : "animate-fade"
-        }`}
+        } ${mobileSizeMode ? "max-w-lg" : ""}`}
         style={{
           backgroundColor: "rgba(0,0,0,.32)",
         }}
@@ -120,16 +126,16 @@ export function Dialog({
           props.isOpen
             ? props.openAnimation
               ? props.openAnimation
-              : mobileMode
+              : inMobileMode
               ? "animate-slide-in-bottom"
               : "animate-scale-up"
             : props.closeAnimation
             ? props.closeAnimation
-            : mobileMode
+            : inMobileMode
             ? "animate-slide-out-bottom"
             : "animate-scale-down"
-        }`}
-        style={{ width, maxWidth }}
+        }  ${mobileSizeMode ? "max-w-lg" : ""}`}
+        style={{ width, maxWidth: mobileSizeMode ? undefined : maxWidth }}
         onMouseDown={(e) => {
           e.stopPropagation();
           isClickingOverlay = false;
@@ -146,6 +152,7 @@ export function Dialog({
       </div>
     </div>
   );
+
   return isOpen ? createPortal(el, document.getElementById(props.root || ROOT_ID)) : null;
 }
 

@@ -46,6 +46,8 @@ const schema = gql`
     phone: String!
     shopName: String
     shopLogo: String
+    "Hình cover cửa hàng"
+    shopCover: String
     address: String
     provinceId: String
     districtId: String
@@ -68,6 +70,8 @@ const schema = gql`
     phone: String
     shopName: String
     shopLogo: String
+    "Hình cover cửa hàng"
+    shopCover: String
     address: String
     provinceId: String
     districtId: String
@@ -110,6 +114,8 @@ const schema = gql`
     shopName: String
     "Logo cửa hàng"
     shopLogo: String
+    "Hình cover cửa hàng"
+    shopCover: String
     "Điểm tích lũy"
     cumulativePoint: Float
     "Điểm chuyên cần"

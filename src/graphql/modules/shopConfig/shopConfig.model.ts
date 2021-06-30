@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import { BaseDocument, ModelHook, ModelLoader } from "../../../base/baseModel";
 import { MainConnection } from "../../../loaders/database";
 import { ShopBanner, ShopBannerSchema } from "./shopBanner.graphql";
+import { ShopProductGroup, ShopProductGroupSchema } from "./shopProductGroup.graphql";
+import { ShopTag, ShopTagSchema } from "./shopTag.graphql";
 
 const Schema = mongoose.Schema;
 
@@ -24,6 +26,11 @@ export type IShopConfig = BaseDocument & {
   shipAhamoveToken?: string; // Token ship Ahamove
   // Banner hiển thị
   banners?: ShopBanner[]; // Banner của shop
+  productGroups?: ShopProductGroup[]; // Nhóm sản phẩm của shop
+  rating?: number; // Đánh giá sao
+  ratingQty?: number; // Số lượng đánh giá
+  soldQty?: number; // Số lượng đã bán
+  tags?: ShopTag[]; // Tags đánh giá cho cửa hàng
 };
 
 const shopConfigSchema = new Schema(
@@ -42,6 +49,11 @@ const shopConfigSchema = new Schema(
     shipNote: { type: String },
     shipAhamoveToken: { type: String },
     banners: { type: [ShopBannerSchema], default: [] },
+    productGroups: { type: [ShopProductGroupSchema], default: [] },
+    rating: { type: Number, default: 0 },
+    ratingQty: { type: Number, default: 0 },
+    soldQty: { type: Number, default: 0 },
+    tags: { type: [ShopTagSchema], default: [] },
   },
   { timestamps: true }
 );

@@ -26,7 +26,6 @@ export function CartProvider(props) {
   const [totalFood, setTotalFood] = useState(0);
   const [totalMoney, setTotalMoney] = useState(0);
   const [branchSelecting, setBranchSelecting] = useState(null);
-  console.log("CartProvider", cart);
   useEffect(() => {
     setTotalFood(cart.reduce((count, item) => (count += item.qty), 0));
     setTotalMoney(cart.reduce((total, item) => (total += item.price * item.qty), 0));

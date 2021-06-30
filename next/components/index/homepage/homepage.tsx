@@ -36,14 +36,15 @@ export function Homepage({ productId }: PropsType) {
   }, [totalFood]);
   return (
     <>
-      <div className={`z-0 relative bg-white text-gray-800`}>
-        {shop &&
-          ((
-            <>
-              <RestaurantInformation shop={shop} />
-              <RestaurantFood />
-            </>
-          ) || <Spinner />)}
+      <div className={`z-0 relative bg-white min-h-screen text-gray-800`}>
+        {!shop ? (
+          <Spinner />
+        ) : (
+          <>
+            <RestaurantInformation shop={shop} />
+            <RestaurantFood />
+          </>
+        )}
         {cart && cart.length > 0 && (
           <FloatingButton
             totalFood={totalFood}
@@ -55,22 +56,10 @@ export function Homepage({ productId }: PropsType) {
           isOpen={showDialogCart}
           onClose={() => setShowDialogCart(false)}
           cart={cart}
-          mobileMode
+          slideFromBottom="all"
           onChange={handleChange}
           money={totalMoney}
         />
-        {/* <Form
-          dialog
-          isOpen={openDialog}
-          mobileMode
-          onClose={() => {
-            setProductIdCode(null);
-            setOpenDialog(false);
-          }}
-          className="z-400 rounded w-full"
-        >
-          <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
-        </Form> */}
       </div>
       <Footer />
     </>

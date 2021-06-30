@@ -9,7 +9,7 @@ interface PropsType extends ReactProps {
 
 export function ImageDialog({ className = "", style = {}, ...props }: PropsType) {
   return (
-    <Dialog isOpen={props.isOpen} onClose={props.onClose} mobileMode={false}>
+    <Dialog isOpen={props.isOpen} onClose={props.onClose} slideFromBottom="none">
       {props.image && (
         <img
           className={`${props.onClick ? "cursor-pointer" : ""} ${className}`}

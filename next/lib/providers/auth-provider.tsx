@@ -28,6 +28,7 @@ export const AuthContext = createContext<
     checkMember: () => Promise<any>;
     loginMemberByPassword: (username: string, password: string) => Promise<any>;
     logoutMember: () => Promise<any>;
+    memberUpdateMe: (data) => Promise<Member>;
     redirectToAdminLogin: Function;
     redirectToAdmin: Function;
     redirectToShopLogin: Function;
@@ -154,15 +155,14 @@ export function AuthProvider(props) {
     if (memberToken) {
       if (member === undefined) {
         try {
-          let res = await GraphService.mutate({
-            mutation: `
-              loginMember(idToken: "${memberToken}") {
-                member { ${MemberService.fullFragment} } token
+          let res = await GraphService.query({
+            query: `
+              memberGetMe {
+                ${MemberService.fullFragment}
               }
             `,
           });
-          SetAuthTokenMember(res.data.g0.token);
-          setMember(res.data.g0.member);
+          setMember(res.data.g0);
         } catch (err) {
           ClearAuthTokenMember();
           setMember(null);
@@ -200,6 +200,29 @@ export function AuthProvider(props) {
     ClearAuthTokenMember();
     setMember(null);
     await MemberService.clearStore();
+  };
+
+  const memberUpdateMe = async (data) => {
+    return MemberService.mutate({
+      mutation: `
+        memberUpdateMe(data: $data) {
+          ${MemberService.fullFragment}
+        }
+      `,
+      variablesParams: `($data: UpdateMemberInput!)`,
+      options: {
+        variables: {
+          data,
+        },
+      },
+    })
+      .then((res) => {
+        setMember({ ...member, ...data });
+        return res.data.g0;
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 
   const activeUser = async (userId) => {
@@ -271,6 +294,7 @@ export function AuthProvider(props) {
         checkMember,
         loginMemberByPassword,
         logoutMember,
+        memberUpdateMe,
         redirectToAdminLogin,
         redirectToAdmin,
         redirectToShopLogin,

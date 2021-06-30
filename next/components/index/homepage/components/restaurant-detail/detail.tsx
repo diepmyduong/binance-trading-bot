@@ -26,7 +26,7 @@ interface PropsType extends ReactProps {
 }
 export function RestaurantDetail({ item, onClose }: PropsType) {
   console.log("item", item);
-  const { cart, handleChange } = useCartContext();
+  const { cartProducts, addProductToCart } = useCartContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [count, setCount] = useState(1);
   const [opacity, setOpacity] = useState("opacity-0");
@@ -131,7 +131,7 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
           text={`Thêm ${NumberPipe(item.basePrice * count)} đ`}
           className="w-full"
           onClick={() => {
-            handleChange(-1, item);
+            addProductToCart(item, 1);
             onClose();
           }}
         />

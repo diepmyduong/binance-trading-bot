@@ -7,7 +7,7 @@ import { FaHistory, FaPercent, FaSignInAlt, FaUserAlt } from "react-icons/fa";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import { Button } from "../../../components/shared/utilities/form/button";
 import { useAuth } from "../../../lib/providers/auth-provider";
-import CustomerLoginDialog from "../../../components/shared/utilities/dialog/customer-login-dialog";
+import { CustomerLoginDialog } from "../../../components/shared/homepage-layout/customer-login-dialog";
 import { HiOutlineUserCircle } from "react-icons/hi";
 import { Img } from "../../../components/shared/utilities/img";
 

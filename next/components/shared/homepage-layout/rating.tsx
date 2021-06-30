@@ -8,7 +8,7 @@ interface Propstype extends ReactProps {
   ratingTime?: string;
 }
 
-const Rating = (props: Propstype) => {
+export function Rating(props: Propstype) {
   return (
     <div
       className={`${
@@ -27,6 +27,4 @@ const Rating = (props: Propstype) => {
       {props.ratingTime && <p className="text-gray-400 text-sm"> {props.ratingTime}</p>}
     </div>
   );
-};
-
-export default Rating;
+}

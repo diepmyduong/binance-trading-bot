@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Button } from "../../../../shared/utilities/form/button";
-import BranchsDialog from "../branch/branchs-dialog";
+import BranchsDialog from "../branchs-dialog";
 import { AiOutlineRight } from "react-icons/ai";
-import { useCartContext } from "../../../../../lib/providers/cart-provider";
+import { useShopContext } from "../../../../../lib/providers/shop-provider";
 interface Propstype extends ReactProps {
   info: {
     name: string;
@@ -10,7 +10,7 @@ interface Propstype extends ReactProps {
 }
 const DefaultInfomation = (props: Propstype) => {
   const [showBranchs, setShowBranchs] = useState(false);
-  const { branchSelecting, setBranchSelecting } = useCartContext();
+  const { branchSelecting, setBranchSelecting } = useShopContext();
 
   return (
     <div className={`bg-white p-3 pb-0 rounded-md shadow-lg text-center  ${props.className || ""}`}>

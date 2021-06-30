@@ -1,21 +1,25 @@
-import RestaurantFood from "./component/restaurant-menus/restaurant-menus";
-import RestaurantInformation from "./component/restaurant-information/restaurant-information";
+import RestaurantInformation from "./components/shop-info/restaurant-information";
 import { useCartContext } from "../../../lib/providers/cart-provider";
-import FloatingButton from "./component/cart/floating-button";
 import { useEffect, useState } from "react";
-import CartDialog from "./component/cart/cart-dialog";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import { Spinner } from "../../shared/utilities/spinner";
-import { Form } from "../../shared/utilities/form/form";
-import { RestaurantDetail } from "./component/restaurant-detail/detail";
 import { Footer } from "../../../layouts/default-layout/components/footer";
+import { ShopCategories } from "./components/shop-category";
+import { CartDialog } from "./components/cart-dialog";
+import { NumberPipe } from "../../../lib/pipes/number";
 
 interface PropsType extends ReactProps {
   productId?: string;
 }
 export function Homepage({ productId }: PropsType) {
   const { shop } = useShopContext();
-  const { cart, totalFood, totalMoney, handleChange } = useCartContext();
+  const {
+    cartProducts,
+    totalFood,
+    totalMoney,
+    changeProductQuantity,
+    removeProductFromCart,
+  } = useCartContext();
   const [showDialogCart, setShowDialogCart] = useState(false);
   const [productIdCode, setProductIdCode] = useState(productId);
   const [openDialog, setOpenDialog] = useState(false);
@@ -42,10 +46,10 @@ export function Homepage({ productId }: PropsType) {
         ) : (
           <>
             <RestaurantInformation shop={shop} />
-            <RestaurantFood />
+            <ShopCategories />
           </>
         )}
-        {cart && cart.length > 0 && (
+        {cartProducts && cartProducts.length > 0 && (
           <FloatingButton
             totalFood={totalFood}
             totalMoney={totalMoney}
@@ -55,13 +59,37 @@ export function Homepage({ productId }: PropsType) {
         <CartDialog
           isOpen={showDialogCart}
           onClose={() => setShowDialogCart(false)}
-          cart={cart}
+          cart={cartProducts}
           slideFromBottom="all"
-          onChange={handleChange}
           money={totalMoney}
+          onChange={changeProductQuantity}
+          onRemove={removeProductFromCart}
         />
       </div>
       <Footer />
     </>
   );
 }
+interface FloatButtonProps extends ReactProps {
+  totalFood: string | number;
+  totalMoney: string | number;
+  onClick?: Function;
+}
+
+const FloatingButton = (props: FloatButtonProps) => {
+  return (
+    <div className="w-full mt-3 sticky bottom-5 sm:bottom-7 left-0 flex flex-col items-center z-100">
+      <div className="max-w-lg flex flex-col items-center w-full px-4">
+        <button
+          className={`z-50 flex text-sm btn-primary mx-4 w-full max-w-sm sm:h-14`}
+          onClick={() => props.onClick()}
+        >
+          <span className="flex-1">Giỏ hàng</span>
+          <span className="flex-1 text-right whitespace-nowrap pl-4">
+            {props.totalFood} món - {NumberPipe(props.totalMoney, true)}
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+};

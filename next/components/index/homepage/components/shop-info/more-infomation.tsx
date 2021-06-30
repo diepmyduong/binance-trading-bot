@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import { FaPercent } from "react-icons/fa";
 import { HiShoppingCart, HiStar } from "react-icons/hi";
 import { Package, SmileIcon, MoneyBag } from "../../../../../public/assets/svg/svg";
-import Rating from "../../../../shared/infomation/rating";
-import EmotionsEvaluate from "./emotions-evaluate";
-import BranchsDialog from "../branch/branchs-dialog";
-import PromotionsDialog from "../../../promotion/promotions-page";
+import { Rating } from "../../../../shared/homepage-layout/rating";
+import { EmotionsEvaluate } from "./emotions-evaluate";
 import { Button } from "../../../../shared/utilities/form/button";
 import { AiOutlineRight } from "react-icons/ai";
-import CommentsDialog from "../coments/comments-dialog";
+import { CommentsDialog } from "../comments-dialog";
 interface Propstype extends ReactProps {}
 const MoreInfomation = (props: Propstype) => {
   const reactions = [

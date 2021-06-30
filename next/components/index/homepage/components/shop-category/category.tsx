@@ -1,19 +1,16 @@
 import React, { useState } from "react";
-import Rating from "../../../../shared/infomation/rating";
-import { NumberPipe } from "../../../../../lib/pipes/number";
 import { Img } from "../../../../shared/utilities/img";
-import Price from "../../../../shared/infomation/price";
-import { useCartContext } from "../../../../../lib/providers/cart-provider";
 import { Form } from "../../../../shared/utilities/form/form";
 import { RestaurantDetail } from "../restaurant-detail/detail";
 import { useRouter } from "next/router";
 import { Product } from "../../../../../lib/repo/product.repo";
+import { Rating } from "../../../../shared/homepage-layout/rating";
+import { Price } from "../../../../shared/homepage-layout/price";
 interface PropsType extends ReactProps {
   list: Product[];
   title: string;
 }
-const Menu = (props: PropsType) => {
-  const { handleChange } = useCartContext();
+export function Category(props: PropsType) {
   const router = useRouter();
   const query = router.query;
   const [openDialog, setOpenDialog] = useState(false);
@@ -56,6 +53,4 @@ const Menu = (props: PropsType) => {
       </Form>
     </div>
   );
-};
-
-export default Menu;
+}

@@ -9,7 +9,7 @@ SwiperCore.use([Navigation]);
 interface Propstype extends ReactProps {
   reactions: any[];
 }
-const EmotionsEvaluate = (props: Propstype) => {
+export function EmotionsEvaluate(props: Propstype) {
   // const [isLastLeft, setIsLastLeft] = useState(false);
   // const [isLastRight, setIsLastRight] = useState(false);
   // function isInViewport(element) {
@@ -149,6 +149,4 @@ const EmotionsEvaluate = (props: Propstype) => {
       </div> */}
     </div>
   );
-};
-
-export default EmotionsEvaluate;
+}

@@ -17,11 +17,14 @@ export const ShopContext = createContext<
     shopCode: string;
     setShopCode: Function;
     productShop: Category[];
+    branchSelecting: any;
+    setBranchSelecting: Function;
   }>
 >({});
 export function ShopProvider(props) {
   const router = useRouter();
   const [shopCode, setShopCode] = useState<string>();
+  const [branchSelecting, setBranchSelecting] = useState(null);
   const [shop, setShop] = useState<Shop>();
   const [productIdSelected, setProductIdSelected] = useState<any>(null);
   const [productShop, setProductShop] = useState<Category[]>(null);
@@ -100,6 +103,8 @@ export function ShopProvider(props) {
         productShop,
         setShop,
         setShopCode,
+        branchSelecting,
+        setBranchSelecting,
       }}
     >
       {props.children}

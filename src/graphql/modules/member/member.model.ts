@@ -29,6 +29,7 @@ export type IMember = BaseDocument & {
   chatbotKey?: string; // Chatbot API Key
   shopName?: string; // Tên cửa hàng
   shopLogo?: string; // Logo cửa hàng
+  shopCover?: string; // Hình cover cửa hàng
   cumulativePoint?: number; // Điểm tích lũy
   diligencePoint?: number; // Điểm chuyen can
   commission?: number; // Hoa hồng

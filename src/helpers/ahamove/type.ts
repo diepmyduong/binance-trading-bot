@@ -108,3 +108,24 @@ export type CreateOrderProps = {
   type?: string;
   need_optimize_route?: boolean;
 };
+export type FetchOrderProps = {
+  token: string;
+  status?: string;
+  count?: number;
+  offset?: number;
+  from_time?: number;
+  to_time?: number;
+  child_ids?: string[];
+  fields?: string;
+  total?: boolean;
+};
+export type NotifyOrderProps = {
+  token: string;
+  order_ids: string;
+  supplier_id: number;
+  noti_timeout?: number;
+  allow_busy?: boolean;
+  trip_distance?: number;
+  sound?: boolean;
+  max_cod?: number;
+};

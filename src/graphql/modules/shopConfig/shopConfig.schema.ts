@@ -21,6 +21,12 @@ const schema = gql`
     shipUseOneKmFee: Boolean
     "Ghi chú cho shipper"
     shipNote: String
+    "Đánh giá sao"
+    rating: Float
+    "Số lượng đánh giá"
+    ratingQty: Int
+    "Số lượng đã bán"
+    soldQty: Int
   }
 
   type ShopConfig {
@@ -50,6 +56,12 @@ const schema = gql`
     shipUseOneKmFee: Boolean
     "Ghi chú cho shipper"
     shipNote: String
+    "Đánh giá sao"
+    rating: Float
+    "Số lượng đánh giá"
+    ratingQty: Int
+    "Số lượng đã bán"
+    soldQty: Int
   }
 `;
 

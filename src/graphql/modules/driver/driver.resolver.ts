@@ -23,23 +23,23 @@ const Query = {
 
 const Mutation = {
   createDriver: async (root: any, args: any, context: Context) => {
-    context.auth([ROLES.MEMBER]);
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER_STAFF);
     const { data } = args;
-    data.memberId = context.id;
+    data.memberId = context.sellerId;
     return await driverService.create(data);
   },
   updateDriver: async (root: any, args: any, context: Context) => {
-    context.auth([ROLES.MEMBER]);
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER_STAFF);
     const { id, data } = args;
     const driver = await DriverModel.findById(id);
-    if (driver.memberId.toString() != context.id) throw ErrorHelper.permissionDeny();
+    if (driver.memberId.toString() != context.sellerId) throw ErrorHelper.permissionDeny();
     return await driverService.updateOne(id, data);
   },
   deleteOneDriver: async (root: any, args: any, context: Context) => {
-    context.auth([ROLES.MEMBER]);
+    context.auth(ROLES.ADMIN_EDITOR_MEMBER_STAFF);
     const { id } = args;
     const driver = await DriverModel.findById(id);
-    if (driver.memberId.toString() != context.id) throw ErrorHelper.permissionDeny();
+    if (driver.memberId.toString() != context.sellerId) throw ErrorHelper.permissionDeny();
     return await driverService.deleteOne(id);
   },
 };

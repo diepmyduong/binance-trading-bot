@@ -1,10 +1,10 @@
 import React from "react";
-import { Dialog, DialogPropsType } from "../../../../shared/utilities/dialog/dialog";
-import Comment from "./comment";
+import { Rating } from "../../../shared/homepage-layout/rating";
+import { Dialog, DialogPropsType } from "../../../shared/utilities/dialog/dialog";
 interface Propstype extends DialogPropsType {
   onSelect?: (string) => void;
 }
-const CommentsDialog = (props: Propstype) => {
+export function CommentsDialog(props: Propstype) {
   const comments = [
     {
       name: "Nguyễn Nhật Ninh",
@@ -71,12 +71,14 @@ const CommentsDialog = (props: Propstype) => {
           style={{ maxHeight: `calc(100vh - 250px)`, minHeight: `calc(100vh - 100px)` }}
         >
           {comments.map((item, index) => (
-            <Comment comment={item} key={index} />
+            <div className="leading-7 px-4 mt-2 border-b pb-2">
+              <h3 className=" text-base">{item.name}</h3>
+              <Rating rating={4.8} ratingTime={item.time} />
+              <p className="text-ellipsis-3">{item.comment}</p>
+            </div>
           ))}
         </div>
       </Dialog.Body>
     </Dialog>
   );
-};
-
-export default CommentsDialog;
+}

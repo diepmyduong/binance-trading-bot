@@ -6,12 +6,10 @@ interface Propstype extends ReactProps {
   downPrict?: string | number;
 }
 
-const Price = (props: Propstype) => {
+export function Price(props: Propstype) {
   return (
     <p className={`${(props.textDanger && "text-danger") || "text-gray-800"}  font-bold text-sm`}>
       {NumberPipe(props.price, true)}
     </p>
   );
-};
-
-export default Price;
+}

@@ -59,7 +59,7 @@ const PromotionsPage = (props: Propstype) => {
           ]
         }
       />
-      <div className="flex flex-col text-sm sm:text-base overscroll-y-auto px-4 bg-primary-light h-full min-h-xs">
+      <div className="flex flex-col text-sm sm:text-base overscroll-y-auto px-4 bg-bluegray-light h-full min-h-xs">
         <div className="flex my-4 border-group rounded-md h-12">
           <Input placeholder="Nhập mã giảm giá ở đây" />{" "}
           <Button className="h-12 whitespace-nowrap" primary text="Áp dụng" />

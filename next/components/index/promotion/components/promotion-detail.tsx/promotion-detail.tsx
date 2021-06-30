@@ -49,7 +49,7 @@ const PromotionDetail = () => {
   ];
   const [showMore, setShowMore] = useState(false);
   return (
-    <div className="text-sm">
+    <div className="text-sm bg-primary-light">
       <Promotion
         promotion={{
           name: "Giảm 40k cho đơn từ 150k",

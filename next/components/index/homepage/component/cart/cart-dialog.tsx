@@ -33,7 +33,7 @@ const CartDialog = (props: Propstype) => {
         <Button
           primary
           large
-          text={`Thanh toán ${NumberPipe(props.money, true)}`}
+          text={`Đặt hàng ${NumberPipe(props.money, true)}`}
           className="w-full"
           onClick={() => {
             if (customer) {

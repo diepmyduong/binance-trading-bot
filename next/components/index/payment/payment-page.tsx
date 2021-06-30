@@ -109,7 +109,7 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied }) => {
         )}
       </div>
       <div className="w-full py-2 px-4">
-        <Button text={`Thanh toán ${NumberPipe(189000)}đ`} primary className="w-full" />
+        <Button text={`Đặt hàng ${NumberPipe(189000)}đ`} primary className="w-full" />
       </div>
     </div>
   );

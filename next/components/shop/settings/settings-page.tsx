@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ShopPageTabs } from "../../shared/shop-layout/shop-page-tabs";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
 import { AccountSettings } from "./components/account-settings";
+import { ConfigSettings } from "./components/config-settings";
 import { DeliverySettings } from "./components/delivery-settings";
 import { GeneralSettings } from "./components/general-settings";
 import { PaymentSettings } from "./components/payment-settings";
@@ -35,6 +36,7 @@ export function SettingsPage(props: ReactProps) {
         {
           {
             general: <GeneralSettings />,
+            config: <ConfigSettings />,
             account: <AccountSettings />,
             delivery: <DeliverySettings />,
             payment: <PaymentSettings />,
@@ -46,8 +48,9 @@ export function SettingsPage(props: ReactProps) {
 }
 
 export const SETTINGS_TABS: Option[] = [
-  { value: "general", label: "Thông tin cửa hàng" },
+  { value: "general", label: "Thông tin cơ bản" },
+  { value: "config", label: "Thiết lập cửa hàng" },
   { value: "account", label: "Tài khoản" },
-  { value: "delivery", label: "Giao hàng" },
+  // { value: "delivery", label: "Giao hàng" },
   { value: "payment", label: "Thanh toán" },
 ];

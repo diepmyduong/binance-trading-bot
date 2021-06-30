@@ -2,38 +2,39 @@ import { BaseModel, CrudRepository } from "./crud.repo";
 import { Product } from "./product.repo";
 
 export interface Category extends BaseModel {
+  memberId: string;
   name: string;
   code: string;
-  isPrimary;
-  productIds: string;
+  isPrimary: boolean;
+  productIds: string[];
   priority: number;
   products: Product[];
 }
 export class CategoryRepository extends CrudRepository<Category> {
   apiName: string = "Category";
-  displayName: string = "danh mục sản phẩm";
+  displayName: string = "danh mục";
   shortFragment: string = this.parseFragment(`
-  id: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  memberId: ID
-  name: String
-  code: String
-  isPrimary: Boolean
-  productIds: [ID]
-  priority: Int
-  products{
     id: String
-    code: String
+    createdAt: DateTime
+    updatedAt: DateTime
+    memberId: ID
     name: String
+    code: String
     isPrimary: Boolean
-    isCrossSale: Boolean
-    type: String
-    basePrice: Float
-    subtitle:String
-    intro:String
-    image:String
-    }: [Product]`);
+    productIds: [ID]
+    priority: Int
+    products{
+      id: String
+      code: String
+      name: String
+      isPrimary: Boolean
+      isCrossSale: Boolean
+      type: String
+      basePrice: Float
+      subtitle:String
+      intro:String
+      image:String
+      }: [Product]`);
   fullFragment: string = this.parseFragment(`
   id: String
   createdAt: DateTime

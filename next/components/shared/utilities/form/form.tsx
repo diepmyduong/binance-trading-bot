@@ -112,6 +112,7 @@ export function Form({ className = "", style = {}, ...props }: FormPropsType) {
       try {
         setLoading(true);
         await props.onSubmit(data, context);
+        setHasChanged(false);
       } finally {
         setLoading(false);
       }

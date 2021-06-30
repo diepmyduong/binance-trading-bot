@@ -8,7 +8,8 @@ import { SaveButtonGroup } from "./../save-button-group";
 
 interface PropsType extends FormPropsType {
   hasFooter?: boolean;
-  beforeSubmit?: (data: object) => object;
+  checkValidation?: (data: any, item: any) => boolean;
+  beforeSubmit?: (data: any) => any;
 }
 
 export function TableForm({ hasFooter = true, ...props }: PropsType) {
@@ -16,6 +17,9 @@ export function TableForm({ hasFooter = true, ...props }: PropsType) {
   const [initialData, setInitialData] = useState(formItem);
   const onSubmit = async (data) => {
     let newData = { ...data };
+    if (props.checkValidation) {
+      if (!props.checkValidation(newData, formItem)) return;
+    }
     if (props.beforeSubmit) newData = props.beforeSubmit(newData);
     await saveItem(newData);
   };

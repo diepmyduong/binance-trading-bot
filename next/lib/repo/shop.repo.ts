@@ -24,7 +24,7 @@ export interface Shop extends BaseModel {
 }
 export class ShopRepository extends CrudRepository<Shop> {
   apiName: string = "Shop";
-  displayName: string = "Shop";
+  displayName: string = "shop";
   shortFragment: string = this.parseFragment(`
   id: String
   username: String

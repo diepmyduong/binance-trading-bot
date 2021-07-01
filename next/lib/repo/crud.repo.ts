@@ -241,7 +241,7 @@ export abstract class CrudRepository<T extends BaseModel> extends GraphRepositor
   createOrUpdate({
     id,
     data,
-    fragment = this.shortFragment,
+    fragment = this.fullFragment,
     createApiName,
     updateApiName,
     toast,

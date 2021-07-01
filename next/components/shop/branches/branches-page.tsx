@@ -7,9 +7,9 @@ import { Field } from "../../shared/utilities/form/field";
 import { Form } from "../../shared/utilities/form/form";
 import { Input } from "../../shared/utilities/form/input";
 import { CategoryList } from "./components/category-list";
-import { ProductsContext, ProductsProvider } from "./providers/products-provider";
+import { ProductsContext, ProductsProvider } from "./providers/branches-provider";
 
-export function ProductsPage(props: ReactProps) {
+export function BranchesPage(props: ReactProps) {
   const [openCategory, setOpenCategory] = useState<Category>(undefined);
   const toast = useToast();
 
@@ -33,9 +33,6 @@ export function ProductsPage(props: ReactProps) {
           <Form
             grid
             dialog
-            extraDialogClass="bg-transparent"
-            extraHeaderClass="bg-gray-100 text-xl py-3 justify-center rounded-t-xl border-gray-300"
-            extraBodyClass="px-6 bg-gray-100 rounded-b-xl"
             initialData={openCategory}
             title={`${openCategory ? "Chỉnh sửa" : "Thêm"} danh mục`}
             isOpen={openCategory !== undefined}
@@ -55,12 +52,7 @@ export function ProductsPage(props: ReactProps) {
               <Input number defaultValue={1} />
             </Field>
             <Form.Footer>
-              <Form.ButtonGroup
-                submitText={`${openCategory ? "Chỉnh sửa" : "Thêm"} danh mục`}
-                className="justify-center"
-                cancelText=""
-                submitProps={{ className: "bg-gradient h-14 w-64" }}
-              />
+              <Form.ButtonGroup submitText={`${openCategory ? "Chỉnh sửa" : "Thêm"} danh mục`} />
             </Form.Footer>
           </Form>
         )}

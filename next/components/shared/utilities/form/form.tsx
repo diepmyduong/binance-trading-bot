@@ -209,9 +209,13 @@ export function Form({ className = "", style = {}, ...props }: FormPropsType) {
       wrapperClass,
       overlayClass,
       dialogClass,
+      extraDialogClass,
       headerClass,
+      extraHeaderClass,
       bodyClass,
+      extraBodyClass,
       footerClass,
+      extraFooterClass,
       title,
       icon,
       width,
@@ -226,9 +230,13 @@ export function Form({ className = "", style = {}, ...props }: FormPropsType) {
       wrapperClass,
       overlayClass,
       dialogClass,
+      extraDialogClass,
       headerClass,
+      extraHeaderClass,
       bodyClass,
+      extraBodyClass,
       footerClass,
+      extraFooterClass,
       title,
       icon,
       width: width || "450px",
@@ -348,7 +356,12 @@ Form.Footer = Footer;
 
 Form.Consumer = FormConsumer;
 
-const ButtonGroup = ({ submitText = "", cancelText = "Đóng", ...props }: SaveButtonGroupProps) => {
+const ButtonGroup = ({
+  submitText = "",
+  cancelText = "Đóng",
+  onCancel,
+  ...props
+}: SaveButtonGroupProps) => {
   const { title, onClose, loading } = useForm();
 
   return (
@@ -357,9 +370,10 @@ const ButtonGroup = ({ submitText = "", cancelText = "Đóng", ...props }: SaveB
       cancelText={cancelText}
       submitText={submitText || title}
       onCancel={() => {
-        if (props.onCancel) props.onCancel();
+        if (onCancel) onCancel();
         else onClose();
       }}
+      {...props}
     />
   );
 };

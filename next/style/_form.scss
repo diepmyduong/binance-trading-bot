@@ -16,6 +16,9 @@
     @apply border-danger hover:border-danger-dark focus:border-danger focus:ring-danger #{!important};
     @apply focus-within:ring-danger focus-within:border-danger #{!important};
   }
+  &.no-focus {
+    box-shadow: none !important;
+  }
 }
 
 input.form-control,

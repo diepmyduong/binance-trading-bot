@@ -217,7 +217,7 @@ export function AuthProvider(props) {
       },
     })
       .then((res) => {
-        setMember({ ...member, ...data });
+        setMember(res.data.g0);
         return res.data.g0;
       })
       .catch((err) => {

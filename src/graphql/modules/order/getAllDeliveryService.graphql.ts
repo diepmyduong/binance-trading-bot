@@ -54,7 +54,7 @@ export default {
           serviceId: ShipMethod.DRIVER,
           serviceName: "Tài xế nội bộ",
           duration: branch.shipPreparationTime,
-          iconUrl: null,
+          iconUrl: "https://i.ibb.co/pJzfmFg/delivery-man.png",
           shipFee: order.shipfee,
         });
         return services;
@@ -69,6 +69,7 @@ async function setAhamoveServices(
   branch: IShopBranch
 ) {
   const ahamove = new Ahamove({});
+  console.log("order", order.latitude, order.longitude);
   const ahamoveServices = await ahamove
     .fetchAllServices(order.latitude, order.longitude)
     .then((res) => res.filter((r: any) => /\-(BIKE|EXPRESS)/.test(r._id)));
@@ -78,6 +79,7 @@ async function setAhamoveServices(
   const address = compact([branch.address, branch.ward, branch.district, branch.province]).join(
     ", "
   );
+  console.log("address", address);
   const estimatedFees = await ahamove.estimatedFeeMutilService(
     {
       token: shopConfig.shipAhamoveToken,

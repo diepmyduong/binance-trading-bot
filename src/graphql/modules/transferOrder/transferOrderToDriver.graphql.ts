@@ -4,6 +4,7 @@ import { onMemberDelivering } from "../../../events/onMemberDelivering.event";
 import { Context } from "../../context";
 import { DriverModel } from "../driver/driver.model";
 import { OrderModel, OrderStatus } from "../order/order.model";
+import { DeliveryInfo } from "../order/types/deliveryInfo.type";
 
 export default {
   schema: gql`
@@ -37,6 +38,10 @@ export default {
         order.driverName = driver.name;
         order.driverPhone = driver.phone;
         order.driverLicense = driver.licensePlates;
+        order.deliveryInfo = {
+          ...order.deliveryInfo,
+          serviceName: "DRIVER",
+        } as DeliveryInfo;
         order = await order.save();
         onMemberDelivering.next(order);
         return order;

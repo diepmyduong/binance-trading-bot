@@ -134,11 +134,11 @@ export function Input({
     >
       {!!props.prefix && (
         <div
-          className={`flex-shrink-0 flex justify-center items-center min-w-10 self-stretch text-gray-600 ${
+          className={`flex-shrink-0 flex justify-center items-center min-w-10 self-stretch text-gray-400 ${
             typeof props.prefix == "string" ? "px-2" : ""
           } ${prefixClassName}`}
           onClick={() => {
-            prefixInputFocus ? ref.current.focus() : false;
+            prefixInputFocus ? ref.current?.focus() : false;
           }}
         >
           {props.prefix}
@@ -210,11 +210,11 @@ export function Input({
       )}
       {!!props.suffix && (
         <div
-          className={`flex-shrink-0 flex justify-center items-center min-w-10 self-stretch text-gray-600 ${
+          className={`flex-shrink-0 flex justify-center items-center min-w-10 self-stretch text-gray-400 ${
             typeof props.suffix == "string" ? "px-2" : ""
           } ${suffixClassName}`}
           onClick={() => {
-            suffixInputFocus ? ref.current.focus() : false;
+            suffixInputFocus ? ref.current?.focus() : false;
           }}
         >
           {props.suffix}
@@ -257,7 +257,7 @@ export const parseNumberToText = (
   negative: boolean = true,
   currency: string = ""
 ) => {
-  if (num) {
+  if (num !== undefined && num !== null) {
     if (typeof num == "number") {
       let text: string;
       if (decimal) {
@@ -289,7 +289,7 @@ export const parseTextToNumber = (text: string) => {
     num = num.replace(",", ".");
     if (num.endsWith(".")) num += "0";
     num = Number(num);
-    return isNaN(num) ? null : num;
+    return isNaN(num) ? 0 : num;
   }
   return null;
 };

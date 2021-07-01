@@ -11,6 +11,8 @@ import { Textarea } from "../../shared/utilities/form/textarea";
 import { SaveButtonGroup } from "../../shared/utilities/save-button-group";
 import { Dialog, DialogPropsType } from "../../shared/utilities/dialog/dialog";
 import { Spinner } from "../../shared/utilities/spinner";
+import { useProductsContext } from "../../admin/products/providers/products-provider";
+import { useProductDetailContext } from "./provider/product-detail-provider";
 
 interface PropsType extends DialogPropsType {
   productId?: string;
@@ -32,10 +34,12 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
   const ref = useRef(null);
   const [intervalScroll, setIntervalScroll] = useState(0);
 
+  const { productDetail } = useProductDetailContext();
   function dialogScrollEvent() {
     let scrollCheckInterval = null;
     scrollCheckInterval = setInterval(() => {
       if (ref.current) {
+        console.log(ref.current.scrollTop);
         let temp = parseInt(((ref.current.scrollTop / 215) * 10).toFixed(0)) * 10;
         if (temp > 100) setOpacity("opacity-100");
         else setOpacity("opacity-" + temp);
@@ -50,9 +54,16 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
     };
   }, []);
   console.log("productId", productId, props.isOpen);
+  if (!productDetail) return <Spinner></Spinner>;
   return (
-    <Dialog isOpen={props.isOpen} onClose={props.onClose} className="h-screen">
-      {/* <div ref={ref} className="w-full h-screen rounded bg-white overflow-y-auto">
+    <Dialog
+      isOpen={props.isOpen}
+      onClose={props.onClose}
+      mobileSizeMode
+      slideFromBottom="all"
+      bodyClass="relative rounded"
+    >
+      <div ref={ref} className="w-full h-full rounded bg-white overflow-y-auto">
         <div className="relative w-full">
           <div
             className={`w-8 h-8 absolute right-2 top-2 z-200 rounded-full flex items-center justify-center cursor-pointer${
@@ -68,7 +79,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
         <div
           className={`z-50 w-full ${opacity} fixed top-0 h-12 flex items-center justify-center max-w-lg bg-white `}
         >
-          <h2 className="text-xl text-center w-full flex-1">{item.name}</h2>
+          <h2 className="text-xl text-center w-full flex-1">{productDetail.name}</h2>
           <div
             className={`w-8 h-8 mr-2 z-200 rounded-full bg-gray-50 flex items-center justify-center cursor-pointer ${
               opacity == "opacity-100" ? "visible" : "invisible"
@@ -80,21 +91,21 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
             </i>
           </div>
         </div>
-        <div className="w-full sticky top-0">
-          <Img src={item.img} className="w-full" ratio169 />
+        <div className="w-full h-full top-0">
+          <Img src={"https://i.imgur.com/a8BAycP.png"} ratio169 />
         </div>
 
         <div ref={ref} className="sticky overflow-auto bg-white">
-          <h2 className="header-name px-4 pt-4 text-xl">{item.name}</h2>
+          <h2 className="header-name px-4 pt-4 text-xl">{productDetail.name}</h2>
           <div className="px-4 text-xs text-gray-600 py-1 flex items-center space-x-1">
             <i className="text-accent">
               <HiStar />
             </i>
             <div className="font-bold">{"4.6"}</div>
             <div className="px-2">-</div>
-            <div className="">{`Đã bán ${item.sold || 0}`}</div>
+            <div className="">{`Đã bán ${productDetail.sold || 0}`}</div>
           </div>
-          <p className="px-4 text-sm text-gray-500">{item.des}</p>
+          <p className="px-4 text-sm text-gray-500">{productDetail.des}</p>
           <Button
             text="+ Lời nhắn cho cửa hàng"
             textPrimary
@@ -129,10 +140,10 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
             <IncreaseButton onChange={(count) => setCount(count)} />
             <Button
               primary
-              text={`Thêm ${NumberPipe(item.basePrice * count)} đ`}
+              text={`Thêm ${NumberPipe(productDetail.basePrice * count)} đ`}
               className="w-full"
               onClick={() => {
-                handleChange(-1, item);
+                handleChange(-1, productDetail);
                 props.onClose();
               }}
             />
@@ -154,7 +165,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
           </Field>
           <SaveButtonGroup disableCancle />
         </Form>
-      </div> */}
+      </div>
     </Dialog>
   );
 }

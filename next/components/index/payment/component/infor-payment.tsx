@@ -73,7 +73,7 @@ export function InforPayment() {
               <Field name="address">
                 <Input
                   type="text"
-                  placeholder="Nhập Địa chỉ giao đến"
+                  placeholder="Nhập địa chỉ giao đến"
                   prefix={<FaAddressCard />}
                   className="rounded-2xl bg-primary-light"
                 />

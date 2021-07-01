@@ -5,21 +5,28 @@ import { Product, ProductService } from "../../../../lib/repo/product.repo";
 export const ProductDetailContext = createContext<
   PaginationQueryProps<Product> & {
     [x: string]: any;
+    productDetail?: Product;
   }
 >({});
 
 export function ProductDetailProvider({ productId, ...props }) {
-  const [productDetail, setProductDetail] = useState<Product>();
+  const [productDetail, setProductDetail] = useState<any>();
   const loadProduct = () => {
-    ProductService.getOne({ id: productId }).then((res) => {
-      console.log(res);
-      setProductDetail(res);
-    });
+    ProductService.getAll({ query: { filter: { code: productId } } })
+      .then((res) => {
+        console.log("res, productId", res.data[0], productId);
+        if (res) setProductDetail(res.data[0]);
+      })
+      .catch((err) => {});
   };
   useEffect(() => {
     loadProduct();
   }, [productId]);
-  return <ProductDetailContext.Provider value={{}}>{props.children}</ProductDetailContext.Provider>;
+  return (
+    <ProductDetailContext.Provider value={{ productDetail }}>
+      {props.children}
+    </ProductDetailContext.Provider>
+  );
 }
 
 export const useProductDetailContext = () => useContext(ProductDetailContext);

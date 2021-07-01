@@ -1,4 +1,3 @@
-import RestaurantInformation from "./components/shop-info/restaurant-information";
 import { useCartContext } from "../../../lib/providers/cart-provider";
 import { useEffect, useState } from "react";
 import { useShopContext } from "../../../lib/providers/shop-provider";
@@ -7,6 +6,7 @@ import { Footer } from "../../../layouts/default-layout/components/footer";
 import { ShopCategories } from "./components/shop-category";
 import { CartDialog } from "./components/cart-dialog";
 import { NumberPipe } from "../../../lib/pipes/number";
+import { ShopInfo } from "./components/shop-info";
 
 interface PropsType extends ReactProps {
   productId?: string;
@@ -45,7 +45,7 @@ export function Homepage({ productId }: PropsType) {
           <Spinner />
         ) : (
           <>
-            <RestaurantInformation shop={shop} />
+            <ShopInfo shop={shop} />
             <ShopCategories />
           </>
         )}

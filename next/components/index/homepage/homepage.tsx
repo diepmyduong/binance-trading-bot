@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 import CartDialog from "./component/cart/cart-dialog";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import { Spinner } from "../../shared/utilities/spinner";
-import { Form } from "../../shared/utilities/form/form";
-import { RestaurantDetail } from "./component/restaurant-detail/detail";
+import { ProductDetail } from "../../shop/product-detail/detail";
 import { Footer } from "../../../layouts/default-layout/components/footer";
+import { ProductDetailProvider } from "../../shop/product-detail/provider/product-detail-provider";
 
 interface PropsType extends ReactProps {
   productId?: string;
@@ -27,6 +27,7 @@ export function Homepage({ productId }: PropsType) {
 
   useEffect(() => {
     setProductIdCode(productId);
+    setOpenDialog(true);
   }, [productId]);
 
   useEffect(() => {
@@ -61,6 +62,13 @@ export function Homepage({ productId }: PropsType) {
           money={totalMoney}
         />
       </div>
+
+      <ProductDetail
+        productId={productIdCode}
+        isOpen={openDialog}
+        onClose={() => setOpenDialog(false)}
+      ></ProductDetail>
+
       <Footer />
     </>
   );

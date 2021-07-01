@@ -1,5 +1,5 @@
 import { BaseModel, CrudRepository } from "./crud.repo";
-import { Product } from "./product.repo";
+import { Product, ProductService } from "./product.repo";
 
 export interface Category extends BaseModel {
   memberId: string;
@@ -23,39 +23,31 @@ export class CategoryRepository extends CrudRepository<Category> {
     isPrimary: Boolean
     productIds: [ID]
     priority: Int
-    products{
+    products {
       id: String
       code: String
       name: String
-      isPrimary: Boolean
-      isCrossSale: Boolean
-      type: String
+      allowSale: Boolean
       basePrice: Float
+      downPrice: Float
       subtitle:String
-      intro:String
       image:String
-      }: [Product]`);
+      rating: number
+      soldQty: number
+      labelIds: string[]
+    }: [Product]`);
   fullFragment: string = this.parseFragment(`
-  id: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  memberId: ID
-  name: String
-  code: String
-  isPrimary: Boolean
-  productIds: [ID]
-  priority: Int
-  products{
     id: String
-    code: String
+    createdAt: DateTime
+    updatedAt: DateTime
+    memberId: ID
     name: String
+    code: String
     isPrimary: Boolean
-    isCrossSale: Boolean
-    type: String
-    basePrice: Float
-    subtitle:String
-    intro:String
-    image:String
+    productIds: [ID]
+    priority: Int
+    products{
+      ${ProductService.fullFragment}
     }: [Product]`);
 
   async copyCategory(categoryId: string, parentCategoryId: string): Promise<Category> {

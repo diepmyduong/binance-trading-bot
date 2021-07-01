@@ -150,7 +150,7 @@ export function RestaurantDetail({ item, onClose }: PropsType) {
         <Field label="Lời nhắn của khách hàng" name="note">
           <Textarea placeholder="Nhập Lời nhắn của khách hàng" />
         </Field>
-        <SaveButtonGroup disableCancle />
+        <SaveButtonGroup cancelText="" />
       </Form>
     </div>
   );

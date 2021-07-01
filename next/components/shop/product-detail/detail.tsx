@@ -27,7 +27,7 @@ interface PropsType extends DialogPropsType {
   };
 }
 export function ProductDetail({ item, productId, ...props }: PropsType) {
-  const { cart, handleChange } = useCartContext();
+  const { cartProducts, addProductToCart } = useCartContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [count, setCount] = useState(1);
   const [opacity, setOpacity] = useState("opacity-0");
@@ -143,7 +143,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
               text={`Thêm ${NumberPipe(productDetail.basePrice * count)} đ`}
               className="w-full"
               onClick={() => {
-                handleChange(-1, productDetail);
+                addProductToCart(productDetail, 1);
                 props.onClose();
               }}
             />

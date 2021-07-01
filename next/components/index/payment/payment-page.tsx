@@ -14,7 +14,7 @@ import { InforPayment } from "./component/infor-payment";
 import { TicketVoucher } from "./component/ticket-voucher";
 
 export function PaymentPage() {
-  const { cart, totalFood, totalMoney } = useCartContext();
+  const { cartProducts, totalFood, totalMoney } = useCartContext();
   const [voucherApplied, setVoucherApplied] = useState(null);
   useEffect(() => {
     setVoucherApplied(null);
@@ -26,8 +26,8 @@ export function PaymentPage() {
         <div className="mt-1 bg-white">
           <p className="font-semibold px-4 py-2">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
           <div className="">
-            {cart.map((item, index) => {
-              const last = cart.length - 1 == index;
+            {cartProducts.map((item, index) => {
+              const last = cartProducts.length - 1 == index;
               return (
                 <div
                   className={`flex px-4 items-start border-gray-300 py-3 ${!last && "border-b"}`}
@@ -38,7 +38,7 @@ export function PaymentPage() {
                     <p className="px-2">X</p>
                   </div>
                   <div className="flex-1">
-                    <p className="">{item.name}</p>
+                    <p className="">{item.product.name}</p>
                     <p className=" text-gray-500">{item.note}</p>
                   </div>
                   <div className="font-bold">{NumberPipe(item.amount)}đ</div>

@@ -42,8 +42,8 @@ export default {
       "Phường / xã nhận"
       buyerWardId: String
       "Toạ độ"
-      latitude: Float
-      longitude: Float
+      latitude: Float!
+      longitude: Float!
       "Phương thức thanh toán"
       paymentMethod: String!
       "Ghi chú"

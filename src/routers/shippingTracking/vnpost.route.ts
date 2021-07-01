@@ -63,7 +63,6 @@ async function action(req: Request, res: Response) {
       orderService: data.ServiceDisplayName,
       detail: data.PackageContent,
     });
-    console.log("deliveryLog", deliveryLog);
     order.deliveryInfo.status = deliveryLog.status;
     order.deliveryInfo.statusText = deliveryLog.statusName;
     await order.save();

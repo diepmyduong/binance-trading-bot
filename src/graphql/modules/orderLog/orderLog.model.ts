@@ -8,7 +8,7 @@ export enum OrderLogType {
   CREATED = "CREATED", // Khách hàng đặt đơn hàng
   CONFIRMED = "CONFIRMED", // Xác nhận nhận đơn hàng
   TRANSFERED = "TRANSFERED", // Chuyển đơn cho bưu cục khác
-  
+
   CUSTOMER_CANCELED = "CUSTOMER_CANCELED", // Khách hàng huỷ đơn
   MEMBER_CANCELED = "MEMBER_CANCELED", // Bưu cục huỷ đơn
 
@@ -25,7 +25,7 @@ export type IOrderLog = BaseDocument & {
   orderId?: string; // Mã đơn hàng
   type?: OrderLogType; // Loại lịch sử
   memberId?: string; // Mã người dùng
-  toMemberId: string; //Ma buu cuc chuyen giao
+  toMemberId?: string; //Ma buu cuc chuyen giao
   customerId?: string; // Mã khách hàng
   orderStatus?: OrderStatus; // Trạng thái thanh toán
 };
@@ -34,8 +34,8 @@ const orderLogSchema = new Schema(
   {
     orderId: { type: Schema.Types.ObjectId, ref: "Order", required: true },
     type: { type: String, enum: Object.values(OrderLogType), required: true },
-    memberId: {type: Schema.Types.ObjectId, ref:"Member", required: true},
-    toMemberId: {type: Schema.Types.ObjectId, ref:"Member"},
+    memberId: { type: Schema.Types.ObjectId, ref: "Member", required: true },
+    toMemberId: { type: Schema.Types.ObjectId, ref: "Member" },
     customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
     orderStatus: { type: String, enum: Object.values(OrderStatus) },
     value: { type: Number },
@@ -51,7 +51,4 @@ export const OrderLogModel: mongoose.Model<IOrderLog> = MainConnection.model(
   orderLogSchema
 );
 
-export const OrderLogLoader = ModelLoader<IOrderLog>(
-  OrderLogModel,
-  OrderLogHook
-);
+export const OrderLogLoader = ModelLoader<IOrderLog>(OrderLogModel, OrderLogHook);

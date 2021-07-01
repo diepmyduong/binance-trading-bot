@@ -77,6 +77,7 @@ const memberSchema = new Schema(
     chatbotKey: { type: String },
     shopName: { type: String },
     shopLogo: { type: String },
+    shopCover: { type: String },
     cumulativePoint: { type: Number, default: 0 },
     diligencePoint: { type: Number, default: 0 },
     commission: { type: Number, default: 0 },

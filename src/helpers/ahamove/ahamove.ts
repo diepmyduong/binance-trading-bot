@@ -25,6 +25,7 @@ const statusText = {
   "IN PROCESS": "Món đang được giao",
   COMPLETED: "Món đã được giao",
   CANCELLED: "Đơn hàng đã huỷ",
+  RETURNED: "",
 };
 
 export class Ahamove {

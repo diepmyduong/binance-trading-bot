@@ -27,7 +27,7 @@ export function Homepage({ productId }: PropsType) {
   console.log(productId, productIdCode);
 
   useEffect(() => {
-    if (productIdCode != null) setOpenDialog(true);
+    if (productIdCode !== null) setOpenDialog(true);
   }, [productIdCode]);
 
   useEffect(() => {

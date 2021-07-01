@@ -59,7 +59,7 @@ const BranchsDialog = (props: Propstype) => {
           style={{ maxHeight: `calc(100vh - 250px)`, minHeight: `calc(100vh - 100px)` }}
         >
           {branchs.map((item, index) => (
-            <div className="flex px-4 mt-2 border-b pb-2">
+            <div className="flex px-4 mt-2 border-b pb-2" key={index}>
               <div className="flex-1 leading-7">
                 <h3 className="text-primary text-base sm:text-lg">{item.place}</h3>
                 <p className="text-ellipsis-2">{item.address}</p>

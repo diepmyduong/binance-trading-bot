@@ -46,7 +46,6 @@ export function ShopProvider(props) {
     }
     if (haveShop) {
       console.log(haveShop);
-
       let token = await ShopService.loginAnonymous(haveShop);
       SetAnonymousToken(token);
       let cats = await CategoryService.getAll();

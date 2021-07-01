@@ -63,7 +63,7 @@ const BranchsDialog = (props: Propstype) => {
               branch={item}
               key={index}
               onClick={() => {
-                props.onSelect(item.place);
+                props.onSelect(item.address);
                 props.onClose();
               }}
             />

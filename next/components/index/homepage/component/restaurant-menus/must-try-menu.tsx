@@ -3,8 +3,6 @@ import { NumberPipe } from "../../../../../lib/pipes/number";
 import { Img } from "../../../../shared/utilities/img";
 import Price from "../../../../shared/infomation/price";
 import { useCartContext } from "../../../../../lib/providers/cart-provider";
-import { Form } from "../../../../shared/utilities/form/form";
-import { RestaurantDetail } from "../restaurant-detail/detail";
 import { useRouter } from "next/router";
 interface Propstype extends ReactProps {}
 const MustTryMenu = (props: Propstype) => {
@@ -63,7 +61,7 @@ const MustTryMenu = (props: Propstype) => {
           </div>
         ))}
       </div>
-      <Form
+      {/*  <Form
         dialog
         mobileSizeMode
         isOpen={openDialog}
@@ -71,7 +69,7 @@ const MustTryMenu = (props: Propstype) => {
         onClose={() => setOpenDialog(false)}
       >
         <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
-      </Form>
+      </Form> */}
     </div>
   );
 };

@@ -193,8 +193,8 @@ const orderSchema = new Schema(
     toMemberNote: { type: Schema.Types.String },
     // chuyển đơn cho member khác xử lý
     toMemberId: { type: Schema.Types.ObjectId, ref: "Member" },
-    longitude: { type: Schema.Types.String },
-    latitude: { type: Schema.Types.String },
+    longitude: { type: Schema.Types.String, required: true },
+    latitude: { type: Schema.Types.String, required: true },
     orderLogIds: {
       type: [{ type: Schema.Types.ObjectId, ref: "OrderLog" }],
       default: [],

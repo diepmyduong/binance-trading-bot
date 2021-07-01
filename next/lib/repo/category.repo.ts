@@ -34,6 +34,11 @@ export class CategoryRepository extends CrudRepository<Category> {
       subtitle:String
       intro:String
       image:String
+      downPrice:Float
+      rating:Float
+      saleRate:Float
+      soldQty:int
+      labels{id name color}	: [ProductLabel]
       }: [Product]`);
   fullFragment: string = this.parseFragment(`
   id: String
@@ -56,6 +61,11 @@ export class CategoryRepository extends CrudRepository<Category> {
     subtitle:String
     intro:String
     image:String
+    downPrice:Float
+    rating:Float
+    saleRate:Float
+    soldQty:int
+  labels{id name color}	: [ProductLabel]
     }: [Product]`);
 
   async copyCategory(categoryId: string, parentCategoryId: string): Promise<Category> {

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Dialog, DialogPropsType } from "../../../../shared/utilities/dialog/dialog";
-import PromotionDetail from "./promotion-detail";
+import { PromotionDetail } from "./promotion-detail";
 interface Propstype extends DialogPropsType {}
 
-const PromotionDetailDialog = (props: Propstype) => {
+export function PromotionDetailDialog(props: Propstype) {
   return (
     <Dialog
       isOpen={props.isOpen}
@@ -17,6 +17,4 @@ const PromotionDetailDialog = (props: Propstype) => {
       </Dialog.Body>
     </Dialog>
   );
-};
-
-export default PromotionDetailDialog;
+}

@@ -21,6 +21,15 @@ export interface Product extends BaseModel {
   categoryId?: string;
   priority?: number;
   allowSale?: boolean;
+  rating?: number;
+  saleRate?: number;
+  soldQty?: number;
+  labels: ProductLabel[];
+}
+export interface ProductLabel {
+  id: string;
+  name: string;
+  color: string;
 }
 export class ProductRepository extends CrudRepository<Product> {
   apiName: string = "Product";

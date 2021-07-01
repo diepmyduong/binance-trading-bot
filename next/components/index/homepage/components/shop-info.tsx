@@ -72,13 +72,7 @@ const MoreInfomation = (props) => {
           />
         </div>
         <div className="flex justify-between items-center px-4 ">
-          <div className="flex items-center">
-            <Rating numRated={344} rating={4.8} />
-            <i className="text-lg ml-3">
-              <HiShoppingCart />
-            </i>
-            <p className="text-gray-400"> (688+)</p>
-          </div>
+          <Rating numRated={344} rating={4.8} soldQty={688} />
           <Button
             textPrimary
             text="Xem bình luận"

@@ -7,7 +7,7 @@ import { Price } from "../../../shared/homepage-layout/price";
 import { Rating } from "../../../shared/homepage-layout/rating";
 import { Form } from "../../../shared/utilities/form/form";
 import { Img } from "../../../shared/utilities/img";
-import {SwitchTabs} from "../../../shared/utilities/tab/switch-tabs";
+import { SwitchTabs } from "../../../shared/utilities/tab/switch-tabs";
 import { RestaurantDetail } from "./restaurant-detail/detail";
 import { HightLightCategories } from "./hight-light-categories";
 interface ShopCategoriesPropsType extends ReactProps {}
@@ -109,13 +109,13 @@ export function ShopCategory(props: ShopCategoryPropsType) {
   return (
     <div id={props.title} className="relative menu bg-white">
       <div className=" absolute -top-28 menu-container"></div>
-      <p className="font-semibold text-primary py-2 pl-4 text-lg">{props.title}</p>
+      <p className="font-semibold text-primary pt-2 pl-4 text-lg">{props.title}</p>
       {props.list.length > 0 && (
         <>
           {props.list.map((item: Product, index: number) => (
             <div
               key={index}
-              className="flex justify-evenly items-center py-2 px-4 hover:bg-primary-light cursor-pointer border-b transition-all duration-300"
+              className="flex items-center py-2 px-4 hover:bg-primary-light cursor-pointer border-b transition-all duration-300"
               onClick={() => {
                 setOpenDialog(true);
                 setDetailItem(item);
@@ -123,11 +123,31 @@ export function ShopCategory(props: ShopCategoryPropsType) {
               }}
             >
               <div className="flex-1">
-                <p>{item.name}</p>
-                <Rating rating={item.rating || 4.8} numRated={item.rating || 688} textSm />
+                <p className="font-semibold">{item.name}</p>
+                <p className="text-gray-500 text-sm">{item.subtitle}</p>
+                <Rating rating={item.rating || 4.8} textSm soldQty={item.soldQty} />
                 <p className="text-gray-400 text-sm">{item.des}</p>
-                <Price price={item.basePrice} textDanger />
+                <Price
+                  price={item.basePrice}
+                  saleRate={item.saleRate}
+                  downPrice={item.downPrice}
+                  textDanger
+                  className="mt-auto"
+                />
               </div>
+              {item.labels && (
+                <ul className="flex flex-wrap text-sm font-bold text-white">
+                  {item.labels.map((item, index) => {
+                    <i
+                      key={index}
+                      style={{ backgroundColor: item.color }}
+                      className="px-2 mx-2 rounded-sm"
+                    >
+                      {item.name}
+                    </i>;
+                  })}
+                </ul>
+              )}
               <Img src={item.image} className="w-24 h-24 rounded-sm" />
             </div>
           ))}

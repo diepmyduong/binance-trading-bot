@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Promotion from "../promotion";
+import { Promotion } from "../promotion";
 import { Button } from "../../../../shared/utilities/form/button";
 
-const PromotionDetail = () => {
+export function PromotionDetail() {
   const des = [
     {
       label: "Ưu đãi",
@@ -88,6 +88,4 @@ const PromotionDetail = () => {
       </p>
     </div>
   );
-};
-
-export default PromotionDetail;
+}

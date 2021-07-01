@@ -21,6 +21,11 @@ export function GeneralSettings() {
   const toast = useToast();
 
   const onSubmit = async (data) => {
+    // await memberUpdateMe({
+    // shopLogo:
+    //   "https://3mmarketing.vn/wp-content/uploads/2021/04/54435386_403746057122362_985545898937286656_n.png",
+    //   shopLogo: "https://i.imgur.com/ty11Eu1.jpeg",
+    // });
     try {
       setSubmitting(true);
       await memberUpdateMe(data);

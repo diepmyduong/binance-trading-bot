@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import { Spinner } from "../../shared/utilities/spinner";
 import { Footer } from "../../../layouts/default-layout/components/footer";
-import { ShopCategories } from "./components/shop-category";
+import { ShopCategories } from "./components/shop-categories";
 import { CartDialog } from "./components/cart-dialog";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { ShopInfo } from "./components/shop-info";

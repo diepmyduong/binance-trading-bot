@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Navigation } from "swiper/core";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import useDevice from "../../../../../lib/hooks/useDevice";
 
 SwiperCore.use([Navigation]);
 interface Propstype extends ReactProps {

@@ -3,7 +3,6 @@ import { NextSeo } from "next-seo";
 import { Homepage } from "../components/index/homepage/homepage";
 import { DefaultLayout } from "../layouts/default-layout/default-layout";
 import { MemberModel } from "../../dist/graphql/modules/member/member.model";
-import { HomeProvider } from "../components/index/homepage/providers/homepage-provider";
 import { useEffect } from "react";
 import { Redirect } from "../lib/helpers/redirect";
 
@@ -14,10 +13,8 @@ export default function Page(props) {
   }, []);
   return (
     <>
-      <HomeProvider code={props.code} shop={props.shop}>
-        <NextSeo title={`Trang chủ`} />
-        <Homepage productId={props.productId} />
-      </HomeProvider>
+      <NextSeo title={`Trang chủ`} />
+      <Homepage productId={props.productId} />
     </>
   );
 }

@@ -1,5 +1,4 @@
 import React from "react";
-import { ShopClosed } from "../../../public/assets/svg/svg";
 import { Img } from "../../shared/utilities/img";
 
 export function NotFoundShop() {

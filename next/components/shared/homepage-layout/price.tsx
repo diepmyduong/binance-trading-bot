@@ -3,13 +3,36 @@ import { NumberPipe } from "../../../lib/pipes/number";
 interface Propstype extends ReactProps {
   price: string | number;
   textDanger?: boolean;
-  downPrict?: string | number;
+  downPrice?: string | number;
+  saleRate?: string | number;
 }
 
 export function Price(props: Propstype) {
   return (
-    <p className={`${(props.textDanger && "text-danger") || "text-gray-800"}  font-bold text-sm`}>
-      {NumberPipe(props.price, true)}
-    </p>
+    <div className={`${props.className || ""}`}>
+      {props.downPrice ? (
+        <div className="flex items-center">
+          <p
+            className={`${
+              (props.textDanger && "text-danger") || "text-gray-800"
+            } font-bold text-sm pr-2`}
+          >
+            {NumberPipe(props.price, true)}
+          </p>
+          <div className="flex items-center text-sm ">
+            <span className={`line-through pr-2`}>{NumberPipe(props.downPrice, true)}</span>
+            {props.saleRate > 0 && (
+              <span className="bg-danger text-white px-2 rounded-sm font-bold">- 20%</span>
+            )}
+          </div>
+        </div>
+      ) : (
+        <p
+          className={`${(props.textDanger && "text-danger") || "text-gray-800"} font-bold text-sm`}
+        >
+          {NumberPipe(props.price, true)}
+        </p>
+      )}
+    </div>
   );
 }

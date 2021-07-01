@@ -5,7 +5,7 @@ interface Propstype extends ReactProps {
   onClick: (e) => void;
 }
 
-const Promotion = (props: Propstype) => {
+export function Promotion(props: Propstype) {
   return (
     <div
       className="flex cursor-pointer border-l-8 rounded-lg overflow-hidden text-sm sm:text-base border-primary items-center mb-3"
@@ -24,6 +24,4 @@ const Promotion = (props: Propstype) => {
       </div> */}
     </div>
   );
-};
-
-export default Promotion;
+}

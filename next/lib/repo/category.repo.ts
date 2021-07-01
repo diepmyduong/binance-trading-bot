@@ -32,10 +32,12 @@ export class CategoryRepository extends CrudRepository<Category> {
       downPrice: Float
       subtitle:String
       image:String
-      rating: number
-      soldQty: number
-      labelIds: string[]
-    }: [Product]`);
+      downPrice:Float
+      rating:Float
+      saleRate:Float
+      soldQty:int
+      labels{id name color}	: [ProductLabel]
+      }: [Product]`);
   fullFragment: string = this.parseFragment(`
     id: String
     createdAt: DateTime
@@ -44,10 +46,17 @@ export class CategoryRepository extends CrudRepository<Category> {
     name: String
     code: String
     isPrimary: Boolean
-    productIds: [ID]
-    priority: Int
-    products{
-      ${ProductService.fullFragment}
+    isCrossSale: Boolean
+    type: String
+    basePrice: Float
+    subtitle:String
+    intro:String
+    image:String
+    downPrice:Float
+    rating:Float
+    saleRate:Float
+    soldQty:int
+  labels{id name color}	: [ProductLabel]
     }: [Product]`);
 
   async copyCategory(categoryId: string, parentCategoryId: string): Promise<Category> {

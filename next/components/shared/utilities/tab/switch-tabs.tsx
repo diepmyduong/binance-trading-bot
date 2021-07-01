@@ -10,7 +10,7 @@ interface Propstype extends FormControlProps {
   value?: any;
   chevron?: boolean;
 }
-const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) => {
+export function SwitchTabs({ native = false, chevron = false, ...props }: Propstype) {
   function isInViewport(element) {
     const rect = element.getBoundingClientRect();
     return (
@@ -186,6 +186,4 @@ const SwitchTabs = ({ native = false, chevron = false, ...props }: Propstype) =>
       </div>
     </div>
   );
-};
-
-export default SwitchTabs;
+}

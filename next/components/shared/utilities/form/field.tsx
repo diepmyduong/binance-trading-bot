@@ -133,14 +133,12 @@ export function Field({ className = "", style = {}, ...props }: PropsType) {
       {props.label && (
         <Label
           text={props.label}
+          description={props.description}
           htmlFor={fieldName}
           tooltip={props.tooltip}
           required={props.required}
           error={props.error || error}
         />
-      )}
-      {props.description && (
-        <div className="text-sm text-gray-600 pl-1 -mt-0.5 mb-1">{props.description}</div>
       )}
       {props.name && child
         ? cloneElement(child, {

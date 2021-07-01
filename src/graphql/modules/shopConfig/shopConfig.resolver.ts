@@ -7,7 +7,7 @@ const Mutation = {
     context.auth([ROLES.MEMBER]);
     const { id, data } = args;
     return await ShopConfigModel.findOneAndUpdate(
-      { memberId: id },
+      { _id: id },
       { $set: data },
       { new: true }
     ).exec();

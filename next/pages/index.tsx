@@ -8,6 +8,7 @@ import NotFoundShop from "../components/index/not-found-shop/not-found-shop";
 import { NoneLayout } from "../layouts/none-layout/none-layout";
 import { HomeProvider } from "../components/index/homepage/providers/homepage-provider";
 import { useEffect } from "react";
+import { ProductDetailProvider } from "../components/shop/product-detail/provider/product-detail-provider";
 
 export default function Page(props) {
   useEffect(() => {
@@ -23,8 +24,10 @@ export default function Page(props) {
     )) || (
       <>
         <HomeProvider code={props.code} shop={props.shop}>
-          <NextSeo title={`Trang chủ`} />
-          <Homepage productId={props.productId} />
+          <ProductDetailProvider productId={props.productId}>
+            <NextSeo title={`Trang chủ`} />
+            <Homepage productId={props.productId} />
+          </ProductDetailProvider>
         </HomeProvider>
       </>
     )

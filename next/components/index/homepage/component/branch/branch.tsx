@@ -18,7 +18,13 @@ const Branch = (props: Propstype) => {
           range={props.branch.range}
         />
       </div>
-      <Button outline primary text="Chọn" className="rounded-full" onClick={props.onClick} />
+      <Button
+        outline
+        primary
+        text="Chọn"
+        className="rounded-full"
+        onClick={() => props.onClick()}
+      />
     </div>
   );
 };

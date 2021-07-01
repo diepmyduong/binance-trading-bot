@@ -10,12 +10,13 @@ import { Field } from "../../shared/utilities/form/field";
 import { Form } from "../../shared/utilities/form/form";
 import { Textarea } from "../../shared/utilities/form/textarea";
 import { SaveButtonGroup } from "../../shared/utilities/save-button-group";
-import { InforPayment } from "./component/infor-payment";
-import { TicketVoucher } from "./component/ticket-voucher";
+import { InforPayment } from "./components/infor-payment";
+import { TicketVoucher } from "./components/ticket-voucher";
 
 export function PaymentPage() {
   const { cartProducts, totalFood, totalMoney } = useCartContext();
   const [voucherApplied, setVoucherApplied] = useState(null);
+  console.log(cartProducts);
   useEffect(() => {
     setVoucherApplied(null);
   }, []);
@@ -63,11 +64,11 @@ export function PaymentPage() {
           </div>
           <div className="flex justify-between items-center">
             <div className="">Giảm giá:</div>
-            <div className="text-accent">{NumberPipe(40000)}đ</div>
+            <div className="text-accent">{NumberPipe(0)}đ</div>
           </div>
         </div>
         <div className="px-2 py-4 flex w-full md:overflow-hidden overflow-auto z-0">
-          <Swiper freeMode slidesPerView={"auto"} spaceBetween={12} className="">
+          <Swiper freeMode slidesPerView={"auto"} spaceBetween={16} className="">
             {dataVoucher.map((item, index) => {
               return (
                 <SwiperSlide className="max-w-max" key={index}>
@@ -82,13 +83,17 @@ export function PaymentPage() {
           </Swiper>
         </div>
         <div className="h-24"></div>
-        <ButtonPayment voucherApplied={voucherApplied} setVoucherApplied={setVoucherApplied} />
+        <ButtonPayment
+          voucherApplied={voucherApplied}
+          setVoucherApplied={setVoucherApplied}
+          totalMoney={totalMoney}
+        />
       </div>
     </>
   );
 }
 
-const ButtonPayment = ({ voucherApplied, setVoucherApplied }) => {
+const ButtonPayment = ({ voucherApplied, setVoucherApplied, totalMoney }) => {
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
       <div className="grid grid-cols-2 px-4 border-t border-b border-gray-100 items-center justify-between">
@@ -109,7 +114,7 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied }) => {
         )}
       </div>
       <div className="w-full py-2 px-4">
-        <Button text={`Đặt hàng ${NumberPipe(189000)}đ`} primary className="w-full" />
+        <Button text={`Đặt hàng ${NumberPipe(totalMoney)}đ`} primary className="w-full" />
       </div>
     </div>
   );

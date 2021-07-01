@@ -73,7 +73,6 @@ export function CartProvider(props) {
     }
     setCartProducts([...cartProducts]);
   };
-  // useEffect(() => {}, []);
 
   return (
     <CartContext.Provider

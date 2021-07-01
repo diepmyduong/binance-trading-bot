@@ -13,6 +13,7 @@ import { Dialog, DialogPropsType } from "../../shared/utilities/dialog/dialog";
 import { Spinner } from "../../shared/utilities/spinner";
 import { useProductsContext } from "../../admin/products/providers/products-provider";
 import { useProductDetailContext } from "./provider/product-detail-provider";
+import { ToppingOption } from "../../../lib/repo/product-topping.repo";
 
 interface PropsType extends DialogPropsType {
   productId?: string;
@@ -48,12 +49,11 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
     setIntervalScroll(scrollCheckInterval);
   }
   useEffect(() => {
-    window.addEventListener("scroll", dialogScrollEvent);
+    // window.addEventListener("scroll", dialogScrollEvent);
     return () => {
       clearInterval(intervalScroll);
     };
   }, []);
-  console.log("productId", productId, props.isOpen);
   if (!productDetail) return <Spinner></Spinner>;
   return (
     <Dialog
@@ -92,7 +92,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
           </div>
         </div>
         <div className="w-full h-full top-0">
-          <Img src={"https://i.imgur.com/a8BAycP.png"} ratio169 />
+          <Img src={productDetail.image} ratio169 />
         </div>
 
         <div ref={ref} className="sticky overflow-auto bg-white">
@@ -101,11 +101,11 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
             <i className="text-accent">
               <HiStar />
             </i>
-            <div className="font-bold">{"4.6"}</div>
+            <div className="font-bold">{productDetail.rating}</div>
             <div className="px-2">-</div>
-            <div className="">{`Đã bán ${productDetail.sold || 0}`}</div>
+            <div className="">{`Đã bán ${productDetail.soldQty || 0}`}</div>
           </div>
-          <p className="px-4 text-sm text-gray-500">{productDetail.des}</p>
+          <p className="px-4 text-sm text-gray-500">{productDetail.subtitle}</p>
           <Button
             text="+ Lời nhắn cho cửa hàng"
             textPrimary
@@ -113,25 +113,24 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
             unfocusable
             onClick={() => setOpenDialog(true)}
           />
-          <div className="bg-primary-light  px-4 py-2">
-            <h2 className="font-bold text-sm">Các món ăn kèm</h2>
-            <p className="pt-1 text-xs">Chọn ít nhất 1 món</p>
-          </div>
           <div className="">
-            {data.sideDishes.map((item) => {
-              return <OneDish item={item} />;
-            })}
-          </div>
-          <div className="bg-primary-light px-4 py-2">
-            <h2 className="font-bold text-sm">
-              Các đi kèm <span className="text-red-600">*</span>
-            </h2>
-            <p className="pt-1 text-xs text-red-600">Bắt buộc Chọn ít nhất 1 món</p>
-          </div>
-          <div className="">
-            {data.obligatoryDishes.map((item) => {
-              return <OneDish item={item} />;
-            })}
+            {productDetail.toppings &&
+              productDetail.toppings.map((item, index) => {
+                if (item.options.length > 0)
+                  return (
+                    <div className="">
+                      <div className="bg-primary-light  px-4 py-2">
+                        <h2 className="font-bold text-sm">{item.name}</h2>
+                        <p className="pt-1 text-xs"></p>
+                      </div>
+                      <div className="">
+                        {item.options.map((item, index) => {
+                          return <OneDish item={item} key={index} />;
+                        })}
+                      </div>
+                    </div>
+                  );
+              })}
           </div>
         </div>
         <div className="h-22"></div>
@@ -143,7 +142,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
               text={`Thêm ${NumberPipe(productDetail.basePrice * count)} đ`}
               className="w-full"
               onClick={() => {
-                addProductToCart(productDetail, 1);
+                addProductToCart(productDetail, count);
                 props.onClose();
               }}
             />
@@ -170,18 +169,21 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
   );
 }
 
-const OneDish = ({ item }) => {
+interface PropsOneDish {
+  item: ToppingOption;
+}
+const OneDish = ({ item }: PropsOneDish) => {
   return (
     <div className="flex items-center justify-between px-4 py-1 border-b border-gray-300">
       <div className="flex items-center w-full">
         <input
           type="radio"
-          id={item.dish}
+          id={item.name}
           name="obligatoryDishes"
           className="inline form-checkbox"
         />
-        <label htmlFor={item.dish} className="inline font-light text-sm ml-2 cursor-pointer w-full">
-          {item.dish}
+        <label htmlFor={item.name} className="inline font-light text-sm ml-2 cursor-pointer w-full">
+          {item.name}
         </label>
       </div>
       <div className="text-sm text-gray-400 min-w-max">{NumberPipe(item.price)} đ</div>

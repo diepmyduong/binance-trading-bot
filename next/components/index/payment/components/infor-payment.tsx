@@ -53,14 +53,14 @@ export function InforPayment() {
         />
         <div className="px-4 pt-6 text-sm">
           <Form initialData={initData}>
-            <Field name="name">
+            <Field name="name" noError className="pb-2">
               <Input
                 placeholder="Nhập tên người nhận"
                 prefix={<FaUserAlt />}
                 className="rounded-2xl bg-primary-light"
               />
             </Field>
-            <Field name="phone">
+            <Field name="phone" noError className="pb-2">
               <Input
                 type="number"
                 placeholder="Nhập số điện thoại"
@@ -70,7 +70,7 @@ export function InforPayment() {
             </Field>
 
             {selectedIndex == 0 ? (
-              <Field name="address">
+              <Field name="address" noError className="pb-2">
                 <Input
                   type="text"
                   placeholder="Nhập địa chỉ giao đến"
@@ -79,15 +79,15 @@ export function InforPayment() {
                 />
               </Field>
             ) : (
-              <div className="pb-4">
-                <div className="font-bold">Quán chi nhánh 1</div>
-                <div className="flex items-start justify-between">
+              <div className="py-2">
+                <div className="font-bold">Chi nhánh</div>
+                <div className="flex items-start justify-between pt-2">
                   <p className="font-medium">{branch}</p>
                   <Button
                     text="Đổi chi nhánh"
                     textPrimary
                     unfocusable
-                    className="px-0 py-0 min-w-max text-sm"
+                    className="px-0 py-0 ml-4 min-w-max text-sm"
                     onClick={() => setOpenDialog(true)}
                   />
                 </div>

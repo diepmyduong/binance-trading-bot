@@ -44,7 +44,7 @@ export default function Sidebar({ ...props }: PropsType) {
           style={{ height: "calc(100vh)" }}
         >
           <div className="flex items-center py-8 px-6">
-            {member.shopLogo && <Img className="w-12" src={member.shopLogo} />}
+            {member.shopLogo && <Img className="w-12 rounded-full" src={member.shopLogo} />}
             <div className="text-xl pl-4 flex-1 text-gray-800 font-semibold">{member.shopName}</div>
           </div>
           <div className="flex-1 v-scrollbar pt-1 pb-3">

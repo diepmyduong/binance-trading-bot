@@ -1,18 +1,16 @@
-import jwtDecode from "jwt-decode";
 import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   ClearAuthToken,
   ClearAuthTokenMember,
-  GetAuthToken,
   GetAuthTokenMember,
   SetAuthToken,
   SetAuthTokenMember,
 } from "../graphql/auth.link";
-import { User, UserService } from "../repo/user.repo";
 import { firebase } from "../helpers/firebase";
-import { Member, MemberService } from "../repo/member.repo";
 import { GraphService } from "../repo/graph.repo";
+import { Member, MemberService } from "../repo/member.repo";
+import { User, UserService } from "../repo/user.repo";
 
 export const AuthContext = createContext<
   Partial<{

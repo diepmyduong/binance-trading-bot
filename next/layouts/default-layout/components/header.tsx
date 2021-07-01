@@ -7,7 +7,7 @@ import { FaHistory, FaPercent, FaSignInAlt, FaUserAlt } from "react-icons/fa";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import { Button } from "../../../components/shared/utilities/form/button";
 import { useAuth } from "../../../lib/providers/auth-provider";
-import CustomerLoginDialog from "../../../components/shared/utilities/dialog/customer-login-dialog";
+import { CustomerLoginDialog } from "../../../components/shared/homepage-layout/customer-login-dialog";
 import { HiOutlineUserCircle } from "react-icons/hi";
 import { Img } from "../../../components/shared/utilities/img";
 
@@ -54,15 +54,14 @@ export function Header({ code, ...props }: HeaderPropsType) {
     <>
       <header className={`fixed top-0 w-full z-100`}>
         <div className="w-full mx-auto h-14 flex justify-between items-center max-w-lg shadow bg-white px-4">
-          <div
-            className="flex items-center cursor-pointer"
-            onClick={() => router.push(`/?code=${shopCode}`)}
-          >
-            {shop && <Img src={shop.shopLogo || ""} className="h-10 w-10" />}
-            <p className="text-ellipsis-2 font-semibold px-2 text-sm sm:text-base">
-              {shop?.shopName}
-            </p>
-          </div>
+          <Link href={`/?code=${shopCode}`}>
+            <div className="flex items-center cursor-pointer">
+              {shop && <Img src={shop.shopLogo || ""} className="w-10 rounded-full" />}
+              <p className="text-ellipsis-2 font-semibold px-2 text-sm sm:text-base">
+                {shop?.shopName}
+              </p>
+            </div>
+          </Link>
           {!customer && <Button text="Đăng nhâp" primary small onClick={() => setIsOpen(true)} />}
           <button
             className={`btn text-primary bg-primary-light rounded-full flex items-center px-2 ${

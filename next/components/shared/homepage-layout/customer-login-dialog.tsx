@@ -1,14 +1,14 @@
 import React from "react";
-import { Form } from "../form/form";
-import { Field } from "../form/field";
-import { Input } from "../form/input";
-import { DialogPropsType } from "./dialog";
-import { Button } from "../form/button";
+import { Form } from "../utilities/form/form";
+import { Field } from "../utilities/form/field";
+import { Input } from "../utilities/form/input";
+import { DialogPropsType } from "../utilities/dialog/dialog";
+import { Button } from "../utilities/form/button";
 interface Propstype extends DialogPropsType {
   onConfirm: Function;
 }
 
-const CustomerLoginDialog = (props: Propstype) => {
+export function CustomerLoginDialog(props: Propstype) {
   return (
     <Form
       title="Đăng nhập"
@@ -26,6 +26,4 @@ const CustomerLoginDialog = (props: Propstype) => {
       <Button text="Đăng nhập" className="w-full" submit primary />
     </Form>
   );
-};
-
-export default CustomerLoginDialog;
+}

@@ -1,74 +1,90 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { useToast } from "./toast-provider";
+import { Product } from "../repo/product.repo";
 
 export const CartContext = createContext<
   Partial<{
     totalFood: number;
     totalMoney: number;
-    cart: Food[];
-    setCart: Function;
-    handleChange: Function;
-    branchSelecting: any;
-    setBranchSelecting: Function;
+    cartProducts: CartProduct[];
+    setCartProducts: Function;
+    addProductToCart: Function;
+    changeProductQuantity: Function;
+    removeProductFromCart: Function;
   }>
 >({});
-export type Food = {
-  qty?: number;
-  name: string;
+export interface CartProduct {
+  productId: string;
+  product?: Product;
   note?: string;
-  img: string;
-  price: number;
+  qty: number;
+  price?: number;
   amount?: number;
-};
+}
 export function CartProvider(props) {
-  const [cart, setCart] = useState<Food[]>([]);
+  const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
   const [totalFood, setTotalFood] = useState(0);
   const [totalMoney, setTotalMoney] = useState(0);
-  const [branchSelecting, setBranchSelecting] = useState(null);
   useEffect(() => {
-    setTotalFood(cart.reduce((count, item) => (count += item.qty), 0));
-    setTotalMoney(cart.reduce((total, item) => (total += item.price * item.qty), 0));
+    setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
+    setTotalMoney(cartProducts.reduce((total, item) => (total += item.price * item.qty), 0));
     // setCartProductTotal(cartProducts.length);
-  }, [cart]);
-  function handleChange(index: number, food?: Food) {
-    let newCart = cart;
-    if (index !== -1) {
-      newCart.splice(index, 1);
+  }, [cartProducts]);
+  const addProductToCart = (product: Product, qty: number): boolean => {
+    if (!qty) return false;
+    let cartProduct = cartProducts.find((x) => x.productId == product.id);
+    if (cartProduct) {
+      cartProduct.qty += qty;
+      cartProduct.amount = cartProduct.price * cartProduct.qty;
     } else {
-      let foodCart = newCart.find((x) => x.name == food.name);
-      if (foodCart) {
-        console.log(foodCart, food);
-        if (food.qty) {
-          foodCart.qty = food.qty;
-        } else {
-          foodCart.qty += 1;
-        }
-        foodCart.amount = foodCart.price * foodCart.qty;
-      } else {
-        newCart.push({
-          name: food.name,
-          qty: 1,
-          img: "",
-          price: food.price,
-          amount: food.price,
-        });
-      }
+      cartProducts.push({
+        productId: product.id,
+        product: product,
+        qty,
+        price: product.basePrice,
+        amount: product.basePrice * qty,
+      });
     }
-    setCart(cloneDeep(newCart));
-  }
-  useEffect(() => {}, []);
+    setCartProducts([...cartProducts]);
+    return true;
+  };
+  const changeProductQuantity = (product: Product, qty: number) => {
+    if (!qty) return;
+    let cartProduct = cartProducts.find((x) => x.productId == product.id);
+    if (cartProduct) {
+      cartProduct.qty = qty;
+      cartProduct.amount = cartProduct.price * qty;
+    } else {
+      cartProducts.push({
+        productId: product.id,
+        product: product,
+        qty,
+        price: product.salePrice,
+        amount: product.salePrice * qty,
+      });
+    }
+    setCartProducts([...cartProducts]);
+  };
+  const removeProductFromCart = (product: Product) => {
+    let cartProductIndex = cartProducts.findIndex((x) => x.productId == product.id);
+    if (cartProductIndex >= 0) {
+      cartProducts.splice(cartProductIndex, 1);
+    }
+    setCartProducts([...cartProducts]);
+  };
+  // useEffect(() => {}, []);
 
   return (
     <CartContext.Provider
       value={{
         totalFood,
         totalMoney,
-        cart,
-        setCart,
-        handleChange,
-        branchSelecting,
-        setBranchSelecting,
+        cartProducts,
+        setCartProducts,
+        addProductToCart,
+        removeProductFromCart,
+        changeProductQuantity,
       }}
     >
       {props.children}

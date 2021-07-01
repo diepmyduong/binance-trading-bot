@@ -64,7 +64,7 @@ export function FormEmail({ dataEmail, onCancle, unSelect }: PropsType) {
                 .then((res) => toast.success("Đã cập nhật."))
                 .catch((err) => toast.error(err.message))
             }
-            disableCancle
+            cancelText=""
           />
           <Dialog
             width="80%"

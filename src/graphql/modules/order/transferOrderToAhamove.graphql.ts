@@ -23,7 +23,7 @@ export default {
         const { orderId, serviceId } = args;
         const order = await OrderModel.findById(orderId);
         if (!order) throw Error("Không tìm thấy đơn hàng");
-        if (order.status != OrderStatus.CONFIRMED && !order.shipMethod)
+        if (order.status != OrderStatus.CONFIRMED || order.shipMethod)
           throw Error("Đơn hàng không hợp lệ");
         if (order.sellerId.toString() != context.sellerId) throw ErrorHelper.permissionDeny();
         const [orderItems, shopConfig, branch] = await Promise.all([
@@ -65,6 +65,12 @@ async function createAhamoveOrder(
   const address = compact([branch.address, branch.ward, branch.district, branch.province]).join(
     ", "
   );
+  const buyerAddress = compact([
+    order.buyerAddress,
+    order.buyerWard,
+    order.buyerDistrict,
+    order.buyerProvince,
+  ]).join(", ");
   const ahamoveOrder = await ahamove.createOrder({
     token: shopConfig.shipAhamoveToken,
     order_time: parseInt((Date.now() / 1000).toFixed(0)),
@@ -80,9 +86,9 @@ async function createAhamoveOrder(
       {
         lat: parseFloat(order.latitude),
         lng: parseFloat(order.longitude),
-        address: address,
-        short_address: branch.district,
-        name: branch.name,
+        address: buyerAddress,
+        short_address: order.buyerDistrict,
+        name: order.buyerName,
       },
     ],
     payment_method: "CASH",

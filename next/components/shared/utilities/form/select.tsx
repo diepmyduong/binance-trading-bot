@@ -30,6 +30,7 @@ export interface SelectProps extends FormControlProps {
   isAvatarImage?: boolean;
   dependency?: any;
   autosize?: boolean;
+  menuIsOpen?: boolean;
 }
 export function Select({
   controlClassName = "form-control",
@@ -236,7 +237,7 @@ export function Select({
     option: (styles, { data, isDisabled, isFocused, isSelected }) => {
       let optionStyles;
       if (hasColor) {
-        const color = getTailwindColor(data.color);
+        const color = getTailwindColor(data.color) || data.color;
         optionStyles = {
           ...styles,
           backgroundColor: isDisabled
@@ -276,31 +277,31 @@ export function Select({
       hasColor && multi
         ? {
             ...styles,
-            backgroundColor: getTailwindColor(data.color).light,
+            backgroundColor: getTailwindColor(data.color)?.DEFAULT || data.color,
           }
         : { ...styles },
     multiValueLabel: (styles, { data }) =>
       hasColor && multi
         ? {
             ...styles,
-            color: getTailwindColor(data.color).DEFAULT,
+            color: getTailwindColor(data.color)?.DEFAULT || data.color,
           }
         : { ...styles },
     multiValueRemove: (styles, { data }) =>
       hasColor && multi
         ? {
             ...styles,
-            color: getTailwindColor(data.color).DEFAULT,
+            color: getTailwindColor(data.color)?.DEFAULT || data.color,
             ":hover": {
-              backgroundColor: getTailwindColor(data.color).DEFAULT,
+              backgroundColor: getTailwindColor(data.color)?.DEFAULT || data.color,
               color: "white",
             },
           }
         : {
             ...styles,
             ":hover": {
-              backgroundColor: getTailwindColor("danger").light,
-              color: getTailwindColor("danger").DEFAULT,
+              backgroundColor: getTailwindColor("danger").DEFAULT,
+              color: "white",
             },
           },
   };
@@ -441,14 +442,16 @@ export function Select({
           tabIndex={props.noFocus && "-1"}
           ref={selectRef}
           onMenuOpen={onMenuOpen}
-          menuIsOpen={menuIsOpen}
+          menuIsOpen={menuIsOpen || props.menuIsOpen}
           id={props.id}
           name={props.name}
           options={options}
           value={value}
           onChange={onChange}
           onInputChange={onInputChange}
-          className={`${controlClassName} px-0 ${props.error ? "error" : ""} ${className}`}
+          className={`${controlClassName} px-0 ${props.error ? "error" : ""} ${className} ${
+            props.autosize ? "react-select-autosize" : ""
+          }`}
           style={{ ...style }}
           classNamePrefix="react-select"
           placeholder={

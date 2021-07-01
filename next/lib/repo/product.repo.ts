@@ -1,8 +1,6 @@
 import axios from "axios";
 import { GetAuthToken } from "../graphql/auth.link";
-import { Category } from "./category.repo";
 import { BaseModel, CrudRepository } from "./crud.repo";
-import { ProductTopping } from "./product-topping.repo";
 
 export interface ProductParam {
   value: string;
@@ -22,10 +20,14 @@ export interface Product extends BaseModel {
   categoryId?: string;
   priority?: number;
   allowSale?: boolean;
-  toppings: ProductTopping[];
-  rating: number;
-  soldQty: number;
-  labelIds: string[];
+  rating?: number;
+  saleRate?: number;
+  soldQty?: number;
+  labels: ProductLabel[];
+}
+export interface ProductLabel extends BaseModel {
+  name: string;
+  color: string;
 }
 export class ProductRepository extends CrudRepository<Product> {
   apiName: string = "Product";
@@ -44,7 +46,14 @@ export class ProductRepository extends CrudRepository<Product> {
     categoryId: ID
     rating: number
     soldQty: number
-    labelIds: string[]
+    labels {
+      id: String
+      createdAt: DateTime
+      updatedAt: DateTime
+      memberId: ID
+      name: String
+      color: String
+    }: [ProductLabel]
   `);
   fullFragment: string = this.parseFragment(`
     id: String
@@ -76,6 +85,14 @@ export class ProductRepository extends CrudRepository<Product> {
         isDefault: Boolean
       }: [ToppingOption]
     }: [ProductTopping]
+    labels {
+      id: String
+      createdAt: DateTime
+      updatedAt: DateTime
+      memberId: ID
+      name: String
+      color: String
+    }: [ProductLabel]
   `);
 
   async copyProduct(productId: string, parentCategoryId: string): Promise<Product> {
@@ -125,3 +142,20 @@ export class ProductRepository extends CrudRepository<Product> {
 }
 
 export const ProductService = new ProductRepository();
+
+export const PRODUCT_LABEL_COLORS: Option[] = [
+  { value: "blue", label: "Xanh dương", color: "blue" },
+  // color?:
+  //   | "primary"
+  //   | "accent"
+  //   | "info"
+  //   | "success"
+  //   | "danger"
+  //   | "warning"
+  //   | "bluegray"
+  //   | "orange"
+  //   | "teal"
+  //   | "cyan"
+  //   | "purple"
+  //   | "pink";
+];

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Promotion from "../promotion";
+import { Promotion } from "../promotion";
 import { Button } from "../../../../shared/utilities/form/button";
 
-const PromotionDetail = () => {
+export function PromotionDetail() {
   const des = [
     {
       label: "Ưu đãi",
@@ -49,7 +49,7 @@ const PromotionDetail = () => {
   ];
   const [showMore, setShowMore] = useState(false);
   return (
-    <div className="text-sm">
+    <div className="text-sm bg-primary-light">
       <Promotion
         promotion={{
           name: "Giảm 40k cho đơn từ 150k",
@@ -88,6 +88,4 @@ const PromotionDetail = () => {
       </p>
     </div>
   );
-};
-
-export default PromotionDetail;
+}

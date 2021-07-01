@@ -5,7 +5,6 @@ export interface Category extends BaseModel {
   memberId: string;
   name: string;
   code: string;
-  isPrimary: boolean;
   productIds: string[];
   priority: number;
   products: Product[];
@@ -20,21 +19,10 @@ export class CategoryRepository extends CrudRepository<Category> {
     memberId: ID
     name: String
     code: String
-    isPrimary: Boolean
     productIds: [ID]
     priority: Int
     products {
-      id: String
-      code: String
-      name: String
-      allowSale: Boolean
-      basePrice: Float
-      downPrice: Float
-      subtitle:String
-      image:String
-      rating: number
-      soldQty: number
-      labelIds: string[]
+      ${ProductService.fullFragment}
     }: [Product]`);
   fullFragment: string = this.parseFragment(`
     id: String
@@ -43,13 +31,12 @@ export class CategoryRepository extends CrudRepository<Category> {
     memberId: ID
     name: String
     code: String
-    isPrimary: Boolean
     productIds: [ID]
     priority: Int
-    products{
+    products {
       ${ProductService.fullFragment}
-    }: [Product]`);
-
+    }: [Product]
+  `);
   async copyCategory(categoryId: string, parentCategoryId: string): Promise<Category> {
     return await this.mutate({
       mutation: `copyCategory(categoryId: "${categoryId}", parentCategoryId: "${parentCategoryId}") {

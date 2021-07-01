@@ -1,7 +1,7 @@
 import React from "react";
-import { Dialog, DialogPropsType } from "../../../../shared/utilities/dialog/dialog";
-import Branch from "./branch";
-import { useCartContext } from "../../../../../lib/providers/cart-provider";
+import { Dialog, DialogPropsType } from "../../../shared/utilities/dialog/dialog";
+import { Button } from "../../../shared/utilities/form/button";
+import { StatusTime } from "../../../shared/homepage-layout/status-time";
 interface Propstype extends DialogPropsType {
   onSelect?: (string) => void;
 }
@@ -59,14 +59,28 @@ const BranchsDialog = (props: Propstype) => {
           style={{ maxHeight: `calc(100vh - 250px)`, minHeight: `calc(100vh - 100px)` }}
         >
           {branchs.map((item, index) => (
-            <Branch
-              branch={item}
-              key={index}
-              onClick={() => {
-                props.onSelect(item.address);
-                props.onClose();
-              }}
-            />
+            <div className="flex px-4 mt-2 border-b pb-2" key={index}>
+              <div className="flex-1 leading-7">
+                <h3 className="text-primary text-base sm:text-lg">{item.place}</h3>
+                <p className="text-ellipsis-2">{item.address}</p>
+                <StatusTime
+                  isActive={item.isActive}
+                  // openAt={item.openAt}
+                  // closeAt={item.closeAt}
+                  range={item.range}
+                />
+              </div>
+              <Button
+                outline
+                primary
+                text="Chọn"
+                className="rounded-full"
+                onClick={() => {
+                  props.onSelect(item.place);
+                  props.onClose();
+                }}
+              />
+            </div>
           ))}
         </div>
       </Dialog.Body>

@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { Input } from "../../shared/utilities/form/input";
 import { Button } from "../../shared/utilities/form/button";
-import Promotion from "./components/promotion";
-import { TabButtonGroup } from "../../shared/utilities/tab-button-group/tab-button-group";
-import SwitchTabs from "../../shared/utilities/tab/switch-tabs";
+import { Promotion } from "./components/promotion";
+import { SwitchTabs } from "../../shared/utilities/tab/switch-tabs";
 import useScreen from "../../../lib/hooks/useScreen";
-import PromotionDetailDialog from "./components/promotion-detail.tsx/promotion-detail-dialog";
+import { PromotionDetailDialog } from "./components/promotion-detail.tsx/promotion-detail-dialog";
 interface Propstype extends ReactProps {}
 const PromotionsPage = (props: Propstype) => {
   const promotions = [
@@ -59,7 +58,7 @@ const PromotionsPage = (props: Propstype) => {
           ]
         }
       />
-      <div className="flex flex-col text-sm sm:text-base overscroll-y-auto px-4 bg-primary-light h-full min-h-xs">
+      <div className="flex flex-col text-sm sm:text-base overscroll-y-auto px-4 bg-bluegray-light h-full min-h-xs">
         <div className="flex my-4 border-group rounded-md h-12">
           <Input placeholder="Nhập mã giảm giá ở đây" />{" "}
           <Button className="h-12 whitespace-nowrap" primary text="Áp dụng" />

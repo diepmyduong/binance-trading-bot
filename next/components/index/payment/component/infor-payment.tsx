@@ -6,7 +6,7 @@ import { Field } from "../../../shared/utilities/form/field";
 import { Form } from "../../../shared/utilities/form/form";
 import { Input } from "../../../shared/utilities/form/input";
 import { Select } from "../../../shared/utilities/form/select";
-import BranchsDialog from "../../homepage/component/branch/branchs-dialog";
+import BranchsDialog from "../../homepage/components/branchs-dialog";
 
 export function InforPayment() {
   const initData = {

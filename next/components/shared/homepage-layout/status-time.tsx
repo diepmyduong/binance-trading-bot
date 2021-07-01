@@ -6,7 +6,7 @@ interface Propstype extends ReactProps {
   range?: string | number;
 }
 
-const StatusTime = (props: Propstype) => {
+export function StatusTime(props: Propstype) {
   return (
     <ul className="flex font-bold">
       <li className={`${!props.isActive && "text-danger"} pr-2`}>
@@ -19,6 +19,4 @@ const StatusTime = (props: Propstype) => {
       {props.range && <li> - Cách bạn {props.range}km</li>}
     </ul>
   );
-};
-
-export default StatusTime;
+}

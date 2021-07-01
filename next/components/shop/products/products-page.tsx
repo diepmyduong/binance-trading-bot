@@ -33,6 +33,9 @@ export function ProductsPage(props: ReactProps) {
           <Form
             grid
             dialog
+            extraDialogClass="bg-transparent"
+            extraHeaderClass="bg-gray-100 text-xl py-3 justify-center rounded-t-xl border-gray-300"
+            extraBodyClass="px-6 bg-gray-100 rounded-b-xl"
             initialData={openCategory}
             title={`${openCategory ? "Chỉnh sửa" : "Thêm"} danh mục`}
             isOpen={openCategory !== undefined}
@@ -52,7 +55,12 @@ export function ProductsPage(props: ReactProps) {
               <Input number defaultValue={1} />
             </Field>
             <Form.Footer>
-              <Form.ButtonGroup submitText={`${openCategory ? "Chỉnh sửa" : "Thêm"} danh mục`} />
+              <Form.ButtonGroup
+                submitText={`${openCategory ? "Chỉnh sửa" : "Thêm"} danh mục`}
+                className="justify-center"
+                cancelText=""
+                submitProps={{ className: "bg-gradient h-14 w-64" }}
+              />
             </Form.Footer>
           </Form>
         )}

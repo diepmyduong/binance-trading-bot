@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-import { NumberPipe } from "../../../../../lib/pipes/number";
-import { Img } from "../../../../shared/utilities/img";
-import Price from "../../../../shared/infomation/price";
-import { useCartContext } from "../../../../../lib/providers/cart-provider";
+import { Img } from "../../../shared/utilities/img";
 import { useRouter } from "next/router";
+import { Price } from "../../../shared/homepage-layout/price";
 interface Propstype extends ReactProps {}
-const MustTryMenu = (props: Propstype) => {
+export function HightLightCategories(props: Propstype) {
   const tryFood = [
     {
       img:
@@ -38,7 +36,6 @@ const MustTryMenu = (props: Propstype) => {
   ];
   const router = useRouter();
   const query = router.query;
-  const { handleChange } = useCartContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [detailItem, setDetailItem] = useState<any>(null);
   return (
@@ -72,6 +69,4 @@ const MustTryMenu = (props: Propstype) => {
       </Form> */}
     </div>
   );
-};
-
-export default MustTryMenu;
+}

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Img } from "../../../../shared/utilities/img";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Pagination, Autoplay } from "swiper/core";
 // install Swiper modules

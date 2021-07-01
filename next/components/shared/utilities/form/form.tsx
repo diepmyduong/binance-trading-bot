@@ -278,7 +278,9 @@ export function Form({ className = "", style = {}, ...props }: FormPropsType) {
             {Children.map(props.children, (child) =>
               child?.type?.displayName === "FormHeader" ? (
                 <div
-                  className={`col-span-12 flex justify-center uppercase font-bold text-gray-700 ${child.props.className}`}
+                  className={`col-span-12 flex justify-center uppercase font-bold text-gray-700 ${
+                    child.props.className || ""
+                  }`}
                 >
                   {child}
                 </div>
@@ -290,7 +292,9 @@ export function Form({ className = "", style = {}, ...props }: FormPropsType) {
             {Children.map(props.children, (child) =>
               child?.type?.displayName === "FormFooter" ? (
                 <div
-                  className={`col-span-12 mt-auto flex flex-row-reverse justify-start gap-1 ${child.props.className}`}
+                  className={`col-span-12 mt-auto flex flex-row-reverse justify-start gap-1 ${
+                    child.props.className || ""
+                  }`}
                 >
                   {child}
                 </div>

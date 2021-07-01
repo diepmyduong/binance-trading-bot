@@ -7,6 +7,7 @@ import { Footer } from "../../../layouts/default-layout/components/footer";
 import { ShopCategories } from "./components/shop-category";
 import { CartDialog } from "./components/cart-dialog";
 import { NumberPipe } from "../../../lib/pipes/number";
+import { ProductDetail } from "../../shop/product-detail/detail";
 
 interface PropsType extends ReactProps {
   productId?: string;
@@ -31,6 +32,7 @@ export function Homepage({ productId }: PropsType) {
 
   useEffect(() => {
     setProductIdCode(productId);
+    setOpenDialog(true);
   }, [productId]);
 
   useEffect(() => {
@@ -66,6 +68,13 @@ export function Homepage({ productId }: PropsType) {
           onRemove={removeProductFromCart}
         />
       </div>
+
+      <ProductDetail
+        productId={productIdCode}
+        isOpen={openDialog}
+        onClose={() => setOpenDialog(false)}
+      ></ProductDetail>
+
       <Footer />
     </>
   );

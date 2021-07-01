@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Img } from "../../../../shared/utilities/img";
 import { Form } from "../../../../shared/utilities/form/form";
-import { RestaurantDetail } from "../restaurant-detail/detail";
 import { useRouter } from "next/router";
 import { Product } from "../../../../../lib/repo/product.repo";
 import { Rating } from "../../../../shared/homepage-layout/rating";
@@ -13,8 +12,6 @@ interface PropsType extends ReactProps {
 export function Category(props: PropsType) {
   const router = useRouter();
   const query = router.query;
-  const [openDialog, setOpenDialog] = useState(false);
-  const [detailItem, setDetailItem] = useState<any>(null);
   return (
     <div id={props.title} className="relative menu bg-white">
       <div className=" absolute -top-28 menu-container"></div>
@@ -26,8 +23,6 @@ export function Category(props: PropsType) {
               key={index}
               className="flex justify-evenly items-center py-2 px-4 hover:bg-primary-light cursor-pointer border-b transition-all duration-300"
               onClick={() => {
-                setOpenDialog(true);
-                setDetailItem(item);
                 router.replace({ query: { ...query, productId: item.code }, path: "/" });
               }}
             >
@@ -42,15 +37,6 @@ export function Category(props: PropsType) {
           ))}
         </>
       )}
-      <Form
-        dialog
-        mobileSizeMode
-        isOpen={openDialog}
-        slideFromBottom="all"
-        onClose={() => setOpenDialog(false)}
-      >
-        <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
-      </Form>
     </div>
   );
 }

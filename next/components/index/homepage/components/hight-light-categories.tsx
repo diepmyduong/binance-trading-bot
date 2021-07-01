@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import { NumberPipe } from "../../../../lib/pipes/number";
 import { Img } from "../../../shared/utilities/img";
-import { useCartContext } from "../../../../lib/providers/cart-provider";
-import { Form } from "../../../shared/utilities/form/form";
-import { RestaurantDetail } from "./restaurant-detail/detail";
 import { useRouter } from "next/router";
 import { Price } from "../../../shared/homepage-layout/price";
 interface Propstype extends ReactProps {}
@@ -62,7 +58,7 @@ export function HightLightCategories(props: Propstype) {
           </div>
         ))}
       </div>
-      <Form
+      {/*  <Form
         dialog
         mobileSizeMode
         isOpen={openDialog}
@@ -70,7 +66,7 @@ export function HightLightCategories(props: Propstype) {
         onClose={() => setOpenDialog(false)}
       >
         <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
-      </Form>
+      </Form> */}
     </div>
   );
 }

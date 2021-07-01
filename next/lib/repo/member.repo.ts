@@ -34,6 +34,7 @@ export interface Member extends BaseModel {
   fanpageImage: string;
   shopName: string;
   shopLogo: string;
+  shopCover: string;
   cumulativePoint: number;
   diligencePoint: number;
   commission: number;
@@ -111,6 +112,7 @@ export class MemberRepository extends CrudRepository<Member> {
     fanpageImage: String
     shopName: String
     shopLogo: String
+    shopCover: String
     cumulativePoint: Float
     diligencePoint: Float
     commission: Float

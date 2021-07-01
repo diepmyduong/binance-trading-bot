@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { CartProduct } from "../../../../lib/providers/cart-provider";
 import { Dialog, DialogPropsType } from "../../../shared/utilities/dialog/dialog";
-import ListCart from "./list-cart";
 import { Button } from "../../../shared/utilities/form/button";
 import { NumberPipe } from "../../../../lib/pipes/number";
 import { CustomerLoginDialog } from "../../../shared/homepage-layout/customer-login-dialog";

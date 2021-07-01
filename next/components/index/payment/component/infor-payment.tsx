@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Fa500Px, FaAddressCard, FaBlenderPhone, FaUserAlt } from "react-icons/fa";
 import { Dialog } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
 import { Field } from "../../../shared/utilities/form/field";
@@ -52,16 +53,30 @@ export function InforPayment() {
         />
         <div className="px-4 pt-6 text-sm">
           <Form initialData={initData}>
-            <Field label="Tên người nhận" name="name">
-              <Input placeholder="Nhập tên người nhận" />
+            <Field name="name">
+              <Input
+                placeholder="Nhập tên người nhận"
+                prefix={<FaUserAlt />}
+                className="rounded-2xl bg-primary-light"
+              />
             </Field>
-            <Field label="Số điện thoại" name="phone">
-              <Input type="number" placeholder="Nhập số điện thoại" />
+            <Field name="phone">
+              <Input
+                type="number"
+                placeholder="Nhập số điện thoại"
+                prefix={<FaBlenderPhone />}
+                className="rounded-2xl bg-primary-light"
+              />
             </Field>
 
             {selectedIndex == 0 ? (
-              <Field label="Giao đến" name="address">
-                <Input type="text" placeholder="Nhập Địa chỉ giao đến" />
+              <Field name="address">
+                <Input
+                  type="text"
+                  placeholder="Nhập địa chỉ giao đến"
+                  prefix={<FaAddressCard />}
+                  className="rounded-2xl bg-primary-light"
+                />
               </Field>
             ) : (
               <div className="pb-4">
@@ -78,13 +93,12 @@ export function InforPayment() {
                 </div>
                 <div className="flex items-center justify-between pt-6">
                   <p className="">Chọn thời gian lấy:</p>
-                  <Field>
-                    <Select
-                      options={times.map((item) => ({ value: item, label: item }))}
-                      className="w-32"
-                      searchable={false}
-                    />
-                  </Field>
+                  <Select
+                    options={times.map((item) => ({ value: item, label: item }))}
+                    className="w-32"
+                    searchable={false}
+                    native
+                  />
                 </div>
               </div>
             )}

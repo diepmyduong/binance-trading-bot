@@ -3,6 +3,7 @@ import { useToast } from "../../../../lib/providers/toast-provider";
 import { Category, CategoryService } from "../../../../lib/repo/category.repo";
 import { Product, ProductService } from "../../../../lib/repo/product.repo";
 import cloneDeep from "lodash/cloneDeep";
+import { ProductTopping, ProductToppingService } from "../../../../lib/repo/product-topping.repo";
 
 export const ProductsContext = createContext<
   Partial<{
@@ -11,12 +12,14 @@ export const ProductsContext = createContext<
     removeCategory: (category: Category) => Promise<any>;
     onProductChange: (product: Product, category: Category) => any;
     onDeleteProduct: (product: Product, category: Category) => Promise<any>;
-
     onToggleProduct: (product: Product, category: Category) => Promise<any>;
+    toppings: ProductTopping[];
+    loadToppings: () => Promise<any>;
   }>
 >({});
 export function ProductsProvider(props) {
   const [categories, setCategories] = useState<Category[]>(null);
+  const [toppings, setToppings] = useState<ProductTopping[]>(null);
   const toast = useToast();
 
   useEffect(() => {
@@ -29,6 +32,7 @@ export function ProductsProvider(props) {
         limit: 0,
         order: { priority: -1, createdAt: 1 },
       },
+      fragment: CategoryService.fullFragment,
     }).then((res) => {
       setCategories(cloneDeep(res.data));
     });
@@ -87,6 +91,17 @@ export function ProductsProvider(props) {
     } catch (err) {}
   };
 
+  const loadToppings = async () => {
+    ProductToppingService.getAll({
+      query: {
+        limit: 0,
+        order: { createdAt: -1 },
+      },
+    }).then((res) => {
+      setToppings(cloneDeep(res.data));
+    });
+  };
+
   return (
     <ProductsContext.Provider
       value={{
@@ -96,6 +111,8 @@ export function ProductsProvider(props) {
         onProductChange,
         onDeleteProduct,
         onToggleProduct,
+        toppings,
+        loadToppings,
       }}
     >
       {props.children}

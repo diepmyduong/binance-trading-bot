@@ -44,12 +44,12 @@ export function ConfigSettings() {
             <div className="flex mr-2">
               {[1, 2, 3, 4, 5].map((star) => {
                 let width = "0";
-                const rest = starRating - star;
-                if (rest > 1) {
+                const rest = starRating - star + 1;
+                if (rest >= 1) {
                   width = "100%";
                 } else if (rest > 0) {
-                  let pecent = rest * 100 + 5;
-                  width = (pecent > 100 ? 100 : pecent) + "%";
+                  let percent = rest * 100 + 2;
+                  width = (percent > 100 ? 100 : percent) + "%";
                 }
                 return (
                   <div className="mr-2 relative" key={star}>

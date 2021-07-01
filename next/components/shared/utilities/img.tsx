@@ -20,7 +20,6 @@ export interface ImgProps extends ReactProps {
   imageClassName?: string;
   default?: string;
   compress?: number;
-
   border?: boolean;
 }
 
@@ -60,10 +59,12 @@ export function Img({
     }
   }, [src]);
 
-  const onClick = () => {
+  const onClick = (e) => {
     if (props.showImageOnClick) {
+      e.stopPropagation();
       setShowImage(src);
     } else if (props.onClick) {
+      e.stopPropagation();
       props.onClick();
     }
   };

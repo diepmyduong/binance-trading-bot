@@ -30,7 +30,7 @@ export function Dropdown({
 
   return (
     <Popover reference={reference} trigger={trigger} placement={placement} arrow={arrow} {...props}>
-      {menuItems.length && (
+      {!!menuItems.length && (
         <div className="flex flex-col my-1.5" style={{ marginLeft: "-9px", marginRight: "-9px" }}>
           {menuItems.map((item, index) =>
             item.type.displayName === "Item" ? (

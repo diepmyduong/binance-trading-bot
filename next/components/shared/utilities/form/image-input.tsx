@@ -9,6 +9,7 @@ import { uploadImage } from "../../../../lib/helpers/upload-image";
 export interface ImageInputProps extends FormControlProps {
   multi?: boolean;
   inputClassName?: string;
+  buttonClassName?: string;
   avatar?: boolean;
   largeImage?: boolean;
   ratio169?: boolean;
@@ -23,6 +24,7 @@ export function ImageInput({
   controlClassName = "form-control",
   className = "",
   inputClassName = "",
+  buttonClassName = "",
   defaultValue = getDefaultValue({}),
   style = {},
   multi = false,
@@ -192,7 +194,7 @@ export function ImageInput({
             />
             <Button
               outline
-              className="flex-grow-0 flex-shrink-0 rounded-l-none px-3"
+              className={`flex-grow-0 flex-shrink-0 rounded-l-none px-3 ${buttonClassName}`}
               text="Thêm ảnh"
               unfocusable
               disabled={props.readonly}
@@ -203,7 +205,7 @@ export function ImageInput({
             <span className="px-2 font-semibold">hoặc</span>
             <Button
               outline
-              className="flex-grow-0 flex-shrink-0 px-3"
+              className={`flex-grow-0 flex-shrink-0 px-3 ${buttonClassName}`}
               icon={<RiUpload2Line />}
               text="Upload"
               unfocusable
@@ -271,7 +273,7 @@ export function ImageInput({
             />
             {!props.readonly && (
               <Button
-                className="border-l self-stretch rounded-l-none border-gray-300 bg-gray-50 px-3"
+                className={`border-l self-stretch rounded-l-none border-gray-300 bg-gray-50 px-3 ${buttonClassName}`}
                 isLoading={uploading}
                 text="Upload"
                 icon={<RiUpload2Line />}
@@ -288,7 +290,7 @@ export function ImageInput({
 }
 
 const getDefaultValue = (props: ImageInputProps) => {
-  return props.multi ? "" : [];
+  return props.multi ? [] : "";
 };
 
 ImageInput.getDefaultValue = getDefaultValue;

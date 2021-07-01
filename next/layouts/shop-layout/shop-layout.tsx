@@ -8,6 +8,7 @@ import { useAuth } from "../../lib/providers/auth-provider";
 import { DefaultHead } from "../default-head";
 import { Header } from "./components/header";
 import Sidebar from "./components/sidebar";
+import { ShopLayoutContext, ShopLayoutProvider } from "./providers/shop-layout-provider";
 
 interface PropsType extends ReactProps {}
 export function ShopLayout({ ...props }: PropsType) {
@@ -21,23 +22,29 @@ export function ShopLayout({ ...props }: PropsType) {
   }, [member]);
 
   return (
-    <>
-      {!member ? (
-        <div className="w-h-screen min-h-screen">
-          <Spinner />
-        </div>
-      ) : (
-        <>
-          <DefaultHead />
-          {/* <Header /> */}
-          <div className="flex w-full relative min-h-screen">
-            <Sidebar />
-            <div className="flex-1 flex flex-col pl-60">
-              <div className="p-6">{props.children}</div>
-            </div>
-          </div>
-        </>
-      )}
-    </>
+    <ShopLayoutProvider>
+      <ShopLayoutContext.Consumer>
+        {({ shopConfig }) => (
+          <>
+            {!(member && shopConfig) ? (
+              <div className="w-h-screen min-h-screen">
+                <Spinner />
+              </div>
+            ) : (
+              <>
+                <DefaultHead />
+                {/* <Header /> */}
+                <div className="flex w-full relative min-h-screen">
+                  <Sidebar />
+                  <div className="flex-1 flex flex-col pl-60">
+                    <div className="p-6">{props.children}</div>
+                  </div>
+                </div>
+              </>
+            )}
+          </>
+        )}
+      </ShopLayoutContext.Consumer>
+    </ShopLayoutProvider>
   );
 }

@@ -15,6 +15,7 @@ export interface Product extends BaseModel {
   isPrimary: boolean;
   type: string;
   basePrice: number;
+  downPrice: number;
   subtitle?: string;
   image: string;
   categoryId?: string;
@@ -33,8 +34,8 @@ export class ProductRepository extends CrudRepository<Product> {
   isPrimary: Boolean
   type: String
   basePrice: Float
+  downPrice: Float
   subtitle: String
-  intro: String
   image: String
   categoryId: ID
   `);
@@ -47,8 +48,8 @@ export class ProductRepository extends CrudRepository<Product> {
   isPrimary: Boolean
   type: String
   basePrice: Float
+  downPrice: Floa
   subtitle: String
-  intro: String
   image: String
   categoryId: ID
   `);

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Promotion } from "../promotion";
 import { Button } from "../../../../shared/utilities/form/button";
+import useDevice from "../../../../../lib/hooks/useDevice";
 
 export function PromotionDetail() {
   const des = [
@@ -48,8 +49,9 @@ export function PromotionDetail() {
     },
   ];
   const [showMore, setShowMore] = useState(false);
+  const { isMobile } = useDevice();
   return (
-    <div className="text-sm bg-primary-light">
+    <div className={`text-sm bg-primary-light ${isMobile ? "pb-12" : ""}`}>
       <Promotion
         promotion={{
           name: "Giảm 40k cho đơn từ 150k",

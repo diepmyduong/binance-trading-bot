@@ -10,7 +10,7 @@ import { OrderModel, ShipMethod } from "./order.model";
 export default {
   schema: gql`
     extend type Mutation {
-      cancelAhamoveOrder(orderId: ID!, comment: String!): Mixed
+      cancelAhamoveOrder(orderId: ID!, comment: String!): Order
     }
   `,
   resolver: {
@@ -39,7 +39,7 @@ export default {
           });
         order = await OrderModel.findOneAndUpdate(
           { _id: order._id },
-          { $unset: { shipMethod: 1, deliveryInfo: 1 } },
+          { $unset: { shipMethod: 1, deliveryInfo: 1 }, $set: { note: comment } },
           { new: true }
         );
         return order;

@@ -160,7 +160,7 @@ export function Dialog({
         {body?.length ? (
           <div className={`dialog-body ${bodyClass} ${extraBodyClass}`}>{body[0]}</div>
         ) : null}
-        {children}
+        {isOpen && children}
         {footer?.length ? (
           <div className={`dialog-footer ${footerClass} ${extraFooterClass}`}>{footer[0]}</div>
         ) : null}

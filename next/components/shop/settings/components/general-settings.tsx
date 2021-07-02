@@ -89,7 +89,7 @@ export function GeneralSettings() {
         <Input className="h-12" />
       </Field>
       <Field label="Ảnh nền cửa hàng" name="shopCover">
-        <ImageInput largeImage ratio169 inputClassName="h-12" buttonClassName="h-12" />
+        <ImageInput cover largeImage ratio169 inputClassName="h-12" buttonClassName="h-12" />
       </Field>
       <Form.Footer className="justify-end gap-3">
         <Button

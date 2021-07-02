@@ -63,7 +63,6 @@ export function DataTable<T extends BaseModel>({
     if (loadDone) {
       loadAll();
     }
-    console.log("filter cahnge");
   }, [loadDone, search, filter, props.filter, currentOrder, pagination.page, pagination.limit]);
 
   const loadAll = async (refresh = false) => {

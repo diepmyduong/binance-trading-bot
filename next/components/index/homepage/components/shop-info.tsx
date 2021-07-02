@@ -16,10 +16,15 @@ interface Propstype extends ReactProps {
 }
 
 export function ShopInfo(props: Propstype) {
+  const { branchSelecting } = useShopContext();
   return (
     <div className="relative text-sm bg-white">
       <Img
-        src="https://file.hstatic.net/200000043306/file/trang-chu-pc-24-09-2020-1-02-4_d9ed746c78e148db9c3c9f42e1ffe9bb.png"
+        src={
+          branchSelecting
+            ? branchSelecting.coverImage
+            : "https://file.hstatic.net/200000043306/file/trang-chu-pc-24-09-2020-1-02-4_d9ed746c78e148db9c3c9f42e1ffe9bb.png"
+        }
         ratio169
         className="bannerShop"
       />
@@ -98,7 +103,7 @@ interface ShopInfoProps extends ReactProps {
 
 const ShopBranch = (props: ShopInfoProps) => {
   const [showBranchs, setShowBranchs] = useState(false);
-  const { branchSelecting, setBranchSelecting } = useShopContext();
+  const { branchSelecting, setBranchSelecting, shopBranchs } = useShopContext();
 
   return (
     <div className={`bg-white p-3 pb-0 rounded-md shadow-lg text-center  ${props.className || ""}`}>
@@ -106,7 +111,7 @@ const ShopBranch = (props: ShopInfoProps) => {
       <p className="text-sm text-gray-400 pb-2 border-b">Thời gian làm món khoảng 15 phút</p>
       <div className="flex justify-between items-center">
         <p className="whitespace-nowrap">
-          {(!branchSelecting && "23 chi nhánh") || branchSelecting}
+          {(!branchSelecting && "23 chi nhánh") || branchSelecting.name}
         </p>
         <Button
           textPrimary
@@ -118,11 +123,14 @@ const ShopBranch = (props: ShopInfoProps) => {
           iconClassName="text-gray-400"
         />
       </div>
-      <BranchsDialog
-        isOpen={showBranchs}
-        onClose={() => setShowBranchs(false)}
-        onSelect={(val) => setBranchSelecting(val)}
-      />
+      {shopBranchs && (
+        <BranchsDialog
+          isOpen={showBranchs}
+          onClose={() => setShowBranchs(false)}
+          onSelect={(val) => setBranchSelecting(val)}
+          shopBranchs={shopBranchs}
+        />
+      )}
     </div>
   );
 };

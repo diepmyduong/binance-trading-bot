@@ -1,9 +1,10 @@
 import { gql } from "apollo-server-express";
 import { ROLES } from "../../../constants/role.const";
 import { onMemberDelivering } from "../../../events/onMemberDelivering.event";
+import { Ahamove } from "../../../helpers/ahamove/ahamove";
 import { Context } from "../../context";
 import { DriverModel } from "../driver/driver.model";
-import { OrderModel, OrderStatus } from "../order/order.model";
+import { OrderModel, OrderStatus, ShipMethod } from "../order/order.model";
 import { DeliveryInfo } from "../order/types/deliveryInfo.type";
 
 export default {
@@ -33,7 +34,8 @@ export default {
         ]);
         if (!order) throw Error("Đơn hàng không đúng.");
         if (!driver) throw Error("Tài xế không đúng.");
-        if (order.status != OrderStatus.CONFIRMED) throw Error("Đơn hàng này không thể giao.");
+        if (order.status != OrderStatus.CONFIRMED || order.shipMethod)
+          throw Error("Đơn hàng này không thể giao.");
         order.driverId = driver._id;
         order.driverName = driver.name;
         order.driverPhone = driver.phone;
@@ -41,7 +43,10 @@ export default {
         order.deliveryInfo = {
           ...order.deliveryInfo,
           serviceName: "DRIVER",
+          status: "ACCEPTED",
+          statusText: Ahamove.StatusText.ACCEPTED,
         } as DeliveryInfo;
+        order.shipMethod = ShipMethod.DRIVER;
         order = await order.save();
         onMemberDelivering.next(order);
         return order;

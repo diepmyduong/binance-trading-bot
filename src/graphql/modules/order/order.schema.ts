@@ -18,8 +18,6 @@ const schema = gql`
     createOrder(data: CreateOrderInput!): [Order]
     cancelOrder(id: ID!, note: String): Order
     deliveryOrder(orderId: ID!, deliveryInfo:DeliveryInfoInput!): Order
-    deliveryMemberOrder(id: ID!): Order
-    approveOrder(id: ID!, note: String , status: String): Order
     confirmToMemberOrder(id: ID!, note: String): Order
     approveToMemberOrder(id: ID!, note: String, status: String): Order
     

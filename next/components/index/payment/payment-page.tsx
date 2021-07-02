@@ -12,6 +12,8 @@ import { Textarea } from "../../shared/utilities/form/textarea";
 import { SaveButtonGroup } from "../../shared/utilities/save-button-group";
 import { InforPayment } from "./components/infor-payment";
 import { TicketVoucher } from "./components/ticket-voucher";
+import "swiper/swiper.min.css";
+import "swiper/components/pagination/pagination.min.css";
 
 export function PaymentPage() {
   const { cartProducts, totalFood, totalMoney } = useCartContext();
@@ -68,7 +70,7 @@ export function PaymentPage() {
           </div>
         </div>
         <div className="px-2 py-4 flex w-full md:overflow-hidden overflow-auto z-0">
-          <Swiper freeMode slidesPerView={"auto"} spaceBetween={16} className="">
+          <Swiper slidesPerView={"auto"} spaceBetween={16} pagination={true}>
             {dataVoucher.map((item, index) => {
               return (
                 <SwiperSlide className="max-w-max" key={index}>

@@ -179,14 +179,14 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
         </Dialog.Footer>
         <Form
           dialog
-          slideFromBottom="none"
+          slideFromBottom="mobile-only"
           mobileSizeMode
           isOpen={openDialog}
           onClose={() => setOpenDialog(false)}
           onSubmit={() => {
             setOpenDialog(false);
           }}
-          className="px-4 py-4"
+          className=""
         >
           <Field label="Lời nhắn của khách hàng" name="note">
             <Textarea placeholder="Nhập Lời nhắn của khách hàng" />

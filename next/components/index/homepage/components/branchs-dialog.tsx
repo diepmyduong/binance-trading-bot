@@ -2,6 +2,7 @@ import React from "react";
 import { Dialog, DialogPropsType } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
 import { StatusTime } from "../../../shared/homepage-layout/status-time";
+import useDevice from "../../../../lib/hooks/useDevice";
 interface Propstype extends DialogPropsType {
   onSelect?: (string) => void;
 }
@@ -44,6 +45,7 @@ const BranchsDialog = (props: Propstype) => {
       isActive: true,
     },
   ];
+  const { isMobile } = useDevice();
   return (
     <Dialog
       isOpen={props.isOpen}
@@ -54,10 +56,7 @@ const BranchsDialog = (props: Propstype) => {
       bodyClass="relative bg-white rounded"
     >
       <Dialog.Body>
-        <div
-          className="flex flex-col text-sm sm:text-base overscroll-y-auto"
-          style={{ maxHeight: `calc(100vh - 250px)`, minHeight: `calc(100vh - 100px)` }}
-        >
+        <div className={`flex flex-col text-sm sm:text-base ${isMobile ? "pb-12" : ""}`}>
           {branchs.map((item, index) => (
             <div className="flex px-4 mt-2 border-b pb-2" key={index}>
               <div className="flex-1 leading-7">
@@ -76,7 +75,7 @@ const BranchsDialog = (props: Propstype) => {
                 text="Chọn"
                 className="rounded-full"
                 onClick={() => {
-                  props.onSelect(item.address);
+                  props.onSelect(item.place);
                   props.onClose();
                 }}
               />

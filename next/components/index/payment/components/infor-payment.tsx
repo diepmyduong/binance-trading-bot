@@ -7,6 +7,7 @@ import { Form } from "../../../shared/utilities/form/form";
 import { Input } from "../../../shared/utilities/form/input";
 import { Select } from "../../../shared/utilities/form/select";
 import BranchsDialog from "../../homepage/components/branchs-dialog";
+import { useShopContext } from "../../../../lib/providers/shop-provider";
 
 export function InforPayment() {
   const initData = {
@@ -20,6 +21,7 @@ export function InforPayment() {
   const [branch, setBranch] = useState(
     "110 Nguyễn Văn Linh, F. Tân Thuận Tây, Quận 7, Hồ Chí Minh"
   );
+  const { shopBranchs } = useShopContext();
   const generateTime = () => {
     var today = new Date();
     var time = today.getHours();
@@ -103,13 +105,16 @@ export function InforPayment() {
               </div>
             )}
           </Form>
-          <BranchsDialog
-            onClose={() => setOpenDialog(false)}
-            isOpen={openDialog}
-            onSelect={(br) => {
-              setBranch(br);
-            }}
-          />
+          {shopBranchs && (
+            <BranchsDialog
+              shopBranchs={shopBranchs}
+              onClose={() => setOpenDialog(false)}
+              isOpen={openDialog}
+              onSelect={(br) => {
+                setBranch(br);
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

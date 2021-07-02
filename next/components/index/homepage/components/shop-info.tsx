@@ -106,8 +106,7 @@ const ShopBranch = (props: ShopInfoProps) => {
       <p className="text-sm text-gray-400 pb-2 border-b">Thời gian làm món khoảng 15 phút</p>
       <div className="flex justify-between items-center">
         <p className="whitespace-nowrap">
-          {" "}
-          {(!branchSelecting && "Có 23 chi nhánh") || branchSelecting}
+          {(!branchSelecting && "23 chi nhánh") || branchSelecting}
         </p>
         <Button
           textPrimary

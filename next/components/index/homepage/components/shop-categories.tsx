@@ -89,7 +89,7 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
             ]}
             onChange={(val) => handleChange(val)}
           />
-          <div className="flex flex-col gap-2 bg-gray-200 ">
+          <div className="flex flex-col bg-gray-200 ">
             {productShop.map(
               (item: Category, index: number) =>
                 item.productIds.length > 0 && (
@@ -110,10 +110,8 @@ interface ShopCategoryPropsType extends ReactProps {
 export function ShopCategory(props: ShopCategoryPropsType) {
   const router = useRouter();
   const query = router.query;
-  const [openDialog, setOpenDialog] = useState(false);
-  const [detailItem, setDetailItem] = useState<any>(null);
   return (
-    <div id={props.title} className="relative menu bg-white">
+    <div id={props.title} className="relative menu bg-white mb-2">
       <div className=" absolute -top-28 menu-container"></div>
       <p className="font-semibold text-primary pt-2 pl-4 text-lg">{props.title}</p>
       {props.list.length > 0 && (
@@ -123,12 +121,10 @@ export function ShopCategory(props: ShopCategoryPropsType) {
               key={index}
               className="flex items-center py-2 px-4 hover:bg-primary-light cursor-pointer border-b transition-all duration-300"
               onClick={() => {
-                // setOpenDialog(true);
-                // setDetailItem(item);
                 router.replace({ query: { ...query, productId: item.code }, path: "/" });
               }}
             >
-              <div className="flex-1">
+              <div className="flex-1 pr-2 h-full flex flex-col">
                 <p className="font-semibold">{item.name}</p>
                 <p className="text-gray-500 text-sm">{item.subtitle}</p>
                 <Rating rating={item.rating || 4.8} textSm soldQty={item.soldQty} />
@@ -154,20 +150,11 @@ export function ShopCategory(props: ShopCategoryPropsType) {
                   })}
                 </ul>
               )}
-              <Img src={item.image} className="w-24 h-24 rounded-sm" />
+              <Img src={item.image} className="w-20 sm:w-24 rounded-sm" />
             </div>
           ))}
         </>
       )}
-      {/* <Form
-        dialog
-        mobileSizeMode
-        isOpen={openDialog}
-        slideFromBottom="all"
-        onClose={() => setOpenDialog(false)}
-      >
-        <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
-      </Form> */}
     </div>
   );
 }

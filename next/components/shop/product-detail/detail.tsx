@@ -54,7 +54,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
       clearInterval(intervalScroll);
     };
   }, []);
-  if (!productDetail) return null;
+  if (!productDetail) return <div className=""></div>;
   return (
     <Dialog
       isOpen={props.isOpen}

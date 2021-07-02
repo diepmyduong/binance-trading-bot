@@ -13,13 +13,12 @@ export default function Page(props) {
     sessionStorage.setItem("shop", JSON.stringify(props.shop));
     sessionStorage.setItem("shopCode", props.code);
   }, []);
+
   return (
     <>
       <HomeProvider code={props.code} shop={props.shop}>
-        <ProductDetailProvider productId={props.productId}>
-          <NextSeo title={`Trang chủ`} />
-          <Homepage productId={props.productId} />
-        </ProductDetailProvider>
+        <NextSeo title={`Trang chủ`} />
+        <Homepage />
       </HomeProvider>
     </>
   );

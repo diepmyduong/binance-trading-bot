@@ -8,6 +8,7 @@ import { useShopContext } from "../../../../lib/providers/shop-provider";
 import { useRouter } from "next/router";
 import { Price } from "../../../shared/homepage-layout/price";
 import { Quantity } from "../../../shared/homepage-layout/quantity";
+import useDevice from "../../../../lib/hooks/useDevice";
 interface Propstype extends DialogPropsType {
   cart: CartProduct[];
   onChange: Function;
@@ -27,6 +28,7 @@ export function CartDialog(props: Propstype) {
       props.onRemove(item.product);
     }
   }
+  const { isMobile } = useDevice();
   return (
     <Dialog
       isOpen={props.isOpen}
@@ -38,8 +40,8 @@ export function CartDialog(props: Propstype) {
     >
       <Dialog.Body>
         <div
-          className="text-sm overflow-y-auto main-container"
-          style={{ maxHeight: `calc(100vh - 250px)`, minHeight: `calc(100vh - 350px)` }}
+          className={`text-sm sm:text-base px-4 ${isMobile ? "pb-12" : ""}`}
+          style={{ minHeight: `calc(100vh - 350px)` }}
         >
           {props.cart.map((item, index) => (
             <div className="flex items-center justify-between py-1.5 border-b w-full" key={index}>

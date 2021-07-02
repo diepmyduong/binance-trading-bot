@@ -62,7 +62,15 @@ export function Header({ code, ...props }: HeaderPropsType) {
               </p>
             </div>
           </Link>
-          {!customer && <Button text="Đăng nhâp" primary small onClick={() => setIsOpen(true)} />}
+          {!customer && (
+            <Button
+              text="Đăng nhâp"
+              className="whitespace-nowrap"
+              primary
+              small
+              onClick={() => setIsOpen(true)}
+            />
+          )}
           <button
             className={`btn text-primary bg-primary-light rounded-full flex items-center px-2 ${
               !customer ? "hidden" : ""

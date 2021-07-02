@@ -21,6 +21,8 @@ const schema = gql`
     password: String!
     "Tên nhân viên"
     name: String!
+    "Mã chi nhánh"
+    branchId: ID!
     "Điện thoại nhân viên"
     phone: String
     "Ảnh đại diện"
@@ -40,6 +42,8 @@ const schema = gql`
     avatar: String
     "Địa chỉ liên hệ"
     address: String
+    "Mã chi nhánh"
+    branchId: ID
   }
 
   type Staff {
@@ -59,6 +63,10 @@ const schema = gql`
     avatar: String
     "Địa chỉ liên hệ"
     address: String
+    "Mã chi nhánh"
+    branchId: ID
+
+    branch: ShopBranch
   }
 
   type StaffPageData {

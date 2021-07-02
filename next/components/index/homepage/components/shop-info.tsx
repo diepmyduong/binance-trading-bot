@@ -108,7 +108,9 @@ const ShopBranch = (props: ShopInfoProps) => {
   return (
     <div className={`bg-white p-3 pb-0 rounded-md shadow-lg text-center  ${props.className || ""}`}>
       <h2 className="text-xl font-semibold pb-2">{props.info.name}</h2>
-      <p className="text-sm text-gray-400 pb-2 border-b">Thời gian làm món khoảng 15 phút</p>
+      <p className="text-sm text-gray-400 pb-2 border-b">
+        Thời gian làm món khoảng {branchSelecting?.shipPreparationTime} phút
+      </p>
       <div className="flex justify-between items-center">
         <p className="whitespace-nowrap">
           {(!branchSelecting && "23 chi nhánh") || branchSelecting.name}

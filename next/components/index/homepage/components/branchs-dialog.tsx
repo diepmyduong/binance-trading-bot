@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogPropsType } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
 import { StatusTime } from "../../../shared/homepage-layout/status-time";
@@ -48,6 +48,12 @@ const BranchsDialog = (props: Propstype) => {
     },
   ];
   const { isMobile } = useDevice();
+  const [dayCur, setDayCur] = useState(0);
+  useEffect(() => {
+    let d = new Date();
+    let n = d.getDay();
+    setDayCur(n);
+  }, []);
   return (
     <Dialog
       isOpen={props.isOpen}
@@ -64,11 +70,7 @@ const BranchsDialog = (props: Propstype) => {
               <div className="flex-1 leading-7">
                 <h3 className="text-primary text-base sm:text-lg">{item.name}</h3>
                 <p className="text-ellipsis-2">{item.address}</p>
-                <StatusTime
-                  isActive={item.isOpen}
-                  // openAt={item.openAt}
-                  // closeAt={item.closeAt}
-                />
+                <StatusTime isActive={item.isOpen} />
               </div>
               <Button
                 outline

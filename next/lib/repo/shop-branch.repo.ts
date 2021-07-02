@@ -27,7 +27,7 @@ export interface ShopBranch extends BaseModel {
 }
 interface OperatingTime {
   day: number;
-  timeFrames: string;
+  timeFrames: string[];
   status: string;
 }
 export class ShopBranchRepository extends CrudRepository<ShopBranch> {
@@ -47,6 +47,11 @@ export class ShopBranchRepository extends CrudRepository<ShopBranch> {
   shipOneKmFee: Float
   shipUseOneKmFee: Boolean
   shipNote: String
+  operatingTimes{
+    day:Int
+    timeFrames:[String]
+    status:String
+  }:[OperatingTime]
  `);
   fullFragment: string = this.parseFragment(`
   id: String

@@ -71,7 +71,11 @@ export function Homepage({ productId }: PropsType) {
       <ProductDetail
         productId={productId}
         isOpen={openDialog}
-        onClose={() => setOpenDialog(false)}
+        onClose={() => {
+          setOpenDialog(false);
+          setProductIdCode(null);
+          productId = null;
+        }}
       ></ProductDetail>
 
       <Footer />

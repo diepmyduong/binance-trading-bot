@@ -11,6 +11,7 @@ export type IStaff = BaseDocument & {
   phone?: string; // Điện thoại nhân viên
   avatar?: string; // Ảnh đại diện
   address?: string; // Địa chỉ liên hệ
+  branchId?: string; // Mã chi nhánh
 };
 
 const staffSchema = new Schema(
@@ -22,6 +23,7 @@ const staffSchema = new Schema(
     phone: { type: String },
     avatar: { type: String },
     address: { type: String },
+    branchId: { type: Schema.Types.ObjectId, ref: "ShopBranch", required: true },
   },
   { timestamps: true }
 );

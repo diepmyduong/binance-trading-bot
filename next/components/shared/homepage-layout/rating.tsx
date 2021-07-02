@@ -20,7 +20,7 @@ export function Rating(props: Propstype) {
         {props.numRated && <p className="text-gray-400"> ({props.numRated}+)</p>}
         {props.ratingTime && <p className="text-gray-400 text-sm"> {props.ratingTime}</p>}
       </div>
-      {props.soldQty > 0 && (
+      {props.soldQty > 10 && (
         <div className="flex items-center text-sm">
           <i className="text-lg ml-3">
             <HiShoppingCart />

@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { SetAnonymousToken } from "../graphql/auth.link";
 import cloneDeep from "lodash/cloneDeep";
 import { Category, CategoryService } from "../repo/category.repo";
+import { ShopBranchService, ShopBranch } from "../repo/shop-branch.repo";
 
 export const ShopContext = createContext<
   Partial<{
@@ -17,18 +18,20 @@ export const ShopContext = createContext<
     shopCode: string;
     setShopCode: Function;
     productShop: Category[];
-    branchSelecting: any;
+    shopBranchs: ShopBranch[];
+    branchSelecting: ShopBranch;
     setBranchSelecting: Function;
   }>
 >({});
 export function ShopProvider(props) {
   const router = useRouter();
   const [shopCode, setShopCode] = useState<string>();
-  const [branchSelecting, setBranchSelecting] = useState(null);
+  const [branchSelecting, setBranchSelecting] = useState<ShopBranch>(null);
   const [shop, setShop] = useState<Shop>();
   const [productIdSelected, setProductIdSelected] = useState<any>(null);
   const [productShop, setProductShop] = useState<Category[]>(null);
   const [customer, setCustomer] = useState<any>();
+  const [shopBranchs, setShopBranch] = useState<ShopBranch[]>();
   async function getShop() {
     let haveShop = "";
     if (shopCode && shop) {
@@ -52,6 +55,12 @@ export function ShopProvider(props) {
       console.log(cats);
       if (cats) {
         setProductShop(cloneDeep(cats.data));
+      }
+      let branchs = await ShopBranchService.getAll();
+      console.log(branchs);
+      if (branchs) {
+        setShopBranch(cloneDeep(branchs.data));
+        setBranchSelecting(branchs.data[0]);
       }
     }
     // let res = await ShopService.getShopData();
@@ -103,6 +112,7 @@ export function ShopProvider(props) {
         setShop,
         setShopCode,
         branchSelecting,
+        shopBranchs,
         setBranchSelecting,
       }}
     >

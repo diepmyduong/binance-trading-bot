@@ -5,7 +5,12 @@
 }
 
 .dialog-wrapper {
-  &.mobile {
+  &.bottom-mode {
+    &.mobile {
+      .dialog {
+        padding-bottom: 40px;
+      }
+    }
     .dialog {
       width: 100% !important;
       max-width: 32rem;
@@ -16,10 +21,9 @@
       bottom: 0;
       max-height: 100vh;
       overflow-y: auto;
-      padding-bottom: 0px;
     }
     ::-webkit-scrollbar {
-      width: 3px;
+      width: 4px;
     }
 
     ::-webkit-scrollbar-track {

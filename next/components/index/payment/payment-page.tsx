@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
 
 import { Swiper, SwiperSlide } from "swiper/react";
+import SwiperCore, { Pagination } from "swiper/core";
 import { HiChevronUp, HiDocumentAdd } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { useCartContext } from "../../../lib/providers/cart-provider";
@@ -12,8 +13,7 @@ import { Textarea } from "../../shared/utilities/form/textarea";
 import { SaveButtonGroup } from "../../shared/utilities/save-button-group";
 import { InforPayment } from "./components/infor-payment";
 import { TicketVoucher } from "./components/ticket-voucher";
-import "swiper/swiper.min.css";
-import "swiper/components/pagination/pagination.min.css";
+// SwiperCore.use([Pagination]);
 
 export function PaymentPage() {
   const { cartProducts, totalFood, totalMoney } = useCartContext();
@@ -70,10 +70,15 @@ export function PaymentPage() {
           </div>
         </div>
         <div className="px-2 py-4 flex w-full md:overflow-hidden overflow-auto z-0">
-          <Swiper slidesPerView={"auto"} spaceBetween={16} pagination={true}>
+          <Swiper
+            spaceBetween={20}
+            freeMode
+            slidesPerView={"auto"}
+            className="main-container overflow-visible"
+          >
             {dataVoucher.map((item, index) => {
               return (
-                <SwiperSlide className="max-w-max" key={index}>
+                <SwiperSlide className="max-w-max cursor-pointer" key={index}>
                   <TicketVoucher
                     item={item}
                     index={index}
@@ -178,35 +183,35 @@ const dataVoucher = [
     duedate: "6/8/2021",
   },
   {
-    title: "Giảm 40k cho đơn từ 150k",
+    title: "Giảm 40k cho đơn từ 550k",
     duedate: "6/8/2021",
   },
   {
-    title: "Giảm 40k cho đơn từ 150k",
+    title: "Giảm 40k cho đơn từ 250k",
     duedate: "6/8/2021",
   },
   {
-    title: "Giảm 40k cho đơn từ 150k",
+    title: "Giảm 40k cho đơn từ 650k",
     duedate: "6/8/2021",
   },
   {
-    title: "Giảm 40k cho đơn từ 150k",
+    title: "Giảm 40k cho đơn từ 650k",
     duedate: "6/8/2021",
   },
   {
-    title: "Giảm 40k cho đơn từ 150k",
+    title: "Giảm 40k cho đơn từ 950k",
     duedate: "6/8/2021",
   },
   {
-    title: "Giảm 40k cho đơn từ 150k",
+    title: "Giảm 40k cho đơn từ 50k",
     duedate: "6/8/2021",
   },
   {
-    title: "Giảm 40k cho đơn từ 150k",
+    title: "Giảm 40k cho đơn từ 7150k",
     duedate: "6/8/2021",
   },
   {
-    title: "Giảm 40k cho đơn từ 150k",
+    title: "Giảm 40k cho đơn từ 1950k",
     duedate: "6/8/2021",
   },
 ];

@@ -68,7 +68,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
     setIntervalScroll(scrollCheckInterval);
   }
   useEffect(() => {
-    // window.addEventListener("scroll", dialogScrollEvent);
+    window.addEventListener("scroll", dialogScrollEvent);
     return () => {
       clearInterval(intervalScroll);
     };
@@ -135,19 +135,20 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
           />
           <div className="">
             {productDetail.toppings &&
-              productDetail.toppings.map((item, index) => {
-                if (item.options.length > 0)
+              productDetail.toppings.map((items, index) => {
+                if (items.options.length > 0)
                   return (
                     <div className="">
                       <div className="bg-primary-light  px-4 py-2">
-                        <h2 className="font-bold text-sm">{item.name}</h2>
+                        <h2 className="font-bold text-sm">{items.name}</h2>
                         <p className="pt-1 text-xs"></p>
                       </div>
                       <div className="">
-                        {item.options.map((item, index) => {
+                        {items.options.map((item, index) => {
                           return (
                             <OneDish
                               item={item}
+                              name={items.name}
                               key={index}
                               onClick={() => {
                                 topping.push(item);
@@ -201,17 +202,13 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
 interface PropsOneDish {
   item: ToppingOption;
   onClick?: () => void;
+  name?: string;
 }
-const OneDish = ({ item, onClick }: PropsOneDish) => {
+const OneDish = ({ item, onClick, name }: PropsOneDish) => {
   return (
     <div className="flex items-center justify-between px-4 py-1 border-b border-gray-300">
       <div className="flex items-center w-full" onClick={onClick}>
-        <input
-          type="radio"
-          id={item.name}
-          name="obligatoryDishes"
-          className="inline form-checkbox"
-        />
+        <input type="radio" id={item.name} name={name} className="inline form-checkbox" />
         <label htmlFor={item.name} className="inline font-light text-sm ml-2 cursor-pointer w-full">
           {item.name}
         </label>

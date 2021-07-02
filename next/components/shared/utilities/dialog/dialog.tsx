@@ -23,6 +23,7 @@ export interface DialogPropsType extends ReactProps {
   slideFromBottom?: "none" | "mobile-only" | "all";
   openAnimation?: string;
   closeAnimation?: string;
+  ref?: any;
   root?: string;
   isOpen?: boolean;
   onClose?: () => any;

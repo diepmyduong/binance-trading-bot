@@ -35,7 +35,7 @@ export function Dialog({
   overlayClass = "fixed w-full h-full top-0 left-auto pointer-events-none",
   dialogClass = "relative bg-white shadow-md rounded m-auto",
   extraDialogClass = "",
-  headerClass = "relative flex px-4 py-1 box-content bg-white z-5 border-top rounded-t border-b border-gray-200",
+  headerClass = "relative flex px-4 py-1 box-content bg-white z-5 border-top rounded-t border-b border-gray-200 z-10",
   extraHeaderClass = "",
   bodyClass = "relative p-4 bg-white rounded",
   extraBodyClass = "",
@@ -100,12 +100,13 @@ export function Dialog({
     ];
   }
 
-  const inMobileMode = (slideFromBottom == "mobile-only" && isMobile) || slideFromBottom == "all";
+  const isSlideFromBottom =
+    (slideFromBottom == "mobile-only" && isMobile) || slideFromBottom == "all";
 
   let el = (
     <div
-      className={`dialog-wrapper ${wrapperClass} ${
-        inMobileMode ? "mobile" : "not-in-mobile0-mode"
+      className={`dialog-wrapper ${wrapperClass} ${isSlideFromBottom ? "bottom-mode" : ""} ${
+        isMobile ? "mobile" : ""
       }`}
       style={{ ...style }}
       onMouseDown={(e) => {
@@ -134,12 +135,12 @@ export function Dialog({
           props.isOpen
             ? props.openAnimation
               ? props.openAnimation
-              : inMobileMode
+              : isSlideFromBottom
               ? "animate-slide-in-bottom"
               : "animate-scale-up"
             : props.closeAnimation
             ? props.closeAnimation
-            : inMobileMode
+            : isSlideFromBottom
             ? "animate-slide-out-bottom"
             : "animate-scale-down"
         }  ${mobileSizeMode ? "max-w-lg" : ""}`}

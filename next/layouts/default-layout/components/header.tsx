@@ -62,7 +62,15 @@ export function Header({ code, ...props }: HeaderPropsType) {
               </p>
             </div>
           </Link>
-          {!customer && <Button text="Đăng nhâp" primary small onClick={() => setIsOpen(true)} />}
+          {!customer && (
+            <Button
+              text="Đăng nhâp"
+              className="whitespace-nowrap"
+              primary
+              small
+              onClick={() => setIsOpen(true)}
+            />
+          )}
           <button
             className={`btn text-primary bg-primary-light rounded-full flex items-center px-2 ${
               !customer ? "hidden" : ""
@@ -70,7 +78,7 @@ export function Header({ code, ...props }: HeaderPropsType) {
             ref={userRef}
           >
             {/* <Img avatar src="/assets/default/avatar.png" className="w-10" /> */}
-            <i className="text-20 pr-1">
+            <i className="text-18 pr-1">
               <FaUserAlt />
             </i>
             {customer}

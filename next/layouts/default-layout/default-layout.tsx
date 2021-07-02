@@ -26,7 +26,9 @@ export function DefaultLayout({ code, shop, ...props }: PropsType) {
                   {shop && <Header {...props} code={code} />}
                   <div className="w-full max-w-lg mx-auto shadow-lg">
                     <div
-                      className={`w-full flex-1 bg-bluegray-100 text-gray-700 ${shop && " mt-14 "}`}
+                      className={`w-full flex-1 bg-gray-100 text-gray-700 ${
+                        shop && " pt-14 "
+                      } pt-14 min-h-screen`}
                     >
                       {props.children}
                     </div>

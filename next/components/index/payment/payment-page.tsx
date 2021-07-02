@@ -22,7 +22,7 @@ export function PaymentPage() {
   }, []);
   return (
     <>
-      <div className="text-gray-700">
+      <div className="text-gray-700 bg-gray-100">
         <InforPayment />
         <div className="mt-1 bg-white">
           <p className="font-semibold px-4 py-2">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>

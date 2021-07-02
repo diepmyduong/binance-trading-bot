@@ -8,12 +8,16 @@ import { CartDialog } from "./components/cart-dialog";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { ShopInfo } from "./components/shop-info";
 import { ProductDetail } from "../../shop/product-detail/detail";
+import { useRouter } from "next/router";
+import { ProductDetailProvider } from "../../shop/product-detail/provider/product-detail-provider";
 
 interface PropsType extends ReactProps {
   productId?: string;
 }
-export function Homepage({ productId }: PropsType) {
+export function Homepage() {
   const { shop } = useShopContext();
+  const router = useRouter();
+  const { productId } = router.query;
   const {
     cartProducts,
     totalFood,
@@ -24,15 +28,14 @@ export function Homepage({ productId }: PropsType) {
   const [showDialogCart, setShowDialogCart] = useState(false);
   const [productIdCode, setProductIdCode] = useState(productId);
   const [openDialog, setOpenDialog] = useState(false);
-  console.log(productId, productIdCode);
+  console.log(router.query);
 
   useEffect(() => {
-    if (productIdCode) setOpenDialog(true);
+    if (productIdCode && productId) setOpenDialog(true);
   }, [productIdCode]);
 
   useEffect(() => {
     setProductIdCode(productId);
-    if (productId) setOpenDialog(true);
   }, [productId]);
 
   useEffect(() => {
@@ -68,15 +71,18 @@ export function Homepage({ productId }: PropsType) {
           onRemove={removeProductFromCart}
         />
       </div>
-      <ProductDetail
-        productId={productId}
-        isOpen={openDialog}
-        onClose={() => {
-          setOpenDialog(false);
-          setProductIdCode(null);
-          productId = null;
-        }}
-      ></ProductDetail>
+      <ProductDetailProvider productId={productIdCode}>
+        <ProductDetail
+          isOpen={openDialog}
+          onClose={() => {
+            setOpenDialog(false);
+            setProductIdCode(null);
+            const url = new URL(location.href);
+            url.searchParams.delete("productId");
+            router.push(url.toString(), null, { shallow: true });
+          }}
+        ></ProductDetail>
+      </ProductDetailProvider>
 
       <Footer />
     </>

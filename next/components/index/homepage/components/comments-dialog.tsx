@@ -1,6 +1,7 @@
 import React from "react";
 import { Rating } from "../../../shared/homepage-layout/rating";
 import { Dialog, DialogPropsType } from "../../../shared/utilities/dialog/dialog";
+import useDevice from "../../../../lib/hooks/useDevice";
 interface Propstype extends DialogPropsType {
   onSelect?: (string) => void;
 }
@@ -56,6 +57,7 @@ export function CommentsDialog(props: Propstype) {
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
     },
   ];
+  const { isMobile } = useDevice();
   return (
     <Dialog
       isOpen={props.isOpen}
@@ -67,11 +69,11 @@ export function CommentsDialog(props: Propstype) {
     >
       <Dialog.Body>
         <div
-          className="flex flex-col text-sm sm:text-base overscroll-y-auto"
-          style={{ maxHeight: `calc(100vh - 250px)`, minHeight: `calc(100vh - 100px)` }}
+          className={`flex flex-col text-sm sm:text-base ${isMobile ? "pb-12" : ""}`}
+          style={{ minHeight: `calc(100vh - 100px)` }}
         >
           {comments.map((item, index) => (
-            <div className="leading-7 px-4 mt-2 border-b pb-2">
+            <div className="leading-7 px-4 mt-2 border-b pb-2" key={index}>
               <h3 className=" text-base">{item.name}</h3>
               <Rating rating={4.8} ratingTime={item.time} />
               <p className="text-ellipsis-3">{item.comment}</p>

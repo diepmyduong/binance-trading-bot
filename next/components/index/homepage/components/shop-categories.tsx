@@ -110,6 +110,13 @@ interface ShopCategoryPropsType extends ReactProps {
 export function ShopCategory(props: ShopCategoryPropsType) {
   const router = useRouter();
   const query = router.query;
+  const url = new URL(location.href);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [detailItem, setDetailItem] = useState<any>(null);
+  const handleClick = (code) => {
+    url.searchParams.set("productId", code);
+    router.push(url.toString(), null, { shallow: true });
+  };
   return (
     <div id={props.title} className="relative menu bg-white mb-2">
       <div className=" absolute -top-28 menu-container"></div>
@@ -121,7 +128,7 @@ export function ShopCategory(props: ShopCategoryPropsType) {
               key={index}
               className="flex items-center py-2 px-4 hover:bg-primary-light cursor-pointer border-b transition-all duration-300"
               onClick={() => {
-                router.replace({ query: { ...query, productId: item.code }, path: "/" });
+                handleClick(item.code);
               }}
             >
               <div className="flex-1 pr-2 h-full flex flex-col">

@@ -55,7 +55,7 @@ const MoreInfomation = (props) => {
     <>
       <div className={`pt-20`}>
         <div className="flex items-center justify-between border-b px-4 ">
-          <p className="flex items-center">
+          <p className="flex items-center flex-1 text-ellipsis">
             <i className="text-primary p-0.5 border rounded-full text-10 border-primary mr-1">
               {<FaPercent />}
             </i>{" "}
@@ -64,7 +64,7 @@ const MoreInfomation = (props) => {
           <Button
             textPrimary
             text=" Xem thêm"
-            className="pr-0 text-sm xs:text-base text-ellipsis"
+            className="pr-0 text-sm xs:text-base text-ellipsis w-28"
             icon={<AiOutlineRight />}
             iconPosition="end"
             iconClassName="text-gray-400"
@@ -106,8 +106,7 @@ const ShopBranch = (props: ShopInfoProps) => {
       <p className="text-sm text-gray-400 pb-2 border-b">Thời gian làm món khoảng 15 phút</p>
       <div className="flex justify-between items-center">
         <p className="whitespace-nowrap">
-          {" "}
-          {(!branchSelecting && "Có 23 chi nhánh") || branchSelecting}
+          {(!branchSelecting && "23 chi nhánh") || branchSelecting}
         </p>
         <Button
           textPrimary

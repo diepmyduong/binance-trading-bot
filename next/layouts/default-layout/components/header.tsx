@@ -70,7 +70,7 @@ export function Header({ code, ...props }: HeaderPropsType) {
             ref={userRef}
           >
             {/* <Img avatar src="/assets/default/avatar.png" className="w-10" /> */}
-            <i className="text-20 pr-1">
+            <i className="text-18 pr-1">
               <FaUserAlt />
             </i>
             {customer}

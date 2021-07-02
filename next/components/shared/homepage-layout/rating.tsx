@@ -27,9 +27,9 @@ export function Rating(props: Propstype) {
           </i>
           <p className="text-gray-400">
             (
-            {(props.soldQty > 10 && "9+") ||
+            {(props.soldQty > 1000 && "999+") ||
               (props.soldQty > 100 && "99+") ||
-              (props.soldQty > 1000 && "999+")}
+              (props.soldQty > 10 && "9+")}
             )
           </p>
         </div>

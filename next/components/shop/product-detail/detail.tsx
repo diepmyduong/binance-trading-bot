@@ -16,7 +16,7 @@ import { useProductDetailContext } from "./provider/product-detail-provider";
 import { ToppingOption } from "../../../lib/repo/product-topping.repo";
 
 interface PropsType extends DialogPropsType {
-  productId?: string;
+  productId?: any;
   item?: {
     name: string;
     sold: number | string;
@@ -34,8 +34,27 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
   const [opacity, setOpacity] = useState("opacity-0");
   const ref = useRef(null);
   const [intervalScroll, setIntervalScroll] = useState(0);
-
+  const [topping, setTopping] = useState<ToppingOption[]>([]);
+  const [totalMoney, setTotalMoney] = useState(0);
   const { productDetail } = useProductDetailContext();
+
+  useEffect(() => {
+    let total = 0;
+    if (productDetail) {
+      topping.forEach((item) => {
+        total += item.price;
+      });
+      total += productDetail.basePrice * count;
+      setTotalMoney(total);
+    }
+  }, [count, topping]);
+
+  useEffect(() => {
+    setTopping([]);
+    setCount(1);
+    if (productDetail) setTotalMoney(productDetail.basePrice * count);
+  }, [productDetail]);
+
   function dialogScrollEvent() {
     let scrollCheckInterval = null;
     scrollCheckInterval = setInterval(() => {
@@ -54,6 +73,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
       clearInterval(intervalScroll);
     };
   }, []);
+
   if (!productDetail) return <div className=""></div>;
   return (
     <Dialog
@@ -63,7 +83,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
       slideFromBottom="all"
       bodyClass="relative rounded"
     >
-      <div ref={ref} className="w-full h-full rounded bg-white overflow-y-auto">
+      <div ref={ref} className="w-full rounded bg-white overflow-y-auto">
         <div className="relative w-full">
           <div
             className={`w-8 h-8 absolute right-2 top-2 z-200 rounded-full flex items-center justify-center cursor-pointer${
@@ -125,7 +145,16 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
                       </div>
                       <div className="">
                         {item.options.map((item, index) => {
-                          return <OneDish item={item} key={index} />;
+                          return (
+                            <OneDish
+                              item={item}
+                              key={index}
+                              onClick={() => {
+                                topping.push(item);
+                                setTopping([...topping]);
+                              }}
+                            />
+                          );
                         })}
                       </div>
                     </div>
@@ -139,7 +168,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
             <IncreaseButton onChange={(count) => setCount(count)} />
             <Button
               primary
-              text={`Thêm ${NumberPipe(productDetail.basePrice * count)} đ`}
+              text={`Thêm ${NumberPipe(totalMoney)} đ`}
               className="w-full"
               onClick={() => {
                 addProductToCart(productDetail, count);
@@ -171,11 +200,12 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
 
 interface PropsOneDish {
   item: ToppingOption;
+  onClick?: () => void;
 }
-const OneDish = ({ item }: PropsOneDish) => {
+const OneDish = ({ item, onClick }: PropsOneDish) => {
   return (
     <div className="flex items-center justify-between px-4 py-1 border-b border-gray-300">
-      <div className="flex items-center w-full">
+      <div className="flex items-center w-full" onClick={onClick}>
         <input
           type="radio"
           id={item.name}

@@ -100,12 +100,13 @@ export function Dialog({
     ];
   }
 
-  const inMobileMode = (slideFromBottom == "mobile-only" && isMobile) || slideFromBottom == "all";
+  const isSlideFromBottom =
+    (slideFromBottom == "mobile-only" && isMobile) || slideFromBottom == "all";
 
   let el = (
     <div
-      className={`dialog-wrapper ${wrapperClass} ${
-        inMobileMode ? "mobile" : "not-in-mobile0-mode"
+      className={`dialog-wrapper ${wrapperClass} ${isSlideFromBottom ? "bottom-mode" : ""} ${
+        isMobile ? "mobile" : ""
       }`}
       style={{ ...style }}
       onMouseDown={(e) => {
@@ -134,12 +135,12 @@ export function Dialog({
           props.isOpen
             ? props.openAnimation
               ? props.openAnimation
-              : inMobileMode
+              : isSlideFromBottom
               ? "animate-slide-in-bottom"
               : "animate-scale-up"
             : props.closeAnimation
             ? props.closeAnimation
-            : inMobileMode
+            : isSlideFromBottom
             ? "animate-slide-out-bottom"
             : "animate-scale-down"
         }  ${mobileSizeMode ? "max-w-lg" : ""}`}

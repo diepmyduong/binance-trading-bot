@@ -27,12 +27,12 @@ export function Homepage({ productId }: PropsType) {
   console.log(productId, productIdCode);
 
   useEffect(() => {
-    if (productIdCode !== null) setOpenDialog(true);
+    if (productIdCode) setOpenDialog(true);
   }, [productIdCode]);
 
   useEffect(() => {
     setProductIdCode(productId);
-    setOpenDialog(true);
+    if (productId) setOpenDialog(true);
   }, [productId]);
 
   useEffect(() => {
@@ -69,9 +69,13 @@ export function Homepage({ productId }: PropsType) {
         />
       </div>
       <ProductDetail
-        productId={productIdCode}
+        productId={productId}
         isOpen={openDialog}
-        onClose={() => setOpenDialog(false)}
+        onClose={() => {
+          setOpenDialog(false);
+          setProductIdCode(null);
+          productId = null;
+        }}
       ></ProductDetail>
 
       <Footer />

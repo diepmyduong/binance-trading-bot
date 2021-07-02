@@ -76,7 +76,7 @@ const BranchsDialog = (props: Propstype) => {
                 text="Chọn"
                 className="rounded-full"
                 onClick={() => {
-                  props.onSelect(item.place);
+                  props.onSelect(item.address);
                   props.onClose();
                 }}
               />

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { GetAuthToken } from "../graphql/auth.link";
 import { BaseModel, CrudRepository } from "./crud.repo";
+import { ProductTopping, ToppingOption } from "./product-topping.repo";
 
 export interface ProductParam {
   value: string;
@@ -24,6 +25,7 @@ export interface Product extends BaseModel {
   saleRate?: number;
   soldQty?: number;
   labels: ProductLabel[];
+  toppings?: ProductTopping[];
 }
 export interface ProductLabel extends BaseModel {
   name: string;
@@ -46,6 +48,7 @@ export class ProductRepository extends CrudRepository<Product> {
     categoryId: ID
     rating: number
     soldQty: number
+    labelIds: string[]
     labels {
       id: String
       createdAt: DateTime
@@ -54,6 +57,21 @@ export class ProductRepository extends CrudRepository<Product> {
       name: String
       color: String
     }: [ProductLabel]
+    toppings {
+      id: String
+      createdAt: DateTime
+      updatedAt: DateTime
+      memberId: ID
+      name: String
+      required: Boolean
+      min: Int
+      max: Int
+      options {
+        name: String
+        price: Float
+        isDefault: Boolean
+      }: [ToppingOption]
+    }: [ProductTopping]
   `);
   fullFragment: string = this.parseFragment(`
     id: String

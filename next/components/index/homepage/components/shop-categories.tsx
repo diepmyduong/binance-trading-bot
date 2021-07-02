@@ -8,7 +8,6 @@ import { Rating } from "../../../shared/homepage-layout/rating";
 import { Form } from "../../../shared/utilities/form/form";
 import { Img } from "../../../shared/utilities/img";
 import { SwitchTabs } from "../../../shared/utilities/tab/switch-tabs";
-import { RestaurantDetail } from "./restaurant-detail/detail";
 import { HightLightCategories } from "./hight-light-categories";
 interface ShopCategoriesPropsType extends ReactProps {}
 

@@ -79,16 +79,23 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
             className=" sticky top-14 bg-white z-20 shadow-sm "
             native
             options={[
-              ...productShop.map((item, index) => {
-                return { value: index, label: item.name };
-              }),
+              ...productShop.map(
+                (item, index) =>
+                  item.productIds.length > 0 && {
+                    value: index,
+                    label: item.name,
+                  }
+              ),
             ]}
             onChange={(val) => handleChange(val)}
           />
-          <div className="flex flex-col gap-2 bg-gray-200 ">
-            {productShop.map((item: Category, index: number) => (
-              <ShopCategory list={item.products} title={item.name} key={index} />
-            ))}
+          <div className="flex flex-col bg-gray-200 ">
+            {productShop.map(
+              (item: Category, index: number) =>
+                item.productIds.length > 0 && (
+                  <ShopCategory list={item.products} title={item.name} key={index} />
+                )
+            )}
           </div>
         </>
       )}
@@ -111,7 +118,7 @@ export function ShopCategory(props: ShopCategoryPropsType) {
     router.push(url.toString(), null, { shallow: true });
   };
   return (
-    <div id={props.title} className="relative menu bg-white">
+    <div id={props.title} className="relative menu bg-white mb-2">
       <div className=" absolute -top-28 menu-container"></div>
       <p className="font-semibold text-primary pt-2 pl-4 text-lg">{props.title}</p>
       {props.list.length > 0 && (
@@ -124,7 +131,7 @@ export function ShopCategory(props: ShopCategoryPropsType) {
                 handleClick(item.code);
               }}
             >
-              <div className="flex-1">
+              <div className="flex-1 pr-2 h-full flex flex-col">
                 <p className="font-semibold">{item.name}</p>
                 <p className="text-gray-500 text-sm">{item.subtitle}</p>
                 <Rating rating={item.rating || 4.8} textSm soldQty={item.soldQty} />
@@ -150,20 +157,11 @@ export function ShopCategory(props: ShopCategoryPropsType) {
                   })}
                 </ul>
               )}
-              <Img src={item.image} className="w-24 h-24 rounded-sm" />
+              <Img src={item.image} className="w-20 sm:w-24 rounded-sm" />
             </div>
           ))}
         </>
       )}
-      {/* <Form
-        dialog
-        mobileSizeMode
-        isOpen={openDialog}
-        slideFromBottom="all"
-        onClose={() => setOpenDialog(false)}
-      >
-        <RestaurantDetail item={detailItem} onClose={() => setOpenDialog(false)}></RestaurantDetail>
-      </Form> */}
     </div>
   );
 }

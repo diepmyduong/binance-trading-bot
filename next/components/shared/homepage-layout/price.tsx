@@ -17,12 +17,14 @@ export function Price(props: Propstype) {
               (props.textDanger && "text-danger") || "text-gray-800"
             } font-bold text-sm pr-2`}
           >
-            {NumberPipe(props.price, true)}
+            {NumberPipe(props.downPrice, true)}
           </p>
           <div className="flex items-center text-sm ">
-            <span className={`line-through pr-2`}>{NumberPipe(props.downPrice, true)}</span>
+            <span className={`line-through pr-2`}>{NumberPipe(props.price, true)}</span>
             {props.saleRate > 0 && (
-              <span className="bg-danger text-white px-2 rounded-sm font-bold">- 20%</span>
+              <span className="bg-danger text-white px-2 rounded-sm font-bold">
+                {props.saleRate}
+              </span>
             )}
           </div>
         </div>

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { useToast } from "./toast-provider";
 import { Product } from "../repo/product.repo";
+import { ToppingOption } from "../repo/product-topping.repo";
 
 export const CartContext = createContext<
   Partial<{
@@ -21,6 +22,7 @@ export interface CartProduct {
   qty: number;
   price?: number;
   amount?: number;
+  topping: ToppingOption[];
 }
 export function CartProvider(props) {
   const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
@@ -31,7 +33,7 @@ export function CartProvider(props) {
     setTotalMoney(cartProducts.reduce((total, item) => (total += item.price * item.qty), 0));
     // setCartProductTotal(cartProducts.length);
   }, [cartProducts]);
-  const addProductToCart = (product: Product, qty: number): boolean => {
+  const addProductToCart = (product: Product, qty: number, topping: ToppingOption[]): boolean => {
     if (!qty) return false;
     let cartProduct = cartProducts.find((x) => x.productId == product.id);
     if (cartProduct) {
@@ -44,12 +46,13 @@ export function CartProvider(props) {
         qty,
         price: product.basePrice,
         amount: product.basePrice * qty,
+        topping: [],
       });
     }
     setCartProducts([...cartProducts]);
     return true;
   };
-  const changeProductQuantity = (product: Product, qty: number) => {
+  const changeProductQuantity = (product: Product, qty: number, topping: ToppingOption[]) => {
     if (!qty) return;
     let cartProduct = cartProducts.find((x) => x.productId == product.id);
     if (cartProduct) {
@@ -62,6 +65,7 @@ export function CartProvider(props) {
         qty,
         price: product.salePrice,
         amount: product.salePrice * qty,
+        topping: [],
       });
     }
     setCartProducts([...cartProducts]);

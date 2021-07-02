@@ -80,16 +80,23 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
             className=" sticky top-14 bg-white z-20 shadow-sm "
             native
             options={[
-              ...productShop.map((item, index) => {
-                return { value: index, label: item.name };
-              }),
+              ...productShop.map(
+                (item, index) =>
+                  item.productIds.length > 0 && {
+                    value: index,
+                    label: item.name,
+                  }
+              ),
             ]}
             onChange={(val) => handleChange(val)}
           />
           <div className="flex flex-col gap-2 bg-gray-200 ">
-            {productShop.map((item: Category, index: number) => (
-              <ShopCategory list={item.products} title={item.name} key={index} />
-            ))}
+            {productShop.map(
+              (item: Category, index: number) =>
+                item.productIds.length > 0 && (
+                  <ShopCategory list={item.products} title={item.name} key={index} />
+                )
+            )}
           </div>
         </>
       )}

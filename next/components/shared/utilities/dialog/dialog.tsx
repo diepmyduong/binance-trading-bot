@@ -8,9 +8,13 @@ export interface DialogPropsType extends ReactProps {
   wrapperClass?: string;
   overlayClass?: string;
   dialogClass?: string;
+  extraDialogClass?: string;
   headerClass?: string;
+  extraHeaderClass?: string;
   bodyClass?: string;
+  extraBodyClass?: string;
   footerClass?: string;
+  extraFooterClass?: string;
   title?: string;
   icon?: JSX.Element;
   width?: string;
@@ -30,9 +34,13 @@ export function Dialog({
   wrapperClass = "fixed w-screen h-screen top-0 left-0 z-100 flex flex-col items-center overflow-y-scroll py-20",
   overlayClass = "fixed w-full h-full top-0 left-auto pointer-events-none",
   dialogClass = "relative bg-white shadow-md rounded m-auto",
-  headerClass = "relative flex justify-between px-4 py-1 box-content bg-white z-5 border-top rounded-t border-b border-gray-200",
+  extraDialogClass = "",
+  headerClass = "relative flex px-4 py-1 box-content bg-white z-5 border-top rounded-t border-b border-gray-200",
+  extraHeaderClass = "",
   bodyClass = "relative p-4 bg-white rounded",
+  extraBodyClass = "",
   footerClass = "relative flex px-4 pb-3 pt-2 bg-white z-5 rounded-b",
+  extraFooterClass = "",
   slideFromBottom = "mobile-only",
   width = "auto",
   mobileSizeMode = false,
@@ -79,7 +87,7 @@ export function Dialog({
   if (title && !header.length) {
     header = [
       <>
-        <div className="flex items-center">
+        <div className="flex items-center flex-1" style={{ justifyContent: "inherit" }}>
           {icon ? <i className="text-lg text-primary mr-2">{icon}</i> : null}
           <span className="text-gray-700 text font-semibold">{title}</span>
         </div>
@@ -122,7 +130,7 @@ export function Dialog({
         }}
       ></div>
       <div
-        className={`dialog ${dialogClass} ${
+        className={`dialog ${dialogClass} ${extraDialogClass} ${
           props.isOpen
             ? props.openAnimation
               ? props.openAnimation
@@ -145,10 +153,16 @@ export function Dialog({
           isClickingOverlay = false;
         }}
       >
-        {header?.length ? <div className={`dialog-header ${headerClass}`}>{header[0]}</div> : null}
-        {body?.length ? <div className={`dialog-body ${bodyClass}`}>{body[0]}</div> : null}
+        {header?.length ? (
+          <div className={`dialog-header ${headerClass} ${extraHeaderClass}`}>{header[0]}</div>
+        ) : null}
+        {body?.length ? (
+          <div className={`dialog-body ${bodyClass} ${extraBodyClass}`}>{body[0]}</div>
+        ) : null}
         {children}
-        {footer?.length ? <div className={`dialog-footer ${footerClass}`}>{footer[0]}</div> : null}
+        {footer?.length ? (
+          <div className={`dialog-footer ${footerClass} ${extraFooterClass}`}>{footer[0]}</div>
+        ) : null}
       </div>
     </div>
   );

@@ -56,7 +56,7 @@ export function Header({ code, ...props }: HeaderPropsType) {
         <div className="w-full mx-auto h-14 flex justify-between items-center max-w-lg shadow bg-white px-4">
           <Link href={`/?code=${shopCode}`}>
             <div className="flex items-center cursor-pointer">
-              {shop && <Img src={shop.shopLogo || ""} className="h-10 w-10" />}
+              {shop && <Img src={shop.shopLogo || ""} className="w-10 rounded-full" />}
               <p className="text-ellipsis-2 font-semibold px-2 text-sm sm:text-base">
                 {shop?.shopName}
               </p>

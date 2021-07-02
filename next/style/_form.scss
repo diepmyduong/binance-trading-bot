@@ -72,8 +72,19 @@ select.form-control {
   }
 }
 .react-select__menu {
-  width: max-content;
   z-index: 20 !important;
+}
+.form-control {
+  &.react-select-autosize {
+    .react-select__menu {
+      width: max-content !important;
+    }
+  }
+  &:not(.react-select-autosize) {
+    .react-select__menu {
+      width: 100% !important;
+    }
+  }
 }
 .react-select__single-value {
   overflow: visible !important;

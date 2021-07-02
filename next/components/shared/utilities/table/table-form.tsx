@@ -1,18 +1,17 @@
+import cloneDeep from "lodash/cloneDeep";
 import { useEffect, useState } from "react";
-import { RiArrowLeftSLine, RiArrowRightSLine, RiMoreFill } from "react-icons/ri";
-import { Form, FormConsumer, FormPropsType } from "../form/form";
-import { Select } from "../form/select";
-import { PaginationComponent } from "../pagination/pagination-component";
+import { Form, FormPropsType } from "../form/form";
+import { SaveButtonGroupProps } from "./../save-button-group";
 import { useDataTable } from "./data-table";
-import { SaveButtonGroup } from "./../save-button-group";
 
 interface PropsType extends FormPropsType {
   hasFooter?: boolean;
+  saveButtonGroupProps?: SaveButtonGroupProps;
   checkValidation?: (data: any, item: any) => boolean;
   beforeSubmit?: (data: any) => any;
 }
 
-export function TableForm({ hasFooter = true, ...props }: PropsType) {
+export function TableForm({ hasFooter = true, saveButtonGroupProps = {}, ...props }: PropsType) {
   const { itemName, formItem, setFormItem, saveItem } = useDataTable();
   const [initialData, setInitialData] = useState(formItem);
   const onSubmit = async (data) => {
@@ -25,7 +24,7 @@ export function TableForm({ hasFooter = true, ...props }: PropsType) {
   };
 
   useEffect(() => {
-    setInitialData(formItem ? { ...formItem } : null);
+    setInitialData(formItem ? cloneDeep(formItem) : null);
   }, [formItem]);
 
   return (
@@ -37,25 +36,19 @@ export function TableForm({ hasFooter = true, ...props }: PropsType) {
       dialog
       isOpen={!!initialData}
       onClose={() => setFormItem(null)}
+      onSubmit={onSubmit}
     >
       {props.children}
       {hasFooter && (
         <Form.Footer>
-          <FormConsumer>
-            {({ submit }) => (
-              <SaveButtonGroup
-                onSubmit={async () => {
-                  let data = await submit();
-                  if (data) await onSubmit(data);
-                }}
-                onCancel={() => setFormItem(null)}
-                cancelText="Đóng"
-                submitText={`${formItem?.id ? "Cập nhật" : "Tạo"} ${itemName} ${
-                  formItem?.id ? "" : "mới"
-                }`.trim()}
-              />
-            )}
-          </FormConsumer>
+          <Form.ButtonGroup
+            onCancel={() => setFormItem(null)}
+            cancelText="Đóng"
+            submitText={`${formItem?.id ? "Cập nhật" : "Tạo"} ${itemName} ${
+              formItem?.id ? "" : "mới"
+            }`.trim()}
+            {...saveButtonGroupProps}
+          />
         </Form.Footer>
       )}
     </Form>

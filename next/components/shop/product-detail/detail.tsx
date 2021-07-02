@@ -162,7 +162,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
           <Field label="Lời nhắn của khách hàng" name="note">
             <Textarea placeholder="Nhập Lời nhắn của khách hàng" />
           </Field>
-          <SaveButtonGroup disableCancle />
+          <SaveButtonGroup cancelText="" />
         </Form>
       </div>
     </Dialog>

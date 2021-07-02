@@ -1,6 +1,5 @@
 import axios from "axios";
 import { GetAuthToken } from "../graphql/auth.link";
-import { Category } from "./category.repo";
 import { BaseModel, CrudRepository } from "./crud.repo";
 import { ProductTopping, ToppingOption } from "./product-topping.repo";
 
@@ -28,8 +27,7 @@ export interface Product extends BaseModel {
   labels: ProductLabel[];
   toppings?: ProductTopping[];
 }
-export interface ProductLabel {
-  id: string;
+export interface ProductLabel extends BaseModel {
   name: string;
   color: string;
 }
@@ -51,6 +49,14 @@ export class ProductRepository extends CrudRepository<Product> {
     rating: number
     soldQty: number
     labelIds: string[]
+    labels {
+      id: String
+      createdAt: DateTime
+      updatedAt: DateTime
+      memberId: ID
+      name: String
+      color: String
+    }: [ProductLabel]
     toppings {
       id: String
       createdAt: DateTime
@@ -97,6 +103,14 @@ export class ProductRepository extends CrudRepository<Product> {
         isDefault: Boolean
       }: [ToppingOption]
     }: [ProductTopping]
+    labels {
+      id: String
+      createdAt: DateTime
+      updatedAt: DateTime
+      memberId: ID
+      name: String
+      color: String
+    }: [ProductLabel]
   `);
 
   async copyProduct(productId: string, parentCategoryId: string): Promise<Product> {
@@ -146,3 +160,20 @@ export class ProductRepository extends CrudRepository<Product> {
 }
 
 export const ProductService = new ProductRepository();
+
+export const PRODUCT_LABEL_COLORS: Option[] = [
+  { value: "blue", label: "Xanh dương", color: "blue" },
+  // color?:
+  //   | "primary"
+  //   | "accent"
+  //   | "info"
+  //   | "success"
+  //   | "danger"
+  //   | "warning"
+  //   | "bluegray"
+  //   | "orange"
+  //   | "teal"
+  //   | "cyan"
+  //   | "purple"
+  //   | "pink";
+];

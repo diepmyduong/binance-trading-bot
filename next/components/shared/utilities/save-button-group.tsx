@@ -1,4 +1,4 @@
-import { Button } from "./form/button";
+import { Button, ButtonProps } from "./form/button";
 
 export interface SaveButtonGroupProps extends ReactProps {
   onSubmit?: () => any;
@@ -6,13 +6,13 @@ export interface SaveButtonGroupProps extends ReactProps {
   submitText?: string;
   cancelText?: string;
   isLoading?: boolean;
-  disableCancle?: boolean;
   actions?: JSX.Element[];
+  submitProps?: ButtonProps;
 }
 export function SaveButtonGroup({
   submitText = "Lưu thay đổi",
   cancelText = "Huỷ",
-  disableCancle = false,
+  submitProps = {},
   ...props
 }: SaveButtonGroupProps) {
   return (
@@ -23,8 +23,9 @@ export function SaveButtonGroup({
         submit
         isLoading={props.isLoading}
         onClick={props.onSubmit}
+        {...submitProps}
       />
-      {!disableCancle && <Button text={cancelText} reset onClick={props.onCancel} />}
+      {cancelText && <Button text={cancelText} reset onClick={props.onCancel} />}
 
       {props.actions && props.actions.map((btn, index) => <div key={index}>{btn}</div>)}
     </div>

@@ -164,7 +164,7 @@ const InputNote = () => {
         <Field label="Ghi chú" name="note">
           <Textarea placeholder="Nhập ghi chú" />
         </Field>
-        <SaveButtonGroup disableCancle />
+        <SaveButtonGroup cancelText="" />
       </Form>
     </>
   );

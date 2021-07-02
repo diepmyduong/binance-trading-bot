@@ -54,7 +54,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
       clearInterval(intervalScroll);
     };
   }, []);
-  if (!productDetail) return <Spinner></Spinner>;
+  if (!productDetail) return null;
   return (
     <Dialog
       isOpen={props.isOpen}

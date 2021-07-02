@@ -16,7 +16,7 @@ import { useProductDetailContext } from "./provider/product-detail-provider";
 import { ToppingOption } from "../../../lib/repo/product-topping.repo";
 
 interface PropsType extends DialogPropsType {
-  productId?: string;
+  productId?: any;
   item?: {
     name: string;
     sold: number | string;

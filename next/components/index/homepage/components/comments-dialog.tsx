@@ -71,7 +71,7 @@ export function CommentsDialog(props: Propstype) {
           style={{ maxHeight: `calc(100vh - 250px)`, minHeight: `calc(100vh - 100px)` }}
         >
           {comments.map((item, index) => (
-            <div className="leading-7 px-4 mt-2 border-b pb-2">
+            <div className="leading-7 px-4 mt-2 border-b pb-2" key={index}>
               <h3 className=" text-base">{item.name}</h3>
               <Rating rating={4.8} ratingTime={item.time} />
               <p className="text-ellipsis-3">{item.comment}</p>

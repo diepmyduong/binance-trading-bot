@@ -19,8 +19,16 @@ export function ProductItem({ product, ...props }: PropsType) {
     >
       <Img src={product.image} className="w-16 rounded-md" showImageOnClick />
       <div className="flex-1 pl-3">
-        <div className="text-gray-800 font-semibold text-lg group-hover:text-primary">
+        <div className="text-gray-800 font-semibold text-lg group-hover:text-primary flex items-center">
           {product.name}
+          {product.labels?.map((label, index) => (
+            <div
+              className="ml-2 inline-flex items-center text-white rounded-full font-semibold text-xs px-2 py-1 cursor-pointer"
+              style={{ backgroundColor: label.color }}
+            >
+              <span>{label.name}</span>
+            </div>
+          ))}
         </div>
         <div className="flex items-center text-sm text-gray-600">
           <i className="text-yellow-400 mr-1">

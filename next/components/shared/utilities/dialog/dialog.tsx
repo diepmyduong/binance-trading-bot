@@ -23,6 +23,7 @@ export interface DialogPropsType extends ReactProps {
   slideFromBottom?: "none" | "mobile-only" | "all";
   openAnimation?: string;
   closeAnimation?: string;
+  ref?: any;
   root?: string;
   isOpen?: boolean;
   onClose?: () => any;
@@ -160,7 +161,7 @@ export function Dialog({
         {body?.length ? (
           <div className={`dialog-body ${bodyClass} ${extraBodyClass}`}>{body[0]}</div>
         ) : null}
-        {children}
+        {isOpen && children}
         {footer?.length ? (
           <div className={`dialog-footer ${footerClass} ${extraFooterClass}`}>{footer[0]}</div>
         ) : null}

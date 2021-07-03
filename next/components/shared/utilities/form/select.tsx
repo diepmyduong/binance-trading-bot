@@ -173,7 +173,7 @@ export function Select({
           display: "flex",
 
           ":before": {
-            backgroundColor: getTailwindColor(color).DEFAULT,
+            backgroundColor: getTailwindColor(color)?.DEFAULT || color,
             borderRadius: "50%",
             content: '" "',
             display: "block",
@@ -243,15 +243,19 @@ export function Select({
           backgroundColor: isDisabled
             ? null
             : isSelected
-            ? color.DEFAULT
+            ? color?.DEFAULT || data.color
             : isFocused
-            ? color.light
+            ? color?.light
             : null,
-          color: isDisabled ? "#ccc" : isSelected ? "white" : color.DEFAULT,
+          color: isDisabled ? "#ccc" : isSelected ? "white" : color?.DEFAULT || data.color,
           cursor: isDisabled ? "not-allowed" : "default",
           ":active": {
             ...styles[":active"],
-            backgroundColor: !isDisabled && (isSelected ? color.DEFAULT : color.light),
+            backgroundColor:
+              !isDisabled && (isSelected ? color?.DEFAULT || data.color : color?.light),
+          },
+          ":hover": {
+            backgroundColor: !isDisabled && !isSelected ? color?.light || "#fafafa" : null,
           },
         };
       } else if (hasImage) {

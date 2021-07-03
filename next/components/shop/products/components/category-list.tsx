@@ -16,9 +16,8 @@ interface PropsType extends ReactProps {
 }
 export function CategoryList({ onEditClick, ...props }: PropsType) {
   const { categories, removeCategory, onDeleteProduct, onToggleProduct } = useProductsContext();
-  const [openProduct, setOpenProduct] = useState<{ product: Product; category: Category }>(
-    undefined
-  );
+  const [openProduct, setOpenProduct] = useState<Product>(undefined);
+  const [openCategory, setOpenCategory] = useState<Category>(null);
   const ref = useRef();
   const alert = useAlert();
 
@@ -46,7 +45,8 @@ export function CategoryList({ onEditClick, ...props }: PropsType) {
               key={product.id}
               product={product}
               onClick={() => {
-                setOpenProduct({ product, category });
+                setOpenProduct(product);
+                setOpenCategory(category);
               }}
               onToggleClick={async () => {
                 onToggleProduct(product, category);
@@ -63,14 +63,15 @@ export function CategoryList({ onEditClick, ...props }: PropsType) {
             primary
             text="Thêm món mới"
             onClick={() => {
-              setOpenProduct({ product: null, category });
+              setOpenProduct(null);
+              setOpenCategory(category);
             }}
           />
         </div>
       ))}
       <ProductForm
-        product={openProduct?.product}
-        category={openProduct?.category}
+        product={openProduct}
+        category={openCategory}
         isOpen={openProduct !== undefined}
         onClose={() => setOpenProduct(undefined)}
       />

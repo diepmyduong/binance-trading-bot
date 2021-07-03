@@ -13,9 +13,13 @@ export function StatusTime(props: Propstype) {
         {(props.isActive && "Đang mở") || "Đã đóng cửa"}
       </li>
 
-      {/* <li>
-        - Mở cửa từ {props.openAt} - {props.closeAt}
-      </li> */}
+      {props.openAt ? (
+        <li>
+          - Mở cửa từ {props.openAt} - {props.closeAt}
+        </li>
+      ) : (
+        ""
+      )}
       {props.range && <li> - Cách bạn {props.range}km</li>}
     </ul>
   );

@@ -1,3 +1,5 @@
+import { WIP } from "../../shared/utilities/wip";
+
 export function DashboardPage() {
-  return <div className=""></div>;
+  return <WIP />;
 }

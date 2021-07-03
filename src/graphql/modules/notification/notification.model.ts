@@ -11,11 +11,13 @@ export enum NotificationType {
 export enum NotificationTarget {
   MEMBER = "MEMBER", // Gửi tới chủ shop
   STAFF = "STAFF", // Gưi tới staff
+  CUSTOMER = "CUSTOMER", // Gửi tới khách hàng
 }
 export type INotification = BaseDocument & {
   target?: NotificationTarget; // Gửi tới
   memberId?: string; // Mã chủ shop
   staffId?: string; // Mã nhân viên
+  customerId?: string; // Mã khách hàng
   title?: string; // Tiêu đề thông báo
   body?: string; // Nội dung thông báo
   type?: NotificationType; // Loại thông báo
@@ -33,6 +35,7 @@ const notificationSchema = new Schema(
     target: { type: String, enum: Object.values(NotificationTarget), required: true },
     memberId: { type: Schema.Types.ObjectId, ref: "Member" },
     staffId: { type: Schema.Types.ObjectId, ref: "Staff" },
+    customerId: { type: Schema.Types.ObjectId, ref: "Customer" },
     title: { type: String, required: true },
     body: { type: String, required: true },
     type: { type: String, enum: Object.values(NotificationType), required: true },

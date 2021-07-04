@@ -33,7 +33,7 @@ onConfirmedOrder.subscribe(async (order: IOrder) => {
 
 // Gửi thông báo đơn hàng đang làm món cho khách hàng
 onConfirmedOrder.subscribe(async (order) => {
-  if (order.status != OrderStatus.PENDING) return;
+  if (order.status != OrderStatus.CONFIRMED) return;
   const notify = new NotificationModel({
     target: NotificationTarget.CUSTOMER,
     type: NotificationType.ORDER,

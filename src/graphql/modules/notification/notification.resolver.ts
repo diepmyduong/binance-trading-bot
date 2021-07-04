@@ -4,6 +4,7 @@ import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
+import { CustomerLoader } from "../customer/customer.model";
 import { MemberLoader } from "../member/member.model";
 import { OrderLoader } from "../order/order.model";
 import { ProductLoader } from "../product/product.model";
@@ -36,6 +37,7 @@ const Notification = {
   product: GraphQLHelper.loadById(ProductLoader, "productId"),
   member: GraphQLHelper.loadById(MemberLoader, "memberId"),
   staff: GraphQLHelper.loadById(StaffLoader, "staffId"),
+  customer: GraphQLHelper.loadById(CustomerLoader, "customerId"),
 };
 
 export default {

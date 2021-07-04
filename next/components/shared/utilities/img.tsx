@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import LazyLoad from "react-lazyload";
+import LazyLoad, { forceCheck } from "react-lazyload";
 import { ImageDialog } from "./dialog/image-dialog";
 
 const defaultImage = "/assets/default/default.png";
@@ -54,6 +54,7 @@ export function Img({
         setImage(src);
       }
       setError(false);
+      setTimeout(() => forceCheck(), 100);
     } else {
       onImageError();
     }

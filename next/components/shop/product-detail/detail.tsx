@@ -44,7 +44,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
       topping.forEach((item) => {
         total += item.price;
       });
-      total += productDetail.basePrice * count;
+      total += productDetail.downPrice * count;
       setTotalMoney(total);
     }
   }, [count, topping]);
@@ -52,7 +52,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
   useEffect(() => {
     setTopping([]);
     setCount(1);
-    if (productDetail) setTotalMoney(productDetail.basePrice * count);
+    if (productDetail) setTotalMoney(productDetail.downPrice * count);
   }, [productDetail]);
 
   function dialogScrollEvent() {
@@ -68,7 +68,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
     setIntervalScroll(scrollCheckInterval);
   }
   useEffect(() => {
-    // window.addEventListener("scroll", dialogScrollEvent);
+    window.addEventListener("scroll", dialogScrollEvent);
     return () => {
       clearInterval(intervalScroll);
     };
@@ -111,19 +111,28 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
             </i>
           </div>
         </div>
-        <div className="w-full h-full top-0">
+        <div className="w-full sticky top-0">
           <Img src={productDetail.image} ratio169 />
-        </div>
-
-        <div ref={ref} className="sticky overflow-auto bg-white">
-          <h2 className="header-name px-4 pt-4 text-xl">{productDetail.name}</h2>
-          <div className="px-4 text-xs text-gray-600 py-1 flex items-center space-x-1">
-            <i className="text-accent">
+          <div className="absolute bottom-0 left-0 px-4 text-xs text-gray-600 py-1 flex items-center space-x-1">
+            <i className="text-yellow-500">
               <HiStar />
             </i>
             <div className="font-bold">{productDetail.rating}</div>
             <div className="px-2">-</div>
             <div className="">{`Đã bán ${productDetail.soldQty || 0}`}</div>
+          </div>
+        </div>
+
+        <div ref={ref} className="sticky overflow-auto bg-white">
+          <h2 className="header-name px-4 pt-4 text-xl">{productDetail.name}</h2>
+          <div className="px-4 text-gray-700 py-1 flex items-center space-x-1">
+            <div className="font-bold">{NumberPipe(productDetail.downPrice)}đ</div>
+            <div className="text-xs line-through px-1">{NumberPipe(productDetail.basePrice)}đ</div>
+            {productDetail.saleRate && (
+              <div className="bg-red-500 text-white text-xs rounded px-2">
+                {productDetail.saleRate || 0}%
+              </div>
+            )}
           </div>
           <p className="px-4 text-sm text-gray-500">{productDetail.subtitle}</p>
           <Button
@@ -135,19 +144,20 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
           />
           <div className="">
             {productDetail.toppings &&
-              productDetail.toppings.map((item, index) => {
-                if (item.options.length > 0)
+              productDetail.toppings.map((items, index) => {
+                if (items.options.length > 0)
                   return (
                     <div className="">
                       <div className="bg-primary-light  px-4 py-2">
-                        <h2 className="font-bold text-sm">{item.name}</h2>
+                        <h2 className="font-bold text-sm">{items.name}</h2>
                         <p className="pt-1 text-xs"></p>
                       </div>
                       <div className="">
-                        {item.options.map((item, index) => {
+                        {items.options.map((item, index) => {
                           return (
                             <OneDish
                               item={item}
+                              name={items.name}
                               key={index}
                               onClick={() => {
                                 topping.push(item);
@@ -179,14 +189,14 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
         </Dialog.Footer>
         <Form
           dialog
-          slideFromBottom="none"
+          slideFromBottom="mobile-only"
           mobileSizeMode
           isOpen={openDialog}
           onClose={() => setOpenDialog(false)}
           onSubmit={() => {
             setOpenDialog(false);
           }}
-          className="px-4 py-4"
+          className=""
         >
           <Field label="Lời nhắn của khách hàng" name="note">
             <Textarea placeholder="Nhập Lời nhắn của khách hàng" />
@@ -201,17 +211,13 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
 interface PropsOneDish {
   item: ToppingOption;
   onClick?: () => void;
+  name?: string;
 }
-const OneDish = ({ item, onClick }: PropsOneDish) => {
+const OneDish = ({ item, onClick, name }: PropsOneDish) => {
   return (
     <div className="flex items-center justify-between px-4 py-1 border-b border-gray-300">
       <div className="flex items-center w-full" onClick={onClick}>
-        <input
-          type="radio"
-          id={item.name}
-          name="obligatoryDishes"
-          className="inline form-checkbox"
-        />
+        <input type="radio" id={item.name} name={name} className="inline form-checkbox" />
         <label htmlFor={item.name} className="inline font-light text-sm ml-2 cursor-pointer w-full">
           {item.name}
         </label>

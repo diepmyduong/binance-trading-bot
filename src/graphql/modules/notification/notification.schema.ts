@@ -26,6 +26,8 @@ const schema = gql`
     memberId: ID
     "Mã nhân viên"
     staffId: ID
+    "Mã khách hàng"
+    customerId: ID
     "Tiêu đề thông báo"
     title: String
     "Nội dung thông báo"
@@ -49,6 +51,7 @@ const schema = gql`
 
     member: Member
     staff: Staff
+    customer: Customer
     order: Order
     product: Product
   }

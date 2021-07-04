@@ -2,7 +2,9 @@ import { set } from "lodash";
 import passwordHash from "password-hash";
 
 import { ROLES } from "../../../constants/role.const";
+import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
+import { ShopBranchLoader } from "../shopBranch/shopBranch.model";
 import { StaffModel } from "./staff.model";
 import { staffService } from "./staff.service";
 
@@ -44,7 +46,9 @@ const Mutation = {
   },
 };
 
-const Staff = {};
+const Staff = {
+  branch: GraphQLHelper.loadById(ShopBranchLoader, "branchId"),
+};
 
 export default {
   Query,

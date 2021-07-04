@@ -191,10 +191,11 @@ export class OrderGenerator {
         parseFloat(this.order.latitude)
       ),
     ]);
-    const day = moment().day();
+    let day = moment().day();
+    if (day == 0) day = 7;
     const operatingTime = shopBranch.operatingTimes.find((o) => o.day == day);
-    if (!shopBranch.isOpen || operatingTime.status == OperatingTimeStatus.CLOSED)
-      throw Error("Cửa hàng không mở cửa.");
+    if (!shopBranch.isOpen || !operatingTime || operatingTime.status == OperatingTimeStatus.CLOSED)
+      throw Error("Cửa hàng chưa mở cửa.");
     if (operatingTime.status == OperatingTimeStatus.TIME_FRAME) {
       var isOpen = false;
       var toDate = moment();

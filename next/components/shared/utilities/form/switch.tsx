@@ -37,7 +37,7 @@ export function Switch({
       <span className={`switch`}>
         <input
           type="checkbox"
-          value={value as any}
+          value={(value as any) || false}
           checked={value}
           name={props.name}
           readOnly={props.readonly}

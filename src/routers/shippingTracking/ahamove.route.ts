@@ -5,10 +5,16 @@ import { onApprovedFailureOrder } from "../../events/onApprovedFailureOrder.even
 import { onDelivering } from "../../events/onDelivering.event";
 import { AhamoveWebhookLogModel } from "../../graphql/modules/ahamoveWebhookLog/ahamoveWebhookLog.model";
 import { DeliveryLogModel } from "../../graphql/modules/deliveryLog/deliveryLog.model";
+import {
+  NotificationModel,
+  NotificationTarget,
+  NotificationType,
+} from "../../graphql/modules/notification/notification.model";
 import { OrderModel, OrderStatus, ShipMethod } from "../../graphql/modules/order/order.model";
 import { OrderLogModel, OrderLogType } from "../../graphql/modules/orderLog/orderLog.model";
 import { validateJSON } from "../../helpers";
 import { Ahamove } from "../../helpers/ahamove/ahamove";
+import SendNotificationJob from "../../scheduler/jobs/sendNotification.job";
 export default [
   {
     method: "post",
@@ -89,7 +95,7 @@ export default [
           note: path[1].fail_comment,
           orderService: service_id,
         });
-
+        onDelivering.next(order);
         // console.log("Cập nhật đơn hàng", { api_key, status, _id, supplier_name, supplier_id });
       } catch (err) {}
     },

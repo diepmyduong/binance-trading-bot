@@ -1,5 +1,6 @@
 import { gql } from "apollo-server-express";
 import { ROLES } from "../../../constants/role.const";
+import { onDelivering } from "../../../events/onDelivering.event";
 import { onMemberDelivering } from "../../../events/onMemberDelivering.event";
 import { Ahamove } from "../../../helpers/ahamove/ahamove";
 import { Context } from "../../context";
@@ -49,6 +50,7 @@ export default {
         order.shipMethod = ShipMethod.DRIVER;
         order = await order.save();
         onMemberDelivering.next(order);
+        onDelivering.next(order);
         return order;
       },
     },

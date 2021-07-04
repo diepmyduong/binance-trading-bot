@@ -31,7 +31,7 @@ export interface FormPropsType extends Partial<DialogPropsType> {
   name?: string;
   disabled?: boolean;
   validatorFn?: (data: any) => Object;
-  onSubmit?: (data: any, context?: Partial<FormContextProps>) => any;
+  onSubmit?: (data: any, fullData?: any, context?: Partial<FormContextProps>) => any;
   onChange?: (data: any, fullData?: any) => any;
   onReset?: (data: any) => any;
   onHasChanged?: (hasChanged: boolean) => any;
@@ -111,7 +111,7 @@ export function Form({ className = "", style = {}, ...props }: FormPropsType) {
     if (props.onSubmit) {
       try {
         setLoading(true);
-        await props.onSubmit(data, context);
+        await props.onSubmit(data, fullData, context);
         setHasChanged(false);
       } finally {
         setLoading(false);

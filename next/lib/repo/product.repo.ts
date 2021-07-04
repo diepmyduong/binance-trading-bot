@@ -160,20 +160,3 @@ export class ProductRepository extends CrudRepository<Product> {
 }
 
 export const ProductService = new ProductRepository();
-
-export const PRODUCT_LABEL_COLORS: Option[] = [
-  { value: "blue", label: "Xanh dương", color: "blue" },
-  // color?:
-  //   | "primary"
-  //   | "accent"
-  //   | "info"
-  //   | "success"
-  //   | "danger"
-  //   | "warning"
-  //   | "bluegray"
-  //   | "orange"
-  //   | "teal"
-  //   | "cyan"
-  //   | "purple"
-  //   | "pink";
-];

@@ -8,7 +8,7 @@ import { ProductTopping, ProductToppingService } from "../../../../lib/repo/prod
 export const ProductsContext = createContext<
   Partial<{
     categories: Category[];
-    loadCategories: () => Promise<any>;
+    loadCategories: (reset?: boolean) => Promise<any>;
     removeCategory: (category: Category) => Promise<any>;
     onProductChange: (product: Product, category: Category) => any;
     onDeleteProduct: (product: Product, category: Category) => Promise<any>;
@@ -26,7 +26,8 @@ export function ProductsProvider(props) {
     loadCategories();
   }, []);
 
-  const loadCategories = async () => {
+  const loadCategories = async (reset: boolean = false) => {
+    if (reset) await CategoryService.clearStore();
     CategoryService.getAll({
       query: {
         limit: 0,

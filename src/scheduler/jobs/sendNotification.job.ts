@@ -40,7 +40,11 @@ export class SendNotificationJob {
   static async execute(job: Job, done: any) {
     const counter = await CounterModel.findOne({ name: "notify" });
     if (!counter || counter.value <= 0) return done();
-    await Promise.all([sendNotificationToMembers(job), sendNotificationToStaff(job)]);
+    await Promise.all([
+      sendNotificationToMembers(job),
+      sendNotificationToStaff(job),
+      sendNotificationToCustomer(job),
+    ]);
     logger.info("Send Done");
     done();
   }
@@ -109,6 +113,35 @@ async function sendNotificationToStaff(job: Job) {
     }
   }
 }
+async function sendNotificationToCustomer(job: Job) {
+  const match = {
+    sentAt: { $exists: false },
+    target: NotificationTarget.CUSTOMER,
+  };
+  for (let i = 0; i < (await NotificationModel.count(match)); ) {
+    const customers = await getCustomerNotifications();
+    const customerDevices = await getCustomerDevices(customers);
+    const task: Promise<any>[] = [];
+    let notificationIds: string[] = [];
+    try {
+      for (const m of customers) {
+        const devices = customerDevices[m._id];
+        notificationIds = [...notificationIds, ...m.notifications.map((n: INotification) => n._id)];
+        if (!devices) continue;
+        logger.info(`Send Notification To Customer ${m._id} with ${devices.length} Devices`);
+        sendNotificationToDevices(devices, m.notifications, task);
+      }
+      if (task.length > 0) {
+        await Promise.all(task).catch(errorLogger.error);
+      }
+    } catch (error) {
+      errorLogger.error(error);
+    } finally {
+      await updateNoficationCounter(notificationIds);
+      await job.touch();
+    }
+  }
+}
 
 function sendNotificationToDevices(
   devices: IDeviceInfo[],
@@ -148,6 +181,11 @@ function getStaffDevices(staffs: any[]) {
     staffId: { $in: staffs.map((m) => m._id) },
   }).then((res) => groupBy(res, "staffId"));
 }
+function getCustomerDevices(customers: any[]) {
+  return DeviceInfoModel.find({
+    customerId: { $in: customers.map((m) => m._id) },
+  }).then((res) => groupBy(res, "customerId"));
+}
 
 function getMemberDevices(members: any[]) {
   return DeviceInfoModel.find({
@@ -162,6 +200,18 @@ function getStaffNotifications(): any[] | PromiseLike<any[]> {
     {
       $group: {
         _id: "$staffId",
+        notifications: { $push: "$$ROOT" },
+      },
+    },
+  ]);
+}
+function getCustomerNotifications(): any[] | PromiseLike<any[]> {
+  return NotificationModel.aggregate([
+    { $match: { sentAt: { $exists: false }, target: NotificationTarget.CUSTOMER } },
+    { $limit: 1000 },
+    {
+      $group: {
+        _id: "$customerId",
         notifications: { $push: "$$ROOT" },
       },
     },

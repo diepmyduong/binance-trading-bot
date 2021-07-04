@@ -14,7 +14,10 @@ const END_MONTH = moment().endOf("month").format("YYYY-MM-DD");
 
 export class UtilsHelper {
   constructor() {}
-
+  static toMoney(text = 0, digit = 0) {
+    var re = "\\d(?=(\\d{3})+" + (digit > 0 ? "\\." : "$") + ")";
+    return text.toFixed(Math.max(0, ~~digit)).replace(new RegExp(re, "g"), "$&,");
+  }
   static toBoolean(value: string) {
     return _.upperCase(value) == "TRUE";
   }

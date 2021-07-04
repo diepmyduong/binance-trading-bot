@@ -2,13 +2,24 @@ import * as admin from "firebase-admin";
 import { configs } from "../configs";
 import { ErrorHelper } from "../base/error";
 export class FirebaseHelper {
-  app: admin.app.App;
+  _app: admin.app.App;
   constructor() {
-    let config = configs.firebase;
+    this.setApp();
+  }
+
+  setApp() {
     try {
+      let config = configs.firebase;
       config.credential = admin.credential.cert(config.credential);
-      this.app = admin.initializeApp(config);
-    } catch (err) {}
+      this._app = admin.initializeApp(config);
+    } catch (err) {
+      console.log("INIT FIREBASE APP ERROR", err.message);
+    }
+  }
+
+  get app() {
+    if (!this._app) this.setApp();
+    return this._app;
   }
 
   get messaging() {

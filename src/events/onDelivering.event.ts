@@ -1,7 +1,19 @@
 import { Subject } from "rxjs";
+import {
+  NotificationModel,
+  NotificationTarget,
+  NotificationType,
+} from "../graphql/modules/notification/notification.model";
 
 import { IOrder, OrderStatus } from "../graphql/modules/order/order.model";
-import { VNPostCancelStatus, VNPostFailedStatus, VNPostSuccessStatus } from "../helpers";
+import { StaffModel } from "../graphql/modules/staff/staff.model";
+import {
+  UtilsHelper,
+  VNPostCancelStatus,
+  VNPostFailedStatus,
+  VNPostSuccessStatus,
+} from "../helpers";
+import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
 import { onApprovedCompletedOrder } from "./onApprovedCompletedOrder.event";
 import { onApprovedFailureOrder } from "./onApprovedFailureOrder.event";
 import { onCanceledOrder } from "./onCanceledOrder.event";
@@ -47,136 +59,50 @@ onDelivering.subscribe(async (order) => {
   onApprovedCompletedOrder.next(order);
 });
 
-// // gửi thông báo cho khách hàng 3 tình trạng đơn hàng - đang giao - giao thành công - giao thất bại
-// onDelivering.subscribe(async (order) => {
-//   const { buyerId, fromMemberId, itemIds, deliveryInfo } = order;
+// Thông báo khách hàng cập nhật trạng thái giao hàng
+onDelivering.subscribe(async (order) => {
+  const notify = new NotificationModel({
+    target: NotificationTarget.CUSTOMER,
+    type: NotificationType.ORDER,
+    customerId: order.buyerId,
+    title: `Đơn hàng hàng #${order.code}`,
+    body: order.deliveryInfo.statusText,
+    orderId: order._id,
+  });
+  await NotificationModel.create(notify);
+  await SendNotificationJob.trigger();
+});
 
-//   // console.log("onDelivering order", order);
-//   const alert = await SettingHelper.load(SettingKey.DELIVERY_STATUS_CUSTOMER_ALERT);
-//   //   console.log("order", order);
-//   if (alert) {
-//     const [seller, customer, orderItems, users, apiKey] = await Promise.all([
-//       MemberLoader.load(fromMemberId),
-//       CustomerLoader.load(buyerId),
-//       OrderItemLoader.loadMany(itemIds),
-//       UserModel.find({ psid: { $exists: true } }),
-//       SettingHelper.load(SettingKey.CHATBOT_API_KEY),
-//     ]);
+// Thông báo nhân viên cập nhật trang thái giao hàng
+onDelivering.subscribe(async (order) => {
+  const staffs = await StaffModel.find({ memberId: order.sellerId, branchId: order.shopBranchId });
+  const notifies = staffs.map(
+    (s) =>
+      new NotificationModel({
+        target: NotificationTarget.STAFF,
+        type: NotificationType.ORDER,
+        staffId: s._id,
+        title: `Đơn hàng hàng #${order.code}`,
+        body: order.deliveryInfo.statusText,
+        orderId: order._id,
+      })
+  );
+  if (notifies.length > 0) {
+    await NotificationModel.insertMany(notifies);
+    await SendNotificationJob.trigger(notifies.length);
+  }
+});
 
-//     // đơn hàng mobi
-//     const pageAccount = customer.pageAccounts.find((p) => p.pageId == seller.fanpageId);
-
-//     // console.log('pageAccount',pageAccount);
-//     if (pageAccount) {
-//       const status = GetOrderStatusByPostDeliveryStatus(deliveryInfo.status);
-//       if (status === DeliveryStatus.DELIVERING) {
-//         SettingHelper.load(SettingKey.DELIVERY_PENDING_MSG_FOR_CUSTOMER).then((msg) => {
-//           onSendChatBotText.next({
-//             apiKey: seller.chatbotKey,
-//             psids: [pageAccount.psid],
-//             message: msg,
-//             context: { seller, orderItems, order },
-//           });
-//         });
-//       }
-//       if (status === DeliveryStatus.FAILURE) {
-//         SettingHelper.load(SettingKey.DELIVERY_FAILURE_MSG_FOR_CUSTOMER).then((msg) => {
-//           onSendChatBotText.next({
-//             apiKey: seller.chatbotKey,
-//             psids: [pageAccount.psid],
-//             message: msg,
-//             context: { seller, orderItems, order },
-//           });
-//         });
-//       }
-//       if (status === DeliveryStatus.COMPLETED) {
-//         SettingHelper.load(SettingKey.DELIVERY_COMPLETED_MSG_FOR_CUSTOMER).then((msg) => {
-//           onSendChatBotText.next({
-//             apiKey: seller.chatbotKey,
-//             psids: [pageAccount.psid],
-//             message: msg,
-//             context: { seller, orderItems, order },
-//           });
-//         });
-//       }
-//     }
-//   }
-// });
-
-// // gửi thông tin cho chủ shop 3 trạng thái đơn hàng
-// onDelivering.subscribe(async (order) => {
-//   const { buyerId, fromMemberId, itemIds } = order;
-
-//   // console.log("onDelivering order", order);
-//   const alert = await SettingHelper.load(SettingKey.DELIVERY_STATUS_MEMBER_ALERT);
-//   //   console.log("order", order);
-//   if (alert) {
-//     const [seller, customer, orderItems, users, apiKey] = await Promise.all([
-//       MemberLoader.load(fromMemberId),
-//       CustomerLoader.load(buyerId),
-//       OrderItemLoader.loadMany(itemIds),
-//       UserModel.find({ psid: { $exists: true } }),
-//       SettingHelper.load(SettingKey.CHATBOT_API_KEY),
-//     ]);
-
-//     // đơn hàng mobi
-//     const pageAccount = customer.pageAccounts.find((p) => p.pageId == seller.fanpageId);
-
-//     // console.log('pageAccount',pageAccount);
-//     if (pageAccount) {
-//       // Đơn hàng của Mobifone
-//       const status = GetOrderStatusByPostDeliveryStatus(order.deliveryInfo.status);
-
-//       if (status === DeliveryStatus.DELIVERING) {
-//         SettingHelper.load(SettingKey.DELIVERY_PENDING_MSG_FOR_MEMBER).then((msg) => {
-//           onSendChatBotText.next({
-//             apiKey: seller.chatbotKey,
-//             psids: seller.psids,
-//             message: msg,
-//             context: { seller, orderItems, order },
-//           });
-//         });
-//       }
-//       if (status === DeliveryStatus.FAILURE) {
-//         SettingHelper.load(SettingKey.DELIVERY_FAILURE_MSG_FOR_MEMBER).then((msg) => {
-//           onSendChatBotText.next({
-//             apiKey: seller.chatbotKey,
-//             psids: seller.psids,
-//             message: msg,
-//             context: { seller, orderItems, order },
-//           });
-//         });
-//       }
-//       if (status === DeliveryStatus.COMPLETED) {
-//         SettingHelper.load(SettingKey.DELIVERY_COMPLETED_MSG_FOR_MEMBER).then((msg) => {
-//           onSendChatBotText.next({
-//             apiKey: seller.chatbotKey,
-//             psids: seller.psids,
-//             message: msg,
-//             context: { seller, orderItems, order },
-//           });
-//         });
-//       }
-//     }
-//   }
-// });
-
-// // chuyen trang thai COMPLETE hoac RETURNED
-// onDelivering.subscribe(async (order) => {
-//   const { deliveryInfo, paymentMethod } = order;
-
-//   const status = GetOrderStatus(deliveryInfo.status);
-
-//   // console.log("status", status);
-//   if (status) {
-//     await OrderModel.findByIdAndUpdate(
-//       order.id,
-//       {
-//         $set: {
-//           status,
-//         },
-//       },
-//       { new: true }
-//     );
-//   }
-// });
+// Thông báo chủ shop cập nhật trạng thái giao hàng
+onDelivering.subscribe(async (order) => {
+  const notify = new NotificationModel({
+    target: NotificationTarget.MEMBER,
+    type: NotificationType.ORDER,
+    staffId: order.sellerId,
+    title: `Đơn hàng hàng #${order.code}`,
+    body: order.deliveryInfo.statusText,
+    orderId: order._id,
+  });
+  await NotificationModel.create(notify);
+  await SendNotificationJob.trigger();
+});

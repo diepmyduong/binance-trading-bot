@@ -335,7 +335,7 @@ export abstract class CrudRepository<T extends BaseModel> extends GraphRepositor
       parseOption,
       query,
     }: { fragment?: string; parseOption?: (data: Partial<T>) => Option; query?: QueryInput } = {
-      fragment: this.fullFragment,
+      fragment: this.shortFragment,
       parseOption: (data) => ({ value: data.id, label: data.name, data } as Option),
       query: {},
     }
@@ -343,7 +343,7 @@ export abstract class CrudRepository<T extends BaseModel> extends GraphRepositor
     const defaultParseOptions = (data) => ({ value: data.id, label: data.name, data } as Option);
     let res = await this.getAll({
       query: { limit: 0, ...(query || {}) },
-      fragment: fragment || this.fullFragment,
+      fragment: fragment || this.shortFragment,
     });
     return res.data.map((x) => (parseOption ? parseOption(x) : defaultParseOptions(x)));
   }
@@ -356,7 +356,7 @@ export abstract class CrudRepository<T extends BaseModel> extends GraphRepositor
       query?: QueryInput;
     } = {}
   ) {
-    const fragment = options.fragment || this.fullFragment;
+    const fragment = options.fragment || this.shortFragment;
     const parseOption =
       options.parseOption || ((data) => ({ value: data.id, label: data.name, data }));
     const query = options.query || {};
@@ -390,7 +390,7 @@ export abstract class CrudRepository<T extends BaseModel> extends GraphRepositor
       query?: QueryInput;
     } = {
       inputValue: "",
-      fragment: this.fullFragment,
+      fragment: this.shortFragment,
       parseOption: (data) => ({ value: data.id, label: data.name, data } as Option),
       parseDataObject: (value) => ({ name: value } as any),
       query: {},
@@ -401,13 +401,13 @@ export abstract class CrudRepository<T extends BaseModel> extends GraphRepositor
     if (inputValue) {
       let res = await this.create({
         data: parseDataObject ? parseDataObject(inputValue) : defaultParseDataObject(inputValue),
-        fragment: fragment || this.fullFragment,
+        fragment: fragment || this.shortFragment,
       });
       return parseOption ? parseOption(res) : defaultParseOptions(res);
     } else {
       let res = await this.getAll({
         query: { limit: 0, ...(query || {}) },
-        fragment: fragment || this.fullFragment,
+        fragment: fragment || this.shortFragment,
       });
       return res.data.map((x) => (parseOption ? parseOption(x) : defaultParseOptions(x)));
     }

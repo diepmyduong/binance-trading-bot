@@ -95,16 +95,7 @@ export default [
           note: path[1].fail_comment,
           orderService: service_id,
         });
-        const notify = new NotificationModel({
-          target: NotificationTarget.CUSTOMER,
-          type: NotificationType.ORDER,
-          customerId: order.buyerId,
-          title: `Đơn hàng hàng #${order.code}`,
-          body: order.deliveryInfo.statusText,
-          orderId: order._id,
-        });
-        await NotificationModel.create(notify);
-        await SendNotificationJob.trigger();
+        onDelivering.next(order);
         // console.log("Cập nhật đơn hàng", { api_key, status, _id, supplier_name, supplier_id });
       } catch (err) {}
     },

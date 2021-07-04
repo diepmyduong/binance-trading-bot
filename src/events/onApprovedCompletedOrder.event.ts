@@ -330,7 +330,7 @@ onApprovedCompletedOrder.subscribe(async (order) => {
   await SendNotificationJob.trigger();
 });
 
-// Thông báo nhân viên cập nhật trang thái giao hàng
+// Thông báo nhân viên đơn hàng thành công
 onApprovedCompletedOrder.subscribe(async (order) => {
   const staffs = await StaffModel.find({ memberId: order.sellerId, branchId: order.shopBranchId });
   const notifies = staffs.map(
@@ -350,7 +350,7 @@ onApprovedCompletedOrder.subscribe(async (order) => {
   }
 });
 
-// Thông báo chủ shop cập nhật trạng thái giao hàng
+// Thông báo chủ shop đơn hàng thành công
 onApprovedCompletedOrder.subscribe(async (order) => {
   const notify = new NotificationModel({
     target: NotificationTarget.MEMBER,

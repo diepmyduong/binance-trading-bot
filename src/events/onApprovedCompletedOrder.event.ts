@@ -12,12 +12,19 @@ import {
 } from "../graphql/modules/customer/customer.model";
 import { CustomerPointLogType } from "../graphql/modules/customerPointLog/customerPointLog.model";
 import { IMember, MemberLoader, MemberModel } from "../graphql/modules/member/member.model";
+import {
+  NotificationModel,
+  NotificationTarget,
+  NotificationType,
+} from "../graphql/modules/notification/notification.model";
 import { IOrder, OrderStatus } from "../graphql/modules/order/order.model";
 import { orderService } from "../graphql/modules/order/order.service";
 import { OrderItemLoader } from "../graphql/modules/orderItem/orderItem.model";
 import { OrderLogModel, OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
+import { StaffModel } from "../graphql/modules/staff/staff.model";
 import { UserModel } from "../graphql/modules/user/user.model";
+import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
 import { EventHelper } from "./event.helper";
 import { onSendChatBotText } from "./onSendToChatbot.event";
 
@@ -307,4 +314,52 @@ onApprovedCompletedOrder.subscribe(async (order: IOrder) => {
       orderService.updateLogToOrder({ order, log });
     });
   }
+});
+
+// Thông báo đơn thành công tới khách hàng
+onApprovedCompletedOrder.subscribe(async (order) => {
+  const notify = new NotificationModel({
+    target: NotificationTarget.CUSTOMER,
+    type: NotificationType.ORDER,
+    customerId: order.buyerId,
+    title: `Đơn hàng hàng #${order.code}`,
+    body: `Đơn hàng hoàn thành.`,
+    orderId: order._id,
+  });
+  await NotificationModel.create(notify);
+  await SendNotificationJob.trigger();
+});
+
+// Thông báo nhân viên cập nhật trang thái giao hàng
+onApprovedCompletedOrder.subscribe(async (order) => {
+  const staffs = await StaffModel.find({ memberId: order.sellerId, branchId: order.shopBranchId });
+  const notifies = staffs.map(
+    (s) =>
+      new NotificationModel({
+        target: NotificationTarget.STAFF,
+        type: NotificationType.ORDER,
+        staffId: s._id,
+        title: `Đơn hàng hàng #${order.code}`,
+        body: `Đơn hàng hoàn thành`,
+        orderId: order._id,
+      })
+  );
+  if (notifies.length > 0) {
+    await NotificationModel.insertMany(notifies);
+    await SendNotificationJob.trigger(notifies.length);
+  }
+});
+
+// Thông báo chủ shop cập nhật trạng thái giao hàng
+onApprovedCompletedOrder.subscribe(async (order) => {
+  const notify = new NotificationModel({
+    target: NotificationTarget.MEMBER,
+    type: NotificationType.ORDER,
+    staffId: order.sellerId,
+    title: `Đơn hàng hàng #${order.code}`,
+    body: `Đơn hàng hoàn thành`,
+    orderId: order._id,
+  });
+  await NotificationModel.create(notify);
+  await SendNotificationJob.trigger();
 });

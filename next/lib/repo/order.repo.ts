@@ -18,7 +18,7 @@ export interface OrderInput {
   longtitude: number;
   paymentMethod: string;
   note: string;
-  items: [OrderItemInput];
+  items: OrderItemInput[];
 }
 
 export interface OrderItemInput {

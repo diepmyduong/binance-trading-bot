@@ -1,8 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import cloneDeep from "lodash/cloneDeep";
-import { useToast } from "./toast-provider";
 import { Product } from "../repo/product.repo";
-import { ToppingOption } from "../repo/product-topping.repo";
+import { OrderItemToppingInput, ToppingOption } from "../repo/product-topping.repo";
+import { OrderInput, OrderItemInput, OrderService } from "../repo/order.repo";
 
 export const CartContext = createContext<
   Partial<{
@@ -11,6 +10,7 @@ export const CartContext = createContext<
     cartProducts: CartProduct[];
     setCartProducts: Function;
     addProductToCart: Function;
+    generateOrder: Function;
     changeProductQuantity: Function;
     removeProductFromCart: Function;
   }>
@@ -22,7 +22,7 @@ export interface CartProduct {
   qty: number;
   price?: number;
   amount?: number;
-  topping: ToppingOption[];
+  topping?: OrderItemToppingInput[];
 }
 export function CartProvider(props) {
   const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
@@ -30,10 +30,13 @@ export function CartProvider(props) {
   const [totalMoney, setTotalMoney] = useState(0);
   useEffect(() => {
     setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
-    setTotalMoney(cartProducts.reduce((total, item) => (total += item.price * item.qty), 0));
-    // setCartProductTotal(cartProducts.length);
+    setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
   }, [cartProducts]);
-  const addProductToCart = (product: Product, qty: number, topping: ToppingOption[]): boolean => {
+  const addProductToCart = (
+    product: Product,
+    qty: number,
+    topping: OrderItemToppingInput[]
+  ): boolean => {
     if (!qty) return false;
     let cartProduct = cartProducts.find((x) => x.productId == product.id);
     if (cartProduct) {
@@ -44,15 +47,19 @@ export function CartProvider(props) {
         productId: product.id,
         product: product,
         qty,
-        price: product.basePrice,
-        amount: product.basePrice * qty,
-        topping: [],
+        price: product.downPrice,
+        amount: product.downPrice * qty + topping.reduce((total, item) => (total += item.price), 0),
+        topping: topping,
       });
     }
     setCartProducts([...cartProducts]);
     return true;
   };
-  const changeProductQuantity = (product: Product, qty: number, topping: ToppingOption[]) => {
+  const changeProductQuantity = (
+    product: Product,
+    qty: number,
+    topping: OrderItemToppingInput[]
+  ) => {
     if (!qty) return;
     let cartProduct = cartProducts.find((x) => x.productId == product.id);
     if (cartProduct) {
@@ -65,7 +72,7 @@ export function CartProvider(props) {
         qty,
         price: product.salePrice,
         amount: product.salePrice * qty,
-        topping: [],
+        topping: topping,
       });
     }
     setCartProducts([...cartProducts]);
@@ -78,12 +85,45 @@ export function CartProvider(props) {
     setCartProducts([...cartProducts]);
   };
 
+  const generateOrder = (inforBuyer, note) => {
+    let itemProduct: OrderItemInput[] = [{ productId: "", quantity: 1, toppings: null }];
+    cartProducts.forEach((item) => {
+      let OrderItem: OrderItemInput = {
+        productId: item.productId,
+        quantity: item.qty,
+        toppings: item.topping,
+      };
+      itemProduct.push(OrderItem);
+    });
+    let data: OrderInput = {
+      buyerName: inforBuyer.name,
+      buyerPhone: inforBuyer.phone,
+      pickupMethod: "abc",
+      shopBranchId: "abc",
+      pickupTime: "abc",
+      buyerProvinceId: "abc",
+      buyerDistrictId: "abc",
+      buyerWardId: "abc",
+      latitude: 0,
+      longtitude: 0,
+      paymentMethod: "COD",
+      note: note.note,
+      items: itemProduct,
+    };
+    OrderService.generateOrder(data)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.log("Loi generate", err));
+  };
+
   return (
     <CartContext.Provider
       value={{
         totalFood,
         totalMoney,
         cartProducts,
+        generateOrder,
         setCartProducts,
         addProductToCart,
         removeProductFromCart,

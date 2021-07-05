@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "../form/button";
 import useDebounce from "../../../../lib/hooks/useDebounce";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import useDevice from "../../../../lib/hooks/useDevice";
@@ -40,11 +39,13 @@ export function SwitchTabs({ native = false, chevron = false, ...props }: Propst
     if (!clickToView && chevron) {
       setValue(debounceValue);
       let selected = document.getElementsByClassName("tab")[debounceValue];
-      selected.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      });
+      if (selected) {
+        selected.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
       setTimeout(() => {
         checkLeftnRight();
       }, 500);

@@ -5,7 +5,6 @@ import { Category } from "../../../../lib/repo/category.repo";
 import { Product } from "../../../../lib/repo/product.repo";
 import { Price } from "../../../shared/homepage-layout/price";
 import { Rating } from "../../../shared/homepage-layout/rating";
-import { Form } from "../../../shared/utilities/form/form";
 import { Img } from "../../../shared/utilities/img";
 import { SwitchTabs } from "../../../shared/utilities/tab/switch-tabs";
 import { HightLightCategories } from "./hight-light-categories";
@@ -13,7 +12,7 @@ interface ShopCategoriesPropsType extends ReactProps {}
 
 export function ShopCategories(props: ShopCategoriesPropsType) {
   const { productShop } = useShopContext();
-  const [isViewing, setIsViewing] = useState(0);
+  const [isViewing, setIsViewing] = useState<number>();
   const [isClickView, setIsClickView] = useState(false);
   function isInViewport(element) {
     const rect = element.getBoundingClientRect();
@@ -26,13 +25,11 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
   }
   function menuScrollEvent() {
     let scrollCheckInterval = null;
-    let menus = document.getElementById("menus");
-
-    let menulist = document.getElementsByClassName("menu");
-    if (!isClickView && menulist && menulist.length > 0 && menus && isInViewport(menus)) {
+    let menulist = document.getElementsByClassName("menu-title");
+    if (!isClickView && menulist && menulist.length > 0) {
       scrollCheckInterval = setInterval(() => {
         for (let index = 0; index < menulist.length; index++) {
-          let position = isInViewport(menus[index]);
+          let position = isInViewport(menulist[index]);
           if (position) {
             setTimeout(() => {
               setIsViewing(index);
@@ -111,8 +108,6 @@ export function ShopCategory(props: ShopCategoryPropsType) {
   const router = useRouter();
   const query = router.query;
   const url = new URL(location.href);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [detailItem, setDetailItem] = useState<any>(null);
   const handleClick = (code) => {
     url.searchParams.set("productId", code);
     router.push(url.toString(), null, { shallow: true });
@@ -120,7 +115,7 @@ export function ShopCategory(props: ShopCategoryPropsType) {
   return (
     <div id={props.title} className="relative menu bg-white mb-2">
       <div className=" absolute -top-28 menu-container"></div>
-      <p className="font-semibold text-primary pt-2 pl-4 text-lg">{props.title}</p>
+      <p className="font-semibold text-primary pt-2 pl-4 text-lg menu-title">{props.title}</p>
       {props.list.length > 0 && (
         <>
           {props.list.map((item: Product, index: number) => (

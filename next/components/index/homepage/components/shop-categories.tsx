@@ -121,38 +121,38 @@ export function ShopCategory(props: ShopCategoryPropsType) {
           {props.list.map((item: Product, index: number) => (
             <div
               key={index}
-              className="flex items-center py-2 px-4 hover:bg-primary-light cursor-pointer border-b transition-all duration-300"
-              onClick={() => {
-                handleClick(item.code);
-              }}
+              className="py-2  hover:bg-primary-light cursor-pointer border-b transition-all duration-300"
             >
-              <div className="flex-1 pr-2 h-full flex flex-col">
-                <p className="font-semibold">{item.name}</p>
-                <p className="text-gray-500 text-sm">{item.subtitle}</p>
-                <Rating rating={item.rating || 4.8} textSm soldQty={item.soldQty} />
-                <p className="text-gray-400 text-sm">{item.des}</p>
-                <Price
-                  price={item.basePrice}
-                  saleRate={item.saleRate}
-                  downPrice={item.downPrice}
-                  textDanger
-                  className="mt-auto"
-                />
+              <div
+                className={`flex items-center px-4  ${item.allowSale ? "" : "hidden"}`}
+                onClick={() => {
+                  handleClick(item.code);
+                }}
+              >
+                <div className="flex-1 flex flex-col">
+                  <p className="font-semibold items-start">{item.name}</p>
+                  <p className="text-gray-500 text-sm">{item.subtitle}</p>
+                  <Rating rating={item.rating || 4.8} textSm soldQty={item.soldQty} />
+                  <p className="text-gray-400 text-sm">{item.des}</p>
+                  <Price
+                    price={item.basePrice}
+                    saleRate={item.saleRate}
+                    downPrice={item.downPrice}
+                    textDanger
+                    className="justify-items-end"
+                  />
+                </div>
+                <Img src={item.image} className="w-20 sm:w-24 rounded-sm" />
               </div>
-              {item.labels && (
-                <ul className="flex flex-wrap text-sm font-bold text-white">
-                  {item.labels.map((item, index) => {
-                    <i
-                      key={index}
-                      style={{ backgroundColor: item.color }}
-                      className="px-2 mx-2 rounded-sm"
-                    >
-                      {item.name}
-                    </i>;
-                  })}
-                </ul>
-              )}
-              <Img src={item.image} className="w-20 sm:w-24 rounded-sm" />
+              {item.labels?.map((label, index) => (
+                <div
+                  className="ml-2 inline-flex items-center text-white rounded-full font-semibold text-xs px-2 py-1 cursor-pointer whitespace-nowrap"
+                  style={{ backgroundColor: label.color }}
+                  key={index}
+                >
+                  <span>{label.name}</span>
+                </div>
+              ))}
             </div>
           ))}
         </>

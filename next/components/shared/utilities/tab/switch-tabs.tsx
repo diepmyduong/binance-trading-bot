@@ -148,9 +148,9 @@ export function SwitchTabs({ native = false, chevron = false, ...props }: Propst
         </>
       )}
       <div
-        className={`flex relative border-b   ${
-          (isMobile && " overflow-x-scroll") || "overflow-hidden"
-        } ${!native && " border-group rounded-md "}`}
+        className={`flex relative border-b  cursor-move  ${
+          isMobile ? " overflow-x-scroll" : "overflow-hidden"
+        } ${!native ? " border-group rounded-md " : ""}`}
       >
         {props.options.map(
           (item, index) =>

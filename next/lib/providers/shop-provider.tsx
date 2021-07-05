@@ -51,7 +51,13 @@ export function ShopProvider(props) {
       console.log(haveShop);
       let token = await ShopService.loginAnonymous(haveShop);
       SetAnonymousToken(token);
-      let cats = await CategoryService.getAll();
+      let cats = await CategoryService.getAll({
+        query: {
+          limit: 0,
+          order: { priority: -1, createdAt: 1 },
+        },
+        fragment: CategoryService.fullFragment,
+      });
       console.log(cats);
       if (cats) {
         setProductShop(cloneDeep(cats.data));

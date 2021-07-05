@@ -81,7 +81,7 @@ export function ShopProvider(props) {
     localStorage.removeItem("phoneUser");
     setCustomer(null);
     if (router.pathname !== "/") {
-      router.reload();
+      router.push(location.href, null, { shallow: true });
     }
   }
 

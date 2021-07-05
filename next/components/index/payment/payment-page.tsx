@@ -46,7 +46,7 @@ export function PaymentPage() {
                     <p className="">{item.product.name}</p>
                     <p className=" text-gray-500">{item.note}</p>
                     {item.topping.map((topping, index) => (
-                      <p className=" text-gray-500 text-sm ml-2">{topping.toppingName}</p>
+                      <p className=" text-gray-500 text-sm ml-2">{topping.optionName}</p>
                     ))}
                   </div>
                   <div className="font-bold">{NumberPipe(item.amount)}đ</div>

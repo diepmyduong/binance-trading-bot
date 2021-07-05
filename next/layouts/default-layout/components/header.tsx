@@ -36,12 +36,12 @@ export function Header({ code, ...props }: HeaderPropsType) {
     {
       label: "Lịch sử đặt hàng",
       icon: <FaHistory />,
-      onClick: () => router.push("/order"),
+      onClick: () => router.push("/order", null, { shallow: true }),
     },
     {
       label: "Khuyến mãi",
       icon: <FaPercent />,
-      onClick: () => router.push("/promotion"),
+      onClick: () => router.push("/promotion", null, { shallow: true }),
     },
     {
       label: "Đăng xuất",

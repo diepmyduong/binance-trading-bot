@@ -86,7 +86,7 @@ export function CartProvider(props) {
   };
 
   const generateOrder = (inforBuyer, note) => {
-    let itemProduct: OrderItemInput[] = [{ productId: "", quantity: 1, toppings: null }];
+    let itemProduct: OrderItemInput[] = [];
     cartProducts.forEach((item) => {
       let OrderItem: OrderItemInput = {
         productId: item.productId,
@@ -95,17 +95,26 @@ export function CartProvider(props) {
       };
       itemProduct.push(OrderItem);
     });
+    let longtitude = 106.771436,
+      lattitude = 10.842888;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
+        longtitude = position.coords.latitude;
+        lattitude = position.coords.longitude;
+      });
+    }
+    console.log("lattitude,longtitude", lattitude, longtitude);
     let data: OrderInput = {
       buyerName: inforBuyer.name,
-      buyerPhone: inforBuyer.phone,
+      buyerPhone: inforBuyer.phone.toString(),
       pickupMethod: "abc",
       shopBranchId: "abc",
       pickupTime: "abc",
       buyerProvinceId: "abc",
       buyerDistrictId: "abc",
       buyerWardId: "abc",
-      latitude: 0,
-      longtitude: 0,
+      latitude: parseFloat(lattitude.toString()),
+      longitude: parseFloat(longtitude.toString()),
       paymentMethod: "COD",
       note: note.note,
       items: itemProduct,

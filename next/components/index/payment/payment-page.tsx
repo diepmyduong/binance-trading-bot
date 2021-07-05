@@ -40,9 +40,12 @@ export function PaymentPage() {
                     <p className="min-w-5 text-center">{item.qty}</p>
                     <p className="px-2">X</p>
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 flex flex-col">
                     <p className="">{item.product.name}</p>
                     <p className=" text-gray-500">{item.note}</p>
+                    {item.topping.map((topping, index) => (
+                      <p className=" text-gray-500 text-sm ml-2">{topping.name}</p>
+                    ))}
                   </div>
                   <div className="font-bold">{NumberPipe(item.amount)}đ</div>
                 </div>
@@ -90,17 +93,14 @@ export function PaymentPage() {
           </Swiper>
         </div>
         <div className="h-24"></div>
-        <ButtonPayment
-          voucherApplied={voucherApplied}
-          setVoucherApplied={setVoucherApplied}
-          totalMoney={totalMoney}
-        />
+        <ButtonPayment voucherApplied={voucherApplied} setVoucherApplied={setVoucherApplied} />
       </div>
     </>
   );
 }
 
-const ButtonPayment = ({ voucherApplied, setVoucherApplied, totalMoney }) => {
+const ButtonPayment = ({ voucherApplied, setVoucherApplied }) => {
+  const { totalMoney, generateOrder } = useCartContext();
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
       <div className="grid grid-cols-2 px-4 border-t border-b border-gray-100 items-center justify-between">
@@ -121,7 +121,12 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, totalMoney }) => {
         )}
       </div>
       <div className="w-full py-2 px-4">
-        <Button text={`Đặt hàng ${NumberPipe(totalMoney)}đ`} primary className="w-full" />
+        <Button
+          text={`Đặt hàng ${NumberPipe(totalMoney)}đ`}
+          primary
+          className="w-full"
+          onClick={() => generateOrder()}
+        />
       </div>
     </div>
   );

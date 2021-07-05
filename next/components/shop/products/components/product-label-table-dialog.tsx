@@ -11,11 +11,7 @@ export function ProductLabelTableDialog({ ...props }: PropsType) {
   return (
     <Dialog {...props}>
       <Dialog.Body>
-        <DataTable<ProductLabel>
-          crudService={ProductLabelService}
-          order={{ createdAt: -1 }}
-          limit={0}
-        >
+        <DataTable<ProductLabel> crudService={ProductLabelService} order={{ createdAt: -1 }}>
           <DataTable.Header>
             <DataTable.Title />
             <DataTable.Buttons>

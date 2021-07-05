@@ -12,7 +12,7 @@ export interface OrderInput {
   shopBranchId: string;
   pickupTime: string;
   buyerProvinceId: string;
-  buyerDistrictId: String;
+  buyerDistrictId: string;
   buyerWardId: string;
   latitude: number;
   longtitude: number;

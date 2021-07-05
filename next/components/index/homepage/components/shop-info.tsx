@@ -29,7 +29,7 @@ export function ShopInfo(props: Propstype) {
         className="bannerShop"
       />
       <ShopBranch
-        className="center-item top-1/4 w-11/12 sm:mt-10"
+        className="center-item top-1/4 w-11/12 sm:mt-20"
         info={{ name: props.shop.shopName }}
       />
       <MoreInfomation />

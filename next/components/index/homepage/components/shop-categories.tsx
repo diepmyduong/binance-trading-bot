@@ -129,8 +129,8 @@ export function ShopCategory(props: ShopCategoryPropsType) {
                   handleClick(item.code);
                 }}
               >
-                <div className="flex-1 pr-2 h-full flex flex-col">
-                  <p className="font-semibold">{item.name}</p>
+                <div className="flex-1 flex flex-col">
+                  <p className="font-semibold items-start">{item.name}</p>
                   <p className="text-gray-500 text-sm">{item.subtitle}</p>
                   <Rating rating={item.rating || 4.8} textSm soldQty={item.soldQty} />
                   <p className="text-gray-400 text-sm">{item.des}</p>
@@ -139,7 +139,7 @@ export function ShopCategory(props: ShopCategoryPropsType) {
                     saleRate={item.saleRate}
                     downPrice={item.downPrice}
                     textDanger
-                    className="mt-auto"
+                    className="justify-items-end"
                   />
                 </div>
                 <Img src={item.image} className="w-20 sm:w-24 rounded-sm" />

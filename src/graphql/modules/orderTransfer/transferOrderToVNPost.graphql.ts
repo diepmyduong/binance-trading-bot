@@ -11,8 +11,8 @@ import {
   PickupType,
 } from "../../../helpers/vietnamPost/resources/type";
 import { Context } from "../../context";
+import { IOrder, OrderModel, OrderStatus, PaymentMethod } from "../order/order.model";
 import { ShopConfigModel } from "../shopConfig/shopConfig.model";
-import { IOrder, OrderModel, OrderStatus, PaymentMethod } from "./order.model";
 
 export default {
   schema: gql`

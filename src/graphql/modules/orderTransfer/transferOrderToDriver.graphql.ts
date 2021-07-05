@@ -7,6 +7,7 @@ import { Context } from "../../context";
 import { DriverModel } from "../driver/driver.model";
 import { OrderModel, OrderStatus, ShipMethod } from "../order/order.model";
 import { DeliveryInfo } from "../order/types/deliveryInfo.type";
+import { ShopBranchModel } from "../shopBranch/shopBranch.model";
 
 export default {
   schema: gql`
@@ -37,6 +38,7 @@ export default {
         if (!driver) throw Error("Tài xế không đúng.");
         if (order.status != OrderStatus.CONFIRMED || order.shipMethod)
           throw Error("Đơn hàng này không thể giao.");
+        const branch = await ShopBranchModel.findById(order.shopBranchId);
         order.driverId = driver._id;
         order.driverName = driver.name;
         order.driverPhone = driver.phone;
@@ -46,6 +48,7 @@ export default {
           serviceName: "DRIVER",
           status: "ACCEPTED",
           statusText: Ahamove.StatusText.ACCEPTED,
+          deliveryTime: branch.shipPreparationTime,
         } as DeliveryInfo;
         order.shipMethod = ShipMethod.DRIVER;
         order = await order.save();

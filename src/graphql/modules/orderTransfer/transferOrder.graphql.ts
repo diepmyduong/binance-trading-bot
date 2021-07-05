@@ -1,12 +1,13 @@
 import { gql } from "apollo-server-express";
+
 import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { onConfirmedOrder } from "../../../events/onConfirmedOrder.event";
 import { onTransfering } from "../../../events/onTransfering.event";
 import { Context } from "../../context";
 import { MemberModel } from "../member/member.model";
+import { OrderModel, OrderStatus } from "../order/order.model";
 import { OrderItemModel } from "../orderItem/orderItem.model";
-import { OrderModel, OrderStatus } from "./order.model";
 
 export default {
   schema: gql`

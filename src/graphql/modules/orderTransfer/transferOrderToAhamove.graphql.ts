@@ -6,10 +6,11 @@ import { ErrorHelper } from "../../../helpers";
 import { Ahamove } from "../../../helpers/ahamove/ahamove";
 import { CreateOrderProps } from "../../../helpers/ahamove/type";
 import { Context } from "../../context";
+import { IOrder, OrderModel, OrderStatus, ShipMethod } from "../order/order.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
 import { IShopBranch, ShopBranchModel } from "../shopBranch/shopBranch.model";
 import { IShopConfig, ShopConfigModel } from "../shopConfig/shopConfig.model";
-import { IOrder, OrderModel, OrderStatus, ShipMethod } from "./order.model";
+
 export default {
   schema: gql`
     extend type Mutation {
@@ -46,6 +47,7 @@ export default {
         order.deliveryInfo.status = ahamoveOrder.status;
         order.deliveryInfo.statusText = get(Ahamove.StatusText, ahamoveOrder.status);
         order.deliveryInfo.partnerFee = ahamoveOrder.total_pay;
+        order.deliveryInfo.deliveryTime = `${(ahamoveOrder.duration / 60).toFixed(0)} phút`;
         await order.save();
         return order;
       },

@@ -13,6 +13,12 @@ export interface ToppingOption {
   price: number;
   isDefault: boolean;
 }
+export interface OrderItemToppingInput {
+  toppingId: string;
+  toppingName: string;
+  optionName: string;
+  price: number;
+}
 export class ProductToppingRepository extends CrudRepository<ProductTopping> {
   apiName: string = "ProductTopping";
   displayName: string = "mẫu topping";

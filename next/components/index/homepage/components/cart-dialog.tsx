@@ -79,7 +79,7 @@ export function CartDialog(props: Propstype) {
         onConfirm={(val) => {
           if (val) {
             cunstomerLogin(val);
-            router.push("/payment");
+            router.push("/payment", null, { shallow: true });
           }
         }}
       />

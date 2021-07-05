@@ -14,6 +14,9 @@ import { Spinner } from "../../shared/utilities/spinner";
 import { useProductsContext } from "../../admin/products/providers/products-provider";
 import { useProductDetailContext } from "./provider/product-detail-provider";
 import { ToppingOption } from "../../../lib/repo/product-topping.repo";
+import { notEqual } from "assert";
+import { FaPen } from "react-icons/fa";
+import { Toppings } from "./components/toppings";
 
 interface PropsType extends DialogPropsType {
   productId?: any;
@@ -29,9 +32,9 @@ interface PropsType extends DialogPropsType {
 }
 export function ProductDetail({ item, productId, ...props }: PropsType) {
   const { cartProducts, addProductToCart } = useCartContext();
-  const [openDialog, setOpenDialog] = useState(false);
   const [count, setCount] = useState(1);
-  const [opacity, setOpacity] = useState("opacity-0");
+  const [toppings, setToppings] = useState([]);
+  const [opacity, setOpacity] = useState<number>();
   const ref = useRef(null);
   const [intervalScroll, setIntervalScroll] = useState(0);
   const [topping, setTopping] = useState<ToppingOption[]>([]);
@@ -41,9 +44,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
   useEffect(() => {
     let total = 0;
     if (productDetail) {
-      topping.forEach((item) => {
-        total += item.price;
-      });
+      topping.forEach((item) => (total += item.price));
       total += productDetail.downPrice * count;
       setTotalMoney(total);
     }
@@ -55,14 +56,21 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
     if (productDetail) setTotalMoney(productDetail.downPrice * count);
   }, [productDetail]);
 
+  function handleAddTopping(data) {
+    let arr = [];
+    for (var item in data) {
+      arr.push(data[item]);
+    }
+    setTopping([...arr]);
+  }
+
   function dialogScrollEvent() {
     let scrollCheckInterval = null;
     scrollCheckInterval = setInterval(() => {
       if (ref.current) {
-        console.log(ref.current.scrollTop);
-        let temp = parseInt(((ref.current.scrollTop / 215) * 10).toFixed(0)) * 10;
-        if (temp > 100) setOpacity("opacity-100");
-        else setOpacity("opacity-" + temp);
+        let temp = parseInt(((ref.current.scrollTop / 200) * 10).toFixed(0)) * 10;
+        if (temp > 100) setOpacity(100);
+        else setOpacity(temp);
       }
     }, 300);
     setIntervalScroll(scrollCheckInterval);
@@ -81,28 +89,35 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
       onClose={props.onClose}
       mobileSizeMode
       slideFromBottom="all"
-      bodyClass="relative rounded"
+      autoScroll="overflow-y-hidden"
+      bodyClass="relative rounded w-full"
     >
-      <div ref={ref} className="w-full rounded bg-white overflow-y-auto">
-        <div className="relative w-full">
-          <div
-            className={`w-8 h-8 absolute right-2 top-2 z-200 rounded-full flex items-center justify-center cursor-pointer${
-              opacity == "opacity-100" ? "invisible" : "visible"
-            }`}
-            onClick={props.onClose}
-          >
-            <i className="text-2xl text-gray-600 ">
-              <HiOutlineX />
-            </i>
-          </div>
+      <div ref={ref} className="w-full rounded bg-white overflow-y-auto" style={{ height: "95vh" }}>
+        <div
+          className={`w-8 h-8 absolute right-2 top-2 z-200 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer ${
+            opacity == 100 ? "invisible" : "visible"
+          }`}
+          onClick={props.onClose}
+        >
+          <i className="text-2xl text-gray-600 ">
+            <HiOutlineX />
+          </i>
         </div>
         <div
-          className={`z-50 w-full ${opacity} fixed top-0 h-12 flex items-center justify-center max-w-lg bg-white `}
+          className={`z-50 w-full opacity-${
+            opacity >= 90 ? opacity : 0
+          } fixed top-0 h-12 max-w-lg bg-white `}
         >
-          <h2 className="text-xl text-center w-full flex-1">{productDetail.name}</h2>
+          <h2
+            className={`text-xl text-center w-full pt-2 ${
+              opacity == 100 ? "visible" : "invisible"
+            } `}
+          >
+            {productDetail.name}
+          </h2>
           <div
-            className={`w-8 h-8 mr-2 z-200 rounded-full bg-gray-50 flex items-center justify-center cursor-pointer ${
-              opacity == "opacity-100" ? "visible" : "invisible"
+            className={`absolute top-2 right-2 w-8 h-8 z-200 rounded-full bg-gray-50 flex items-center justify-center cursor-pointer ${
+              opacity == 100 ? "visible" : "invisible"
             }`}
             onClick={props.onClose}
           >
@@ -111,15 +126,17 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
             </i>
           </div>
         </div>
-        <div className="w-full sticky top-0">
+        <div className="relative w-full top-0 ">
           <Img src={productDetail.image} ratio169 />
-          <div className="absolute bottom-0 left-0 px-4 text-xs text-gray-600 py-1 flex items-center space-x-1">
-            <i className="text-yellow-500">
-              <HiStar />
-            </i>
-            <div className="font-bold">{productDetail.rating}</div>
-            <div className="px-2">-</div>
-            <div className="">{`Đã bán ${productDetail.soldQty || 0}`}</div>
+          <div className="absolute bottom-0 left-0 w-full h-1/3  px-4 text-xs text-white py-1 flex items-end space-x-1 bg-opacity-20 bg-gradient-to-t from-primary">
+            <div className="flex items-center">
+              <i className="text-yellow-500 px-1">
+                <HiStar />
+              </i>
+              <div className="font-semibold">{productDetail.rating}</div>
+              <div className="px-1">-</div>
+              <div className="">{`Đã bán ${productDetail.soldQty || 0}`}</div>
+            </div>
           </div>
         </div>
 
@@ -135,41 +152,14 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
             )}
           </div>
           <p className="px-4 text-sm text-gray-500">{productDetail.subtitle}</p>
-          <Button
-            text="+ Lời nhắn cho cửa hàng"
-            textPrimary
-            className="py-2 text-xs"
-            unfocusable
-            onClick={() => setOpenDialog(true)}
-          />
+          <Note />
           <div className="">
-            {productDetail.toppings &&
-              productDetail.toppings.map((items, index) => {
-                if (items.options.length > 0)
-                  return (
-                    <div className="">
-                      <div className="bg-primary-light  px-4 py-2">
-                        <h2 className="font-bold text-sm">{items.name}</h2>
-                        <p className="pt-1 text-xs"></p>
-                      </div>
-                      <div className="">
-                        {items.options.map((item, index) => {
-                          return (
-                            <OneDish
-                              item={item}
-                              name={items.name}
-                              key={index}
-                              onClick={() => {
-                                topping.push(item);
-                                setTopping([...topping]);
-                              }}
-                            />
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-              })}
+            <Toppings
+              toppings={productDetail.toppings}
+              onChange={(dta) => {
+                handleAddTopping(dta);
+              }}
+            />
           </div>
         </div>
         <div className="h-22"></div>
@@ -181,74 +171,62 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
               text={`Thêm ${NumberPipe(totalMoney)} đ`}
               className="w-full"
               onClick={() => {
-                addProductToCart(productDetail, count);
+                addProductToCart(productDetail, count, topping);
                 props.onClose();
               }}
+              small
             />
           </div>
         </Dialog.Footer>
-        <Form
-          dialog
-          slideFromBottom="mobile-only"
-          mobileSizeMode
-          isOpen={openDialog}
-          onClose={() => setOpenDialog(false)}
-          onSubmit={() => {
-            setOpenDialog(false);
-          }}
-          className=""
-        >
-          <Field label="Lời nhắn của khách hàng" name="note">
-            <Textarea placeholder="Nhập Lời nhắn của khách hàng" />
-          </Field>
-          <SaveButtonGroup cancelText="" />
-        </Form>
       </div>
     </Dialog>
   );
 }
 
-interface PropsOneDish {
-  item: ToppingOption;
-  onClick?: () => void;
-  name?: string;
-}
-const OneDish = ({ item, onClick, name }: PropsOneDish) => {
+const Note = () => {
+  const [note, setNote] = useState({ note: "" });
+  const [openDialog, setOpenDialog] = useState(false);
   return (
-    <div className="flex items-center justify-between px-4 py-1 border-b border-gray-300">
-      <div className="flex items-center w-full" onClick={onClick}>
-        <input type="radio" id={item.name} name={name} className="inline form-checkbox" />
-        <label htmlFor={item.name} className="inline font-light text-sm ml-2 cursor-pointer w-full">
-          {item.name}
-        </label>
+    <div className="">
+      <div className="mt-1 text-xs">
+        {note.note != "" ? (
+          <div className="px-4 py-2 bg-white w-full">
+            <div className="flex items-center justify-between">
+              <p className="font-bold">Lời nhắn cho cửa hàng</p>
+              <i className="hover:text-primary cursor-pointer" onClick={() => setOpenDialog(true)}>
+                <FaPen />
+              </i>
+            </div>
+            <p className="">{note.note}</p>
+          </div>
+        ) : (
+          <Button
+            text="+ Lời nhắn cho cửa hàng"
+            textPrimary
+            className="py-2 text-xs"
+            unfocusable
+            onClick={() => setOpenDialog(true)}
+          />
+        )}
       </div>
-      <div className="text-sm text-gray-400 min-w-max">{NumberPipe(item.price)} đ</div>
+      <Form
+        dialog
+        slideFromBottom="mobile-only"
+        mobileSizeMode
+        isOpen={openDialog}
+        onClose={() => setOpenDialog(false)}
+        initialData={note}
+        onSubmit={(data) => {
+          setNote({ ...data });
+          setOpenDialog(false);
+        }}
+        className=""
+      >
+        <Field label="Lời nhắn của khách hàng" name="note">
+          <Textarea placeholder="Nhập Lời nhắn của khách hàng" />
+        </Field>
+        <SaveButtonGroup cancelText="" />
+      </Form>
     </div>
   );
-};
-const data = {
-  sideDishes: [
-    {
-      dish: "Trứng chiên",
-      price: 13000,
-    },
-    {
-      dish: "Trứng hấp",
-      price: 13000,
-    },
-    {
-      dish: "Trứng luộc",
-      price: 12000,
-    },
-  ],
-  obligatoryDishes: [
-    {
-      dish: "Rau",
-      price: 0,
-    },
-    {
-      dish: "Canh",
-      price: 0,
-    },
-  ],
 };

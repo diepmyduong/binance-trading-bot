@@ -10,7 +10,7 @@ export const ProductDetailContext = createContext<
 >({});
 
 export function ProductDetailProvider({ productId, ...props }) {
-  const [productDetail, setProductDetail] = useState<any>();
+  const [productDetail, setProductDetail] = useState<Product>();
   const loadProduct = () => {
     ProductService.getAll({ query: { filter: { code: productId } } })
       .then((res) => {

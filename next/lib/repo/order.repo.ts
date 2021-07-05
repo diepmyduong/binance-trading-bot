@@ -2,7 +2,7 @@ import { BaseModel, CrudRepository } from "./crud.repo";
 
 export interface OrderInput {
   buyerName: string;
-  buyerPhong: string;
+  buyerPhone: string;
   pickupMethod: string;
   shopBranchId: string;
   pickupTime: string;
@@ -13,7 +13,7 @@ export interface OrderInput {
   longtitude: number;
   paymentMethod: string;
   note: string;
-  items: [OrderItemInput];
+  items: OrderItemInput[];
 }
 
 export interface OrderItemInput {

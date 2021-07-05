@@ -13,7 +13,7 @@ import { Dialog, DialogPropsType } from "../../shared/utilities/dialog/dialog";
 import { Spinner } from "../../shared/utilities/spinner";
 import { useProductsContext } from "../../admin/products/providers/products-provider";
 import { useProductDetailContext } from "./provider/product-detail-provider";
-import { ToppingOption } from "../../../lib/repo/product-topping.repo";
+import { OrderItemToppingInput, ToppingOption } from "../../../lib/repo/product-topping.repo";
 import { notEqual } from "assert";
 import { FaPen } from "react-icons/fa";
 import { Toppings } from "./components/toppings";
@@ -37,7 +37,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
   const [opacity, setOpacity] = useState<number>();
   const ref = useRef(null);
   const [intervalScroll, setIntervalScroll] = useState(0);
-  const [topping, setTopping] = useState<ToppingOption[]>([]);
+  const [topping, setTopping] = useState<OrderItemToppingInput[]>([]);
   const [totalMoney, setTotalMoney] = useState(0);
   const { productDetail } = useProductDetailContext();
 
@@ -57,9 +57,15 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
   }, [productDetail]);
 
   function handleAddTopping(data) {
-    let arr = [];
+    let arr: OrderItemToppingInput[] = [];
     for (var item in data) {
-      arr.push(data[item]);
+      let temp: OrderItemToppingInput = {
+        toppingName: data[item].nameTopping,
+        toppingId: item,
+        optionName: data[item].name,
+        price: data[item].price,
+      };
+      arr.push({ ...temp });
     }
     setTopping([...arr]);
   }

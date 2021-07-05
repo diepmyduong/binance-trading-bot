@@ -1,6 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import cloneDeep from "lodash/cloneDeep";
-import { useToast } from "./toast-provider";
 import { Product } from "../repo/product.repo";
 import { OrderItemToppingInput, ToppingOption } from "../repo/product-topping.repo";
 import { OrderInput, OrderItemInput, OrderService } from "../repo/order.repo";
@@ -24,7 +22,7 @@ export interface CartProduct {
   qty: number;
   price?: number;
   amount?: number;
-  topping?: ToppingOption[];
+  topping?: OrderItemToppingInput[];
 }
 export function CartProvider(props) {
   const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
@@ -34,11 +32,13 @@ export function CartProvider(props) {
     setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
     setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
   }, [cartProducts]);
-  const addProductToCart = (product: Product, qty: number, topping: ToppingOption[]): boolean => {
+  const addProductToCart = (
+    product: Product,
+    qty: number,
+    topping: OrderItemToppingInput[]
+  ): boolean => {
     if (!qty) return false;
     let cartProduct = cartProducts.find((x) => x.productId == product.id);
-    let totalTopping = 0;
-
     if (cartProduct) {
       cartProduct.qty += qty;
       cartProduct.amount = cartProduct.price * cartProduct.qty;
@@ -55,7 +55,11 @@ export function CartProvider(props) {
     setCartProducts([...cartProducts]);
     return true;
   };
-  const changeProductQuantity = (product: Product, qty: number, topping: ToppingOption[]) => {
+  const changeProductQuantity = (
+    product: Product,
+    qty: number,
+    topping: OrderItemToppingInput[]
+  ) => {
     if (!qty) return;
     let cartProduct = cartProducts.find((x) => x.productId == product.id);
     if (cartProduct) {
@@ -68,7 +72,7 @@ export function CartProvider(props) {
         qty,
         price: product.salePrice,
         amount: product.salePrice * qty,
-        topping: [],
+        topping: topping,
       });
     }
     setCartProducts([...cartProducts]);
@@ -81,30 +85,19 @@ export function CartProvider(props) {
     setCartProducts([...cartProducts]);
   };
 
-  const generateOrder = () => {
+  const generateOrder = (inforBuyer, note) => {
     let itemProduct: OrderItemInput[] = [{ productId: "", quantity: 1, toppings: null }];
     cartProducts.forEach((item) => {
-      let toppingInput: OrderItemToppingInput[] = [];
-      item.topping.forEach((it) => {
-        let temp: OrderItemToppingInput;
-        temp = {
-          optionName: it.name,
-          toppingName: it.name,
-          price: it.price,
-          toppingId: it.name,
-        };
-        toppingInput.push(temp);
-      });
       let OrderItem: OrderItemInput = {
         productId: item.productId,
         quantity: item.qty,
-        toppings: null,
+        toppings: item.topping,
       };
       itemProduct.push(OrderItem);
     });
     let data: OrderInput = {
-      buyerName: "abc",
-      buyerPhong: "abc",
+      buyerName: inforBuyer.name,
+      buyerPhone: inforBuyer.phone,
       pickupMethod: "abc",
       shopBranchId: "abc",
       pickupTime: "abc",
@@ -113,9 +106,9 @@ export function CartProvider(props) {
       buyerWardId: "abc",
       latitude: 0,
       longtitude: 0,
-      paymentMethod: "abc",
-      note: "abc",
-      items: [{ productId: "60de971963334fc458de4886", quantity: 1, toppings: null }],
+      paymentMethod: "COD",
+      note: note.note,
+      items: itemProduct,
     };
     OrderService.generateOrder(data)
       .then((res) => {

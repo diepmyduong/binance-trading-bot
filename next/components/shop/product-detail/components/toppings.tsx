@@ -11,8 +11,9 @@ interface PropsType extends ReactProps {
 }
 export function Toppings({ toppings, onChange }: PropsType) {
   let [data, setData] = useState<any>({});
-  const handleClick = (dta, id) => {
+  const handleClick = (dta, id, nameTopping) => {
     data[id] = dta;
+    data[id] = { ...data[id], nameTopping: nameTopping };
     setData({ ...data });
     onChange(data);
   };
@@ -24,7 +25,7 @@ export function Toppings({ toppings, onChange }: PropsType) {
           <Topping
             topping={topping}
             onSelect={(dta, id) => {
-              handleClick(dta, id);
+              handleClick(dta, id, topping.name);
             }}
             key={index}
           />

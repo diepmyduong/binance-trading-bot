@@ -9,8 +9,8 @@ import { Select } from "../../../shared/utilities/form/select";
 import BranchsDialog from "../../homepage/components/branchs-dialog";
 import { useShopContext } from "../../../../lib/providers/shop-provider";
 
-export function InforPayment() {
-  const initData = {
+export function InforPayment({ inforBuyer, setInforBuyer }) {
+  inforBuyer = {
     name: "Nguyễn Văn A",
     phone: "0869698360",
     address: "749 Nguyễn Văn Linh Quận 7 TPHCM ",
@@ -54,7 +54,7 @@ export function InforPayment() {
           }}
         />
         <div className="px-4 pt-6 text-sm">
-          <Form initialData={initData}>
+          <Form initialData={inforBuyer} onChange={(data) => setInforBuyer(data)}>
             <Field name="name" noError className="pb-2">
               <Input
                 placeholder="Nhập tên người nhận"

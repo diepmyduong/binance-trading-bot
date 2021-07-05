@@ -18,6 +18,8 @@ import { TicketVoucher } from "./components/ticket-voucher";
 export function PaymentPage() {
   const { cartProducts, totalFood, totalMoney } = useCartContext();
   const [voucherApplied, setVoucherApplied] = useState(null);
+  const [note, setNote] = useState({ note: "" });
+  const [inforBuyer, setInforBuyer] = useState<any>();
   console.log(cartProducts);
   useEffect(() => {
     setVoucherApplied(null);
@@ -25,7 +27,7 @@ export function PaymentPage() {
   return (
     <>
       <div className="text-gray-700 bg-gray-100">
-        <InforPayment />
+        <InforPayment inforBuyer={inforBuyer} setInforBuyer={setInforBuyer} />
         <div className="mt-1 bg-white">
           <p className="font-semibold px-4 py-2">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
           <div className="">
@@ -44,7 +46,7 @@ export function PaymentPage() {
                     <p className="">{item.product.name}</p>
                     <p className=" text-gray-500">{item.note}</p>
                     {item.topping.map((topping, index) => (
-                      <p className=" text-gray-500 text-sm ml-2">{topping.name}</p>
+                      <p className=" text-gray-500 text-sm ml-2">{topping.toppingName}</p>
                     ))}
                   </div>
                   <div className="font-bold">{NumberPipe(item.amount)}đ</div>
@@ -53,7 +55,7 @@ export function PaymentPage() {
             })}
           </div>
         </div>
-        <InputNote />
+        <InputNote note={note} setNote={setNote} />
         <div className="px-4 py-4 mt-1 bg-white ">
           <div className="flex justify-between items-center">
             <div className="">
@@ -93,13 +95,18 @@ export function PaymentPage() {
           </Swiper>
         </div>
         <div className="h-24"></div>
-        <ButtonPayment voucherApplied={voucherApplied} setVoucherApplied={setVoucherApplied} />
+        <ButtonPayment
+          voucherApplied={voucherApplied}
+          setVoucherApplied={setVoucherApplied}
+          inforBuyer={inforBuyer}
+          note={note}
+        />
       </div>
     </>
   );
 }
 
-const ButtonPayment = ({ voucherApplied, setVoucherApplied }) => {
+const ButtonPayment = ({ voucherApplied, setVoucherApplied, inforBuyer, note }) => {
   const { totalMoney, generateOrder } = useCartContext();
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
@@ -125,17 +132,15 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied }) => {
           text={`Đặt hàng ${NumberPipe(totalMoney)}đ`}
           primary
           className="w-full"
-          onClick={() => generateOrder()}
+          onClick={() => generateOrder(inforBuyer, note)}
         />
       </div>
     </div>
   );
 };
 
-const InputNote = () => {
-  const [note, setNote] = useState({ note: "" });
+const InputNote = ({ note, setNote }) => {
   const [openDialog, setOpenDialog] = useState(false);
-
   return (
     <>
       <div className="mt-1">

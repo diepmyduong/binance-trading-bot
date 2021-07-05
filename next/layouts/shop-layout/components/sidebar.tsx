@@ -43,9 +43,17 @@ export default function Sidebar({ ...props }: PropsType) {
           className="bg-white shadow w-60 fixed top-0 flex flex-col"
           style={{ height: "calc(100vh)" }}
         >
-          <div className="flex items-center py-8 px-6">
+          <div className="flex items-start pt-6 px-4">
             {member.shopLogo && <Img className="w-12 rounded-full" src={member.shopLogo} />}
-            <div className="text-xl pl-4 flex-1 text-gray-800 font-semibold">{member.shopName}</div>
+            <div className="pl-3 flex-1">
+              <div className="text-gray-800 font-semibold text-ellipsis-2">{member.shopName}</div>
+              <Button
+                className="mb-1 text-sm"
+                text="Đăng xuất"
+                hoverDanger
+                onClick={logoutMember}
+              />
+            </div>
           </div>
           <div className="flex-1 v-scrollbar pt-1 pb-3">
             {menus.map((menu, index) => (
@@ -85,7 +93,6 @@ export default function Sidebar({ ...props }: PropsType) {
               </div>
             ))}
           </div>
-          <Button className="mb-1" text="Đăng xuất" hoverDanger onClick={logoutMember} />
           <Footer />
         </div>
       </>

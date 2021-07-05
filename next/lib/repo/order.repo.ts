@@ -7,7 +7,7 @@ import { User } from "./user.repo";
 
 export interface OrderInput {
   buyerName: string;
-  buyerPhong: string;
+  buyerPhone: string;
   pickupMethod: string;
   shopBranchId: string;
   pickupTime: string;

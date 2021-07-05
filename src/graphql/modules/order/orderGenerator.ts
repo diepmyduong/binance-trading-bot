@@ -214,6 +214,7 @@ export class OrderGenerator {
         distance > shopBranch.shipDefaultDistance ? distance - shopBranch.shipDefaultDistance : 0;
       this.order.shipfee = shopBranch.shipDefaultFee + shopBranch.shipNextFee * nextDistance;
     }
+    this.order.shipDistance = distance;
   }
   private async calculateVNPostShipFee() {
     const [storehouses, addressStorehouse] = await Promise.all([

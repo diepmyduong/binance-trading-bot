@@ -72,6 +72,8 @@ const schema = gql`
     shipMethod: String
     "Tiền ship"
     shipfee: Float
+    "Khoản cách ship"
+    shipDistance: Float
     "Phương thức thanh toán ${Object.values(PaymentMethod)}"
     paymentMethod: String
     "Ghi chú đơn hàng"

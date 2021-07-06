@@ -22,24 +22,24 @@ export interface ShopConfig extends BaseModel {
   tags: ShopTag[];
 }
 
-interface ShopTag {
+export interface ShopTag {
   name: string;
   icon: string;
   qty: number;
 }
 
-interface ShopProductGroup {
+export interface ShopProductGroup {
   name: string;
   isPublic: boolean;
   productIds: string[];
   products: Product[];
 }
 
-interface ShopBanner {
+export interface ShopBanner {
   image: string;
   title: string;
   subtitle: string;
-  actionType: string;
+  actionType: "WEBSITE" | "PRODUCT" | "VOUCHER";
   link: string;
   productId: string;
   voucherId: string;
@@ -85,6 +85,7 @@ export class ShopConfigRepository extends CrudRepository<ShopConfig> {
       product {
         id: String
         code: String
+        name: String
       }: Product
       voucher {
         id: String
@@ -109,9 +110,6 @@ export class ShopConfigRepository extends CrudRepository<ShopConfig> {
         labelIds: [ID]
         labels {
           id: String
-          createdAt: DateTime
-          updatedAt: DateTime
-          memberId: ID
           name: String
           color: String
         }: [ProductLabel]
@@ -136,3 +134,9 @@ export class ShopConfigRepository extends CrudRepository<ShopConfig> {
   }
 }
 export const ShopConfigService = new ShopConfigRepository();
+
+export const SHOP_BANNER_ACTIONS: Option[] = [
+  { value: "PRODUCT", label: "Món" },
+  { value: "VOUCHER", label: "Voucher" },
+  { value: "WEBSITE", label: "Trang web" },
+];

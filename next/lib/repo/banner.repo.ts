@@ -1,14 +1,18 @@
 import { BaseModel, CrudRepository } from "./crud.repo";
 import { Product } from "./product.repo";
+import { ShopVoucher } from "./shop-voucher.repo";
 
 export interface ShopBanner extends BaseModel {
-  id: string;
-  name: string;
   image: string;
+  title: string;
+  subtitle: string;
+  actionType: string;
+  link: string;
   productId: string;
-  isPublish: boolean;
-  priority: number;
+  voucherId: string;
+  isPublic: boolean;
   product: Product;
+  voucher: ShopVoucher;
 }
 export class ShopBannerRepository extends CrudRepository<ShopBanner> {
   apiName: string = "Shop";

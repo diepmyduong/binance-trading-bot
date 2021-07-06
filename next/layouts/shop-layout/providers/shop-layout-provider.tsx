@@ -31,8 +31,7 @@ export function ShopLayoutProvider(props) {
       data,
       toast,
     }).then((res) => {
-      // setShopConfig(res);
-      setShopConfig({ ...shopConfig, ...data });
+      setShopConfig(res);
       return res;
     });
   };

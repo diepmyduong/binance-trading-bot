@@ -22,10 +22,10 @@ export function ProductsPage(props: ReactProps) {
         <ProductsContext.Consumer>
           {({ loadCategories }) => (
             <>
-              <div className="flex justify-between items-center pb-6 border-b border-gray-300">
+              <div className="flex justify-between items-center pb-6 pt-4 border-b border-gray-300 bg-gray-100 sticky top-0 z-10 transition-all">
                 <ShopPageTitle
                   title="Danh mục món"
-                  subtitle="Quản lý danh mục và các món ăn thuộc danh mục"
+                  subtitle="Quản lý danh mục và các món thuộc danh mục"
                 />
                 <div className="flex gap-x-2">
                   <Button
@@ -53,7 +53,7 @@ export function ProductsPage(props: ReactProps) {
               <Form
                 grid
                 dialog
-                extraDialogClass="bg-transparent"
+                extraDialogClass="bg-transparent rounded-t-xl rounded-b-xl"
                 extraHeaderClass="bg-gray-100 text-xl py-3 justify-center rounded-t-xl border-gray-300 pl-16"
                 extraBodyClass="px-6 bg-gray-100 rounded-b-xl"
                 initialData={openCategory}
@@ -76,7 +76,6 @@ export function ProductsPage(props: ReactProps) {
                 </Field>
                 <Form.Footer>
                   <Form.ButtonGroup
-                    submitText={`${openCategory ? "Chỉnh sửa" : "Thêm"} danh mục`}
                     className="justify-center"
                     cancelText=""
                     submitProps={{ className: "bg-gradient h-14 w-64" }}

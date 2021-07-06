@@ -320,7 +320,7 @@ export const OrderService = new OrderRepository();
 
 export const ORDER_STATUS: Option[] = [
   { value: "PENDING", label: "Chờ duyệt", color: "warning" },
-  { value: "CONFIRMED", label: "Xác nhận", color: "info" },
+  { value: "CONFIRMED", label: "Làm món", color: "info" },
   { value: "DELIVERING", label: "Đang giao", color: "purple" },
   { value: "COMPLETED", label: "Hoàn thành", color: "success" },
   { value: "FAILURE", label: "Thất bại", color: "danger" },

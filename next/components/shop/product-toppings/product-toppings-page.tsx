@@ -9,7 +9,7 @@ export function ProductToppingsPage(props: ReactProps) {
     <>
       <DataTable<ProductTopping> crudService={ProductToppingService} order={{ createdAt: -1 }}>
         <DataTable.Header>
-          <ShopPageTitle title="Mẫu Topping" subtitle="Quản lý các mẫu topping để gắn vào món ăn" />
+          <ShopPageTitle title="Mẫu Topping" subtitle="Quản lý các mẫu topping để gắn vào món" />
           <DataTable.Buttons>
             <DataTable.Button
               outline

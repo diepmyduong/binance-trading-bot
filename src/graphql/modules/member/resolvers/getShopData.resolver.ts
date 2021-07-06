@@ -1,4 +1,5 @@
 import { ErrorHelper } from "../../../../base/error";
+import { ROLES } from "../../../../constants/role.const";
 import { GraphQLHelper } from "../../../../helpers/graphql.helper";
 import { Context } from "../../../context";
 import {
@@ -7,26 +8,13 @@ import {
 } from "../../addressDelivery/addressDelivery.model";
 import { AddressStorehouseLoader } from "../../addressStorehouse/addressStorehouse.model";
 import { ShopConfigModel } from "../../shopConfig/shopConfig.model";
-import { IMember } from "../member.model";
+import { IMember, MemberModel } from "../member.model";
 import { memberService } from "../member.service";
 
 const Query = {
   getShopData: async (root: any, args: any, context: Context) => {
-    const { pageId, memberCode, xPageId, xPsId } = context;
-    const params: any = {};
-    if (!pageId && !xPageId && !memberCode) throw ErrorHelper.requestDataInvalid("Lỗi pageId");
-    if (pageId) {
-      params.fanpageId = pageId;
-    } else if (xPageId) {
-      params.fanpageId = xPageId;
-    } else {
-      if (memberCode) {
-        params.code = memberCode;
-      }
-    }
-    const member = await memberService.findOne(params);
-    if (!member) throw ErrorHelper.mgRecoredNotFound("Bưu cục");
-    return member;
+    context.auth(ROLES.ANONYMOUS_CUSTOMER_MEMBER_STAFF);
+    return MemberModel.findById(context.sellerId);
   },
 };
 

@@ -16,18 +16,25 @@ import { TicketVoucher } from "./components/ticket-voucher";
 // SwiperCore.use([Pagination]);
 
 export function PaymentPage() {
-  const { cartProducts, totalFood, totalMoney } = useCartContext();
+  const { cartProducts, totalFood, totalMoney, generateOrder } = useCartContext();
   const [voucherApplied, setVoucherApplied] = useState(null);
   const [note, setNote] = useState({ note: "" });
-  const [inforBuyer, setInforBuyer] = useState<any>();
-  console.log(cartProducts);
+  const [inforBuyers, setInforBuyers] = useState({});
+  const getPhone = () => {
+    if (typeof window === "undefined") return;
+    return localStorage.getItem("phoneUser");
+  };
+
+  useEffect(() => {
+    generateOrder(inforBuyers, note);
+  }, []);
   useEffect(() => {
     setVoucherApplied(null);
   }, []);
   return (
     <>
       <div className="text-gray-700 bg-gray-100">
-        <InforPayment inforBuyer={inforBuyer} setInforBuyer={setInforBuyer} />
+        <InforPayment onChange={(data) => console.log(data)} />
         <div className="mt-1 bg-white">
           <p className="font-semibold px-4 py-2">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
           <div className="">
@@ -55,7 +62,7 @@ export function PaymentPage() {
             })}
           </div>
         </div>
-        <InputNote note={note} setNote={setNote} />
+        <InputNote onChange={(data) => setNote({ ...data })} />
         <div className="px-4 py-4 mt-1 bg-white ">
           <div className="flex justify-between items-center">
             <div className="">
@@ -98,7 +105,6 @@ export function PaymentPage() {
         <ButtonPayment
           voucherApplied={voucherApplied}
           setVoucherApplied={setVoucherApplied}
-          inforBuyer={inforBuyer}
           note={note}
         />
       </div>
@@ -106,8 +112,8 @@ export function PaymentPage() {
   );
 }
 
-const ButtonPayment = ({ voucherApplied, setVoucherApplied, inforBuyer, note }) => {
-  const { totalMoney, generateOrder } = useCartContext();
+const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
+  const { totalMoney, generateOrder, order } = useCartContext();
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
       <div className="grid grid-cols-2 px-4 border-t border-b border-gray-100 items-center justify-between">
@@ -129,18 +135,22 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, inforBuyer, note }) 
       </div>
       <div className="w-full py-2 px-4">
         <Button
+          disabled={order.invalid}
           text={`Đặt hàng ${NumberPipe(totalMoney)}đ`}
           primary
           className="w-full"
-          onClick={() => generateOrder(inforBuyer, note)}
         />
       </div>
     </div>
   );
 };
 
-const InputNote = ({ note, setNote }) => {
+const InputNote = ({ onChange }) => {
   const [openDialog, setOpenDialog] = useState(false);
+  const [note, setNote] = useState({ note: "" });
+  useEffect(() => {
+    onChange(note);
+  }, [note]);
   return (
     <>
       <div className="mt-1">
@@ -173,7 +183,8 @@ const InputNote = ({ note, setNote }) => {
         onClose={() => setOpenDialog(false)}
         initialData={note}
         onSubmit={(data) => {
-          setNote(data);
+          onChange({ ...data });
+          setNote({ ...data });
           setOpenDialog(false);
         }}
         className=""

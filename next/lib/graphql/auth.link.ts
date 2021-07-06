@@ -59,8 +59,11 @@ export const AuthLink = setContext((_, { headers }) => {
     } else if (location.pathname.startsWith("/admin")) {
       token = GetAuthToken();
       console.log("admin token", token);
+    } else if (location.pathname.startsWith("/payment")) {
+      token = GetCustomerToken();
+      console.log("admin token", token);
     } else {
-      token = GetAuthToken() || GetAnonymousToken() || GetCustomerToken();
+      token = GetCustomerToken();
     }
     const ip = GetIP();
     const context = {

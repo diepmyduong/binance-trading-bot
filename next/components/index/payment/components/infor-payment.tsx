@@ -3,24 +3,37 @@ import { Fa500Px, FaAddressCard, FaBlenderPhone, FaUserAlt } from "react-icons/f
 import { Dialog } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
 import { Field } from "../../../shared/utilities/form/field";
-import { Form } from "../../../shared/utilities/form/form";
+import { Form, FormConsumer } from "../../../shared/utilities/form/form";
 import { Input } from "../../../shared/utilities/form/input";
 import { Select } from "../../../shared/utilities/form/select";
 import BranchsDialog from "../../homepage/components/branchs-dialog";
 import { useShopContext } from "../../../../lib/providers/shop-provider";
+import { SaveButtonGroup } from "../../../shared/utilities/save-button-group";
+import { AddressGroup } from "../../../shared/utilities/form/address-group";
+import { useCartContext } from "../../../../lib/providers/cart-provider";
 
-export function InforPayment({ inforBuyer, setInforBuyer }) {
-  inforBuyer = {
-    name: "Nguyễn Văn A",
-    phone: "0869698360",
-    address: "749 Nguyễn Văn Linh Quận 7 TPHCM ",
-  };
+export function InforPayment({ onChange }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [times, setTimes] = useState([]);
   const [branch, setBranch] = useState(
     "110 Nguyễn Văn Linh, F. Tân Thuận Tây, Quận 7, Hồ Chí Minh"
   );
+  const [address, setAddress] = useState({
+    provinceId: "",
+    districtId: "",
+    wardId: "",
+    address: "",
+  });
+  const [inforBuyer, setInforBuyer] = useState({
+    name: "",
+    phone: "",
+  });
+  // useEffect(() => {
+  //   onChange({ name: inforBuyer.name, phone: inforBuyer.phone, address: address });
+  // }, [address, inforBuyer]);
+  console.log(address, inforBuyer);
+  const [openInputAddress, setOpenInputAddress] = useState(false);
   const { shopBranchs } = useShopContext();
   const generateTime = () => {
     var today = new Date();
@@ -41,6 +54,7 @@ export function InforPayment({ inforBuyer, setInforBuyer }) {
     }
     setTimes(timess);
   };
+  console.log(inforBuyer, address);
   useEffect(() => {
     generateTime();
   }, []);
@@ -54,7 +68,12 @@ export function InforPayment({ inforBuyer, setInforBuyer }) {
           }}
         />
         <div className="px-4 pt-6 text-sm">
-          <Form initialData={inforBuyer} onChange={(data) => setInforBuyer({ ...data })}>
+          <Form
+            initialData={inforBuyer}
+            onChange={(data) => {
+              setInforBuyer({ ...data });
+            }}
+          >
             <Field name="name" noError className="pb-2">
               <Input
                 placeholder="Nhập tên người nhận"
@@ -64,7 +83,7 @@ export function InforPayment({ inforBuyer, setInforBuyer }) {
             </Field>
             <Field name="phone" noError className="pb-2">
               <Input
-                type="number"
+                type="text"
                 placeholder="Nhập số điện thoại"
                 prefix={<FaBlenderPhone />}
                 className="rounded-2xl bg-primary-light"
@@ -72,14 +91,23 @@ export function InforPayment({ inforBuyer, setInforBuyer }) {
             </Field>
 
             {selectedIndex == 0 ? (
-              <Field name="address" noError className="pb-2">
-                <Input
-                  type="text"
-                  placeholder="Nhập địa chỉ giao đến"
-                  prefix={<FaAddressCard />}
-                  className="rounded-2xl bg-primary-light"
-                />
-              </Field>
+              <div
+                className=""
+                onClick={() => {
+                  setOpenInputAddress(true);
+                }}
+              >
+                <Field noError className="pb-2">
+                  <Input
+                    readonly
+                    value=""
+                    type="text"
+                    placeholder="Nhập địa chỉ giao đến"
+                    prefix={<FaAddressCard />}
+                    className="rounded-2xl bg-primary-light"
+                  />
+                </Field>
+              </div>
             ) : (
               <div className="py-2">
                 <div className="font-bold">Chi nhánh</div>
@@ -115,6 +143,20 @@ export function InforPayment({ inforBuyer, setInforBuyer }) {
               }}
             />
           )}
+          <Form
+            dialog
+            mobileSizeMode
+            isOpen={openInputAddress}
+            onClose={() => setOpenInputAddress(false)}
+            initialData={address}
+            onSubmit={(data) => {
+              setAddress({ ...data });
+              setOpenInputAddress(false);
+            }}
+          >
+            <AddressGroup {...address} required />
+            <SaveButtonGroup />
+          </Form>
         </div>
       </div>
     </div>

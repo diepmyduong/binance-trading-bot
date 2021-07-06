@@ -305,8 +305,10 @@ export class OrderRepository extends CrudRepository<Order> {
     return await this.mutate({
       mutation: `generateDraftOrder(data: $data) {
           order{
-            id
+            ${this.fullFragment}
           }
+          invalid
+          invalidReason
         }`,
       variablesParams: `($data:CreateDraftOrderInput!)`,
       options: { variables: { data } },

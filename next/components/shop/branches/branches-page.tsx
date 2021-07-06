@@ -39,6 +39,7 @@ export function BranchesPage(props: ReactProps) {
               <div className="flex flex-col gap-y-2 mt-4">
                 {branches.map((branch) => (
                   <BranchItem
+                    key={branch.id}
                     branch={branch}
                     onClick={() => {
                       setOpenBranch(branch);

@@ -32,7 +32,7 @@ export interface DialogPropsType extends ReactProps {
 
 const ROOT_ID = "dialog-root";
 export function Dialog({
-  wrapperClass = "fixed w-full h-screen top-0 left-0 z-100 flex flex-col items-center overflow-y-scroll py-20",
+  wrapperClass = "fixed w-screen h-screen top-0 left-0 z-100 flex flex-col items-center overflow-y-scroll py-20",
   overlayClass = "fixed w-full h-full top-0 left-auto pointer-events-none",
   dialogClass = "relative bg-white shadow-md rounded m-auto",
   extraDialogClass = "",

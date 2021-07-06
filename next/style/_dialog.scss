@@ -32,16 +32,4 @@
       bottom: 0;
     }
   }
-  ::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300;
-    border-radius: 1px;
-  }
 }

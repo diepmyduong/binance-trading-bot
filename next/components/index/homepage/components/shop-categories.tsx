@@ -50,7 +50,6 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
     };
   }, []);
   const handleChange = async (index: number) => {
-    console.log(index);
     setIsClickView(true);
     setIsViewing(index);
     setTimeout(() => {

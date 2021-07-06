@@ -137,7 +137,6 @@ export class ShopRepository extends CrudRepository<Shop> {
           loginAnonymous(shopCode:"${shopCode}")
         }`,
       })
-      // .then((res) => console.log(res));
       .then((res) => res.data["loginAnonymous"] as string);
   }
 }

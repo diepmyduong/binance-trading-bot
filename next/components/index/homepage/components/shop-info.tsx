@@ -89,7 +89,7 @@ const ShopBranch = (props: ShopInfoProps) => {
       </p>
       <div className="flex justify-between items-center">
         <p className="whitespace-nowrap">
-          {(!branchSelecting && "23 chi nhánh") || branchSelecting.name}
+          {(!branchSelecting && shopBranchs.length + " chi nhánh") || branchSelecting.name}
         </p>
         <Button
           textPrimary

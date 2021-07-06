@@ -52,7 +52,6 @@ export function ShopProvider(props) {
       }
     }
     if (haveShop) {
-      console.log(haveShop);
       let token = await ShopService.loginAnonymous(haveShop);
       SetAnonymousToken(token);
       let cats = await CategoryService.getAll({
@@ -62,32 +61,27 @@ export function ShopProvider(props) {
         },
         fragment: CategoryService.fullFragment,
       });
-      console.log(cats);
       if (cats) {
         setcategoriesShop(cloneDeep(cats.data));
       }
       let branchs = await ShopBranchService.getAll();
-      console.log(branchs);
       if (branchs) {
         setShopBranch(cloneDeep(branchs.data));
       }
     }
     let res = await ShopService.getShopData();
-    console.log(res);
     if (res) {
       setShop(cloneDeep(res));
     } else {
       setShop(null);
     }
     setLoading(false);
-    console.log(shop);
   }
   const loginCustomerByPhone = (phone) => {};
   function cunstomerLogin(phone: string) {
     if (phone) {
       UserService.loginCustomerByPhone(phone).then((res: { loginCustomerByPhone: any }) => {
         localStorage.setItem("tokenCustomer", res.loginCustomerByPhone.token);
-        console.log(res);
       });
       localStorage.setItem("phoneUser", phone);
       setCustomer(phone);
@@ -103,7 +97,6 @@ export function ShopProvider(props) {
 
   useEffect(() => {
     let res = sessionStorage.getItem("shop");
-    console.log(res);
   }, []);
   useEffect(() => {
     getShop();

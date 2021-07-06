@@ -32,23 +32,38 @@ export function CartProvider(props) {
     setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
     setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
   }, [cartProducts]);
+  function checkInCart(
+    product: Product,
+    topping: OrderItemToppingInput[],
+    cartProduct: CartProduct
+  ): boolean {
+    if (cartProduct && JSON.stringify(cartProduct.topping) == JSON.stringify(topping)) {
+      return true;
+    }
+    return false;
+  }
   const addProductToCart = (
     product: Product,
     qty: number,
     topping: OrderItemToppingInput[]
   ): boolean => {
     if (!qty) return false;
-    let cartProduct = cartProducts.find((x) => x.productId == product.id);
+    let cartProduct = cartProducts.find(
+      (x) => x.productId == product.id && checkInCart(product, topping, x)
+    );
     if (cartProduct) {
       cartProduct.qty += qty;
       cartProduct.amount = cartProduct.price * cartProduct.qty;
     } else {
+      let priceProduct =
+        (product.downPrice ? product.downPrice : product.basePrice) +
+        topping.reduce((total, item) => (total += item.price), 0);
       cartProducts.push({
         productId: product.id,
         product: product,
         qty,
-        price: product.downPrice,
-        amount: product.downPrice * qty + topping.reduce((total, item) => (total += item.price), 0),
+        price: priceProduct,
+        amount: priceProduct * qty,
         topping: topping,
       });
     }
@@ -61,24 +76,31 @@ export function CartProvider(props) {
     topping: OrderItemToppingInput[]
   ) => {
     if (!qty) return;
-    let cartProduct = cartProducts.find((x) => x.productId == product.id);
+    let cartProduct = cartProducts.find(
+      (x) => x.productId == product.id && checkInCart(product, topping, x)
+    );
     if (cartProduct) {
       cartProduct.qty = qty;
       cartProduct.amount = cartProduct.price * qty;
     } else {
+      let priceProduct =
+        (product.downPrice ? product.downPrice : product.basePrice) +
+        topping.reduce((total, item) => (total += item.price), 0);
       cartProducts.push({
         productId: product.id,
         product: product,
         qty,
-        price: product.salePrice,
-        amount: product.salePrice * qty,
+        price: priceProduct,
+        amount: priceProduct * qty,
         topping: topping,
       });
     }
     setCartProducts([...cartProducts]);
   };
-  const removeProductFromCart = (product: Product) => {
-    let cartProductIndex = cartProducts.findIndex((x) => x.productId == product.id);
+  const removeProductFromCart = (product: Product, topping: OrderItemToppingInput[]) => {
+    let cartProductIndex = cartProducts.findIndex(
+      (x) => x.productId == product.id && checkInCart(product, topping, x)
+    );
     if (cartProductIndex >= 0) {
       cartProducts.splice(cartProductIndex, 1);
     }

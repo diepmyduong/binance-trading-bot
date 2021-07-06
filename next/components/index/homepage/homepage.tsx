@@ -28,8 +28,6 @@ export function Homepage() {
   const [showDialogCart, setShowDialogCart] = useState(false);
   const [productIdCode, setProductIdCode] = useState(productId);
   const [openDialog, setOpenDialog] = useState(false);
-  console.log(router.query);
-
   useEffect(() => {
     if (productIdCode && productId) setOpenDialog(true);
   }, [productIdCode]);

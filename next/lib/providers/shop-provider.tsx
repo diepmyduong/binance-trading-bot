@@ -5,6 +5,7 @@ import { SetAnonymousToken } from "../graphql/auth.link";
 import cloneDeep from "lodash/cloneDeep";
 import { Category, CategoryService } from "../repo/category.repo";
 import { ShopBranchService, ShopBranch } from "../repo/shop-branch.repo";
+import { UserService } from "../repo/user.repo";
 
 export const ShopContext = createContext<
   Partial<{
@@ -21,6 +22,7 @@ export const ShopContext = createContext<
     shopBranchs: ShopBranch[];
     branchSelecting: ShopBranch;
     setBranchSelecting: Function;
+    loginCustomerByPhone: Function;
   }>
 >({});
 export function ShopProvider(props) {
@@ -51,7 +53,13 @@ export function ShopProvider(props) {
       console.log(haveShop);
       let token = await ShopService.loginAnonymous(haveShop);
       SetAnonymousToken(token);
-      let cats = await CategoryService.getAll();
+      let cats = await CategoryService.getAll({
+        query: {
+          limit: 0,
+          order: { priority: -1, createdAt: 1 },
+        },
+        fragment: CategoryService.fullFragment,
+      });
       console.log(cats);
       if (cats) {
         setProductShop(cloneDeep(cats.data));
@@ -71,8 +79,13 @@ export function ShopProvider(props) {
     //   setShop(null);
     // }
   }
+  const loginCustomerByPhone = (phone) => {};
   function cunstomerLogin(phone: string) {
     if (phone) {
+      UserService.loginCustomerByPhone(phone).then((res: { loginCustomerByPhone: any }) => {
+        localStorage.setItem("tokenCustomer", res.loginCustomerByPhone.token);
+        console.log(res);
+      });
       localStorage.setItem("phoneUser", phone);
       setCustomer(phone);
     }
@@ -81,7 +94,7 @@ export function ShopProvider(props) {
     localStorage.removeItem("phoneUser");
     setCustomer(null);
     if (router.pathname !== "/") {
-      router.reload();
+      router.push(location.href, null, { shallow: true });
     }
   }
 
@@ -113,6 +126,7 @@ export function ShopProvider(props) {
         setShopCode,
         branchSelecting,
         shopBranchs,
+        loginCustomerByPhone,
         setBranchSelecting,
       }}
     >

@@ -66,7 +66,7 @@ export function ProductForm({ product, category, ...props }: PropsType) {
         grid
         dialog
         extraDialogClass="bg-transparent"
-        extraHeaderClass="bg-gray-100 text-xl py-3 justify-center rounded-t-xl border-gray-300"
+        extraHeaderClass="bg-gray-100 text-xl py-3 justify-center rounded-t-xl border-gray-300 pl-16"
         extraBodyClass="px-6 bg-gray-100 rounded-b-xl"
         title={`${product ? "Chỉnh sửa" : "Thêm"} món`}
         width="650px"
@@ -212,7 +212,7 @@ export function ProductForm({ product, category, ...props }: PropsType) {
               <div className="flex flex-wrap gap-3 mt-2">
                 {labels?.map((label, index) => (
                   <div
-                    className="inline-flex items-center text-gray-100 hover:text-white rounded-full font-semibold px-4 py-2 cursor-pointer"
+                    className="inline-flex items-center text-gray-100 hover:text-white rounded-full font-semibold px-4 py-2 whitespace-nowrap cursor-pointer"
                     style={{ backgroundColor: label.color }}
                     onClick={() => setOpenLabel(label)}
                   >

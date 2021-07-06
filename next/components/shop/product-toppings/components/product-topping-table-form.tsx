@@ -21,7 +21,7 @@ export function ProductToppingTableForm() {
         <>
           <DataTable.Form
             extraDialogClass="bg-transparent"
-            extraHeaderClass="bg-gray-100 text-xl py-3 justify-center rounded-t-xl border-gray-300"
+            extraHeaderClass="bg-gray-100 text-xl py-3 justify-center rounded-t-xl border-gray-300 pl-16"
             extraBodyClass="px-6 bg-gray-100 rounded-b-xl"
             saveButtonGroupProps={{
               className: "justify-center",

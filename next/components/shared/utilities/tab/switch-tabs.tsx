@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "../form/button";
 import useDebounce from "../../../../lib/hooks/useDebounce";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import useDevice from "../../../../lib/hooks/useDevice";
@@ -40,11 +39,13 @@ export function SwitchTabs({ native = false, chevron = false, ...props }: Propst
     if (!clickToView && chevron) {
       setValue(debounceValue);
       let selected = document.getElementsByClassName("tab")[debounceValue];
-      selected.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      });
+      if (selected) {
+        selected.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
       setTimeout(() => {
         checkLeftnRight();
       }, 500);
@@ -147,9 +148,9 @@ export function SwitchTabs({ native = false, chevron = false, ...props }: Propst
         </>
       )}
       <div
-        className={`flex relative border-b   ${
-          (isMobile && " overflow-x-scroll") || "overflow-hidden"
-        } ${!native && " border-group rounded-md "}`}
+        className={`flex relative border-b  cursor-move  ${
+          isMobile ? " overflow-x-scroll" : "overflow-hidden"
+        } ${!native ? " border-group rounded-md " : ""}`}
       >
         {props.options.map(
           (item, index) =>

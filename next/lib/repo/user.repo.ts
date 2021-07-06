@@ -79,6 +79,15 @@ export class UserRepository extends CrudRepository<User> {
       .then((res) => res.data["userGetMe"] as User);
   }
 
+  // for firebase
+  async loginCustomerByPhone(phone): Promise<{}> {
+    return await this.apollo
+      .mutate({
+        mutation: this.gql`mutation {  loginCustomerByPhone(phone: "${phone}") {token}}`,
+      })
+      .then((res) => res.data);
+  }
+
   async updateUserPassword(id: string, password: string) {
     return await this.apollo.mutate({
       mutation: this.gql`

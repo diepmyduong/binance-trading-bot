@@ -82,7 +82,7 @@ export function ShopProvider(props) {
   const loginCustomerByPhone = (phone) => {};
   function cunstomerLogin(phone: string) {
     if (phone) {
-      UserService.loginCustomerByPhone(phone).then((res) => {
+      UserService.loginCustomerByPhone(phone).then((res: { loginCustomerByPhone: any }) => {
         localStorage.setItem("tokenCustomer", res.loginCustomerByPhone.token);
         console.log(res);
       });

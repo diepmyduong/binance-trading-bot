@@ -97,12 +97,12 @@ export function CartProvider(props) {
     });
     let longtitude = 106.771436,
       lattitude = 10.842888;
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
-        longtitude = position.coords.latitude;
-        lattitude = position.coords.longitude;
-      });
-    }
+    // if (navigator.geolocation) {
+    //   navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
+    //     longtitude = position.coords.latitude;
+    //     lattitude = position.coords.longitude;
+    //   });
+    // }
     console.log("lattitude,longtitude", lattitude, longtitude);
     let data: OrderInput = {
       buyerName: inforBuyer.name,

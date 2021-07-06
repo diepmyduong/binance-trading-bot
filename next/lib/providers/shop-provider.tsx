@@ -5,6 +5,7 @@ import { SetAnonymousToken } from "../graphql/auth.link";
 import cloneDeep from "lodash/cloneDeep";
 import { Category, CategoryService } from "../repo/category.repo";
 import { ShopBranchService, ShopBranch } from "../repo/shop-branch.repo";
+import { UserService } from "../repo/user.repo";
 
 export const ShopContext = createContext<
   Partial<{
@@ -21,6 +22,7 @@ export const ShopContext = createContext<
     shopBranchs: ShopBranch[];
     branchSelecting: ShopBranch;
     setBranchSelecting: Function;
+    loginCustomerByPhone: Function;
   }>
 >({});
 export function ShopProvider(props) {
@@ -77,8 +79,13 @@ export function ShopProvider(props) {
     //   setShop(null);
     // }
   }
+  const loginCustomerByPhone = (phone) => {};
   function cunstomerLogin(phone: string) {
     if (phone) {
+      UserService.loginCustomerByPhone(phone).then((res) => {
+        localStorage.setItem("tokenCustomer", res.loginCustomerByPhone.token);
+        console.log(res);
+      });
       localStorage.setItem("phoneUser", phone);
       setCustomer(phone);
     }
@@ -119,6 +126,7 @@ export function ShopProvider(props) {
         setShopCode,
         branchSelecting,
         shopBranchs,
+        loginCustomerByPhone,
         setBranchSelecting,
       }}
     >

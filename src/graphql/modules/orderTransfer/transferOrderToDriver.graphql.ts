@@ -28,7 +28,7 @@ export default {
   resolver: {
     Mutation: {
       transferOrderToDriver: async (root: any, args: any, context: Context) => {
-        context.auth([ROLES.MEMBER]);
+        context.auth(ROLES.MEMBER_STAFF);
         const { orderId, driverId, note } = args;
         let [order, driver] = await Promise.all([
           OrderModel.findById(orderId),

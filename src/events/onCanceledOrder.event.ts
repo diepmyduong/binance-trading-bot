@@ -11,6 +11,13 @@ import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { UserModel } from "../graphql/modules/user/user.model";
 import { onSendChatBotText } from "./onSendToChatbot.event";
 import { orderService } from "../graphql/modules/order/order.service";
+import {
+  NotificationModel,
+  NotificationTarget,
+  NotificationType,
+} from "../graphql/modules/notification/notification.model";
+import { StaffModel } from "../graphql/modules/staff/staff.model";
+import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
 
 export const onCanceledOrder = new Subject<IOrder>();
 
@@ -94,16 +101,9 @@ onCanceledOrder.subscribe(async (order) => {
   });
 });
 
-
 onCanceledOrder.subscribe(async (order: IOrder) => {
-  const {
-    buyerId,
-    sellerId,
-    id,
-    status,
-    toMemberId
-  } = order;
-  
+  const { buyerId, sellerId, id, status, toMemberId } = order;
+
   const log = new OrderLogModel({
     orderId: id,
     type: OrderLogType.MEMBER_CANCELED,
@@ -112,9 +112,59 @@ onCanceledOrder.subscribe(async (order: IOrder) => {
     orderStatus: status,
   });
 
-  if(toMemberId){
+  if (toMemberId) {
     log.toMemberId = toMemberId;
   }
 
-  await log.save().then(log => { orderService.updateLogToOrder({order, log}) });
+  await log.save().then((log) => {
+    orderService.updateLogToOrder({ order, log });
+  });
+});
+
+// Thông báo khách hàng cập nhật trạng thái giao hàng
+onCanceledOrder.subscribe(async (order) => {
+  const notify = new NotificationModel({
+    target: NotificationTarget.CUSTOMER,
+    type: NotificationType.ORDER,
+    customerId: order.buyerId,
+    title: `Đơn hàng hàng #${order.code}`,
+    body: `Đơn hàng đã huỷ`,
+    orderId: order._id,
+  });
+  await NotificationModel.create(notify);
+  await SendNotificationJob.trigger();
+});
+
+// Thông báo nhân viên cập nhật trang thái giao hàng
+onCanceledOrder.subscribe(async (order) => {
+  const staffs = await StaffModel.find({ memberId: order.sellerId, branchId: order.shopBranchId });
+  const notifies = staffs.map(
+    (s) =>
+      new NotificationModel({
+        target: NotificationTarget.STAFF,
+        type: NotificationType.ORDER,
+        staffId: s._id,
+        title: `Đơn hàng hàng #${order.code}`,
+        body: `Đơn hàng đã huỷ`,
+        orderId: order._id,
+      })
+  );
+  if (notifies.length > 0) {
+    await NotificationModel.insertMany(notifies);
+    await SendNotificationJob.trigger(notifies.length);
+  }
+});
+
+// Thông báo chủ shop cập nhật trạng thái giao hàng
+onCanceledOrder.subscribe(async (order) => {
+  const notify = new NotificationModel({
+    target: NotificationTarget.MEMBER,
+    type: NotificationType.ORDER,
+    staffId: order.sellerId,
+    title: `Đơn hàng hàng #${order.code}`,
+    body: `Đơn hàng đã huỷ`,
+    orderId: order._id,
+  });
+  await NotificationModel.create(notify);
+  await SendNotificationJob.trigger();
 });

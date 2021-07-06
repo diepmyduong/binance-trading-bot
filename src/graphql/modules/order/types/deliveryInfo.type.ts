@@ -23,6 +23,7 @@ export type DeliveryInfo = {
   receiverAddressType?: AddressType; // Kiểu địa chỉ người nhận: 1 Nhà riêng, 2: Cơ quan Nếu không có thông tin thì để null
 
   serviceName?: string;
+  serviceIcon?: string; // Icon Dịch vụ
 
   orderCode?: string; // mã đơn hàng
   packageContent?: string; //"Món hàng A + Món hàng B"; // nội dung hàng
@@ -86,6 +87,7 @@ export const DeliveryInfoSchema = new Schema({
   }, // Kiểu địa chỉ người nhận: 1 Nhà riêng, 2: Cơ quan Nếu không có thông tin thì để null
 
   serviceName: { type: Schema.Types.String },
+  serviceIcon: { type: String },
 
   orderCode: { type: Schema.Types.String }, // mã đơn hàng
   packageContent: { type: Schema.Types.String }, //"Món hàng A + Món hàng B"; // nội dung hàng

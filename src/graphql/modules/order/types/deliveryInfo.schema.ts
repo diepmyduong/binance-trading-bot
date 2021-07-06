@@ -33,6 +33,8 @@ export default gql`
 
     "Mã Dịch vụ chuyển phát ${Object.values(DeliveryServices)}"
     serviceName: String
+    "Icon Dịch vụ"
+    serviceIcon: String
 
     "Mã hóa đơn liên quan"
     orderCode: String

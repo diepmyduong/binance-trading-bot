@@ -48,6 +48,7 @@ export default {
         order.deliveryInfo.statusText = get(Ahamove.StatusText, ahamoveOrder.status);
         order.deliveryInfo.partnerFee = ahamoveOrder.total_pay;
         order.deliveryInfo.deliveryTime = `${(ahamoveOrder.duration / 60).toFixed(0)} phút`;
+        order.deliveryInfo.serviceIcon = "https://i.ibb.co/FK87WyJ/icon-ahamove.png";
         await order.save();
         return order;
       },

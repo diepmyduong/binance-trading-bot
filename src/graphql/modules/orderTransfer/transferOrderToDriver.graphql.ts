@@ -46,6 +46,7 @@ export default {
         order.deliveryInfo = {
           ...order.deliveryInfo,
           serviceName: "DRIVER",
+          serviceIcon: "https://i.ibb.co/pJzfmFg/delivery-man.png",
           status: "ACCEPTED",
           statusText: Ahamove.StatusText.ACCEPTED,
           deliveryTime: branch.shipPreparationTime,

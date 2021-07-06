@@ -68,7 +68,8 @@ export function Form({ className = "", style = {}, ...props }: FormPropsType) {
   }, [props.isOpen]);
 
   useEffect(() => {
-    if (!isEqual(props.initialData, initialData) || !initialData) {
+    // TODO FIX PROBLEMS HERE
+    if (!isEqual(props.initialData, initialData) || !props.initialData || !initialData) {
       setInitialData(cloneDeep(props.initialData) || {});
       setData(props.initialData ? pick(props.initialData, fieldNames) : {});
       setFullData(props.initialData ? pick(props.initialData, fieldNames) : {});

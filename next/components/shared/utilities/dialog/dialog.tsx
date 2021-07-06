@@ -18,7 +18,6 @@ export interface DialogPropsType extends ReactProps {
   title?: string;
   icon?: JSX.Element;
   width?: string;
-  autoScroll?: string | boolean;
   maxWidth?: string;
   mobileSizeMode?: boolean;
   slideFromBottom?: "none" | "mobile-only" | "all";
@@ -33,7 +32,7 @@ export interface DialogPropsType extends ReactProps {
 
 const ROOT_ID = "dialog-root";
 export function Dialog({
-  wrapperClass = "fixed w-full h-screen top-0 left-0 z-100 flex flex-col items-center justify-center py-20",
+  wrapperClass = "fixed w-full h-screen top-0 left-0 z-100 flex flex-col items-center overflow-y-scroll py-20",
   overlayClass = "fixed w-full h-full top-0 left-auto pointer-events-none",
   dialogClass = "relative bg-white shadow-md rounded m-auto",
   extraDialogClass = "",
@@ -45,7 +44,6 @@ export function Dialog({
   extraFooterClass = "",
   slideFromBottom = "mobile-only",
   width = "auto",
-  autoScroll = "overflow-y-auto",
   mobileSizeMode = false,
   maxWidth = "86vw",
   title = "",
@@ -108,9 +106,9 @@ export function Dialog({
 
   let el = (
     <div
-      className={`dialog-wrapper ${wrapperClass} ${autoScroll} ${
-        isSlideFromBottom ? "bottom-mode" : ""
-      } ${isMobile ? "mobile" : ""}`}
+      className={`dialog-wrapper ${wrapperClass} ${isSlideFromBottom ? "bottom-mode" : ""} ${
+        isMobile ? "mobile" : ""
+      }`}
       style={{ ...style }}
       onMouseDown={(e) => {
         e.stopPropagation();
@@ -134,7 +132,7 @@ export function Dialog({
         }}
       ></div>
       <div
-        className={`dialog ${autoScroll} ${dialogClass} ${extraDialogClass} ${
+        className={`dialog ${dialogClass} ${extraDialogClass} ${
           props.isOpen
             ? props.openAnimation
               ? props.openAnimation

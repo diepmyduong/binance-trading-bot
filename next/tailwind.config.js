@@ -15,7 +15,7 @@ module.exports = {
       content: ['./next/**/*.tsx', './**/*.tsx'],
       options: {
         safelist: {
-          standard: [/^col-span\-/, /^text\-/, /^bg\-/],
+          standard: [/^col-span\-/, /^text\-/, /^bg\-/, "scroll-block"],
           greedy: [/^react-select/, /^react-datepicker/, /^swiper/]
         }
       }

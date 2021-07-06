@@ -20,18 +20,7 @@
       margin-right: auto;
       bottom: 0;
       max-height: 100vh;
-    }
-    ::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background-color: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      @apply bg-gray-300;
-      border-radius: 1px;
+      overflow-y: auto;
     }
 
     .dialog-header {
@@ -42,5 +31,17 @@
       position: sticky;
       bottom: 0;
     }
+  }
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300;
+    border-radius: 1px;
   }
 }

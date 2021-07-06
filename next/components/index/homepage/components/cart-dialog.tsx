@@ -21,11 +21,10 @@ export function CartDialog(props: Propstype) {
   const { customer, cunstomerLogin } = useShopContext();
   const [showLogin, setShowLogin] = useState(false);
   async function onChange(qty: number, item: CartProduct) {
-    console.log(qty);
     if (qty > 0) {
-      props.onChange(item.product, qty);
+      props.onChange(item.product, qty, item.topping);
     } else {
-      props.onRemove(item.product);
+      props.onRemove(item.product, item.topping);
     }
   }
   const { isMobile } = useDevice();
@@ -44,16 +43,26 @@ export function CartDialog(props: Propstype) {
           style={{ minHeight: `calc(100vh - 350px)` }}
         >
           {props.cart.map((item, index) => (
-            <div className="flex items-center justify-between py-1.5 border-b w-full" key={index}>
-              <div className="leading-7">
-                <p className="text-ellipsis">
-                  <span className="text-primary font-semibold">{item.qty} X </span>
-                  {item.product.name}
-                </p>
-                <Price price={item.price} />
-                {item.note && <p className="text-gray-500 text-ellipsis">Ghi chú: {item.note}</p>}
+            <div key={index} className=" py-1.5 border-b ">
+              <div className="flex items-center justify-between w-full">
+                <div className="leading-7">
+                  <p className="text-ellipsis">
+                    <span className="text-primary font-semibold">{item.qty} X </span>
+                    {item.product.name}
+                  </p>
+                  <Price price={item.price} />
+                  {item.note && <p className="text-gray-500 text-ellipsis">Ghi chú: {item.note}</p>}
+                </div>
+                <Quantity quantity={item.qty} setQuantity={(val) => onChange(val, item)} />
               </div>
-              <Quantity quantity={item.qty} setQuantity={(val) => onChange(val, item)} />
+              <div className="flex space-x-1">
+                <span>Topping: </span>
+                {item.topping.map((topping, index) => (
+                  <span key={index}>
+                    {topping.optionName} {index < item.topping.length - 1 && " + "}
+                  </span>
+                ))}
+              </div>
             </div>
           ))}
         </div>

@@ -9,44 +9,6 @@ interface Propstype extends DialogPropsType {
   shopBranchs: ShopBranch[];
 }
 const BranchsDialog = (props: Propstype) => {
-  const branchs = [
-    {
-      place: "Quận 1",
-      address: "172 Hai Bà Trưng, phường Đa Kao, Quận 1, thành phố Hồ Chí Minh",
-      isActive: true,
-      range: 1.2,
-    },
-    {
-      place: "Quận 2",
-      address: "65 đường Xuân Thủy, phường Thảo Điền, quận 2, Thành phố Hồ Chí Minh.",
-      range: 1.2,
-      isActive: true,
-    },
-    {
-      place: "Quận 3",
-      address: "414C – 414D Nguyễn Thị Minh Khai, Phường 5, Quận 3, Thành phố Hồ Chí Minh.",
-      isActive: true,
-      range: 1.2,
-    },
-    {
-      place: "Quận 3",
-      address: "Tầng trệt tòa nhà Số 538 đường CMT8, phường 11, quận 3, thành phố Hồ Chí Minh.",
-      range: 1.2,
-      isActive: true,
-    },
-    {
-      place: "Quận 4",
-      address: "192, 194 đường Khánh Hội, phường 6, quận 4, thành phố Hồ Chí Minh.",
-      range: 1.2,
-      isActive: true,
-    },
-    {
-      place: "Quận 6",
-      address: "10 – 12 đường Hậu Giang, Phường 2, Quận 6, Thành phố Hồ Chí Minh.",
-      range: 1.2,
-      isActive: true,
-    },
-  ];
   const { isMobile } = useDevice();
   const [dayCur, setDayCur] = useState(0);
   useEffect(() => {
@@ -58,7 +20,7 @@ const BranchsDialog = (props: Propstype) => {
     <Dialog
       isOpen={props.isOpen}
       onClose={props.onClose}
-      title={`Chọn chi nhánh (${branchs.length})`}
+      title={`Chọn chi nhánh (${props.shopBranchs.length})`}
       mobileSizeMode
       slideFromBottom="all"
       bodyClass="relative bg-white rounded"

@@ -7,11 +7,11 @@ import { Price } from "../../../shared/homepage-layout/price";
 import { Rating } from "../../../shared/homepage-layout/rating";
 import { Img } from "../../../shared/utilities/img";
 import { SwitchTabs } from "../../../shared/utilities/tab/switch-tabs";
-import { HightLightCategories } from "./hight-light-categories";
+import { ProductsGroup } from "./products-group";
 interface ShopCategoriesPropsType extends ReactProps {}
 
 export function ShopCategories(props: ShopCategoriesPropsType) {
-  const { productShop } = useShopContext();
+  const { categoriesShop, shop } = useShopContext();
   const [isViewing, setIsViewing] = useState<number>();
   const [isClickView, setIsClickView] = useState(false);
   function isInViewport(element) {
@@ -50,7 +50,6 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
     };
   }, []);
   const handleChange = async (index: number) => {
-    console.log(index);
     setIsClickView(true);
     setIsViewing(index);
     setTimeout(() => {
@@ -66,8 +65,8 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
   };
   return (
     <div className="bg-white mt-4">
-      <HightLightCategories />
-      {productShop?.length > 0 && (
+      <ProductsGroup productGroups={shop.config.productGroups} />
+      {categoriesShop?.length > 0 && (
         <>
           <SwitchTabs
             chevron
@@ -76,7 +75,7 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
             className=" sticky top-14 bg-white z-20 shadow-sm "
             native
             options={[
-              ...productShop.map(
+              ...categoriesShop.map(
                 (item, index) =>
                   item.productIds.length > 0 && {
                     value: index,
@@ -87,7 +86,7 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
             onChange={(val) => handleChange(val)}
           />
           <div className="flex flex-col bg-gray-200 ">
-            {productShop.map(
+            {categoriesShop.map(
               (item: Category, index: number) =>
                 item.productIds.length > 0 && (
                   <ShopCategory list={item.products} title={item.name} key={index} />
@@ -142,7 +141,7 @@ export function ShopCategory(props: ShopCategoryPropsType) {
                     className="justify-items-end"
                   />
                 </div>
-                <Img src={item.image} className="w-20 sm:w-24 rounded-sm" />
+                <Img src={item.image} className="w-20 sm:w-24 rounded-sm" compress={96} />
               </div>
               {item.labels?.map((label, index) => (
                 <div

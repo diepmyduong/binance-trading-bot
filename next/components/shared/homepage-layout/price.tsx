@@ -9,7 +9,7 @@ interface Propstype extends ReactProps {
 
 export function Price(props: Propstype) {
   return (
-    <div className={`${props.className || ""}`}>
+    <div className={`${props.className || ""} transition-all duration-200`}>
       {props.downPrice ? (
         <div className="flex items-center">
           <p

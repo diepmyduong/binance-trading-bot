@@ -50,8 +50,8 @@ export function ProductItem({ product, ...props }: PropsType) {
       </div>
       <div
         onClick={(e) => e.stopPropagation()}
-        tooltip-data="Mở bán món"
-        tooltip-placement="top-center"
+        data-tooltip="Mở bán món"
+        data-placement="top-center"
       >
         <Switch
           className="px-4"

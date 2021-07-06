@@ -46,9 +46,11 @@ export default function Sidebar({ ...props }: PropsType) {
           <div className="flex items-start pt-6 px-4">
             {member.shopLogo && <Img className="w-12 rounded-full" src={member.shopLogo} />}
             <div className="pl-3 flex-1">
-              <div className="text-gray-800 font-semibold text-ellipsis-2">{member.shopName}</div>
+              <div className="text-gray-800 font-semibold text-ellipsis-2 leading-tight">
+                {member.shopName}
+              </div>
               <Button
-                className="mb-1 text-sm"
+                className="mb-1 text-sm px-0 h-8"
                 text="Đăng xuất"
                 hoverDanger
                 onClick={logoutMember}
@@ -116,7 +118,7 @@ export const SIDEBAR_MENUS = [
         icon: (active: boolean) => <IconOrder hasGradient={!active} />,
       },
       {
-        title: "Điểm kinh doanh",
+        title: "Chi nhánh",
         path: "/shop/branches",
         icon: (active: boolean) => <IconPosition hasGradient={!active} />,
       },

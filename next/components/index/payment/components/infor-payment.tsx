@@ -29,10 +29,9 @@ export function InforPayment({ onChange }) {
     name: "",
     phone: "",
   });
-  // useEffect(() => {
-  //   onChange({ name: inforBuyer.name, phone: inforBuyer.phone, address: address });
-  // }, [address, inforBuyer]);
-  console.log(address, inforBuyer);
+  useEffect(() => {
+    onChange({ name: inforBuyer.name, phone: inforBuyer.phone, address: address });
+  }, [address, inforBuyer]);
   const [openInputAddress, setOpenInputAddress] = useState(false);
   const { shopBranchs } = useShopContext();
   const generateTime = () => {
@@ -54,7 +53,6 @@ export function InforPayment({ onChange }) {
     }
     setTimes(timess);
   };
-  console.log(inforBuyer, address);
   useEffect(() => {
     generateTime();
   }, []);
@@ -69,7 +67,6 @@ export function InforPayment({ onChange }) {
         />
         <div className="px-4 pt-6 text-sm">
           <Form
-            initialData={inforBuyer}
             onChange={(data) => {
               setInforBuyer({ ...data });
             }}
@@ -148,8 +145,8 @@ export function InforPayment({ onChange }) {
             mobileSizeMode
             isOpen={openInputAddress}
             onClose={() => setOpenInputAddress(false)}
-            initialData={address}
-            onSubmit={(data) => {
+            onSubmit={(data, fullData) => {
+              console.log(data, fullData);
               setAddress({ ...data });
               setOpenInputAddress(false);
             }}

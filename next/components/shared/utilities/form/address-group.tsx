@@ -56,7 +56,7 @@ export function AddressGroup({ required = false, ...props }: PropsType) {
             )
           }
           value={provinceId}
-          onChange={(val) => {
+          onChange={(val, option) => {
             setProvinceId(val);
           }}
         ></Select>

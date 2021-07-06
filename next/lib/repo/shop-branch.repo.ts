@@ -34,6 +34,7 @@ export class ShopBranchRepository extends CrudRepository<ShopBranch> {
   apiName: string = "ShopBranch";
   displayName: string = "chi nhánh";
   shortFragment: string = this.parseFragment(`
+  id: String
   code: String
   name: String
   address: String

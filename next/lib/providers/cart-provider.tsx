@@ -1,7 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Product } from "../repo/product.repo";
 import { OrderItemToppingInput, ToppingOption } from "../repo/product-topping.repo";
-import { Order, OrderInput, OrderItemInput, OrderService } from "../repo/order.repo";
+import {
+  CreateOrderInput,
+  Order,
+  OrderInput,
+  OrderItemInput,
+  OrderService,
+} from "../repo/order.repo";
+import { useShopContext } from "./shop-provider";
 
 export const CartContext = createContext<
   Partial<{
@@ -10,6 +17,7 @@ export const CartContext = createContext<
     setInforBuyers: any;
     totalFood: number;
     totalMoney: number;
+    createOrder: Function;
     cartProducts: CartProduct[];
     setCartProducts: Function;
     addProductToCart: Function;
@@ -31,7 +39,10 @@ export function CartProvider(props) {
   const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
   const [totalFood, setTotalFood] = useState(0);
   const [totalMoney, setTotalMoney] = useState(0);
+  const [itemProducts, setItemProducts] = useState<OrderItemInput[]>();
   const [order, setOrder] = useState<any>({ invalid: true, invalidReason: "", order: null });
+  const [note, setNote] = useState({ note: "" });
+  const { branchSelecting } = useShopContext();
   const [inforBuyers, setInforBuyers] = useState({
     name: "",
     phone: "",
@@ -42,11 +53,9 @@ export function CartProvider(props) {
       address: "",
     },
   });
-  console.log("inforBuyers", inforBuyers);
-  useEffect(() => {
-    generateOrder(inforBuyers, "");
-  }, []);
-
+  // useEffect(() => {
+  //   generateOrder(inforBuyers, "");
+  // }, []);
   useEffect(() => {
     setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
     setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
@@ -106,7 +115,9 @@ export function CartProvider(props) {
 
   const generateOrder = (inforBuyer, note) => {
     if (!inforBuyer) return;
+    setInforBuyers({ ...inforBuyer });
     let itemProduct: OrderItemInput[] = [];
+
     cartProducts.forEach((item) => {
       let OrderItem: OrderItemInput = {
         productId: item.productId,
@@ -115,18 +126,20 @@ export function CartProvider(props) {
       };
       itemProduct.push(OrderItem);
     });
+    setItemProducts(itemProduct);
     let longtitude = 106.771436,
       lattitude = 10.842888;
     console.log("inforBuyerinforBuyer", inforBuyer);
     let data: OrderInput = {
-      buyerName: "inforBuyer.name",
-      buyerPhone: "inforBuyer.phone",
-      pickupMethod: "abc",
-      shopBranchId: "abc",
+      buyerName: inforBuyer.name,
+      buyerPhone: inforBuyer.phone,
+      pickupMethod: "DELIVERY",
+      shopBranchId: branchSelecting?.id,
       pickupTime: "abc",
-      buyerProvinceId: "inforBuyer.address.provinceId",
-      buyerDistrictId: "inforBuyer.address.districtId",
-      buyerWardId: "inforBuyer.address.wardId",
+      buyerAddress: inforBuyer.address?.address,
+      buyerProvinceId: inforBuyer.address?.provinceId,
+      buyerDistrictId: inforBuyer.address?.districtId,
+      buyerWardId: inforBuyer.address?.wardId,
       latitude: lattitude,
       longitude: longtitude,
       paymentMethod: "COD",
@@ -140,6 +153,34 @@ export function CartProvider(props) {
       .catch((err) => console.log("Loi generate", err));
   };
 
+  const createOrder = () => {
+    let longtitude = 106.771436,
+      lattitude = 10.842888;
+    let data: OrderInput = {
+      buyerName: inforBuyers.name,
+      buyerPhone: inforBuyers.phone,
+      pickupMethod: "DELIVERY",
+      shopBranchId: branchSelecting?.id,
+      pickupTime: "abc",
+      buyerAddress: inforBuyers.address?.address,
+      buyerProvinceId: inforBuyers.address?.provinceId,
+      buyerDistrictId: inforBuyers.address?.districtId,
+      buyerWardId: inforBuyers.address?.wardId,
+      latitude: lattitude,
+      longitude: longtitude,
+      paymentMethod: "COD",
+      note: note.note,
+      items: itemProducts,
+    };
+    if (!order.invalid) {
+      OrderService.createOrder(data)
+        .then((res) => {
+          setOrder(res);
+        })
+        .catch((err) => console.log("Loi generate", err));
+    }
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -148,6 +189,7 @@ export function CartProvider(props) {
         totalMoney,
         cartProducts,
         inforBuyers,
+        createOrder,
         setInforBuyers,
         generateOrder,
         setCartProducts,

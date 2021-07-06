@@ -16,7 +16,7 @@ import { TicketVoucher } from "./components/ticket-voucher";
 // SwiperCore.use([Pagination]);
 
 export function PaymentPage() {
-  const { cartProducts, totalFood, totalMoney, generateOrder } = useCartContext();
+  const { cartProducts, totalFood, totalMoney, generateOrder, createOrder } = useCartContext();
   const [voucherApplied, setVoucherApplied] = useState(null);
   const [note, setNote] = useState({ note: "" });
   const [inforBuyers, setInforBuyers] = useState({});
@@ -27,14 +27,14 @@ export function PaymentPage() {
 
   useEffect(() => {
     generateOrder(inforBuyers, note);
-  }, []);
+  }, [inforBuyers]);
   useEffect(() => {
     setVoucherApplied(null);
   }, []);
   return (
     <>
       <div className="text-gray-700 bg-gray-100">
-        <InforPayment onChange={(data) => console.log(data)} />
+        <InforPayment onChange={(data) => setInforBuyers({ ...data })} />
         <div className="mt-1 bg-white">
           <p className="font-semibold px-4 py-2">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
           <div className="">
@@ -113,7 +113,7 @@ export function PaymentPage() {
 }
 
 const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
-  const { totalMoney, generateOrder, order } = useCartContext();
+  const { totalMoney, generateOrder, order, createOrder } = useCartContext();
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
       <div className="grid grid-cols-2 px-4 border-t border-b border-gray-100 items-center justify-between">
@@ -139,6 +139,9 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
           text={`Đặt hàng ${NumberPipe(totalMoney)}đ`}
           primary
           className="w-full"
+          onClick={() => {
+            createOrder();
+          }}
         />
       </div>
     </div>

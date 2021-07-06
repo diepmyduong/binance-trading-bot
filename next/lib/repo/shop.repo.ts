@@ -7,6 +7,7 @@ export interface Shop extends BaseModel {
   uid: string;
   name: string;
   avatar: string;
+  shopCover: string;
   phone: string;
   fanpageId: string;
   fanpageName: string;
@@ -57,6 +58,7 @@ export class ShopRepository extends CrudRepository<Shop> {
   fanpageId: String
   fanpageName: String
   fanpageImage: String
+  shopCover:String
   shopName: String
   shopLogo: String
   address: String

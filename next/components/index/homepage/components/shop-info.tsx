@@ -18,11 +18,7 @@ export function ShopInfo(props: Propstype) {
   return (
     <div className="relative text-sm bg-white">
       <Img
-        src={
-          branchSelecting
-            ? branchSelecting.coverImage
-            : "https://file.hstatic.net/200000043306/file/trang-chu-pc-24-09-2020-1-02-4_d9ed746c78e148db9c3c9f42e1ffe9bb.png"
-        }
+        src={branchSelecting ? branchSelecting.coverImage : shop.shopCover}
         ratio169
         className="bannerShop"
       />

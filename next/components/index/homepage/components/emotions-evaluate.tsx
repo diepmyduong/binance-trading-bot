@@ -5,7 +5,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 SwiperCore.use([Navigation]);
 interface Propstype extends ReactProps {
-  reactions: any[];
+  reactions: { name: string; icon: string; qty: number }[];
 }
 export function EmotionsEvaluate(props: Propstype) {
   return (
@@ -20,9 +20,9 @@ export function EmotionsEvaluate(props: Propstype) {
         {props.reactions.map((item, index) => (
           <SwiperSlide key={index} className="w-auto">
             <div className="flex-1 flex bg-primary-light rounded-full mr-3 items-center p-1.5 emotion">
-              <i className="mr-1.5">{item.icon}</i>
-              <p>
-                {item.name} ({item.value})
+              {item.icon}
+              <p className="pl-2">
+                {item.name} ({item.qty})
               </p>
             </div>
           </SwiperSlide>

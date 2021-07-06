@@ -15,7 +15,7 @@ interface PropsType extends ReactProps {
   productId?: string;
 }
 export function Homepage() {
-  const { shop } = useShopContext();
+  const { shop, loading, categoriesShop } = useShopContext();
   const router = useRouter();
   const { productId } = router.query;
   const {
@@ -50,7 +50,7 @@ export function Homepage() {
           <Spinner />
         ) : (
           <>
-            <ShopInfo shop={shop} />
+            <ShopInfo />
             <ShopCategories />
           </>
         )}

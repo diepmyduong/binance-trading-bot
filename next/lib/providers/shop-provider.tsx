@@ -17,22 +17,25 @@ export const ShopContext = createContext<
     customerLogout: Function;
     shopCode: string;
     setShopCode: Function;
-    productShop: Category[];
+    categoriesShop: Category[];
     shopBranchs: ShopBranch[];
     branchSelecting: ShopBranch;
     setBranchSelecting: Function;
+    loading: boolean;
   }>
 >({});
 export function ShopProvider(props) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [shopCode, setShopCode] = useState<string>();
   const [branchSelecting, setBranchSelecting] = useState<ShopBranch>(null);
   const [shop, setShop] = useState<Shop>();
   const [productIdSelected, setProductIdSelected] = useState<any>(null);
-  const [productShop, setProductShop] = useState<Category[]>(null);
+  const [categoriesShop, setcategoriesShop] = useState<Category[]>(null);
   const [customer, setCustomer] = useState<any>();
   const [shopBranchs, setShopBranch] = useState<ShopBranch[]>();
   async function getShop() {
+    setLoading(true);
     let haveShop = "";
     if (shopCode && shop) {
       haveShop = shopCode;
@@ -42,7 +45,6 @@ export function ShopProvider(props) {
       let scode = sessionStorage.getItem("shopCode");
       let shopStorage = sessionStorage.getItem("shop");
       if (scode && JSON.parse(shopStorage)) {
-        setShop(JSON.parse(shopStorage));
         setShopCode(scode);
         haveShop = scode;
       }
@@ -60,22 +62,23 @@ export function ShopProvider(props) {
       });
       console.log(cats);
       if (cats) {
-        setProductShop(cloneDeep(cats.data));
+        setcategoriesShop(cloneDeep(cats.data));
       }
       let branchs = await ShopBranchService.getAll();
       console.log(branchs);
       if (branchs) {
         setShopBranch(cloneDeep(branchs.data));
-        setBranchSelecting(branchs.data[0]);
       }
     }
-    // let res = await ShopService.getShopData();
-    // console.log(res);
-    // if (res) {
-    //   setShop(res);
-    // } else {
-    //   setShop(null);
-    // }
+    let res = await ShopService.getShopData();
+    console.log(res);
+    if (res) {
+      setShop(cloneDeep(res));
+    } else {
+      setShop(null);
+    }
+    setLoading(false);
+    console.log(shop);
   }
   function cunstomerLogin(phone: string) {
     if (phone) {
@@ -114,12 +117,13 @@ export function ShopProvider(props) {
         customerLogout,
         productIdSelected,
         setProductIdSelected,
-        productShop,
+        categoriesShop,
         setShop,
         setShopCode,
         branchSelecting,
         shopBranchs,
         setBranchSelecting,
+        loading,
       }}
     >
       {props.children}

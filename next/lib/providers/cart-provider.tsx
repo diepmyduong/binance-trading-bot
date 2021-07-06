@@ -75,6 +75,8 @@ export function CartProvider(props) {
         topping: topping,
       });
     }
+    console.log(cartProducts);
+
     setCartProducts([...cartProducts]);
   };
   const removeProductFromCart = (product: Product) => {

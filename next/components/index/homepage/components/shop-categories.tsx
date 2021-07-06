@@ -11,7 +11,7 @@ import { HightLightCategories } from "./hight-light-categories";
 interface ShopCategoriesPropsType extends ReactProps {}
 
 export function ShopCategories(props: ShopCategoriesPropsType) {
-  const { productShop } = useShopContext();
+  const { categoriesShop } = useShopContext();
   const [isViewing, setIsViewing] = useState<number>();
   const [isClickView, setIsClickView] = useState(false);
   function isInViewport(element) {
@@ -67,7 +67,7 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
   return (
     <div className="bg-white mt-4">
       <HightLightCategories />
-      {productShop?.length > 0 && (
+      {categoriesShop?.length > 0 && (
         <>
           <SwitchTabs
             chevron
@@ -76,7 +76,7 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
             className=" sticky top-14 bg-white z-20 shadow-sm "
             native
             options={[
-              ...productShop.map(
+              ...categoriesShop.map(
                 (item, index) =>
                   item.productIds.length > 0 && {
                     value: index,
@@ -87,7 +87,7 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
             onChange={(val) => handleChange(val)}
           />
           <div className="flex flex-col bg-gray-200 ">
-            {productShop.map(
+            {categoriesShop.map(
               (item: Category, index: number) =>
                 item.productIds.length > 0 && (
                   <ShopCategory list={item.products} title={item.name} key={index} />

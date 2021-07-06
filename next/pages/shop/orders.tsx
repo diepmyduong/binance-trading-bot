@@ -1,8 +1,14 @@
-import { WIP } from "../../components/shared/utilities/wip";
+import { NextSeo } from "next-seo";
+import { OrdersPage } from "../../components/shop/orders/orders-page";
 import { ShopLayout } from "../../layouts/shop-layout/shop-layout";
 
 export default function Page() {
-  return <WIP />;
+  return (
+    <>
+      <NextSeo title="Mẫu Topping" />
+      <OrdersPage />
+    </>
+  );
 }
 
 Page.Layout = ShopLayout;

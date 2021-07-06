@@ -2,7 +2,6 @@ import { useState } from "react";
 import { convertViToEn } from "../../../lib/helpers/convert-vi-to-en";
 import { useAlert } from "../../../lib/providers/alert-provider";
 import { useToast } from "../../../lib/providers/toast-provider";
-import { Category, CategoryService } from "../../../lib/repo/category.repo";
 import { ShopBranch } from "../../../lib/repo/shop-branch.repo";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
 import { AddressGroup } from "../../shared/utilities/address-group";

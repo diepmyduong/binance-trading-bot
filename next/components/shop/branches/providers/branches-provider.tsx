@@ -1,7 +1,6 @@
 import cloneDeep from "lodash/cloneDeep";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useToast } from "../../../../lib/providers/toast-provider";
-import { CategoryService } from "../../../../lib/repo/category.repo";
 import { ShopBranch, ShopBranchService } from "../../../../lib/repo/shop-branch.repo";
 
 export const BranchesContext = createContext<

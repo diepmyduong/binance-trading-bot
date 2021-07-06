@@ -1,3 +1,4 @@
+import { ShopConfig } from "./shop-config.repo";
 import { BaseModel, CrudRepository } from "./crud.repo";
 
 export interface Shop extends BaseModel {
@@ -21,6 +22,7 @@ export interface Shop extends BaseModel {
   ward: string;
   allowSale: boolean;
   deliveryDistricts: string[];
+  config: ShopConfig;
 }
 export class ShopRepository extends CrudRepository<Shop> {
   apiName: string = "Shop";
@@ -66,7 +68,58 @@ export class ShopRepository extends CrudRepository<Shop> {
   ward: String
   allowSale: Boolean
   addressDeliveryIds: [ID]
-  deliveryDistricts: [String]`);
+  deliveryDistricts: [String]
+  config{
+    vnpostCode: String
+    vnpostPhone: String
+    vnpostName: String
+    shipPreparationTime: String
+    shipDefaultDistance: Int
+    shipDefaultFee: Float
+    shipNextFee: Float
+    shipOneKmFee: Float
+    shipUseOneKmFee: Boolean
+    shipNote: String
+    rating: Float
+    ratingQty: Int
+    soldQty: Int
+    tags{
+      name:String
+      icon:String
+      qty:Int
+    }: [ShopTag]
+    banners{
+      image:String
+      title:String
+      subtitle:String
+      actionType:String
+      link:String
+      product{
+        name:String
+        image:String
+        code:String
+      }
+      voucher{
+        code:String
+      }
+    }:[ShopBanner]
+    productGroups{
+      name:String
+      products{
+        image :String
+        name :String
+        priority 
+        basePrice:Float 
+        downPrice :Float
+        code :String
+        labels{
+          name :String
+          color:String
+        }:[ProductLabel]
+      }
+    }
+  }:[ShopConfig]
+  `);
 
   async getShopData() {
     return await this.apollo

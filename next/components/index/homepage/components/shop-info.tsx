@@ -11,12 +11,10 @@ import { CommentsDialog } from "./comments-dialog";
 import BranchsDialog from "./branchs-dialog";
 import { useShopContext } from "../../../../lib/providers/shop-provider";
 import { Img } from "../../../shared/utilities/img";
-interface Propstype extends ReactProps {
-  shop: any;
-}
+interface Propstype extends ReactProps {}
 
 export function ShopInfo(props: Propstype) {
-  const { branchSelecting } = useShopContext();
+  const { branchSelecting, shop } = useShopContext();
   return (
     <div className="relative text-sm bg-white">
       <Img
@@ -28,34 +26,15 @@ export function ShopInfo(props: Propstype) {
         ratio169
         className="bannerShop"
       />
-      <ShopBranch
-        className="center-item top-1/4 w-11/12 sm:mt-20"
-        info={{ name: props.shop.shopName }}
-      />
+      <ShopBranch className="center-item top-1/4 w-11/12 sm:mt-10" />
       <MoreInfomation />
-      <BannerPromtion />
+      <BannerPromtion banner={shop.config.banners} />
     </div>
   );
 }
 const MoreInfomation = (props) => {
-  const reactions = [
-    {
-      name: "Món ngon",
-      value: 10,
-      icon: SmileIcon,
-    },
-    {
-      name: "Đóng gói đep",
-      value: 10,
-      icon: Package,
-    },
-    {
-      name: "Đáng đồng tiền",
-      value: 10,
-      icon: MoneyBag,
-    },
-  ];
   const [showComments, setShowComments] = useState(false);
+  const { shop } = useShopContext();
   return (
     <>
       <div className={`pt-20`}>
@@ -77,7 +56,11 @@ const MoreInfomation = (props) => {
           />
         </div>
         <div className="flex justify-between items-center px-4 ">
-          <Rating numRated={344} rating={4.8} soldQty={688} />
+          <Rating
+            numRated={shop.config.ratingQty}
+            rating={shop.config.rating}
+            soldQty={shop.config.soldQty}
+          />
           <Button
             textPrimary
             text="Xem bình luận"
@@ -89,27 +72,24 @@ const MoreInfomation = (props) => {
           />
         </div>
       </div>
-      <EmotionsEvaluate reactions={reactions} />
+      <EmotionsEvaluate reactions={shop.config.tags} />
       <CommentsDialog isOpen={showComments} onClose={() => setShowComments(false)} />
     </>
   );
 };
 
-interface ShopInfoProps extends ReactProps {
-  info: {
-    name: string;
-  };
-}
+interface ShopInfoProps extends ReactProps {}
 
 const ShopBranch = (props: ShopInfoProps) => {
   const [showBranchs, setShowBranchs] = useState(false);
-  const { branchSelecting, setBranchSelecting, shopBranchs } = useShopContext();
+  const { branchSelecting, setBranchSelecting, shopBranchs, shop } = useShopContext();
 
   return (
     <div className={`bg-white p-3 pb-0 rounded-md shadow-lg text-center  ${props.className || ""}`}>
-      <h2 className="text-xl font-semibold pb-2">{props.info.name}</h2>
+      <h2 className="text-xl font-semibold pb-2">{shop.shopName}</h2>
       <p className="text-sm text-gray-400 pb-2 border-b">
-        Thời gian làm món khoảng {branchSelecting?.shipPreparationTime} phút
+        Thời gian làm món khoảng{" "}
+        {branchSelecting?.shipPreparationTime || shop.config.shipPreparationTime}
       </p>
       <div className="flex justify-between items-center">
         <p className="whitespace-nowrap">

@@ -57,6 +57,7 @@
     "csv-parser": "2.3.3",
     "dataloader": "^2.0.0",
     "dotenv": "^8.2.0",
+    "emoji-mart": "^3.0.1",
     "exceljs": "^4.2.0",
     "express": "^4.17.1",
     "faker": "^4.1.0",

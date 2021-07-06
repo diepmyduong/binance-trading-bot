@@ -16,10 +16,7 @@ export function BranchesPage(props: ReactProps) {
   return (
     <ProductsProvider>
       <div className="flex justify-between items-center pb-6 border-b border-gray-300">
-        <ShopPageTitle
-          title="Danh mục món"
-          subtitle="Quản lý danh mục và các món ăn thuộc danh mục"
-        />
+        <ShopPageTitle title="Danh mục món" subtitle="Quản lý danh mục và các món thuộc danh mục" />
         <Button
           primary
           className="bg-gradient h-12"

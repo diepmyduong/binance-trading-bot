@@ -33,23 +33,6 @@ export function ShopInfo(props: Propstype) {
   );
 }
 const MoreInfomation = (props) => {
-  const reactions = [
-    {
-      name: "Món ngon",
-      value: 10,
-      icon: SmileIcon,
-    },
-    {
-      name: "Đóng gói đep",
-      value: 10,
-      icon: Package,
-    },
-    {
-      name: "Đáng đồng tiền",
-      value: 10,
-      icon: MoneyBag,
-    },
-  ];
   const [showComments, setShowComments] = useState(false);
   const { shop } = useShopContext();
   return (

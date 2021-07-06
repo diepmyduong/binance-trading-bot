@@ -142,7 +142,7 @@ export function ShopCategory(props: ShopCategoryPropsType) {
                     className="justify-items-end"
                   />
                 </div>
-                <Img src={item.image} className="w-20 sm:w-24 rounded-sm" />
+                <Img src={item.image} className="w-20 sm:w-24 rounded-sm" compress={24} />
               </div>
               {item.labels?.map((label, index) => (
                 <div

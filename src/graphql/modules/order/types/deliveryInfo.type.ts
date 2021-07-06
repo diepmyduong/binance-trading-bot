@@ -20,49 +20,50 @@ export type DeliveryInfo = {
   receiverDistrictId?: string; // mã quận người nhận *
   receiverWardId?: string; // mã phường người nhận *
 
-  receiverAddressType: AddressType; // Kiểu địa chỉ người nhận: 1 Nhà riêng, 2: Cơ quan Nếu không có thông tin thì để null
+  receiverAddressType?: AddressType; // Kiểu địa chỉ người nhận: 1 Nhà riêng, 2: Cơ quan Nếu không có thông tin thì để null
 
-  serviceName: string;
+  serviceName?: string;
+  serviceIcon?: string; // Icon Dịch vụ
 
-  orderCode: string; // mã đơn hàng
-  packageContent: string; //"Món hàng A + Món hàng B"; // nội dung hàng
+  orderCode?: string; // mã đơn hàng
+  packageContent?: string; //"Món hàng A + Món hàng B"; // nội dung hàng
 
   weightEvaluation?: number; // cân nặng *
-  widthEvaluation: number; // chiều rộng
-  lengthEvaluation: number; // chiều dài
-  heightEvaluation: number; // chiều cao
+  widthEvaluation?: number; // chiều rộng
+  lengthEvaluation?: number; // chiều dài
+  heightEvaluation?: number; // chiều cao
 
-  codAmountEvaluation: number; // tiền thu hộ tạm tính
+  codAmountEvaluation?: number; // tiền thu hộ tạm tính
 
   isPackageViewable?: boolean; // cho xem hàng
 
-  pickupType: PickupType; //1;
+  pickupType?: PickupType; //1;
 
-  orderAmountEvaluation: number; // giá trị đơn hàng tạm tính
+  orderAmountEvaluation?: number; // giá trị đơn hàng tạm tính
 
-  isReceiverPayFreight: boolean; // Cộng thêm cước vào tiền thu hộ
-  customerNote: string; // yêu cầu khác
-  useBaoPhat: boolean;
-  useHoaDon: boolean;
+  isReceiverPayFreight?: boolean; // Cộng thêm cước vào tiền thu hộ
+  customerNote?: string; // yêu cầu khác
+  useBaoPhat?: boolean;
+  useHoaDon?: boolean;
 
   // bỏ qua
-  customerCode: string; // mã khách hàng
-  vendorId: string; // 1; // mã nhà cung cấp
+  customerCode?: string; // mã khách hàng
+  vendorId?: string; // 1; // mã nhà cung cấp
 
-  itemCode: string;
-  orderId: string;
+  itemCode?: string;
+  orderId?: string;
   // kết quả delivery
-  createTime: string; // thời gian tạo đơn
-  lastUpdateTime: string; // thời gian cập nhật lần cuối
-  deliveryDateEvaluation: string; // ngày dự kiến giao hàng
-  cancelTime: string; // thời gian hủy
-  deliveryTime: string; // thời gian vận chuyển
-  deliveryTimes: number; // Số lần báo phát
-  status: string;
-  statusText: string;
+  createTime?: string; // thời gian tạo đơn
+  lastUpdateTime?: string; // thời gian cập nhật lần cuối
+  deliveryDateEvaluation?: string; // ngày dự kiến giao hàng
+  cancelTime?: string; // thời gian hủy
+  deliveryTime?: string; // thời gian vận chuyển
+  deliveryTimes?: number; // Số lần báo phát
+  status?: string;
+  statusText?: string;
 
-  partnerFee: number; // Phí giao hàng trả cho đối tác
-  sharedLink: string; // Link chia sẻ
+  partnerFee?: number; // Phí giao hàng trả cho đối tác
+  sharedLink?: string; // Link chia sẻ
 };
 
 export const DeliveryInfoSchema = new Schema({
@@ -86,6 +87,7 @@ export const DeliveryInfoSchema = new Schema({
   }, // Kiểu địa chỉ người nhận: 1 Nhà riêng, 2: Cơ quan Nếu không có thông tin thì để null
 
   serviceName: { type: Schema.Types.String },
+  serviceIcon: { type: String },
 
   orderCode: { type: Schema.Types.String }, // mã đơn hàng
   packageContent: { type: Schema.Types.String }, //"Món hàng A + Món hàng B"; // nội dung hàng

@@ -10,6 +10,7 @@ import { useAuth } from "../../../lib/providers/auth-provider";
 import { CustomerLoginDialog } from "../../../components/shared/homepage-layout/customer-login-dialog";
 import { HiOutlineUserCircle } from "react-icons/hi";
 import { Img } from "../../../components/shared/utilities/img";
+import { useDefaultLayoutContext } from "../provider/default-layout-provider";
 
 export interface HeaderPropsType extends ReactProps {
   title?: string;
@@ -20,6 +21,7 @@ export interface HeaderPropsType extends ReactProps {
 }
 export function Header({ code, ...props }: HeaderPropsType) {
   const { customer, cunstomerLogin, customerLogout, shop, shopCode } = useShopContext();
+  const { loginCustomerByPhone } = useDefaultLayoutContext();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const menus = [
@@ -36,12 +38,12 @@ export function Header({ code, ...props }: HeaderPropsType) {
     {
       label: "Lịch sử đặt hàng",
       icon: <FaHistory />,
-      onClick: () => router.push("/order"),
+      onClick: () => router.push("/order", null, { shallow: true }),
     },
     {
       label: "Khuyến mãi",
       icon: <FaPercent />,
-      onClick: () => router.push("/promotion"),
+      onClick: () => router.push("/promotion", null, { shallow: true }),
     },
     {
       label: "Đăng xuất",

@@ -1,34 +1,21 @@
+import { get } from "lodash";
+
 import { ErrorHelper } from "../../../../base/error";
 import { ROLES } from "../../../../constants/role.const";
 import { onCanceledOrder } from "../../../../events/onCanceledOrder.event";
-import { AuthHelper, VietnamPostHelper } from "../../../../helpers";
+import { VietnamPostHelper } from "../../../../helpers";
+import { Ahamove } from "../../../../helpers/ahamove/ahamove";
 import { Context } from "../../../context";
 import { OrderItemModel } from "../../orderItem/orderItem.model";
-import { ProductModel } from "../../product/product.model";
 import { ShopConfigModel } from "../../shopConfig/shopConfig.model";
-import { OrderModel, OrderStatus } from "../order.model";
+import { OrderModel, OrderStatus, ShipMethod } from "../order.model";
 
 const Mutation = {
   cancelOrder: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER_CUSTOMER);
+    context.auth(ROLES.MEMBER_STAFF_CUSTOMER);
     const { id, note } = args;
-    const params: any = {
-      _id: id,
-    };
-
-    if (context.isMember()) {
-      params.sellerId = context.id;
-    }
-
-    if (context.isCustomer()) {
-      params.buyerId = context.id;
-      params.sellerId = context.sellerId;
-    }
-
-    const order = await OrderModel.findOne({ ...params });
-
+    const order = await OrderModel.findById(id);
     if (!order) throw ErrorHelper.requestDataInvalid("Đơn hàng không hợp lệ");
-
     if (context.isCustomer()) {
       if (order.status !== OrderStatus.PENDING) {
         throw ErrorHelper.somethingWentWrong(
@@ -36,31 +23,41 @@ const Mutation = {
         );
       }
     }
-
-    if (context.isMember()) {
-      if (
-        ![OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING].includes(order.status)
-      ) {
-        throw ErrorHelper.somethingWentWrong("Đơn hàng này không hủy được.");
-      }
+    if (
+      ![OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.DELIVERING].includes(order.status)
+    ) {
+      throw ErrorHelper.somethingWentWrong("Đơn hàng này không hủy được.");
     }
-
-    if (order.status === OrderStatus.DELIVERING && order.deliveryInfo.itemCode) {
-      const shopConfig = await ShopConfigModel.findOne({ memberId: order.sellerId });
+    const shopConfig = await ShopConfigModel.findOne({ memberId: order.sellerId });
+    if (
+      order.status === OrderStatus.DELIVERING &&
+      order.deliveryInfo.itemCode &&
+      order.shipMethod == ShipMethod.VNPOST
+    ) {
       await VietnamPostHelper.cancelOrder(order.deliveryInfo.orderId, shopConfig.vnpostToken);
+    }
+    if (order.shipMethod == ShipMethod.AHAMOVE) {
+      const ahamove = new Ahamove({});
+      const ahamoveOrder = await ahamove.fetchOrder(
+        shopConfig.shipAhamoveToken,
+        order.deliveryInfo.orderId
+      );
+      const result = await ahamove
+        .cancelOrder(shopConfig.shipAhamoveToken, order.deliveryInfo.orderId, note)
+        .catch((err) => {
+          throw Error(
+            "Không thể huỷ đơn Ahamove cho đơn hàng này. " +
+              get(Ahamove.StatusText, ahamoveOrder.status)
+          );
+        });
     }
 
     // Thực hiện huỷ đơn
     order.status = OrderStatus.CANCELED;
-    // Trừ orderQty
-    for (const orderId of order.itemIds) {
-      // Duyệt số lượng sao đó trừ inventory
-      await OrderItemModel.findByIdAndUpdate(
-        orderId,
-        { $set: { status: OrderStatus.CANCELED, note } },
-        { new: true }
-      );
-    }
+    await OrderItemModel.updateMany(
+      { orderId: order._id },
+      { $set: { status: OrderStatus.CANCELED } }
+    ).exec;
 
     return await Promise.all([order.save()]).then(async (res) => {
       const result = res[0];

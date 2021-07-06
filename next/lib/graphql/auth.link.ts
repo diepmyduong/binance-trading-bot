@@ -13,6 +13,14 @@ export function GetAuthToken() {
   return localStorage.getItem("user-token") || "";
 }
 
+export function ClearCustomerToken() {
+  localStorage.removeItem("tokenCustomer");
+}
+
+export function GetCustomerToken() {
+  return localStorage.getItem("tokenCustomer") || "";
+}
+
 export function SetAuthTokenMember(token: string) {
   console.log("member token", token);
   localStorage.setItem("member-token", token);
@@ -52,7 +60,7 @@ export const AuthLink = setContext((_, { headers }) => {
       token = GetAuthToken();
       console.log("admin token", token);
     } else {
-      token = GetAuthToken() || GetAnonymousToken();
+      token = GetAuthToken() || GetAnonymousToken() || GetCustomerToken();
     }
     const ip = GetIP();
     const context = {

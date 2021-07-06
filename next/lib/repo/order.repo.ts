@@ -15,7 +15,7 @@ export interface OrderInput {
   buyerDistrictId: string;
   buyerWardId: string;
   latitude: number;
-  longtitude: number;
+  longitude: number;
   paymentMethod: string;
   note: string;
   items: OrderItemInput[];

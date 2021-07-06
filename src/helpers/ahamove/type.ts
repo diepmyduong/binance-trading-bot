@@ -75,6 +75,7 @@ export type Order = {
   stop_fee: number;
   request_fee: number;
   distance_fee: number;
+  duration: number;
   discount: number;
   total_fee: number;
   user_bonus_account: number;

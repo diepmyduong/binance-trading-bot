@@ -54,7 +54,7 @@ export function InforPayment({ inforBuyer, setInforBuyer }) {
           }}
         />
         <div className="px-4 pt-6 text-sm">
-          <Form initialData={inforBuyer} onChange={(data) => setInforBuyer(data)}>
+          <Form initialData={inforBuyer} onChange={(data) => setInforBuyer({ ...data })}>
             <Field name="name" noError className="pb-2">
               <Input
                 placeholder="Nhập tên người nhận"

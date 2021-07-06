@@ -98,7 +98,8 @@ export type IOrder = BaseDocument & {
   itemWidth?: number; // chiều rộng
   itemLength?: number; // chiều dài
   itemHeight?: number; // chiều cao
-  shipfee?: number;
+  shipfee?: number; // Phí ship
+  shipDistance?: number; // Khoản cách ship
   deliveryInfo?: DeliveryInfo;
   shipMethod?: ShipMethod;
   paymentMethod?: PaymentMethod;
@@ -177,6 +178,7 @@ const orderSchema = new Schema(
     itemHeight: { type: Number, default: 0 }, // chiều cao
 
     shipfee: { type: Number, default: 0, min: 0 },
+    shipDistance: { type: Number, default: 0, min: 0 },
     deliveryInfo: { type: DeliveryInfoSchema },
     shipMethod: { type: String, enum: Object.values(ShipMethod) },
     paymentMethod: { type: String, enum: Object.values(PaymentMethod), required: true },

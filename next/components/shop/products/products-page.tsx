@@ -25,7 +25,7 @@ export function ProductsPage(props: ReactProps) {
               <div className="flex justify-between items-center pb-6 border-b border-gray-300">
                 <ShopPageTitle
                   title="Danh mục món"
-                  subtitle="Quản lý danh mục và các món ăn thuộc danh mục"
+                  subtitle="Quản lý danh mục và các món thuộc danh mục"
                 />
                 <div className="flex gap-x-2">
                   <Button

@@ -154,15 +154,15 @@ export function CartProvider(props) {
       itemProduct.push(OrderItem);
     });
     setItemProducts(itemProduct);
-    let longtitude = 106.771436,
-      lattitude = 10.842888;
+    let longtitude = 106.70788626891724,
+      lattitude = 10.795957687020659;
     console.log("inforBuyerinforBuyer", inforBuyer);
     let data: OrderInput = {
       buyerName: inforBuyer.name,
       buyerPhone: inforBuyer.phone || getPhone(),
       pickupMethod: "DELIVERY",
       shopBranchId: branchSelecting?.id,
-      pickupTime: "abc",
+      pickupTime: null,
       buyerAddress: inforBuyer.address?.address,
       buyerProvinceId: inforBuyer.address?.provinceId,
       buyerDistrictId: inforBuyer.address?.districtId,
@@ -181,14 +181,14 @@ export function CartProvider(props) {
   };
 
   const generateOrder = () => {
-    let longtitude = 106.771436,
-      lattitude = 10.842888;
+    let longtitude = 106.70788626891724,
+      lattitude = 10.795957687020659;
     let data: OrderInput = {
       buyerName: inforBuyers.name,
       buyerPhone: inforBuyers.phone || getPhone(),
       pickupMethod: "DELIVERY",
       shopBranchId: branchSelecting?.id,
-      pickupTime: "abc",
+      pickupTime: null,
       buyerAddress: inforBuyers.address?.address,
       buyerProvinceId: inforBuyers.address?.provinceId,
       buyerDistrictId: inforBuyers.address?.districtId,

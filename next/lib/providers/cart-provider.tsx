@@ -84,8 +84,7 @@ export function CartProvider(props) {
       cartProduct.amount = cartProduct.price * cartProduct.qty;
     } else {
       let priceProduct =
-        (product.downPrice ? product.downPrice : product.basePrice) +
-        topping.reduce((total, item) => (total += item.price), 0);
+        product.basePrice + topping.reduce((total, item) => (total += item.price), 0);
       cartProducts.push({
         productId: product.id,
         product: product,
@@ -112,8 +111,7 @@ export function CartProvider(props) {
       cartProduct.amount = cartProduct.price * qty;
     } else {
       let priceProduct =
-        (product.downPrice ? product.downPrice : product.basePrice) +
-        topping.reduce((total, item) => (total += item.price), 0);
+        product.basePrice + topping.reduce((total, item) => (total += item.price), 0);
       cartProducts.push({
         productId: product.id,
         product: product,
@@ -195,7 +193,7 @@ export function CartProvider(props) {
       items: itemProducts,
     };
     if (!order.invalid) {
-      OrderService.createOrder(data)
+      return OrderService.createOrder(data)
         .then((res) => {
           setOrder(res);
         })

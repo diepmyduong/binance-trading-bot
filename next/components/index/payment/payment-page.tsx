@@ -39,7 +39,7 @@ export function PaymentPage() {
   useEffect(() => {
     if (!branchSelecting) {
       toast.error("Chưa chọn quán chi nhánh");
-      setopenDialogSelectBranch(true);
+      // setopenDialogSelectBranch(true);
     }
   }, [branchSelecting]);
   useEffect(() => {

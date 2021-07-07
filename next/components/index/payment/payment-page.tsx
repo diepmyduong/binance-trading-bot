@@ -35,10 +35,6 @@ export function PaymentPage() {
   const [fullAddress, setFullAddress] = useState({});
 
   const toast = useToast();
-  const getPhone = () => {
-    if (typeof window === "undefined") return;
-    return localStorage.getItem("phoneUser");
-  };
 
   useEffect(() => {
     if (!branchSelecting) {

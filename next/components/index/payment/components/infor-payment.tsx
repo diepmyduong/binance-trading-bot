@@ -26,6 +26,10 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
     wardId: "",
     address: "",
   });
+  const getPhone = () => {
+    if (typeof window === "undefined") return;
+    return localStorage.getItem("phoneUser");
+  };
   const [inforBuyer, setInforBuyer] = useState({
     name: "",
     phone: "",
@@ -81,7 +85,9 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
             </Field>
             <Field name="phone" noError className="pb-2" required>
               <Input
-                type="number"
+                type="text"
+                readonly
+                value={getPhone()}
                 placeholder="Nhập số điện thoại"
                 prefix={<FaBlenderPhone />}
                 className="rounded-2xl bg-primary-light"

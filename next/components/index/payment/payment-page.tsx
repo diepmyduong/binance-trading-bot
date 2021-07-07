@@ -27,6 +27,7 @@ export function PaymentPage() {
     generateDraftOrder,
     order,
   } = useCartContext();
+  console.log("order", order);
   const { branchSelecting, shopBranchs, setBranchSelecting } = useShopContext();
   const [voucherApplied, setVoucherApplied] = useState(null);
   const [note, setNote] = useState({ note: "" });
@@ -35,7 +36,6 @@ export function PaymentPage() {
   const [fullAddress, setFullAddress] = useState({});
 
   const toast = useToast();
-
   useEffect(() => {
     if (!branchSelecting) {
       toast.error("Chưa chọn quán chi nhánh");
@@ -56,7 +56,17 @@ export function PaymentPage() {
           onChangeFullAddress={(data) => console.log(data)}
         />
         <div className="mt-1 bg-white">
-          <p className="font-semibold px-4 py-2">{branchSelecting?.name}</p>
+          <div className="flex items-center justify-between">
+            <p className="font-semibold px-4 py-2">
+              {branchSelecting ? branchSelecting.name : "Chưa chọn chi nhánh"}
+            </p>
+            <Button
+              textPrimary
+              text="Đổi chi nhánh"
+              small
+              onClick={() => setopenDialogSelectBranch(true)}
+            />
+          </div>
           <div className="">
             {cartProducts.map((item, index) => {
               const last = cartProducts.length - 1 == index;
@@ -93,9 +103,11 @@ export function PaymentPage() {
           <div className="flex justify-between items-center">
             <div className="">
               Phí áp dụng:{" "}
-              <span className="font-bold">{order.shipDistance && `${order.shipDistance} km`} </span>
+              <span className="font-bold">
+                {order.shipDistance ? `${order?.order?.shipDistance} km` : ""}{" "}
+              </span>
             </div>
-            <div className="">{NumberPipe(order.shipfee || 0)}đ</div>
+            <div className="">{NumberPipe(order?.order?.shipfee)}đ</div>
           </div>
           <div className="flex justify-between items-center">
             <div className="">Giảm giá:</div>
@@ -168,7 +180,7 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
       <div className="w-full py-2 px-4">
         <Button
           disabled={order.invalid}
-          text={`Đặt hàng ${NumberPipe(totalMoney)}đ`}
+          text={order.order ? `Đặt hàng ${NumberPipe(order?.order?.amount)}đ` : "Đặt hàng"}
           primary
           className="w-full"
           onClick={async () => {

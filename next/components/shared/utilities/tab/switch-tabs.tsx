@@ -11,12 +11,15 @@ interface Propstype extends FormControlProps {
 }
 export function SwitchTabs({ native = false, chevron = false, ...props }: Propstype) {
   function isInViewport(element) {
+    let rectTabContainer = document
+      .getElementsByClassName("tab-container")[0]
+      .getBoundingClientRect();
     const rect = element.getBoundingClientRect();
     return (
       rect.top >= 0 &&
-      rect.left >= 0 &&
+      rect.left >= rectTabContainer.left &&
       rect.bottom / 2 <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      rect.right <= rectTabContainer.right
     );
   }
   const [value, setValue] = useState<any>(props.value);
@@ -120,7 +123,7 @@ export function SwitchTabs({ native = false, chevron = false, ...props }: Propst
   }
   const { isMobile } = useDevice();
   return (
-    <div className={`relative group w-full ${props.className || ""}`}>
+    <div className={`relative group w-full ${props.className || ""} tab-container`}>
       {!isMobile && chevron && (
         <>
           {!isLastLeft && (

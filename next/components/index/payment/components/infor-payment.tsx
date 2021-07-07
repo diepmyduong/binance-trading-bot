@@ -3,25 +3,38 @@ import { Fa500Px, FaAddressCard, FaBlenderPhone, FaUserAlt } from "react-icons/f
 import { Dialog } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
 import { Field } from "../../../shared/utilities/form/field";
-import { Form } from "../../../shared/utilities/form/form";
+import { Form, FormConsumer } from "../../../shared/utilities/form/form";
 import { Input } from "../../../shared/utilities/form/input";
 import { Select } from "../../../shared/utilities/form/select";
 import BranchsDialog from "../../homepage/components/branchs-dialog";
 import { useShopContext } from "../../../../lib/providers/shop-provider";
+import { SaveButtonGroup } from "../../../shared/utilities/save-button-group";
+import { AddressGroup } from "../../../shared/utilities/form/address-group";
+import { useCartContext } from "../../../../lib/providers/cart-provider";
 
-export function InforPayment({ inforBuyer, setInforBuyer }) {
-  inforBuyer = {
-    name: "Nguyễn Văn A",
-    phone: "0869698360",
-    address: "749 Nguyễn Văn Linh Quận 7 TPHCM ",
-  };
+export function InforPayment({ onChange, onChangeFullAddress }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [times, setTimes] = useState([]);
   const [branch, setBranch] = useState(
     "110 Nguyễn Văn Linh, F. Tân Thuận Tây, Quận 7, Hồ Chí Minh"
   );
-  const { shopBranchs } = useShopContext();
+  const [fullAddress, setFullAddress] = useState({});
+  const [address, setAddress] = useState({
+    provinceId: "",
+    districtId: "",
+    wardId: "",
+    address: "",
+  });
+  const [inforBuyer, setInforBuyer] = useState({
+    name: "",
+    phone: "",
+  });
+  useEffect(() => {
+    onChange({ name: inforBuyer.name, phone: inforBuyer.phone, address: address });
+  }, [address, inforBuyer]);
+  const [openInputAddress, setOpenInputAddress] = useState(false);
+  const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
   const generateTime = () => {
     var today = new Date();
     var time = today.getHours();
@@ -54,15 +67,19 @@ export function InforPayment({ inforBuyer, setInforBuyer }) {
           }}
         />
         <div className="px-4 pt-6 text-sm">
-          <Form initialData={inforBuyer} onChange={(data) => setInforBuyer({ ...data })}>
-            <Field name="name" noError className="pb-2">
+          <Form
+            onChange={(data) => {
+              setInforBuyer({ ...data });
+            }}
+          >
+            <Field name="name" noError className="pb-2" required>
               <Input
                 placeholder="Nhập tên người nhận"
                 prefix={<FaUserAlt />}
                 className="rounded-2xl bg-primary-light"
               />
             </Field>
-            <Field name="phone" noError className="pb-2">
+            <Field name="phone" noError className="pb-2" required>
               <Input
                 type="number"
                 placeholder="Nhập số điện thoại"
@@ -72,19 +89,37 @@ export function InforPayment({ inforBuyer, setInforBuyer }) {
             </Field>
 
             {selectedIndex == 0 ? (
-              <Field name="address" noError className="pb-2">
-                <Input
-                  type="text"
-                  placeholder="Nhập địa chỉ giao đến"
-                  prefix={<FaAddressCard />}
-                  className="rounded-2xl bg-primary-light"
-                />
-              </Field>
+              <div
+                className=""
+                onClick={() => {
+                  setOpenInputAddress(true);
+                }}
+              >
+                <Field noError className="pb-2">
+                  <Input
+                    readonly
+                    value=""
+                    type="text"
+                    placeholder="Nhập địa chỉ giao đến"
+                    prefix={<FaAddressCard />}
+                    className="rounded-2xl bg-primary-light"
+                  />
+                </Field>
+              </div>
             ) : (
               <div className="py-2">
                 <div className="font-bold">Chi nhánh</div>
                 <div className="flex items-start justify-between pt-2">
-                  <p className="font-medium">{branch}</p>
+                  <div className="flex flex-col">
+                    {branchSelecting ? (
+                      <>
+                        <p className="font-medium">{branchSelecting.name}</p>
+                        <p className="font-medium">{branchSelecting.address}</p>
+                      </>
+                    ) : (
+                      <p className="font-medium">Chưa chọn chi nhánh</p>
+                    )}
+                  </div>
                   <Button
                     text="Đổi chi nhánh"
                     textPrimary
@@ -110,11 +145,35 @@ export function InforPayment({ inforBuyer, setInforBuyer }) {
               shopBranchs={shopBranchs}
               onClose={() => setOpenDialog(false)}
               isOpen={openDialog}
-              onSelect={(br) => {
-                setBranch(br);
+              onSelect={(branch) => {
+                setBranchSelecting(branch);
               }}
             />
           )}
+          <Form
+            dialog
+            mobileSizeMode
+            isOpen={openInputAddress}
+            onClose={() => setOpenInputAddress(false)}
+            onSubmit={(data) => {
+              setAddress({ ...data });
+              onChangeFullAddress(fullAddress);
+              setOpenInputAddress(false);
+            }}
+            onChange={(data, fullData) => {
+              if (fullData?.provinceId)
+                setFullAddress({ ...fullAddress, provinceId: fullData.provinceId });
+              if (fullData?.districtId)
+                setFullAddress({ ...fullAddress, districtId: fullData.districtId });
+              if (fullData?.wardId) setFullAddress({ ...fullAddress, wardId: fullData.wardId });
+              if (fullData?.address != null)
+                setFullAddress({ ...fullAddress, address: fullData.address });
+              console.log(fullData);
+            }}
+          >
+            <AddressGroup {...address} required />
+            <SaveButtonGroup />
+          </Form>
         </div>
       </div>
     </div>

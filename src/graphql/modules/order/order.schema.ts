@@ -169,6 +169,9 @@ const schema = gql`
     pickupTime: DateTime
     "Mã chi nhánh"
     shopBranchId: String
+
+    "Lý do huỷ"
+    cancelReason: String
   }
 
 

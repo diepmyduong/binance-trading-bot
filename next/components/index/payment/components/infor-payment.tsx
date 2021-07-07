@@ -31,6 +31,26 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
   }, [address, inforBuyer]);
   const [openInputAddress, setOpenInputAddress] = useState(false);
   const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
+  const { order } = useCartContext();
+  const [addressTemp, setAddressTemp] = useState("");
+  useEffect(() => {
+    if (
+      order.order?.buyerAddress &&
+      order.order?.buyerWard &&
+      order.order?.buyerDistrict &&
+      order.order?.buyerProvince
+    ) {
+      setAddressTemp(
+        order.order.buyerAddress +
+          ", " +
+          order.order.buyerWard +
+          ", " +
+          order.order.buyerDistrict +
+          ", " +
+          order.order.buyerProvince
+      );
+    }
+  }, [order]);
   const generateTime = () => {
     var today = new Date();
     var time = today.getHours();
@@ -95,7 +115,7 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
                 <Field noError className="pb-2">
                   <Input
                     readonly
-                    value=""
+                    value={addressTemp}
                     type="text"
                     placeholder="Nhập địa chỉ giao đến"
                     prefix={<FaAddressCard />}

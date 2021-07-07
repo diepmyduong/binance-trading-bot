@@ -12,18 +12,18 @@ interface PropsType extends ReactProps {
 }
 export function Toppings({ toppings, onChange }: PropsType) {
   let [data, setData] = useState<any>({});
-  const handleClick = (dta, id, nameTopping, required) => {
-    data[id] = dta;
-    data[id] = { ...data[id], nameTopping: nameTopping };
+  const handleClick = (dta, toppingId, nameTopping) => {
+    data[toppingId] = dta;
+    data[toppingId] = { ...data[toppingId], nameTopping: nameTopping };
     setData({ ...data });
     onChange(data);
   };
-  console.log("Toppings", data);
+  console.log("Toppings", toppings, data);
   useEffect(() => {
     toppings.forEach((item) => {
-      if (item.required) handleClick(item.options[0], item.id, item.name, item.required);
+      if (item.required) handleClick(item.options[0], item.id, item.name);
     });
-  }, [toppings]);
+  }, []);
   return (
     <div className="">
       {toppings.map((topping, index) => {
@@ -32,7 +32,7 @@ export function Toppings({ toppings, onChange }: PropsType) {
             topping={topping}
             listSelected={data[topping.id]}
             onSelect={(dta, id) => {
-              handleClick(dta, id, topping.name, topping.required);
+              handleClick(dta, id, topping.name);
             }}
             key={index}
           />

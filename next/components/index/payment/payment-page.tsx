@@ -92,7 +92,8 @@ export function PaymentPage() {
           </div>
           <div className="flex justify-between items-center">
             <div className="">
-              Phí áp dụng: <span className="font-bold">{order.shipDistance} km</span>
+              Phí áp dụng:{" "}
+              <span className="font-bold">{order.shipDistance && `${order.shipDistance} km`} </span>
             </div>
             <div className="">{NumberPipe(order.shipfee || 0)}đ</div>
           </div>

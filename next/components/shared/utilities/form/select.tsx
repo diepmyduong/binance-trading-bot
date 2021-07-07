@@ -359,10 +359,10 @@ export function Select({
           if (Array.isArray(option)) {
             props.onChange(
               option.map((x) => x.value),
-              option
+              { ...option }
             );
           } else {
-            props.onChange(option.value, option);
+            props.onChange(option.value, { ...option });
           }
         } else {
           if (multi) {

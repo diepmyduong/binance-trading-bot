@@ -195,7 +195,7 @@ export function CartProvider(props) {
       items: itemProducts,
     };
     if (!order.invalid) {
-      OrderService.createOrder(data)
+      return OrderService.createOrder(data)
         .then((res) => {
           setOrder(res);
         })

@@ -13,30 +13,54 @@ import { Textarea } from "../../shared/utilities/form/textarea";
 import { SaveButtonGroup } from "../../shared/utilities/save-button-group";
 import { InforPayment } from "./components/infor-payment";
 import { TicketVoucher } from "./components/ticket-voucher";
+import { useShopContext } from "../../../lib/providers/shop-provider";
+import { useToast } from "../../../lib/providers/toast-provider";
+import BranchsDialog from "../homepage/components/branchs-dialog";
 // SwiperCore.use([Pagination]);
 
 export function PaymentPage() {
-  const { cartProducts, totalFood, totalMoney, generateOrder, createOrder } = useCartContext();
+  const {
+    cartProducts,
+    totalFood,
+    totalMoney,
+    generateOrder,
+    createOrder,
+    order,
+  } = useCartContext();
+  const { branchSelecting, shopBranchs, setBranchSelecting } = useShopContext();
   const [voucherApplied, setVoucherApplied] = useState(null);
   const [note, setNote] = useState({ note: "" });
+  const [openDialogSelectBranch, setopenDialogSelectBranch] = useState(false);
   const [inforBuyers, setInforBuyers] = useState({});
+  const [fullAddress, setFullAddress] = useState({});
+
+  const toast = useToast();
   const getPhone = () => {
     if (typeof window === "undefined") return;
     return localStorage.getItem("phoneUser");
   };
 
   useEffect(() => {
+    if (!branchSelecting) {
+      toast.error("Chưa chọn quán chi nhánh");
+      setopenDialogSelectBranch(true);
+    }
+  }, [branchSelecting]);
+  useEffect(() => {
     generateOrder(inforBuyers, note);
-  }, [inforBuyers]);
+  }, [inforBuyers, note, branchSelecting]);
   useEffect(() => {
     setVoucherApplied(null);
   }, []);
   return (
     <>
       <div className="text-gray-700 bg-gray-100">
-        <InforPayment onChange={(data) => setInforBuyers({ ...data })} />
+        <InforPayment
+          onChange={(data) => setInforBuyers({ ...data })}
+          onChangeFullAddress={(data) => console.log(data)}
+        />
         <div className="mt-1 bg-white">
-          <p className="font-semibold px-4 py-2">Cơm tấm Phúc Lộc Thọ Huỳnh Tấn Phát</p>
+          <p className="font-semibold px-4 py-2">{branchSelecting?.name}</p>
           <div className="">
             {cartProducts.map((item, index) => {
               const last = cartProducts.length - 1 == index;
@@ -72,9 +96,9 @@ export function PaymentPage() {
           </div>
           <div className="flex justify-between items-center">
             <div className="">
-              Phí áp dụng: <span className="font-bold">1.2 km</span>
+              Phí áp dụng: <span className="font-bold">{order.shipDistance} km</span>
             </div>
-            <div className="">{NumberPipe(20000)}đ</div>
+            <div className="">{NumberPipe(order.shipfee || 0)}đ</div>
           </div>
           <div className="flex justify-between items-center">
             <div className="">Giảm giá:</div>
@@ -108,12 +132,23 @@ export function PaymentPage() {
           note={note}
         />
       </div>
+      {shopBranchs && (
+        <BranchsDialog
+          shopBranchs={shopBranchs}
+          onClose={() => setopenDialogSelectBranch(false)}
+          isOpen={openDialogSelectBranch}
+          onSelect={(branch) => {
+            setBranchSelecting(branch);
+          }}
+        />
+      )}
     </>
   );
 }
 
 const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
   const { totalMoney, generateOrder, order, createOrder } = useCartContext();
+  const toast = useToast();
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
       <div className="grid grid-cols-2 px-4 border-t border-b border-gray-100 items-center justify-between">
@@ -140,7 +175,11 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
           primary
           className="w-full"
           onClick={() => {
-            createOrder();
+            createOrder()
+              .then((res) => {
+                toast.success("Đặt hàng thành công");
+              })
+              .catch((err) => toast.error("Đặt hàng thất bại"));
           }}
         />
       </div>

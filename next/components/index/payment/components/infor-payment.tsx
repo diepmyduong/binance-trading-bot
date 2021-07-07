@@ -12,13 +12,14 @@ import { SaveButtonGroup } from "../../../shared/utilities/save-button-group";
 import { AddressGroup } from "../../../shared/utilities/form/address-group";
 import { useCartContext } from "../../../../lib/providers/cart-provider";
 
-export function InforPayment({ onChange }) {
+export function InforPayment({ onChange, onChangeFullAddress }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [times, setTimes] = useState([]);
   const [branch, setBranch] = useState(
     "110 Nguyễn Văn Linh, F. Tân Thuận Tây, Quận 7, Hồ Chí Minh"
   );
+  const [fullAddress, setFullAddress] = useState({});
   const [address, setAddress] = useState({
     provinceId: "",
     districtId: "",
@@ -33,7 +34,7 @@ export function InforPayment({ onChange }) {
     onChange({ name: inforBuyer.name, phone: inforBuyer.phone, address: address });
   }, [address, inforBuyer]);
   const [openInputAddress, setOpenInputAddress] = useState(false);
-  const { shopBranchs } = useShopContext();
+  const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
   const generateTime = () => {
     var today = new Date();
     var time = today.getHours();
@@ -71,16 +72,16 @@ export function InforPayment({ onChange }) {
               setInforBuyer({ ...data });
             }}
           >
-            <Field name="name" noError className="pb-2">
+            <Field name="name" noError className="pb-2" required>
               <Input
                 placeholder="Nhập tên người nhận"
                 prefix={<FaUserAlt />}
                 className="rounded-2xl bg-primary-light"
               />
             </Field>
-            <Field name="phone" noError className="pb-2">
+            <Field name="phone" noError className="pb-2" required>
               <Input
-                type="text"
+                type="number"
                 placeholder="Nhập số điện thoại"
                 prefix={<FaBlenderPhone />}
                 className="rounded-2xl bg-primary-light"
@@ -109,7 +110,16 @@ export function InforPayment({ onChange }) {
               <div className="py-2">
                 <div className="font-bold">Chi nhánh</div>
                 <div className="flex items-start justify-between pt-2">
-                  <p className="font-medium">{branch}</p>
+                  <div className="flex flex-col">
+                    {branchSelecting ? (
+                      <>
+                        <p className="font-medium">{branchSelecting.name}</p>
+                        <p className="font-medium">{branchSelecting.address}</p>
+                      </>
+                    ) : (
+                      <p className="font-medium">Chưa chọn chi nhánh</p>
+                    )}
+                  </div>
                   <Button
                     text="Đổi chi nhánh"
                     textPrimary
@@ -135,8 +145,8 @@ export function InforPayment({ onChange }) {
               shopBranchs={shopBranchs}
               onClose={() => setOpenDialog(false)}
               isOpen={openDialog}
-              onSelect={(br) => {
-                setBranch(br);
+              onSelect={(branch) => {
+                setBranchSelecting(branch);
               }}
             />
           )}
@@ -145,10 +155,20 @@ export function InforPayment({ onChange }) {
             mobileSizeMode
             isOpen={openInputAddress}
             onClose={() => setOpenInputAddress(false)}
-            onSubmit={(data, fullData) => {
-              console.log(data, fullData);
+            onSubmit={(data) => {
               setAddress({ ...data });
+              onChangeFullAddress(fullAddress);
               setOpenInputAddress(false);
+            }}
+            onChange={(data, fullData) => {
+              if (fullData?.provinceId)
+                setFullAddress({ ...fullAddress, provinceId: fullData.provinceId });
+              if (fullData?.districtId)
+                setFullAddress({ ...fullAddress, districtId: fullData.districtId });
+              if (fullData?.wardId) setFullAddress({ ...fullAddress, wardId: fullData.wardId });
+              if (fullData?.address != null)
+                setFullAddress({ ...fullAddress, address: fullData.address });
+              console.log(fullData);
             }}
           >
             <AddressGroup {...address} required />

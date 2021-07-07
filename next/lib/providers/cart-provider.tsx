@@ -11,6 +11,7 @@ import {
 import { useShopContext } from "./shop-provider";
 import cloneDeep from "lodash/cloneDeep";
 import { useToast } from "./toast-provider";
+import { PickupTypes } from "../../../src/helpers/vietnamPost/resources/type";
 
 export const CartContext = createContext<
   Partial<{
@@ -87,6 +88,10 @@ export function CartProvider(props) {
     }
   }, []);
 
+  const getPhone = () => {
+    if (typeof window === "undefined") return;
+    return localStorage.getItem("phoneUser");
+  };
   const toast = useToast();
   // useEffect(() => {
   //   generateOrder(inforBuyers, "");
@@ -183,15 +188,15 @@ export function CartProvider(props) {
       itemProduct.push(OrderItem);
     });
     setItemProducts(itemProduct);
-    let longtitude = 106.771436,
-      lattitude = 10.842888;
+    let longtitude = 106.70788626891724,
+      lattitude = 10.795957687020659;
     console.log("inforBuyerinforBuyer", inforBuyer);
     let data: OrderInput = {
       buyerName: inforBuyer.name,
-      buyerPhone: inforBuyer.phone,
+      buyerPhone: inforBuyer.phone || getPhone(),
       pickupMethod: "DELIVERY",
       shopBranchId: branchSelecting?.id,
-      pickupTime: "abc",
+      pickupTime: null,
       buyerAddress: inforBuyer.address?.address,
       buyerProvinceId: inforBuyer.address?.provinceId,
       buyerDistrictId: inforBuyer.address?.districtId,
@@ -204,20 +209,20 @@ export function CartProvider(props) {
     };
     OrderService.generateDraftOrder(data)
       .then((res) => {
-        setOrder(res);
+        setOrder({ ...res });
       })
       .catch((err) => console.log("Loi generate", err));
   };
 
   const generateOrder = () => {
-    let longtitude = 106.771436,
-      lattitude = 10.842888;
+    let longtitude = 106.70788626891724,
+      lattitude = 10.795957687020659;
     let data: OrderInput = {
       buyerName: inforBuyers.name,
-      buyerPhone: inforBuyers.phone,
+      buyerPhone: inforBuyers.phone || getPhone(),
       pickupMethod: "DELIVERY",
       shopBranchId: branchSelecting?.id,
-      pickupTime: "abc",
+      pickupTime: null,
       buyerAddress: inforBuyers.address?.address,
       buyerProvinceId: inforBuyers.address?.provinceId,
       buyerDistrictId: inforBuyers.address?.districtId,
@@ -231,10 +236,9 @@ export function CartProvider(props) {
     if (!order.invalid) {
       return OrderService.generateOrder(data)
         .then((res) => {
-          setOrder(res);
           toast.success("Đặt hàng thành công");
         })
-        .catch((err) => console.log("Loi generate", err));
+        .catch((err) => toast.error("Đặt hàng thất bại"));
     }
   };
 

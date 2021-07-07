@@ -6,7 +6,7 @@ import { ErrorHelper } from "../../../helpers";
 import { Ahamove } from "../../../helpers/ahamove/ahamove";
 import { CreateOrderProps } from "../../../helpers/ahamove/type";
 import { Context } from "../../context";
-import { IOrder, OrderModel, OrderStatus, ShipMethod } from "../order/order.model";
+import { IOrder, OrderModel, OrderStatus, PaymentMethod, ShipMethod } from "../order/order.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
 import { IShopBranch, ShopBranchModel } from "../shopBranch/shopBranch.model";
 import { IShopConfig, ShopConfigModel } from "../shopConfig/shopConfig.model";
@@ -92,6 +92,7 @@ async function createAhamoveOrder(
         address: buyerAddress,
         short_address: order.buyerDistrict,
         name: order.buyerName,
+        cod: order.paymentMethod == PaymentMethod.COD ? order.amount : 0,
       },
     ],
     payment_method: "CASH",

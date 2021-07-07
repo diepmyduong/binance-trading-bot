@@ -9,6 +9,7 @@ import {
   OrderService,
 } from "../repo/order.repo";
 import { useShopContext } from "./shop-provider";
+import { useToast } from "./toast-provider";
 
 export const CartContext = createContext<
   Partial<{
@@ -17,11 +18,11 @@ export const CartContext = createContext<
     setInforBuyers: any;
     totalFood: number;
     totalMoney: number;
-    createOrder: Function;
     cartProducts: CartProduct[];
     setCartProducts: Function;
     addProductToCart: Function;
-    generateOrder: Function;
+    generateOrder: () => any;
+    generateDraftOrder: Function;
     changeProductQuantity: Function;
     removeProductFromCart: Function;
   }>
@@ -53,6 +54,8 @@ export function CartProvider(props) {
       address: "",
     },
   });
+
+  const toast = useToast();
   // useEffect(() => {
   //   generateOrder(inforBuyers, "");
   // }, []);
@@ -133,7 +136,7 @@ export function CartProvider(props) {
     setCartProducts([...cartProducts]);
   };
 
-  const generateOrder = (inforBuyer, note) => {
+  const generateDraftOrder = (inforBuyer, note) => {
     if (!inforBuyer) return;
     setInforBuyers({ ...inforBuyer });
     let itemProduct: OrderItemInput[] = [];
@@ -166,14 +169,14 @@ export function CartProvider(props) {
       note: note.note,
       items: itemProduct,
     };
-    OrderService.generateOrder(data)
+    OrderService.generateDraftOrder(data)
       .then((res) => {
         setOrder(res);
       })
       .catch((err) => console.log("Loi generate", err));
   };
 
-  const createOrder = () => {
+  const generateOrder = () => {
     let longtitude = 106.771436,
       lattitude = 10.842888;
     let data: OrderInput = {
@@ -193,9 +196,10 @@ export function CartProvider(props) {
       items: itemProducts,
     };
     if (!order.invalid) {
-      return OrderService.createOrder(data)
+      return OrderService.generateOrder(data)
         .then((res) => {
           setOrder(res);
+          toast.success("Đặt hàng thành công");
         })
         .catch((err) => console.log("Loi generate", err));
     }
@@ -209,9 +213,9 @@ export function CartProvider(props) {
         totalMoney,
         cartProducts,
         inforBuyers,
-        createOrder,
-        setInforBuyers,
         generateOrder,
+        generateDraftOrder,
+        setInforBuyers,
         setCartProducts,
         addProductToCart,
         removeProductFromCart,

@@ -24,7 +24,7 @@ export function PaymentPage() {
     totalFood,
     totalMoney,
     generateOrder,
-    createOrder,
+    generateDraftOrder,
     order,
   } = useCartContext();
   const { branchSelecting, shopBranchs, setBranchSelecting } = useShopContext();
@@ -35,10 +35,6 @@ export function PaymentPage() {
   const [fullAddress, setFullAddress] = useState({});
 
   const toast = useToast();
-  const getPhone = () => {
-    if (typeof window === "undefined") return;
-    return localStorage.getItem("phoneUser");
-  };
 
   useEffect(() => {
     if (!branchSelecting) {
@@ -47,7 +43,7 @@ export function PaymentPage() {
     }
   }, [branchSelecting]);
   useEffect(() => {
-    generateOrder(inforBuyers, note);
+    generateDraftOrder(inforBuyers, note);
   }, [inforBuyers, note, branchSelecting]);
   useEffect(() => {
     setVoucherApplied(null);
@@ -96,7 +92,8 @@ export function PaymentPage() {
           </div>
           <div className="flex justify-between items-center">
             <div className="">
-              Phí áp dụng: <span className="font-bold">{order.shipDistance} km</span>
+              Phí áp dụng:{" "}
+              <span className="font-bold">{order.shipDistance && `${order.shipDistance} km`} </span>
             </div>
             <div className="">{NumberPipe(order.shipfee || 0)}đ</div>
           </div>
@@ -147,7 +144,7 @@ export function PaymentPage() {
 }
 
 const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
-  const { totalMoney, generateOrder, order, createOrder } = useCartContext();
+  const { totalMoney, generateOrder, order, generateDraftOrder } = useCartContext();
   const toast = useToast();
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
@@ -174,12 +171,8 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
           text={`Đặt hàng ${NumberPipe(totalMoney)}đ`}
           primary
           className="w-full"
-          onClick={() => {
-            createOrder()
-              .then((res) => {
-                toast.success("Đặt hàng thành công");
-              })
-              .catch((err) => toast.error("Đặt hàng thất bại"));
+          onClick={async () => {
+            await generateOrder();
           }}
         />
       </div>

@@ -318,7 +318,7 @@ export class OrderRepository extends CrudRepository<Order> {
     driverLicense: String
   `);
 
-  async generateOrder(data: OrderInput): Promise<Order> {
+  async generateDraftOrder(data: OrderInput): Promise<Order> {
     return await this.mutate({
       mutation: `generateDraftOrder(data: $data) {
           order{
@@ -333,7 +333,7 @@ export class OrderRepository extends CrudRepository<Order> {
       return res.data["g0"];
     });
   }
-  async createOrder(data: OrderInput): Promise<Order> {
+  async generateOrder(data: OrderInput): Promise<Order> {
     return await this.mutate({
       mutation: `generateOrder(data: $data) {
         id

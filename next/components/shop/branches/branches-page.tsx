@@ -101,7 +101,7 @@ export function BranchesPage(props: ReactProps) {
                     isOpen: true,
                     location: {
                       type: "Point",
-                      coordinates: [10.7797855, 106.6968302],
+                      coordinates: [106.6968302, 10.7797855],
                     },
                   };
                 }

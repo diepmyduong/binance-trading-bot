@@ -110,7 +110,7 @@ export function Field({ className = "", style = {}, ...props }: PropsType) {
   }, [initialData]);
 
   useEffect(() => {
-    if ("value" in child.props) {
+    if (child.props.value !== undefined && data[props.name] != child.props.value) {
       onChange(child.props.value);
     }
   }, [child.props.value]);

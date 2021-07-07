@@ -81,7 +81,7 @@ export function ShopProvider(props) {
   function cunstomerLogin(phone: string) {
     if (phone) {
       UserService.loginCustomerByPhone(phone).then((res: { loginCustomerByPhone: any }) => {
-        localStorage.setItem("tokenCustomer", res.loginCustomerByPhone.token);
+        localStorage.setItem("customer-token", res.loginCustomerByPhone.token);
       });
       localStorage.setItem("phoneUser", phone);
       setCustomer(phone);

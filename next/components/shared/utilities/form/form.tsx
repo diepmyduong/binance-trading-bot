@@ -68,7 +68,7 @@ export function Form({ className = "", style = {}, ...props }: FormPropsType) {
   }, [props.isOpen]);
 
   useEffect(() => {
-    // TODO FIX PROBLEMS HERE
+    // TODO: FIX PROBLEMS HERE
     if (!isEqual(props.initialData, initialData) || !props.initialData || !initialData) {
       setInitialData(cloneDeep(props.initialData) || {});
       setData(props.initialData ? pick(props.initialData, fieldNames) : {});
@@ -123,6 +123,7 @@ export function Form({ className = "", style = {}, ...props }: FormPropsType) {
 
   const onFieldChange = (name: string, value: any, extraValue: any) => {
     if (!fieldNames.includes(name)) return;
+
     let newData = { ...data, [name]: value };
     data[name] = value;
     setData(newData);

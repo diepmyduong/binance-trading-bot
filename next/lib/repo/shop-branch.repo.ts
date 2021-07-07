@@ -39,6 +39,12 @@ export class ShopBranchRepository extends CrudRepository<ShopBranch> {
     code: String
     name: String
     address: String
+    wardId: String
+    districtId: String
+    provinceId: String
+    province: String
+    district: String
+    ward: String
     activated: Boolean
     coverImage: String
     isOpen: Boolean

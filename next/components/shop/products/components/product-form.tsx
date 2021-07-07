@@ -212,7 +212,7 @@ export function ProductForm({ product, category, ...props }: PropsType) {
               <div className="flex flex-wrap gap-3 mt-2">
                 {labels?.map((label, index) => (
                   <div
-                    className="inline-flex items-center text-gray-100 hover:text-white rounded-full font-semibold px-4 py-2 whitespace-nowrap cursor-pointer"
+                    className="inline-flex items-center text-gray-100 hover:text-white rounded-full font-semibold px-4 py-2 whitespace-nowrap cursor-pointer animate-emerge"
                     style={{ backgroundColor: label.color }}
                     onClick={() => setOpenLabel(label)}
                   >
@@ -229,13 +229,15 @@ export function ProductForm({ product, category, ...props }: PropsType) {
                     </i>
                   </div>
                 ))}
-                <Button
-                  className="rounded-full inline-flex bg-white"
-                  icon={<RiAddCircleLine />}
-                  outline
-                  text="Thêm nhãn"
-                  onClick={() => setOpenLabel(null)}
-                />
+                {labels?.length < 3 && (
+                  <Button
+                    className="rounded-full inline-flex bg-white animate-emerge"
+                    icon={<RiAddCircleLine />}
+                    outline
+                    text="Thêm nhãn"
+                    onClick={() => setOpenLabel(null)}
+                  />
+                )}
               </div>
             </div>
 
@@ -383,7 +385,7 @@ export function ProductForm({ product, category, ...props }: PropsType) {
                       readonly={data.create}
                       optionsPromise={() =>
                         ProductLabelService.getAllOptionsPromise({
-                          query: { limit: 0 },
+                          query: { limit: 0, filter: { _id: { $nin: labels.map((x) => x.id) } } },
                           parseOption: (data) => ({
                             value: data.id,
                             label: data.name,

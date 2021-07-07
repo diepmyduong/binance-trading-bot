@@ -16,16 +16,8 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [times, setTimes] = useState([]);
-  const [branch, setBranch] = useState(
-    "110 Nguyễn Văn Linh, F. Tân Thuận Tây, Quận 7, Hồ Chí Minh"
-  );
   const [fullAddress, setFullAddress] = useState({});
-  const [address, setAddress] = useState({
-    provinceId: "",
-    districtId: "",
-    wardId: "",
-    address: "",
-  });
+  const [address, setAddress] = useState({});
   const getPhone = () => {
     if (typeof window === "undefined") return;
     return localStorage.getItem("phoneUser");
@@ -39,6 +31,26 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
   }, [address, inforBuyer]);
   const [openInputAddress, setOpenInputAddress] = useState(false);
   const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
+  const { order } = useCartContext();
+  const [addressTemp, setAddressTemp] = useState("");
+  useEffect(() => {
+    if (
+      order.order?.buyerAddress &&
+      order.order?.buyerWard &&
+      order.order?.buyerDistrict &&
+      order.order?.buyerProvince
+    ) {
+      setAddressTemp(
+        order.order.buyerAddress +
+          ", " +
+          order.order.buyerWard +
+          ", " +
+          order.order.buyerDistrict +
+          ", " +
+          order.order.buyerProvince
+      );
+    }
+  }, [order]);
   const generateTime = () => {
     var today = new Date();
     var time = today.getHours();
@@ -86,7 +98,6 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
             <Field name="phone" noError className="pb-2" required>
               <Input
                 type="text"
-                readonly
                 value={getPhone()}
                 placeholder="Nhập số điện thoại"
                 prefix={<FaBlenderPhone />}
@@ -104,7 +115,7 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
                 <Field noError className="pb-2">
                   <Input
                     readonly
-                    value=""
+                    value={addressTemp}
                     type="text"
                     placeholder="Nhập địa chỉ giao đến"
                     prefix={<FaAddressCard />}
@@ -180,7 +191,7 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
             }}
           >
             <AddressGroup {...address} required />
-            <SaveButtonGroup />
+            <SaveButtonGroup onCancel={() => setOpenInputAddress(false)} />
           </Form>
         </div>
       </div>

@@ -8,7 +8,11 @@ interface Propstype extends ReactProps {
 }
 export function ProductsGroup(props: Propstype) {
   const router = useRouter();
-  const query = router.query;
+  const url = new URL(location.href);
+  const handleClick = (code) => {
+    url.searchParams.set("productId", code);
+    router.push(url.toString(), null, { shallow: true });
+  };
   return (
     <div>
       {props.productGroups.map((item: ShopProductGroup, index) => (
@@ -19,9 +23,7 @@ export function ProductsGroup(props: Propstype) {
               <div
                 className="col-span-1 transition-all duration-300 cursor-pointer group"
                 key={index}
-                onClick={() => {
-                  router.replace({ query: { ...query, productId: item.code }, path: "/" });
-                }}
+                onClick={() => handleClick(item.code)}
               >
                 <Img src={item.image} className="min-w-4xs rounded-sm" compress={232} />
                 <p className="font-semibold group-hover:text-primary-dark transition-all duration-200">

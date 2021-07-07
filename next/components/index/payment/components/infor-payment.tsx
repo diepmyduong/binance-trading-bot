@@ -35,10 +35,10 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
   const [addressTemp, setAddressTemp] = useState("");
   useEffect(() => {
     if (
-      order.order.buyerAddress &&
-      order.order.buyerWard &&
-      order.order.buyerDistrict &&
-      order.order.buyerProvince
+      order.order?.buyerAddress &&
+      order.order?.buyerWard &&
+      order.order?.buyerDistrict &&
+      order.order?.buyerProvince
     ) {
       setAddressTemp(
         order.order.buyerAddress +

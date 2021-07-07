@@ -14,11 +14,11 @@ export function GetAuthToken() {
 }
 
 export function ClearCustomerToken() {
-  localStorage.removeItem("tokenCustomer");
+  localStorage.removeItem("customer-token");
 }
 
 export function GetCustomerToken() {
-  return localStorage.getItem("tokenCustomer") || "";
+  return localStorage.getItem("customer-token") || "";
 }
 
 export function SetAuthTokenMember(token: string) {

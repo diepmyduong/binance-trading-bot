@@ -27,7 +27,10 @@ export function ProductsProvider(props) {
   }, []);
 
   const loadCategories = async (reset: boolean = false) => {
-    if (reset) await CategoryService.clearStore();
+    if (reset) {
+      setCategories(null);
+      await CategoryService.clearStore();
+    }
     CategoryService.getAll({
       query: {
         limit: 0,

@@ -104,6 +104,7 @@ export interface Order extends BaseModel {
   pickupMethod: "DELIVERY" | "STORE";
   pickupTime: string;
   shopBranchId: string;
+  deliveryInfo: DeliveryInfo;
   logs: OrderLog[];
   driverId: string;
   driverName: string;
@@ -129,6 +130,50 @@ export interface OrderItemTopping extends BaseModel {
   price: number;
 }
 interface OrderLog {}
+interface DeliveryInfo {
+  senderFullname: string;
+  senderTel: string;
+  senderAddress: string;
+  senderWardId: string;
+  senderProvinceId: string;
+  senderDistrictId: string;
+  receiverFullname: string;
+  receiverAddress: string;
+  receiverTel: string;
+  receiverProvinceId: string;
+  receiverDistrictId: string;
+  receiverWardId: string;
+  receiverAddressType: number;
+  serviceName: string;
+  serviceIcon: string;
+  orderCode: string;
+  packageContent: string;
+  weightEvaluation: number;
+  widthEvaluation: number;
+  lengthEvaluation: number;
+  heightEvaluation: number;
+  codAmountEvaluation: number;
+  isPackageViewable: boolean;
+  pickupType: number;
+  orderAmountEvaluation: number;
+  isReceiverPayFreight: boolean;
+  customerNote: string;
+  useBaoPhat: boolean;
+  useHoaDon: boolean;
+  customerCode: string;
+  vendorId: string;
+  itemCode: string;
+  orderId: string;
+  createTime: string;
+  lastUpdateTime: string;
+  deliveryDateEvaluation: string;
+  cancelTime: string;
+  deliveryTime: string;
+  deliveryTimes: number;
+  status: string;
+  statusText: string;
+  partnerFee: number;
+}
 export class OrderRepository extends CrudRepository<Order> {
   apiName: string = "Order";
   displayName: string = "đơn hàng";
@@ -183,7 +228,8 @@ export class OrderRepository extends CrudRepository<Order> {
       senderFullname: String
       senderTel: String
       senderAddress: String
-      senderWardId: String
+      status: String
+      statusText: String
     }: DeliveryInfo
     orderType: String
     orderTypeText: String
@@ -277,6 +323,45 @@ export class OrderRepository extends CrudRepository<Order> {
       senderTel: String
       senderAddress: String
       senderWardId: String
+      senderWardId: String
+      senderProvinceId: String
+      senderDistrictId: String
+      receiverFullname: String
+      receiverAddress: String
+      receiverTel: String
+      receiverProvinceId: String
+      receiverDistrictId: String
+      receiverWardId: String!
+      receiverAddressType: Int
+      serviceName: String
+      serviceIcon: String
+      orderCode: String
+      packageContent: String
+      weightEvaluation: Int
+      widthEvaluation: Int
+      lengthEvaluation: Int
+      heightEvaluation: Int
+      codAmountEvaluation: Float
+      isPackageViewable: Boolean
+      pickupType: Int
+      orderAmountEvaluation: Float
+      isReceiverPayFreight: Boolean
+      customerNote: String
+      useBaoPhat: Boolean
+      useHoaDon: Boolean
+      customerCode: String
+      vendorId: String
+      itemCode: String
+      orderId: String
+      createTime: String
+      lastUpdateTime: String
+      deliveryDateEvaluation: String
+      cancelTime: String
+      deliveryTime: String
+      deliveryTimes: Int
+      status: String
+      statusText: String
+      partnerFee: Float
     }: DeliveryInfo
     updatedByUserId: ID
     orderType: String

@@ -107,6 +107,10 @@ export function OrderDetailsDialog({ orderId, ...props }: PropsType) {
               <div className="font-semibold mb-0.5">Phương thức lấy hàng</div>
               <div>{order.pickupMethod == "DELIVERY" ? "Giao hàng" : "Nhận tại cửa hàng"}</div>
             </div>
+            <div className="text-gray-700">
+              <div className="font-semibold mb-0.5">Tình trạng giao hàng</div>
+              <div>{order.deliveryInfo?.statusText || "[Không có]"}</div>
+            </div>
             {order.pickupMethod == "STORE" && (
               <div className="text-gray-700">
                 <div className="font-semibold">Thời gian lấy hàng</div>
@@ -156,6 +160,7 @@ export function OrderDetailsDialog({ orderId, ...props }: PropsType) {
                   className={`text-gray-700 ${
                     index != order.items.length - 1 ? "border-b border-gray-300" : ""
                   }`}
+                  key={item.id}
                 >
                   <td className="p-2 text-center w-6">{index + 1}</td>
                   <td className="p-2 text-left">
@@ -185,10 +190,6 @@ export function OrderDetailsDialog({ orderId, ...props }: PropsType) {
             <div className="flex justify-between">
               <div>Tiền hàng</div>
               <div>{NumberPipe(order.subtotal, true)}</div>
-            </div>
-            <div className="flex justify-between">
-              <div>Tiền topping</div>
-              <div>{NumberPipe(order.toppingAmount, true)}</div>
             </div>
             <div className="flex justify-between">
               <div>Phí ship</div>

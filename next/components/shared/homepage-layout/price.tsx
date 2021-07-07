@@ -9,32 +9,19 @@ interface Propstype extends ReactProps {
 
 export function Price(props: Propstype) {
   return (
-    <div className={`${props.className || ""} transition-all duration-200`}>
-      {props.downPrice ? (
-        <div className="flex items-center">
-          <p
-            className={`${
-              (props.textDanger && "text-danger") || "text-gray-800"
-            } font-bold text-sm pr-2`}
-          >
-            {NumberPipe(props.price, true)}
-          </p>
-          <div className="flex items-center text-sm ">
-            <span className={`line-through pr-2`}>{NumberPipe(props.downPrice, true)}</span>
-            {props.saleRate > 0 && (
-              <span className="bg-danger text-white px-2 rounded-sm font-bold">
-                {props.saleRate}
-              </span>
-            )}
-          </div>
+    <div className={`${props.className || ""} transition-all duration-200 flex`}>
+      <p className={`${(props.textDanger && "text-danger") || "text-gray-800"} font-bold text-sm`}>
+        {NumberPipe(props.price, true)}
+      </p>
+      {(props.downPrice && (
+        <div className="flex items-center text-sm pl-2">
+          <span className={`line-through pr-2`}>{NumberPipe(props.downPrice, true)}</span>
+          {props.saleRate > 0 && (
+            <span className="bg-danger text-white px-2 rounded-sm font-bold">{props.saleRate}</span>
+          )}
         </div>
-      ) : (
-        <p
-          className={`${(props.textDanger && "text-danger") || "text-gray-800"} font-bold text-sm`}
-        >
-          {NumberPipe(props.price, true)}
-        </p>
-      )}
+      )) ||
+        ""}
     </div>
   );
 }

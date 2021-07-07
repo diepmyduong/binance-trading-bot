@@ -19,11 +19,11 @@ export function Toppings({ toppings, onChange }: PropsType) {
     onChange(data);
   };
   console.log("Toppings", toppings, data);
-  useEffect(() => {
-    toppings.forEach((item) => {
-      if (item.required) handleClick(item.options[0], item.id, item.name);
-    });
-  }, []);
+  // useEffect(() => {
+  //   toppings.forEach((item) => {
+  //     if (item.required) handleClick(item.options[0], item.id, item.name);
+  //   });
+  // }, []);
   return (
     <div className="">
       {toppings.map((topping, index) => {
@@ -80,11 +80,11 @@ interface PropsOneDish {
 const OneDish = ({ item, onClick, name, listSelected }: PropsOneDish) => {
   const [checked, setchecked] = useState(false);
   console.log("listSelected", listSelected);
-  useEffect(() => {
-    if (listSelected)
-      if (listSelected.name == item.name) setchecked(true);
-      else setchecked(false);
-  }, [listSelected]);
+  // useEffect(() => {
+  //   if (listSelected)
+  //     if (listSelected.name == item.name) setchecked(true);
+  //     else setchecked(false);
+  // }, [listSelected]);
   return (
     <div
       key={item.name}
@@ -94,13 +94,7 @@ const OneDish = ({ item, onClick, name, listSelected }: PropsOneDish) => {
       }}
     >
       <div className="flex items-center w-full">
-        <input
-          type="radio"
-          id={item.name}
-          name={name}
-          className="inline form-checkbox py-1"
-          checked={checked}
-        />
+        <input type="radio" id={item.name} name={name} className="inline form-checkbox py-1" />
         <label htmlFor={item.name} className="inline font-light text-sm ml-2 cursor-pointer w-full">
           {item.name}
         </label>

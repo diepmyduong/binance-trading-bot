@@ -143,6 +143,7 @@ export function CartProvider(props) {
   const generateDraftOrder = (inforBuyer, note) => {
     if (!inforBuyer) return;
     setInforBuyers({ ...inforBuyer });
+    setNote({ ...note });
     let itemProduct: OrderItemInput[] = [];
 
     cartProducts.forEach((item) => {

@@ -25,7 +25,7 @@ export function PaymentPage() {
     totalMoney,
     generateOrder,
     generateDraftOrder,
-    order,
+    draftOrder: order,
   } = useCartContext();
   console.log("order", order);
   const { branchSelecting, shopBranchs, setBranchSelecting } = useShopContext();
@@ -51,10 +51,7 @@ export function PaymentPage() {
   return (
     <>
       <div className="text-gray-700 bg-gray-100">
-        <InforPayment
-          onChange={(data) => setInforBuyers({ ...data })}
-          onChangeFullAddress={(data) => console.log(data)}
-        />
+        <InforPayment onChange={(data) => setInforBuyers({ ...data })} />
         <div className="mt-1 bg-white">
           <div className="flex items-center justify-between">
             <p className="font-semibold px-4 py-2">
@@ -156,7 +153,7 @@ export function PaymentPage() {
 }
 
 const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
-  const { totalMoney, generateOrder, order, generateDraftOrder } = useCartContext();
+  const { totalMoney, generateOrder, draftOrder: order, generateDraftOrder } = useCartContext();
   const toast = useToast();
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
@@ -194,14 +191,11 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
 
 const InputNote = ({ onChange }) => {
   const [openDialog, setOpenDialog] = useState(false);
-  const [note, setNote] = useState({ note: "" });
-  useEffect(() => {
-    onChange(note);
-  }, [note]);
+  const { orderInput, setOrderInput } = useCartContext();
   return (
     <>
       <div className="mt-1">
-        {note.note != "" ? (
+        {orderInput.note != "" ? (
           <div className="px-4 py-2 bg-white w-full">
             <div className="flex items-center justify-between">
               <p className="font-semibold">Ghi chú</p>
@@ -209,7 +203,7 @@ const InputNote = ({ onChange }) => {
                 <FaPen />
               </i>
             </div>
-            <p className="">{note.note}</p>
+            <p className="">{orderInput.note}</p>
           </div>
         ) : (
           <Button
@@ -228,13 +222,11 @@ const InputNote = ({ onChange }) => {
         mobileSizeMode
         isOpen={openDialog}
         onClose={() => setOpenDialog(false)}
-        initialData={note}
+        initialData={{ note: orderInput.note }}
         onSubmit={(data) => {
-          onChange({ ...data });
-          setNote({ ...data });
+          setOrderInput({ ...orderInput, note: data });
           setOpenDialog(false);
         }}
-        className=""
       >
         <Field label="Ghi chú" name="note">
           <Textarea placeholder="Nhập ghi chú" />

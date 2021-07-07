@@ -9,13 +9,13 @@ import {
   OrderService,
 } from "../repo/order.repo";
 import { useShopContext } from "./shop-provider";
-import cloneDeep from "lodash/cloneDeep";
 import { useToast } from "./toast-provider";
-import { PickupTypes } from "../../../src/helpers/vietnamPost/resources/type";
 
 export const CartContext = createContext<
   Partial<{
-    order?: Order;
+    draftOrder?: any;
+    orderInput?: OrderInput;
+    setOrderInput?: any;
     inforBuyers: any;
     setInforBuyers: any;
     totalFood: number;
@@ -38,17 +38,46 @@ export interface CartProduct {
   amount?: number;
   topping?: OrderItemToppingInput[];
 }
+
 export function CartProvider(props) {
   const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
   const [totalFood, setTotalFood] = useState(0);
   const [totalMoney, setTotalMoney] = useState(0);
   const [itemProducts, setItemProducts] = useState<OrderItemInput[]>();
-  const [order, setOrder] = useState<any>({ invalid: true, invalidReason: "", order: null });
+  const [draftOrder, setDraftOrder] = useState<{
+    invalid: boolean;
+    invalidReason: string;
+    order: Order;
+  }>({
+    invalid: true,
+    invalidReason: "",
+    order: null,
+  });
+
+  const { branchSelecting, customer } = useShopContext();
+  const [orderInput, setOrderInput] = useState<OrderInput>({
+    buyerName: "",
+    buyerPhone: "",
+    pickupMethod: "DELIVERY",
+    shopBranchId: branchSelecting?.id,
+    pickupTime: null,
+    buyerAddress: "",
+    buyerProvinceId: "",
+    buyerDistrictId: "",
+    buyerWardId: "",
+    latitude: 0,
+    longitude: 0,
+    paymentMethod: "COD",
+    note: "",
+    items: null,
+  });
+  console.log("ORDERINPUT", orderInput);
   const [note, setNote] = useState({ note: "" });
-  const { branchSelecting } = useShopContext();
   const [inforBuyers, setInforBuyers] = useState({
     name: "",
     phone: "",
+    lat: 0,
+    long: 0,
     address: {
       provinceId: "",
       districtId: "",
@@ -56,6 +85,14 @@ export function CartProvider(props) {
       address: "",
     },
   });
+  useEffect(() => {
+    if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
+  }, [branchSelecting]);
+  useEffect(() => {
+    if (customer) {
+      setOrderInput({ ...orderInput, buyerName: customer.name, buyerPhone: customer.phone });
+    }
+  }, [customer]);
   useEffect(() => {
     let listCart = JSON.parse(localStorage.getItem("cartProducts"));
     if (listCart) {
@@ -92,6 +129,7 @@ export function CartProvider(props) {
     if (typeof window === "undefined") return;
     return localStorage.getItem("phoneUser");
   };
+
   const toast = useToast();
   // useEffect(() => {
   //   generateOrder(inforBuyers, "");
@@ -209,8 +247,8 @@ export function CartProvider(props) {
       items: itemProduct,
     };
     OrderService.generateDraftOrder(data)
-      .then((res) => {
-        setOrder({ ...res });
+      .then((res: any) => {
+        setDraftOrder({ ...res });
       })
       .catch((err) => console.log("Loi generate", err));
   };
@@ -234,7 +272,7 @@ export function CartProvider(props) {
       note: note.note,
       items: itemProducts,
     };
-    if (!order.invalid) {
+    if (!draftOrder.invalid) {
       return OrderService.generateOrder(data)
         .then((res) => {
           toast.success("Đặt hàng thành công");
@@ -246,11 +284,13 @@ export function CartProvider(props) {
   return (
     <CartContext.Provider
       value={{
-        order,
+        draftOrder: draftOrder,
         totalFood,
         totalMoney,
         cartProducts,
         inforBuyers,
+        orderInput,
+        setOrderInput,
         generateOrder,
         generateDraftOrder,
         setInforBuyers,

@@ -14,7 +14,7 @@ export const ShopContext = createContext<
     customer: any;
     productIdSelected: any;
     setProductIdSelected: any;
-    cunstomerLogin: Function;
+    customerLogin: Function;
     customerLogout: Function;
     shopCode: string;
     setShopCode: Function;
@@ -78,7 +78,7 @@ export function ShopProvider(props) {
     setLoading(false);
   }
   const loginCustomerByPhone = (phone) => {};
-  function cunstomerLogin(phone: string) {
+  function customerLogin(phone: string) {
     if (phone) {
       UserService.loginCustomerByPhone(phone).then((res: { loginCustomerByPhone: any }) => {
         localStorage.setItem("customer-token", res.loginCustomerByPhone.token);
@@ -113,7 +113,7 @@ export function ShopProvider(props) {
         shop,
         shopCode,
         customer,
-        cunstomerLogin,
+        customerLogin,
         customerLogout,
         productIdSelected,
         setProductIdSelected,

@@ -20,7 +20,7 @@ export interface HeaderPropsType extends ReactProps {
   code?: string;
 }
 export function Header({ code, ...props }: HeaderPropsType) {
-  const { customer, cunstomerLogin, customerLogout, shop, shopCode } = useShopContext();
+  const { customer, customerLogin, customerLogout, shop, shopCode } = useShopContext();
   const { loginCustomerByPhone } = useDefaultLayoutContext();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -105,7 +105,7 @@ export function Header({ code, ...props }: HeaderPropsType) {
           onClose={() => setIsOpen(false)}
           onConfirm={(val) => {
             if (val) {
-              cunstomerLogin(val);
+              customerLogin(val);
               setIsOpen(false);
             }
           }}

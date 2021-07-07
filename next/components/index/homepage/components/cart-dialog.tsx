@@ -18,7 +18,7 @@ interface Propstype extends DialogPropsType {
 
 export function CartDialog(props: Propstype) {
   const router = useRouter();
-  const { customer, cunstomerLogin } = useShopContext();
+  const { customer, customerLogin } = useShopContext();
   const [showLogin, setShowLogin] = useState(false);
   async function onChange(qty: number, item: CartProduct) {
     if (qty > 0) {
@@ -86,7 +86,7 @@ export function CartDialog(props: Propstype) {
         onClose={() => setShowLogin(false)}
         onConfirm={(val) => {
           if (val) {
-            cunstomerLogin(val);
+            customerLogin(val);
             router.push("/payment", null, { shallow: true });
           }
         }}

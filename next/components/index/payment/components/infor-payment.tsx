@@ -11,17 +11,13 @@ import { useShopContext } from "../../../../lib/providers/shop-provider";
 import { SaveButtonGroup } from "../../../shared/utilities/save-button-group";
 import { AddressGroup } from "../../../shared/utilities/form/address-group";
 import { useCartContext } from "../../../../lib/providers/cart-provider";
+import { Spinner } from "../../../shared/utilities/spinner";
 
-export function InforPayment({ onChange, onChangeFullAddress }) {
+export function InforPayment({ onChange }) {
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const { orderInput, setOrderInput } = useCartContext();
   const [times, setTimes] = useState([]);
-  const [fullAddress, setFullAddress] = useState({});
   const [address, setAddress] = useState({});
-  const getPhone = () => {
-    if (typeof window === "undefined") return;
-    return localStorage.getItem("phoneUser");
-  };
   const [inforBuyer, setInforBuyer] = useState({
     name: "",
     phone: "",
@@ -31,7 +27,7 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
   }, [address, inforBuyer]);
   const [openInputAddress, setOpenInputAddress] = useState(false);
   const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
-  const { order } = useCartContext();
+  const { draftOrder: order } = useCartContext();
   const [addressTemp, setAddressTemp] = useState("");
   useEffect(() => {
     if (
@@ -70,42 +66,35 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
     }
     setTimes(timess);
   };
+  //TODO: viết tách ra input time thành 1 component mới
   useEffect(() => {
     generateTime();
   }, []);
   return (
     <div className="pt-4 bg-white">
       <div className="">
-        <TabCustom
-          tab={["Giao hàng", "Lấy tại quán"]}
-          onChange={(index) => {
-            setSelectedIndex(index);
-          }}
-        />
+        <TabCustom />
         <div className="px-4 pt-6 text-sm">
-          <Form
-            onChange={(data) => {
-              setInforBuyer({ ...data });
-            }}
-          >
+          <Form initialData={{ name: orderInput.buyerName, phone: orderInput.buyerPhone }}>
             <Field name="name" noError className="pb-2" required>
               <Input
                 placeholder="Nhập tên người nhận"
                 prefix={<FaUserAlt />}
                 className="rounded-2xl bg-primary-light"
+                onChange={(data) => setOrderInput({ ...orderInput, buyerName: data })}
               />
             </Field>
             <Field name="phone" noError className="pb-2" required>
               <Input
                 type="text"
-                value={getPhone()}
                 placeholder="Nhập số điện thoại"
                 prefix={<FaBlenderPhone />}
                 className="rounded-2xl bg-primary-light"
+                onChange={(data) => setOrderInput({ ...orderInput, buyerPhone: data })}
               />
             </Field>
 
-            {selectedIndex == 0 ? (
+            {orderInput.pickupMethod == "DELIVERY" ? (
               <div
                 className=""
                 onClick={() => {
@@ -176,19 +165,9 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
             onSubmit={(data, fullData) => {
               console.log(fullData);
               setAddress({ ...data });
-              onChangeFullAddress(fullAddress);
               setOpenInputAddress(false);
             }}
-            onChange={(data, fullData) => {
-              // console.log(fullData);
-              // if (fullData?.provinceId)
-              //   setFullAddress({ ...fullAddress, provinceId: fullData.provinceId });
-              // if (fullData?.districtId)
-              //   setFullAddress({ ...fullAddress, districtId: fullData.districtId });
-              // if (fullData?.wardId) setFullAddress({ ...fullAddress, wardId: fullData.wardId });
-              // if (fullData?.address != null)
-              //   setFullAddress({ ...fullAddress, address: fullData.address });
-            }}
+            onChange={(data, fullData) => {}}
           >
             <AddressGroup {...address} required />
             <SaveButtonGroup onCancel={() => setOpenInputAddress(false)} />
@@ -198,21 +177,24 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
     </div>
   );
 }
-interface PropType extends ReactProps {
-  onChange: (number) => void;
-  tab: string[];
-}
-const TabCustom = ({ onChange, tab }: PropType) => {
-  const [selected, setSelected] = useState(0);
+
+const TabCustom = () => {
+  const { orderInput, setOrderInput } = useCartContext();
+  const options: { label: string; value: string }[] = [
+    { label: "Giao hàng", value: "DELIVERY" },
+    { label: "Lấy tại quán", value: "STORE" },
+  ];
+  //TODO: viết selected vào trong cart provider
+
   const handleClick = (index) => {
-    setSelected(index);
-    onChange(index);
+    setOrderInput({ ...orderInput, pickupMethod: options[index].value });
   };
+  if (!orderInput) return <Spinner></Spinner>;
   return (
     <div className="relative flex items-center justify-center">
-      {tab.map((item, index) => {
-        const selectedIndex = index == selected;
-        const last = index == tab.length - 1;
+      {options.map((item, index) => {
+        const selectedIndex = options[index].value == orderInput.pickupMethod;
+        const last = index == options.length - 1;
         const first = index == 0;
         return (
           <div
@@ -224,72 +206,10 @@ const TabCustom = ({ onChange, tab }: PropType) => {
             key={index}
             onClick={() => handleClick(index)}
           >
-            {item}
+            {item.label}
           </div>
         );
       })}
     </div>
   );
 };
-
-const selectBranch = () => {
-  return <div className=""></div>;
-};
-
-const dataListBranch = [
-  {
-    district: "Quận 1",
-    branch: [
-      {
-        address: "172 Hai Bà Trưng, phường Đa Kao, Quận 1, thành phố Hồ Chí Minh",
-        open: 9,
-        close: 21,
-      },
-    ],
-  },
-  {
-    district: "Quận 2",
-    branch: [
-      {
-        address: "65 đường Xuân Thủy, phường Thảo Điền, quận 2, Thành phố Hồ Chí Minh.",
-        open: 9,
-        close: 21,
-      },
-    ],
-  },
-  {
-    district: "Quận 3",
-    branch: [
-      {
-        address: "414C – 414D Nguyễn Thị Minh Khai, Phường 5, Quận 3, Thành phố Hồ Chí Minh ",
-        open: 9,
-        close: 21,
-      },
-      {
-        address: "Tầng trệt tòa nhà Số 538 đường CMT8, phường 11, quận 3, thành phố Hồ Chí Minh ",
-        open: 9,
-        close: 21,
-      },
-    ],
-  },
-  {
-    district: "Quận 4",
-    branch: [
-      {
-        address: "192, 194 đường Khánh Hội, phường 6, quận 4, thành phố Hồ Chí Minh",
-        open: 9,
-        close: 21,
-      },
-    ],
-  },
-  {
-    district: "Quận 6",
-    branch: [
-      {
-        address: "10 – 12 đường Hậu Giang, Phường 2, Quận 6, Thành phố Hồ Chí Minh",
-        open: 9,
-        close: 21,
-      },
-    ],
-  },
-];

@@ -272,11 +272,11 @@
 }
 
 .status-text {
-  @apply text-xs font-semibold uppercase;
+  @apply text-xs font-semibold uppercase whitespace-nowrap;
 }
 
 .status-label {
-  @apply text-xs font-semibold uppercase text-white px-2 py-1 rounded;
+  @apply text-xs font-semibold uppercase text-white px-2 py-1 rounded whitespace-nowrap;
 }
 
 .table-view {

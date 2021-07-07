@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Product } from "../repo/product.repo";
+import { Product, ProductService } from "../repo/product.repo";
 import { OrderItemToppingInput, ToppingOption } from "../repo/product-topping.repo";
 import {
   CreateOrderInput,
@@ -9,6 +9,7 @@ import {
   OrderService,
 } from "../repo/order.repo";
 import { useShopContext } from "./shop-provider";
+import cloneDeep from "lodash/cloneDeep";
 import { useToast } from "./toast-provider";
 import { PickupTypes } from "../../../src/helpers/vietnamPost/resources/type";
 
@@ -55,6 +56,38 @@ export function CartProvider(props) {
       address: "",
     },
   });
+  useEffect(() => {
+    let listCart = JSON.parse(localStorage.getItem("cartProducts"));
+    if (listCart) {
+      if (listCart) {
+        ProductService.getAll({
+          query: {
+            limit: 0,
+            filter: {
+              _id: { __in: listCart.map((x) => x.productId) },
+            },
+          },
+        }).then((res) => {
+          if (res.data) {
+            listCart.forEach((cartProduct) => {
+              let product = res.data.find((x) => x.id === cartProduct.productId);
+              let priceProduct =
+                product.basePrice +
+                cartProduct.topping.reduce((total, item) => (total += item.price), 0);
+              if (product) {
+                cartProduct.price = priceProduct;
+                cartProduct.amount = priceProduct * cartProduct.qty;
+                cartProduct.product = product;
+              }
+            });
+            listCart = listCart.filter((x) => x.product);
+            setCartProducts([...listCart]);
+          }
+        });
+      }
+    }
+  }, []);
+
   const getPhone = () => {
     if (typeof window === "undefined") return;
     return localStorage.getItem("phoneUser");
@@ -66,6 +99,7 @@ export function CartProvider(props) {
   useEffect(() => {
     setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
     setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
+    localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
   }, [cartProducts]);
   function checkInCart(
     product: Product,

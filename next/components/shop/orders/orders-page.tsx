@@ -52,7 +52,7 @@ export function OrdersPage(props: ReactProps) {
                 value={
                   <>
                     <div className="text-gray-800 font-semibold">{item.buyerName}</div>
-                    <div className="text-sm text-gray-600">{item.buyerPhone} món</div>
+                    <div className="text-sm text-gray-600">{item.buyerPhone}</div>
                   </>
                 }
               />
@@ -64,9 +64,12 @@ export function OrdersPage(props: ReactProps) {
             render={(item: Order) => (
               <DataTable.CellText
                 value={
-                  <span className={"font-semibold"}>{`${
-                    item.pickupMethod == "DELIVERY" ? "Giao hàng" : "Lấy tại cửa hàng"
-                  }${item.pickupTime ? `(${item.pickupTime})` : ""}`}</span>
+                  <div>
+                    <div className={"font-semibold"}>{`${
+                      item.pickupMethod == "DELIVERY" ? "Giao hàng" : "Lấy tại cửa hàng"
+                    }${item.pickupTime ? `(${item.pickupTime})` : ""}`}</div>
+                    <div>{item.deliveryInfo?.statusText}</div>
+                  </div>
                 }
               />
             )}

@@ -11,6 +11,7 @@ interface PropsType extends ReactProps {
   provinceCols?: Cols;
   districtCols?: Cols;
   wardCols?: Cols;
+  addressCols?: Cols;
   required?: boolean;
 }
 
@@ -74,7 +75,12 @@ export function AddressGroup({ required = false, ...props }: PropsType) {
       <Field label="Phường/Xã" name="wardId" cols={props.wardCols} required={required}>
         <Select readonly={!districtId} value={wardId} options={wardOptions}></Select>
       </Field>
-      <Field label="Địa chỉ" name="address" required={required}>
+      <Field
+        label="Địa chỉ (Số nhà, Đường)"
+        name="address"
+        required={required}
+        cols={props.addressCols}
+      >
         <Input />
       </Field>
     </>

@@ -170,22 +170,24 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
           <Form
             dialog
             mobileSizeMode
+            initialData={address}
             isOpen={openInputAddress}
             onClose={() => setOpenInputAddress(false)}
-            onSubmit={(data) => {
+            onSubmit={(data, fullData) => {
+              console.log(fullData);
               setAddress({ ...data });
               onChangeFullAddress(fullAddress);
               setOpenInputAddress(false);
             }}
             onChange={(data, fullData) => {
-              if (fullData?.provinceId)
-                setFullAddress({ ...fullAddress, provinceId: fullData.provinceId });
-              if (fullData?.districtId)
-                setFullAddress({ ...fullAddress, districtId: fullData.districtId });
-              if (fullData?.wardId) setFullAddress({ ...fullAddress, wardId: fullData.wardId });
-              if (fullData?.address != null)
-                setFullAddress({ ...fullAddress, address: fullData.address });
-              console.log(fullData);
+              // console.log(fullData);
+              // if (fullData?.provinceId)
+              //   setFullAddress({ ...fullAddress, provinceId: fullData.provinceId });
+              // if (fullData?.districtId)
+              //   setFullAddress({ ...fullAddress, districtId: fullData.districtId });
+              // if (fullData?.wardId) setFullAddress({ ...fullAddress, wardId: fullData.wardId });
+              // if (fullData?.address != null)
+              //   setFullAddress({ ...fullAddress, address: fullData.address });
             }}
           >
             <AddressGroup {...address} required />

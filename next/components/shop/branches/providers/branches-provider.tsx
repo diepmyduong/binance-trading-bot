@@ -9,6 +9,7 @@ export const BranchesContext = createContext<
     onCreateOrUpdateBranch: (branch: Partial<ShopBranch>) => Promise<any>;
     onRemoveBranch: (branch: ShopBranch) => Promise<any>;
     onToggleBranch: (branch: ShopBranch) => Promise<any>;
+    loadBranches: (reset: boolean) => Promise<any>;
   }>
 >({});
 export function BranchesProvider(props) {
@@ -19,7 +20,11 @@ export function BranchesProvider(props) {
     loadBranches();
   }, []);
 
-  const loadBranches = async () => {
+  const loadBranches = async (reset: boolean = false) => {
+    if (reset) {
+      setBranches(null);
+      await ShopBranchService.clearStore();
+    }
     ShopBranchService.getAll({
       query: {
         limit: 0,
@@ -75,6 +80,7 @@ export function BranchesProvider(props) {
         onCreateOrUpdateBranch,
         onRemoveBranch,
         onToggleBranch,
+        loadBranches,
       }}
     >
       {props.children}

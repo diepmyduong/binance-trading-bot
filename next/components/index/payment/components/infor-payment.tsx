@@ -86,7 +86,6 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
             <Field name="phone" noError className="pb-2" required>
               <Input
                 type="text"
-                readonly
                 value={getPhone()}
                 placeholder="Nhập số điện thoại"
                 prefix={<FaBlenderPhone />}

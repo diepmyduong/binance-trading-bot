@@ -16,9 +16,6 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [times, setTimes] = useState([]);
-  const [branch, setBranch] = useState(
-    "110 Nguyễn Văn Linh, F. Tân Thuận Tây, Quận 7, Hồ Chí Minh"
-  );
   const [fullAddress, setFullAddress] = useState({});
   const [address, setAddress] = useState({
     provinceId: "",

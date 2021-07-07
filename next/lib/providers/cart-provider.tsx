@@ -10,6 +10,7 @@ import {
 } from "../repo/order.repo";
 import { useShopContext } from "./shop-provider";
 import { useToast } from "./toast-provider";
+import { PickupTypes } from "../../../src/helpers/vietnamPost/resources/type";
 
 export const CartContext = createContext<
   Partial<{
@@ -201,7 +202,7 @@ export function CartProvider(props) {
           setOrder(res);
           toast.success("Đặt hàng thành công");
         })
-        .catch((err) => console.log("Loi generate", err));
+        .catch((err) => toast.error("Đặt hàng thất bại"));
     }
   };
 

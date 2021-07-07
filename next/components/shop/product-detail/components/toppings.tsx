@@ -8,24 +8,31 @@ interface PropsType extends ReactProps {
   topping?: ProductTopping;
   onChange?: any;
   onSelect?: any;
+  listSelected?: any;
 }
 export function Toppings({ toppings, onChange }: PropsType) {
   let [data, setData] = useState<any>({});
-  const handleClick = (dta, id, nameTopping) => {
+  const handleClick = (dta, id, nameTopping, required) => {
     data[id] = dta;
     data[id] = { ...data[id], nameTopping: nameTopping };
     setData({ ...data });
     onChange(data);
   };
 
+  useEffect(() => {
+    toppings.forEach((item) => {
+      if (item.required) handleClick(item.options[0], item.id, item.name, item.required);
+    });
+  }, [toppings]);
   return (
     <div className="">
       {toppings.map((topping, index) => {
         return (
           <Topping
             topping={topping}
+            listSelected={data[topping.id]}
             onSelect={(dta, id) => {
-              handleClick(dta, id, topping.name);
+              handleClick(dta, id, topping.name, topping.required);
             }}
             key={index}
           />
@@ -35,9 +42,8 @@ export function Toppings({ toppings, onChange }: PropsType) {
   );
 }
 
-function Topping({ topping, onSelect }: PropsType) {
+function Topping({ topping, onSelect, listSelected }: PropsType) {
   const [data, setData] = useState<ToppingOption>();
-  useEffect(() => {}, [data]);
   return (
     <div className="">
       <div className="bg-primary-light  px-4 py-2">
@@ -51,6 +57,7 @@ function Topping({ topping, onSelect }: PropsType) {
           return (
             <OneDish
               item={item}
+              listSelected={listSelected}
               name={topping.name}
               key={index}
               onClick={() => {
@@ -68,8 +75,16 @@ interface PropsOneDish {
   item: ToppingOption;
   onClick?: () => void;
   name?: string;
+  listSelected?: any;
 }
-const OneDish = ({ item, onClick, name }: PropsOneDish) => {
+const OneDish = ({ item, onClick, name, listSelected }: PropsOneDish) => {
+  const [checked, setchecked] = useState(false);
+  console.log("listSelected", listSelected);
+  useEffect(() => {
+    if (listSelected)
+      if (listSelected.name == item.name) setchecked(true);
+      else setchecked(false);
+  }, [listSelected]);
   return (
     <div
       key={item.name}
@@ -79,7 +94,13 @@ const OneDish = ({ item, onClick, name }: PropsOneDish) => {
       }}
     >
       <div className="flex items-center w-full">
-        <input type="radio" id={item.name} name={name} className="inline form-checkbox py-1" />
+        <input
+          type="radio"
+          id={item.name}
+          name={name}
+          className="inline form-checkbox py-1"
+          checked={checked}
+        />
         <label htmlFor={item.name} className="inline font-light text-sm ml-2 cursor-pointer w-full">
           {item.name}
         </label>

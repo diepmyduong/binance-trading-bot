@@ -95,7 +95,6 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
       onClose={props.onClose}
       mobileSizeMode
       slideFromBottom="all"
-      autoScroll="overflow-y-hidden"
       bodyClass="relative rounded w-full"
     >
       <div ref={ref} className="w-full rounded bg-white overflow-y-auto" style={{ height: "95vh" }}>

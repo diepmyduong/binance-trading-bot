@@ -1,3 +1,4 @@
+import { PaymentMethod } from "./../../../src/graphql/modules/order/order.model";
 import { String } from "lodash";
 import { BaseModel, CrudRepository } from "./crud.repo";
 import { Customer } from "./customer.repo";
@@ -11,9 +12,25 @@ export interface OrderInput {
   pickupMethod: string;
   shopBranchId: string;
   pickupTime: string;
+  buyerAddress: string;
   buyerProvinceId: string;
   buyerDistrictId: string;
   buyerWardId: string;
+  latitude: number;
+  longitude: number;
+  paymentMethod: string;
+  note: string;
+  items: OrderItemInput[];
+}
+
+export interface CreateOrderInput {
+  buyerName: string;
+  buyerPhone: string;
+  buyerAddress: string;
+  buyerProvinceId: string;
+  buyerDistrictId: string;
+  buyerWardId: string;
+  shipMethod: string;
   latitude: number;
   longitude: number;
   paymentMethod: string;
@@ -305,13 +322,35 @@ export class OrderRepository extends CrudRepository<Order> {
     return await this.mutate({
       mutation: `generateDraftOrder(data: $data) {
           order{
-            id
+            ${this.fullFragment}
           }
+          invalid
+          invalidReason
         }`,
       variablesParams: `($data:CreateDraftOrderInput!)`,
       options: { variables: { data } },
     }).then((res) => {
       return res.data["g0"];
+    });
+  }
+  async createOrder(data: OrderInput): Promise<Order> {
+    return await this.mutate({
+      mutation: `generateOrder(data: $data) {
+        id
+        code
+         seller { id shopName }
+         buyerName buyerPhone
+         buyerAddress buyerProvince buyerDistrict buyerWard
+         pickupMethod
+         subtotal
+         toppingAmount
+         shipfee
+         amount
+        }`,
+      variablesParams: `($data:CreateDraftOrderInput!)`,
+      options: { variables: { data } },
+    }).then((res) => {
+      return res.data;
     });
   }
 }
@@ -320,7 +359,7 @@ export const OrderService = new OrderRepository();
 
 export const ORDER_STATUS: Option[] = [
   { value: "PENDING", label: "Chờ duyệt", color: "warning" },
-  { value: "CONFIRMED", label: "Xác nhận", color: "info" },
+  { value: "CONFIRMED", label: "Làm món", color: "info" },
   { value: "DELIVERING", label: "Đang giao", color: "purple" },
   { value: "COMPLETED", label: "Hoàn thành", color: "success" },
   { value: "FAILURE", label: "Thất bại", color: "danger" },

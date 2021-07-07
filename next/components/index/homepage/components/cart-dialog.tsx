@@ -56,10 +56,9 @@ export function CartDialog(props: Propstype) {
                 <Quantity quantity={item.qty} setQuantity={(val) => onChange(val, item)} />
               </div>
               <div className="flex space-x-1">
-                <span>Topping: </span>
                 {item.topping.map((topping, index) => (
                   <span key={index}>
-                    {topping.optionName} {index < item.topping.length - 1 && " + "}
+                    {topping.optionName} {index < item.topping.length - 1 && ", "}
                   </span>
                 ))}
               </div>

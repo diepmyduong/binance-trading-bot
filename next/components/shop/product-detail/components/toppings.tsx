@@ -18,7 +18,7 @@ export function Toppings({ toppings, onChange }: PropsType) {
     setData({ ...data });
     onChange(data);
   };
-
+  console.log("Toppings", data);
   useEffect(() => {
     toppings.forEach((item) => {
       if (item.required) handleClick(item.options[0], item.id, item.name, item.required);

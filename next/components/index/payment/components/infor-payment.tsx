@@ -17,12 +17,7 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [times, setTimes] = useState([]);
   const [fullAddress, setFullAddress] = useState({});
-  const [address, setAddress] = useState({
-    provinceId: "",
-    districtId: "",
-    wardId: "",
-    address: "",
-  });
+  const [address, setAddress] = useState({});
   const getPhone = () => {
     if (typeof window === "undefined") return;
     return localStorage.getItem("phoneUser");
@@ -83,7 +78,6 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
             <Field name="phone" noError className="pb-2" required>
               <Input
                 type="text"
-                readonly
                 value={getPhone()}
                 placeholder="Nhập số điện thoại"
                 prefix={<FaBlenderPhone />}
@@ -175,7 +169,7 @@ export function InforPayment({ onChange, onChangeFullAddress }) {
             }}
           >
             <AddressGroup {...address} required />
-            <SaveButtonGroup />
+            <SaveButtonGroup onCancel={() => setOpenInputAddress(false)} />
           </Form>
         </div>
       </div>

@@ -131,6 +131,7 @@ export type IOrder = BaseDocument & {
   shopBranchId?: string; // Mã chi nhánh
 
   confirmTime?: Date; // Thời gian confirm
+  cancelReason?: string; // Lý do huỷ
 };
 
 const orderSchema = new Schema(
@@ -218,6 +219,7 @@ const orderSchema = new Schema(
     pickupTime: { type: Date },
     shopBranchId: { type: Schema.Types.ObjectId, ref: "ShopBranch" },
     confirmTime: { type: Date },
+    cancelReason: { type: String },
   },
   { timestamps: true }
 );

@@ -20,11 +20,11 @@ export function IncreaseButton({ onDecrease, onIncrease, onChange, className }: 
 
   return (
     <div className={`flex items-center justify-center  text-primary ${className}`}>
-      <i className={`text-2xl text-gray-500`} onClick={() => handleClick(-1)}>
+      <i className={`text-2xl text-gray-500 cursor-pointer`} onClick={() => handleClick(-1)}>
         <VscDiffRemoved />
       </i>
       <p className={`text-lg px-3 text-gray-600`}>{amount}</p>
-      <i className={`text-2xl text-primary`} onClick={() => handleClick(1)}>
+      <i className={`text-2xl text-primary cursor-pointer`} onClick={() => handleClick(1)}>
         <VscDiffAdded />
       </i>
     </div>

@@ -12,41 +12,19 @@ import { SaveButtonGroup } from "../../../shared/utilities/save-button-group";
 import { AddressGroup } from "../../../shared/utilities/form/address-group";
 import { useCartContext } from "../../../../lib/providers/cart-provider";
 import { Spinner } from "../../../shared/utilities/spinner";
+import { getAddressText } from "../../../../lib/helpers/get-address-text";
+import { HereMapService } from "../../../../lib/repo/map.repo";
+import { Console } from "console";
 
 export function InforPayment({ onChange }) {
   const [openDialog, setOpenDialog] = useState(false);
   const { orderInput, setOrderInput } = useCartContext();
   const [times, setTimes] = useState([]);
-  const [address, setAddress] = useState({});
-  const [inforBuyer, setInforBuyer] = useState({
-    name: "",
-    phone: "",
-  });
-  useEffect(() => {
-    onChange({ name: inforBuyer.name, phone: inforBuyer.phone, address: address });
-  }, [address, inforBuyer]);
   const [openInputAddress, setOpenInputAddress] = useState(false);
   const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
-  const { draftOrder: order } = useCartContext();
   const [addressTemp, setAddressTemp] = useState("");
-  useEffect(() => {
-    if (
-      order.order?.buyerAddress &&
-      order.order?.buyerWard &&
-      order.order?.buyerDistrict &&
-      order.order?.buyerProvince
-    ) {
-      setAddressTemp(
-        order.order.buyerAddress +
-          ", " +
-          order.order.buyerWard +
-          ", " +
-          order.order.buyerDistrict +
-          ", " +
-          order.order.buyerProvince
-      );
-    }
-  }, [order]);
+  useEffect(() => {}, [addressTemp]);
+
   const generateTime = () => {
     var today = new Date();
     var time = today.getHours();
@@ -159,17 +137,48 @@ export function InforPayment({ onChange }) {
           <Form
             dialog
             mobileSizeMode
-            initialData={address}
+            initialData={{
+              wardId: orderInput.buyerWardId,
+              districtId: orderInput.buyerDistrictId,
+              provinceId: orderInput.buyerProvinceId,
+              address: orderInput.buyerAddress,
+            }}
             isOpen={openInputAddress}
             onClose={() => setOpenInputAddress(false)}
-            onSubmit={(data, fullData) => {
-              console.log(fullData);
-              setAddress({ ...data });
+            onSubmit={async (data, fullData) => {
+              console.log("fullData", fullData);
+              setOrderInput({
+                ...orderInput,
+                buyerAddress: data.address,
+                buyerWardId: data.wardId,
+                buyerDistrictId: data.districtId,
+                buyerProvinceId: data.provinceId,
+              });
+              let fullAddress = {
+                ward: fullData.wardId?.label || "",
+                province: fullData.provinceId?.label || "",
+                district: fullData.districtId?.label || "",
+                address: data.address || "",
+              };
+              setAddressTemp(getAddressText(fullAddress));
+              let location = {
+                type: "Point",
+                coordinates: [106.6968302, 10.7797855],
+              };
+              let res = await HereMapService.getCoordinatesFromAddress(getAddressText(fullAddress));
+              if (res) {
+                location.coordinates = [res.position.lng, res.position.lat];
+              }
+              console.log("location.coordinates", location.coordinates);
+              setOrderInput({
+                ...orderInput,
+                longitude: location.coordinates[0],
+                latitude: location.coordinates[1],
+              });
               setOpenInputAddress(false);
             }}
-            onChange={(data, fullData) => {}}
           >
-            <AddressGroup {...address} required />
+            <AddressGroup required />
             <SaveButtonGroup onCancel={() => setOpenInputAddress(false)} />
           </Form>
         </div>

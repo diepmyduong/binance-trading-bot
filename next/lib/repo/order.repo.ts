@@ -59,6 +59,7 @@ export interface Order extends BaseModel {
   toppingAmount: number;
   shipMethod: string;
   shipfee: number;
+  shipDistance: number;
   paymentMethod: string;
   note: string;
   itemCount: number;
@@ -188,6 +189,7 @@ export class OrderRepository extends CrudRepository<Order> {
     toppingAmount: Float
     shipMethod: String
     shipfee: Float
+    shipDistance: Float
     paymentMethod: String
     note: String
     itemCount: Int
@@ -247,6 +249,7 @@ export class OrderRepository extends CrudRepository<Order> {
     toppingAmount: Float
     shipMethod: String
     shipfee: Float
+    shipDistance: Float
     paymentMethod: String
     note: String
     itemCount: Int

@@ -10,11 +10,8 @@ import { Field } from "../../shared/utilities/form/field";
 import { Textarea } from "../../shared/utilities/form/textarea";
 import { SaveButtonGroup } from "../../shared/utilities/save-button-group";
 import { Dialog, DialogPropsType } from "../../shared/utilities/dialog/dialog";
-import { Spinner } from "../../shared/utilities/spinner";
-import { useProductsContext } from "../../admin/products/providers/products-provider";
 import { useProductDetailContext } from "./provider/product-detail-provider";
 import { OrderItemToppingInput, ToppingOption } from "../../../lib/repo/product-topping.repo";
-import { notEqual } from "assert";
 import { FaPen } from "react-icons/fa";
 import { Toppings } from "./components/toppings";
 
@@ -32,43 +29,17 @@ interface PropsType extends DialogPropsType {
 }
 export function ProductDetail({ item, productId, ...props }: PropsType) {
   const { cartProducts, addProductToCart } = useCartContext();
-  const [count, setCount] = useState(1);
-  const [toppings, setToppings] = useState([]);
   const [opacity, setOpacity] = useState<number>();
   const ref = useRef(null);
   const [intervalScroll, setIntervalScroll] = useState(0);
-  const [topping, setTopping] = useState<OrderItemToppingInput[]>([]);
-  const [totalMoney, setTotalMoney] = useState(0);
-  const { productDetail } = useProductDetailContext();
-
-  useEffect(() => {
-    let total = 0;
-    if (productDetail) {
-      topping.forEach((item) => (total += item.price));
-      total += productDetail.downPrice * count;
-      setTotalMoney(total);
-    }
-  }, [count, topping]);
-
-  useEffect(() => {
-    setTopping([]);
-    setCount(1);
-    if (productDetail) setTotalMoney(productDetail.downPrice * count);
-  }, [productDetail]);
-
-  function handleAddTopping(data) {
-    let arr: OrderItemToppingInput[] = [];
-    for (var item in data) {
-      let temp: OrderItemToppingInput = {
-        toppingName: data[item].nameTopping,
-        toppingId: item,
-        optionName: data[item].name,
-        price: data[item].price,
-      };
-      arr.push({ ...temp });
-    }
-    setTopping([...arr]);
-  }
+  const {
+    productDetail,
+    totalMoney,
+    qty,
+    toppings,
+    setQty,
+    setProductDetail,
+  } = useProductDetailContext();
 
   function dialogScrollEvent() {
     let scrollCheckInterval = null;
@@ -92,7 +63,10 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
   return (
     <Dialog
       isOpen={props.isOpen}
-      onClose={props.onClose}
+      onClose={() => {
+        props.onClose();
+        setProductDetail(null);
+      }}
       mobileSizeMode
       slideFromBottom="all"
       bodyClass="relative rounded w-full"
@@ -102,7 +76,10 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
           className={`w-8 h-8 absolute right-2 top-2 z-200 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer ${
             opacity == 100 ? "invisible" : "visible"
           }`}
-          onClick={props.onClose}
+          onClick={() => {
+            props.onClose();
+            setProductDetail(null);
+          }}
         >
           <i className="text-2xl text-gray-600 ">
             <HiOutlineX />
@@ -133,7 +110,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
         </div>
         <div className="relative w-full top-0 ">
           <Img src={productDetail.image} ratio169 />
-          <div className="absolute bottom-0 left-0 w-full h-1/3  px-4 text-xs text-white py-1 flex items-end space-x-1 bg-opacity-20 bg-gradient-to-t from-primary">
+          <div className="absolute bottom-0 left-0 w-full h-1/3  px-4 text-xs text-white py-1 flex items-end bg-opacity-20 bg-gradient-to-t from-primary">
             <div className="flex items-center">
               <i className="text-yellow-500 px-1">
                 <HiStar />
@@ -145,11 +122,11 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
           </div>
         </div>
 
-        <div ref={ref} className="sticky overflow-auto bg-white">
+        <div ref={ref} className="overflow-auto bg-white mb-22">
           <h2 className="header-name px-4 pt-4 text-xl">{productDetail.name}</h2>
           <div className="px-4 text-gray-700 py-1 flex items-center space-x-1">
-            <div className="font-bold">{NumberPipe(productDetail.downPrice)}đ</div>
-            <div className="text-xs line-through px-1">{NumberPipe(productDetail.basePrice)}đ</div>
+            <div className="font-bold">{NumberPipe(productDetail.basePrice)}đ</div>
+            <div className="text-xs line-through px-1">{NumberPipe(productDetail.downPrice)}đ</div>
             {productDetail.saleRate && (
               <div className="bg-red-500 text-white text-xs rounded px-2">
                 {productDetail.saleRate || 0}%
@@ -158,25 +135,18 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
           </div>
           <p className="px-4 text-sm text-gray-500">{productDetail.subtitle}</p>
           <Note />
-          <div className="">
-            <Toppings
-              toppings={productDetail.toppings}
-              onChange={(dta) => {
-                handleAddTopping(dta);
-              }}
-            />
-          </div>
+          <Toppings toppings={productDetail.toppings} />
         </div>
         <div className="h-22"></div>
         <Dialog.Footer>
           <div className="fixed shadow-2xl bg-white -bottom-0 max-w-lg w-full px-4 py-4 flex items-center space-x-7">
-            <IncreaseButton onChange={(count) => setCount(count)} />
+            <IncreaseButton onChange={(count) => setQty(count)} />
             <Button
               primary
               text={`Thêm ${NumberPipe(totalMoney)} đ`}
               className="w-full"
               onClick={() => {
-                addProductToCart(productDetail, count, topping);
+                addProductToCart(productDetail, qty, toppings);
                 props.onClose();
               }}
               small

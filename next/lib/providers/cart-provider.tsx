@@ -72,19 +72,18 @@ export function CartProvider(props) {
     items: null,
   });
   console.log("ORDERINPUT", orderInput);
-  const [note, setNote] = useState({ note: "" });
-  const [inforBuyers, setInforBuyers] = useState({
-    name: "",
-    phone: "",
-    lat: 0,
-    long: 0,
-    address: {
-      provinceId: "",
-      districtId: "",
-      wardId: "",
-      address: "",
-    },
-  });
+  useEffect(() => {
+    let itemProduct: OrderItemInput[] = [];
+    cartProducts.forEach((item) => {
+      let OrderItem: OrderItemInput = {
+        productId: item.productId,
+        quantity: item.qty,
+        toppings: item.topping,
+      };
+      itemProduct.push(OrderItem);
+    });
+    setOrderInput({ ...orderInput, items: itemProduct });
+  }, [cartProducts]);
   useEffect(() => {
     if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
   }, [branchSelecting]);
@@ -93,6 +92,9 @@ export function CartProvider(props) {
       setOrderInput({ ...orderInput, buyerName: customer.name, buyerPhone: customer.phone });
     }
   }, [customer]);
+  useEffect(() => {
+    generateDraftOrder();
+  }, [orderInput]);
   useEffect(() => {
     let listCart = JSON.parse(localStorage.getItem("cartProducts"));
     if (listCart) {
@@ -125,15 +127,7 @@ export function CartProvider(props) {
     }
   }, []);
 
-  const getPhone = () => {
-    if (typeof window === "undefined") return;
-    return localStorage.getItem("phoneUser");
-  };
-
   const toast = useToast();
-  // useEffect(() => {
-  //   generateOrder(inforBuyers, "");
-  // }, []);
   useEffect(() => {
     setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
     setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
@@ -212,41 +206,8 @@ export function CartProvider(props) {
     setCartProducts([...cartProducts]);
   };
 
-  const generateDraftOrder = (inforBuyer, note) => {
-    if (!inforBuyer) return;
-    setInforBuyers({ ...inforBuyer });
-    setNote({ ...note });
-    let itemProduct: OrderItemInput[] = [];
-
-    cartProducts.forEach((item) => {
-      let OrderItem: OrderItemInput = {
-        productId: item.productId,
-        quantity: item.qty,
-        toppings: item.topping,
-      };
-      itemProduct.push(OrderItem);
-    });
-    setItemProducts(itemProduct);
-    let longtitude = 106.70788626891724,
-      lattitude = 10.795957687020659;
-    console.log("inforBuyerinforBuyer", inforBuyer);
-    let data: OrderInput = {
-      buyerName: inforBuyer.name,
-      buyerPhone: inforBuyer.phone || getPhone(),
-      pickupMethod: "DELIVERY",
-      shopBranchId: branchSelecting?.id,
-      pickupTime: null,
-      buyerAddress: inforBuyer.address?.address,
-      buyerProvinceId: inforBuyer.address?.provinceId,
-      buyerDistrictId: inforBuyer.address?.districtId,
-      buyerWardId: inforBuyer.address?.wardId,
-      latitude: lattitude,
-      longitude: longtitude,
-      paymentMethod: "COD",
-      note: note.note,
-      items: itemProduct,
-    };
-    OrderService.generateDraftOrder(data)
+  const generateDraftOrder = () => {
+    OrderService.generateDraftOrder(orderInput)
       .then((res: any) => {
         setDraftOrder({ ...res });
       })
@@ -254,26 +215,8 @@ export function CartProvider(props) {
   };
 
   const generateOrder = () => {
-    let longtitude = 106.70788626891724,
-      lattitude = 10.795957687020659;
-    let data: OrderInput = {
-      buyerName: inforBuyers.name,
-      buyerPhone: inforBuyers.phone || getPhone(),
-      pickupMethod: "DELIVERY",
-      shopBranchId: branchSelecting?.id,
-      pickupTime: null,
-      buyerAddress: inforBuyers.address?.address,
-      buyerProvinceId: inforBuyers.address?.provinceId,
-      buyerDistrictId: inforBuyers.address?.districtId,
-      buyerWardId: inforBuyers.address?.wardId,
-      latitude: lattitude,
-      longitude: longtitude,
-      paymentMethod: "COD",
-      note: note.note,
-      items: itemProducts,
-    };
     if (!draftOrder.invalid) {
-      return OrderService.generateOrder(data)
+      return OrderService.generateOrder(orderInput)
         .then((res) => {
           toast.success("Đặt hàng thành công");
         })
@@ -288,12 +231,10 @@ export function CartProvider(props) {
         totalFood,
         totalMoney,
         cartProducts,
-        inforBuyers,
         orderInput,
         setOrderInput,
         generateOrder,
         generateDraftOrder,
-        setInforBuyers,
         setCartProducts,
         addProductToCart,
         removeProductFromCart,

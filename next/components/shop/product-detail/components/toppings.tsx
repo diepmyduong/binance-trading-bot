@@ -2,37 +2,42 @@ import { database } from "faker/locale/de";
 import { useEffect, useState } from "react";
 import { NumberPipe } from "../../../../lib/pipes/number";
 import { ProductTopping, ToppingOption } from "../../../../lib/repo/product-topping.repo";
+import { useProductDetailContext } from "../provider/product-detail-provider";
 
 interface PropsType extends ReactProps {
   toppings?: ProductTopping[];
   topping?: ProductTopping;
   onChange?: any;
-  onSelect?: any;
+  onSelected?: any;
   listSelected?: any;
 }
-export function Toppings({ toppings, onChange }: PropsType) {
-  let [data, setData] = useState<any>({});
-  const handleClick = (dta, toppingId, nameTopping) => {
-    data[toppingId] = dta;
-    data[toppingId] = { ...data[toppingId], nameTopping: nameTopping };
-    setData({ ...data });
-    onChange(data);
+export function Toppings({ toppings }: PropsType) {
+  const { dataTopping, setDataTopping, productDetail } = useProductDetailContext();
+  const handleClick = (item: ToppingOption, toppingId: string, toppingName: string) => {
+    let temp = {
+      toppingName: toppingName,
+      toppingId: toppingId,
+      optionName: item.name,
+      price: item.price,
+    };
+    dataTopping[toppingId] = temp;
+    setDataTopping({ ...dataTopping });
+    console.log("Toppings", dataTopping);
   };
-  console.log("Toppings", toppings, data);
-  // useEffect(() => {
-  //   toppings.forEach((item) => {
-  //     if (item.required) handleClick(item.options[0], item.id, item.name);
-  //   });
-  // }, []);
+  useEffect(() => {
+    if (productDetail)
+      productDetail.toppings.forEach((item) => {
+        if (item.required) handleClick(item.options[0], item.id, item.name);
+      });
+  }, [productDetail]);
   return (
     <div className="">
       {toppings.map((topping, index) => {
         return (
           <Topping
             topping={topping}
-            listSelected={data[topping.id]}
-            onSelect={(dta, id) => {
-              handleClick(dta, id, topping.name);
+            onSelected={(item) => {
+              handleClick(item, topping.id, topping.name);
             }}
             key={index}
           />
@@ -42,7 +47,7 @@ export function Toppings({ toppings, onChange }: PropsType) {
   );
 }
 
-function Topping({ topping, onSelect, listSelected }: PropsType) {
+function Topping({ topping, onSelected }: PropsType) {
   const [data, setData] = useState<ToppingOption>();
   return (
     <div className="">
@@ -57,11 +62,10 @@ function Topping({ topping, onSelect, listSelected }: PropsType) {
           return (
             <OneDish
               item={item}
-              listSelected={listSelected}
-              name={topping.name}
+              toppingId={topping.id}
               key={index}
               onClick={() => {
-                onSelect(item, topping.id);
+                onSelected(item);
               }}
             />
           );
@@ -74,17 +78,17 @@ function Topping({ topping, onSelect, listSelected }: PropsType) {
 interface PropsOneDish {
   item: ToppingOption;
   onClick?: () => void;
-  name?: string;
+  toppingId?: string;
   listSelected?: any;
 }
-const OneDish = ({ item, onClick, name, listSelected }: PropsOneDish) => {
+const OneDish = ({ item, onClick, toppingId }: PropsOneDish) => {
   const [checked, setchecked] = useState(false);
-  console.log("listSelected", listSelected);
-  // useEffect(() => {
-  //   if (listSelected)
-  //     if (listSelected.name == item.name) setchecked(true);
-  //     else setchecked(false);
-  // }, [listSelected]);
+  const { dataTopping } = useProductDetailContext();
+  useEffect(() => {
+    if (dataTopping[toppingId])
+      if (dataTopping[toppingId].optionName == item.name) setchecked(true);
+      else setchecked(false);
+  }, [dataTopping]);
   return (
     <div
       key={item.name}
@@ -94,7 +98,13 @@ const OneDish = ({ item, onClick, name, listSelected }: PropsOneDish) => {
       }}
     >
       <div className="flex items-center w-full">
-        <input type="radio" id={item.name} name={name} className="inline form-checkbox py-1" />
+        <input
+          type="radio"
+          id={item.name}
+          name={toppingId}
+          className="inline form-checkbox py-1"
+          defaultChecked={checked}
+        />
         <label htmlFor={item.name} className="inline font-light text-sm ml-2 cursor-pointer w-full">
           {item.name}
         </label>

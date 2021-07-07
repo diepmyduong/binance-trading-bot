@@ -33,7 +33,6 @@ export function PaymentPage() {
   const [note, setNote] = useState({ note: "" });
   const [openDialogSelectBranch, setopenDialogSelectBranch] = useState(false);
   const [inforBuyers, setInforBuyers] = useState({});
-  const [fullAddress, setFullAddress] = useState({});
 
   const toast = useToast();
   useEffect(() => {
@@ -89,7 +88,7 @@ export function PaymentPage() {
             })}
           </div>
         </div>
-        <InputNote onChange={(data) => setNote({ ...data })} />
+        <InputNote />
         <div className="px-4 py-4 mt-1 bg-white ">
           <div className="flex justify-between items-center">
             <div className="">
@@ -101,7 +100,7 @@ export function PaymentPage() {
             <div className="">
               Phí áp dụng:{" "}
               <span className="font-bold">
-                {order.shipDistance ? `${order?.order?.shipDistance} km` : ""}{" "}
+                {order.order?.shipDistance ? `${order?.order?.shipDistance} km` : ""}
               </span>
             </div>
             <div className="">{NumberPipe(order?.order?.shipfee)}đ</div>
@@ -189,7 +188,7 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
   );
 };
 
-const InputNote = ({ onChange }) => {
+const InputNote = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const { orderInput, setOrderInput } = useCartContext();
   return (
@@ -224,7 +223,7 @@ const InputNote = ({ onChange }) => {
         onClose={() => setOpenDialog(false)}
         initialData={{ note: orderInput.note }}
         onSubmit={(data) => {
-          setOrderInput({ ...orderInput, note: data });
+          setOrderInput({ ...orderInput, note: data.note });
           setOpenDialog(false);
         }}
       >

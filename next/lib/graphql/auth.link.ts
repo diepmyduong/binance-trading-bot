@@ -63,7 +63,7 @@ export const AuthLink = setContext((_, { headers }) => {
       token = GetCustomerToken();
       console.log("admin token", token);
     } else {
-      token = GetCustomerToken();
+      token = GetAuthToken() || GetAnonymousToken();
     }
     const ip = GetIP();
     const context = {

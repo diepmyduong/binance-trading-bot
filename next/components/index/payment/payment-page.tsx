@@ -35,15 +35,11 @@ export function PaymentPage() {
   const [fullAddress, setFullAddress] = useState({});
 
   const toast = useToast();
-  const getPhone = () => {
-    if (typeof window === "undefined") return;
-    return localStorage.getItem("phoneUser");
-  };
 
   useEffect(() => {
     if (!branchSelecting) {
       toast.error("Chưa chọn quán chi nhánh");
-      setopenDialogSelectBranch(true);
+      // setopenDialogSelectBranch(true);
     }
   }, [branchSelecting]);
   useEffect(() => {
@@ -96,7 +92,8 @@ export function PaymentPage() {
           </div>
           <div className="flex justify-between items-center">
             <div className="">
-              Phí áp dụng: <span className="font-bold">{order.shipDistance} km</span>
+              Phí áp dụng:{" "}
+              <span className="font-bold">{order.shipDistance && `${order.shipDistance} km`} </span>
             </div>
             <div className="">{NumberPipe(order.shipfee || 0)}đ</div>
           </div>

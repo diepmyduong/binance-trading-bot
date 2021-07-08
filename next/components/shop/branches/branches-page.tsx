@@ -105,10 +105,11 @@ export function BranchesPage(props: ReactProps) {
                 let newData = {} as Partial<ShopBranch>;
                 if (openBranch) {
                   newData = {
+                    id: openBranch.id,
                     ...data,
-                    code: data.code || convertViToEn(data.name).replaceAll(" ", ""),
                     location: data.location || location,
                   };
+                  console.log(newData);
                 } else {
                   const {
                     name,
@@ -121,7 +122,6 @@ export function BranchesPage(props: ReactProps) {
                     coverImage,
                   } = data;
                   newData = {
-                    code: convertViToEn(name).replaceAll(" ", ""),
                     name,
                     address,
                     provinceId,

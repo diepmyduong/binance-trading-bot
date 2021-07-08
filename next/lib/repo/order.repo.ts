@@ -455,3 +455,14 @@ export const ORDER_STATUS: Option[] = [
   { value: "RETURNED", label: "Đã hoàn hàng", color: "orange" },
   { value: "UNCOMPLETED", label: "Chưa hoàn thành", color: "teal" },
 ];
+
+export const PICKUP_METHODS: Option[] = [
+  { value: "DELIVERY", label: "Giao hàng" },
+  { value: "STORE", label: "Lấy tại cửa hàng" },
+];
+
+export const PAYMENT_METHODS: Option[] = [
+  { value: "COD", label: "Nhận tiền khi giao hàng" },
+  { value: "MOMO", label: "Ví điện tử MoMo" },
+  { value: "VNPAY", label: "Cổng thanh toán VNPAY" },
+];

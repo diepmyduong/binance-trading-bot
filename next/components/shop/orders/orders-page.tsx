@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { RiEyeLine } from "react-icons/ri";
-import { Order, OrderService, ORDER_STATUS } from "../../../lib/repo/order.repo";
+import {
+  Order,
+  OrderService,
+  ORDER_STATUS,
+  PAYMENT_METHODS,
+  PICKUP_METHODS,
+} from "../../../lib/repo/order.repo";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
 import { DataTable } from "../../shared/utilities/table/data-table";
 import { OrderDetailsDialog } from "./components/order-details-dialog";
+import format from "date-fns/format";
+import { Field } from "../../shared/utilities/form/field";
+import { Select } from "../../shared/utilities/form/select";
 
 export function OrdersPage(props: ReactProps) {
   const [orderId, setOrderId] = useState<string>("");
@@ -28,7 +37,35 @@ export function OrdersPage(props: ReactProps) {
 
         <DataTable.Toolbar>
           <DataTable.Search className="h-12" />
-          <DataTable.Filter></DataTable.Filter>
+          <DataTable.Filter>
+            <Field name="pickupMethod" noError>
+              <Select
+                className="h-12 inline-grid"
+                autosize
+                clearable
+                placeholder="Tất cả hình thức lấy hàng"
+                options={PICKUP_METHODS}
+              />
+            </Field>
+            <Field name="paymentMethod" noError>
+              <Select
+                className="h-12 inline-grid"
+                autosize
+                clearable
+                placeholder="Tất cả hình thức thanh toán"
+                options={PAYMENT_METHODS}
+              />
+            </Field>
+            <Field name="status" noError>
+              <Select
+                className="h-12 inline-grid"
+                autosize
+                clearable
+                placeholder="Tất cả trạng thái"
+                options={ORDER_STATUS}
+              />
+            </Field>
+          </DataTable.Filter>
         </DataTable.Toolbar>
 
         <DataTable.Table className="mt-4 bg-white">
@@ -66,8 +103,10 @@ export function OrdersPage(props: ReactProps) {
                 value={
                   <div>
                     <div className={"font-semibold"}>{`${
-                      item.pickupMethod == "DELIVERY" ? "Giao hàng" : "Lấy tại cửa hàng"
-                    }${item.pickupTime ? `(${item.pickupTime})` : ""}`}</div>
+                      PICKUP_METHODS.find((x) => x.value == item.pickupMethod)?.label
+                    }${
+                      item.pickupTime ? `【${format(new Date(item.pickupTime), "HH:mm")}】` : ""
+                    }`}</div>
                     <div>{item.deliveryInfo?.statusText}</div>
                   </div>
                 }

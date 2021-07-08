@@ -21,7 +21,6 @@ export function InforPayment() {
   const { orderInput, setOrderInput, draftOrder } = useCartContext();
   const [openInputAddress, setOpenInputAddress] = useState(false);
   const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
-  console.log("branchSelecting", branchSelecting);
   const [addressTemp, setAddressTemp] = useState("");
   const getAddress = async (data, fullData) => {
     let fullAddress = {
@@ -53,7 +52,6 @@ export function InforPayment() {
   }, [addressTemp]);
 
   //TODO: viết tách ra input time thành 1 component mới
-
   return (
     <div className="pt-4 bg-white">
       <div className="">
@@ -174,9 +172,30 @@ export function InforPayment() {
 }
 
 const SelectTime = () => {
+  const { branchSelecting } = useShopContext();
+  const { orderInput, setOrderInput } = useCartContext();
   const [times, setTimes] = useState([]);
+  console.log("branchSelecting", branchSelecting);
+  const getDate = (time) => {
+    var today = new Date();
+    return new Date(
+      `${today.getMonth() + 1}-${today.getDate()}-${today.getFullYear()} ${time}`
+    ).toISOString();
+  };
+  const onChangeTime = (time) => {
+    let temp = getDate(time);
+    setOrderInput({ ...orderInput, pickupTime: temp });
+  };
   const generateTime = () => {
     var today = new Date();
+    var current_day = today.getDay();
+    let openTimes = branchSelecting.operatingTimes;
+    let closeTime;
+    if (openTimes[0].day == 0) {
+      closeTime = openTimes[current_day].timeFrames[0][1];
+    } else if (openTimes[0].day == 1) {
+      closeTime = openTimes[(current_day + 1) % 7].timeFrames[0][1];
+    }
     var time = today.getHours();
     var min = today.getMinutes();
     var halfHours = ["00", "30"];
@@ -189,16 +208,22 @@ const SelectTime = () => {
     var timess = [];
     for (var i = time; i < 24; i++) {
       for (var j = 0; j < 2; j++) {
-        timess.push(i + ":" + halfHours[j]);
+        let temp = i + ":" + halfHours[j];
+        if (temp <= closeTime) timess.push(i + ":" + halfHours[j]);
       }
     }
     setTimes(timess);
   };
+  // useEffect(() => {
+  //   console.log("times", times);
+  //   if (times) onChangeTime(times[0]);
+  // }, [times]);
   useEffect(() => {
     generateTime();
   }, []);
   return (
     <Select
+      onChange={(data) => onChangeTime(data)}
       options={times.map((item) => ({ value: item, label: item }))}
       className="w-32"
       searchable={false}

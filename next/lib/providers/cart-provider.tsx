@@ -105,10 +105,9 @@ export function CartProvider(props) {
   }, []);
   useEffect(() => {
     if (customer) {
-      setOrderInput({ ...orderInput, buyerName: customer.name, buyerPhone: customer.phone });
+      setOrderInput({ ...orderInput, buyerPhone: customer });
     }
   }, [customer]);
-
   useEffect(() => {
     let listCart = JSON.parse(localStorage.getItem("cartProducts"));
     if (listCart) {
@@ -224,7 +223,7 @@ export function CartProvider(props) {
           localStorage.removeItem("cartProducts");
           setCartProducts([]);
           resetOrderInput();
-          router.push("/");
+          router.push("/order/" + res.code);
         })
         .catch((err) => toast.error("Đặt hàng thất bại"));
     }

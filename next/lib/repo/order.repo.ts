@@ -434,11 +434,12 @@ export class OrderRepository extends CrudRepository<Order> {
          toppingAmount
          shipfee
          amount
+         status
         }`,
       variablesParams: `($data:CreateDraftOrderInput!)`,
       options: { variables: { data } },
     }).then((res) => {
-      return res.data;
+      return res.data["g0"];
     });
   }
 }

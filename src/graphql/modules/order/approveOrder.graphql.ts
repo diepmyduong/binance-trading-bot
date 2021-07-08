@@ -35,6 +35,7 @@ export default {
             order.deliveryInfo.status = "COMPLETED";
             order.deliveryInfo.statusText = "Giao hàng không thành công.";
           }
+          order.markModified("deliveryInfo");
         }
         await order.save();
         await OrderItemModel.updateMany(

@@ -100,13 +100,10 @@ export function InforPayment() {
                       <>
                         <p className="font-medium">{branchSelecting.name}</p>
                         <p className="font-medium">
-                          {branchSelecting.address +
-                            ", " +
-                            branchSelecting.ward +
-                            ", " +
-                            branchSelecting.district +
-                            ", " +
-                            branchSelecting.province}
+                          {branchSelecting.address && branchSelecting.address}
+                          {branchSelecting.ward && ", " + branchSelecting.ward}
+                          {branchSelecting.district && ", " + branchSelecting.district}
+                          {branchSelecting.province && ", " + branchSelecting.province}
                         </p>
                       </>
                     ) : (

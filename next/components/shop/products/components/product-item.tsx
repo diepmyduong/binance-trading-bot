@@ -17,7 +17,7 @@ export function ProductItem({ product, ...props }: PropsType) {
       className="flex items-center p-2 mb-2 bg-white border border-gray-300 hover:border-primary rounded-md cursor-pointer group"
       onClick={props.onClick}
     >
-      <Img src={product.image} className="w-16 rounded-md" showImageOnClick />
+      <Img src={product.image} compress={100} className="w-16 rounded-md" showImageOnClick />
       <div className="flex-1 pl-3">
         <div className="text-gray-800 font-semibold text-lg group-hover:text-primary flex flex-wrap items-center">
           {product.name}

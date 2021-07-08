@@ -1,70 +1,84 @@
 import Link from "next/link";
 import { HiChevronRight } from "react-icons/hi";
 import { NumberPipe } from "../../../../lib/pipes/number";
+import { Order } from "../../../../lib/repo/order.repo";
 import { Button } from "../../../shared/utilities/form/button";
+import formatDate from "date-fns/format";
 
 interface PropsType extends ReactProps {
-  status: "Đang làm món" | "Đang giao" | "Đã giao" | "Đã hủy";
-  item?: any;
-  index: number;
+  status: Option;
+  order?: Order;
 }
-export function Billed({ item, index, status }: PropsType) {
-  let style;
-  switch (status) {
-    case "Đang làm món":
-      style = "text-primary";
-      break;
-    case "Đang giao":
-      style = "text-warning";
-      break;
-    case "Đã giao":
-      style = "text-success";
-      break;
-    case "Đã hủy":
-      style = "text-danger";
-      break;
-  }
+export function Billed({ order, status }: PropsType) {
   return (
-    <div className="w-full mt-1 bg-white text-sm" key={index}>
-      <Link href="/order/ABC123">
-        <a href="" className="">
-          <div className="flex items-center justify-between">
-            <div className="p-2 flex flex-col">
-              <div className="flex items-center justify-start">
-                <p className={`${style} font-bold text-sm`}>{status}</p>
-                <p className="px-2">-</p>
-                <p className="">24/12/2021</p>
+    <div
+      className={`w-full mt-1 bg-white text-sm ${order.status !== status.value ? "hidden" : ""}`}
+    >
+      <Link href={`/order/${order.code}`}>
+        <div className="flex items-center justify-between cursor-pointer hover:bg-primary-light">
+          <div className="p-2 flex flex-col w-full">
+            <div className="flex items-center justify-start">
+              <p className={`text-${status.color} font-bold text-sm`}>{order.statusText}</p>
+              <p className="px-2">-</p>
+              <p className="">{formatDate(new Date(order.createdAt), "dd-MM-yyyy mm:HH")}</p>
+            </div>
+            <div className="flex flex-col pt-1">
+              <div className="flex items-center">
+                <p className="">{order.sellerName}</p>
+                {/* <p className="px-2">-</p>
+                <p className="">{order.buyerAddress}</p> */}
               </div>
-              <div className="flex flex-col pt-1">
-                <div className="flex items-center">
-                  <p className="">{item.title}</p>
+              <div className="flex pt-1 justify-between flex-wrap">
+                <div className="flex  pt-1 whitespace-nowrap flex-1">
+                  <p className="font-bold">{NumberPipe(order.subtotal)}đ</p>
+                  <p className="ml-1">({order.paymentMethod})</p>
                   <p className="px-2">-</p>
-                  <p className="">{item.address}</p>
+                  <p className="">{order.itemCount} món</p>
                 </div>
-                <div className="flex items-center pt-1">
-                  <p className="font-bold">{NumberPipe(item.price)}đ</p>
-                  <p className="ml-1">(Visa/Master)</p>
-                  <p className="px-2">-</p>
-                  <p className="">{item.count} món</p>
+                <div
+                  className="w-full mt-2 sm:mt-0 sm:w-auto flex justify-end "
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {
+                    {
+                      PENDING: (
+                        <>
+                          <Button
+                            text="Gọi nhà hàng"
+                            outline
+                            primary
+                            className="w-full ml-2 max-w-4xs whitespace-nowrap"
+                            href={`tel:${"0374196903"}`}
+                          />
+                        </>
+                      ),
+                      CANCELED: (
+                        <Button
+                          text="Đặt lại"
+                          outline
+                          primary
+                          className="w-full my-2 ml-2  max-w-4xs whitespace-nowrap"
+                        />
+                      ),
+                      COMPLETED: (
+                        <Button
+                          text="Đặt lại"
+                          outline
+                          primary
+                          className="w-full my-2 ml-2  max-w-4xs whitespace-nowrap"
+                        />
+                      ),
+                    }[order.status]
+                  }
                 </div>
               </div>
             </div>
-            <i className="text-2xl mr-2 text-primary">
-              <HiChevronRight />
-            </i>
           </div>
-        </a>
+          <i className="text-2xl mr-2 text-primary">
+            <HiChevronRight />
+          </i>
+        </div>
       </Link>
-      <div className="w-full flex justify-center items-center">
-        <Button
-          text={`${
-            status == "Đang làm món" || status == "Đang giao" ? "Gọi cho nhà hàng" : "Đặt lại"
-          }`}
-          large
-          className="w-full border border-gray-200 rounded-none"
-          textPrimary
-        />
-      </div>
     </div>
   );
 }

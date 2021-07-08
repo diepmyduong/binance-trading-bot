@@ -154,7 +154,7 @@ export const SIDEBAR_MENUS = [
       },
       {
         title: "Quản lý nhân viên",
-        path: "/shop/employees",
+        path: "/shop/staffs",
         icon: (active: boolean) => <IconEmployee hasGradient={!active} />,
       },
       {

@@ -52,6 +52,7 @@ export default {
     input OrderItemInput {
       productId: ID!
       quantity: Int!
+      note: String
       toppings: [OrderItemToppingInput]
     }
   `,

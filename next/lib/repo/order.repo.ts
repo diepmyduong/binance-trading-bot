@@ -20,7 +20,7 @@ export interface OrderInput {
   longitude: number;
   paymentMethod: string;
   note: string;
-  items: OrderItemInput[];
+  items?: OrderItemInput[];
 }
 
 export interface CreateOrderInput {
@@ -434,11 +434,12 @@ export class OrderRepository extends CrudRepository<Order> {
          toppingAmount
          shipfee
          amount
+         status
         }`,
       variablesParams: `($data:CreateDraftOrderInput!)`,
       options: { variables: { data } },
     }).then((res) => {
-      return res.data;
+      return res.data["g0"];
     });
   }
 }

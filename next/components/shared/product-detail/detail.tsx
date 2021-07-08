@@ -18,6 +18,7 @@ import { Spinner } from "../utilities/spinner";
 interface PropsType extends DialogPropsType {}
 export function ProductDetail({ ...props }: PropsType) {
   const { addProductToCart } = useCartContext();
+  const [note, setNote] = useState("");
   const [opacity, setOpacity] = useState<number>(0);
   const ref = useRef(null);
   const { product, totalMoney, qty, toppings, onChangeQuantity } = useProductDetailContext();
@@ -97,7 +98,7 @@ export function ProductDetail({ ...props }: PropsType) {
                 )}
               </div>
               <p className="px-4 text-sm text-gray-500">{product.subtitle}</p>
-              <Note />
+              <Note note={note} setNote={setNote} />
               <Toppings />
             </div>
           </div>
@@ -112,7 +113,7 @@ export function ProductDetail({ ...props }: PropsType) {
           className="w-full bg-gradient h-12 ml-2"
           large
           onClick={() => {
-            addProductToCart(product, qty);
+            addProductToCart(product, qty, note);
             props.onClose();
           }}
         />
@@ -121,14 +122,16 @@ export function ProductDetail({ ...props }: PropsType) {
     </Dialog>
   );
 }
-
-const Note = () => {
-  const [note, setNote] = useState({ note: "" });
+interface NoteProps extends ReactProps {
+  note: string;
+  setNote: Function;
+}
+const Note = ({ note, setNote, ...props }: NoteProps) => {
   const [openDialog, setOpenDialog] = useState(false);
   return (
     <div className="">
       <div className="mt-1 text-xs">
-        {note.note != "" ? (
+        {note != "" ? (
           <div className="px-4 py-2 bg-white w-full">
             <div className="flex items-center justify-between">
               <p className="font-bold">Lời nhắn cho cửa hàng</p>
@@ -136,7 +139,7 @@ const Note = () => {
                 <FaPen />
               </i>
             </div>
-            <p className="text-gray-700">{note.note}</p>
+            <p className="text-gray-700">{note}</p>
           </div>
         ) : (
           <Button

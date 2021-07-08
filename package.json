@@ -114,10 +114,10 @@
     "wink-nlp-utils": "^2.0.6",
     "winston": "^3.3.3",
     "winston-mongodb": "^5.0.1",
-    "written-number": "^0.9.1"
+    "written-number": "^0.9.1",
+    "@next/bundle-analyzer": "^10.2.3"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^10.2.3",
     "@types/agenda": "^3.0.2",
     "@types/async": "^3.0.2",
     "@types/bcrypt": "^3.0.0",

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Pagination, Autoplay } from "swiper/core";
 import { ShopBanner } from "../../../../lib/repo/banner.repo";
@@ -10,6 +10,9 @@ interface Propstype extends ReactProps {
   banner: ShopBanner[];
 }
 const BannerPromtion = (props: Propstype) => {
+  useEffect(() => {
+    console.log(props.banner);
+  }, []);
   const promotions = [
     {
       img:
@@ -69,7 +72,11 @@ const BannerPromtion = (props: Propstype) => {
         pagination={{ clickable: true }}
       >
         {props.banner.map((item: ShopBanner, index) => (
-          <SwiperSlide key={index} onClick={() => handleClick(item)} className="cursor-pointer">
+          <SwiperSlide
+            key={index}
+            onClick={() => handleClick(item)}
+            className={`cursor-pointer ${item.isPublic ? "" : "hidden"}`}
+          >
             <div>
               <Img key={index} src={item.image || "/assets/default/default.png"} ratio169 />
             </div>

@@ -43,7 +43,7 @@ onApprovedFailureOrder.subscribe(async (order) => {
     target: NotificationTarget.CUSTOMER,
     type: NotificationType.ORDER,
     customerId: order.buyerId,
-    title: `Đơn hàng hàng #${order.code}`,
+    title: `Đơn hàng #${order.code}`,
     body: `Đơn hàng bị huỷ. ${order.note}`,
     orderId: order._id,
   });
@@ -60,7 +60,7 @@ onApprovedFailureOrder.subscribe(async (order) => {
         target: NotificationTarget.STAFF,
         type: NotificationType.ORDER,
         staffId: s._id,
-        title: `Đơn hàng hàng #${order.code}`,
+        title: `Đơn hàng #${order.code}`,
         body: `Đơn hàng bị huỷ. ${order.note}`,
         orderId: order._id,
       })
@@ -77,7 +77,7 @@ onApprovedFailureOrder.subscribe(async (order) => {
     target: NotificationTarget.MEMBER,
     type: NotificationType.ORDER,
     staffId: order.sellerId,
-    title: `Đơn hàng hàng #${order.code}`,
+    title: `Đơn hàng #${order.code}`,
     body: `Đơn hàng bị huỷ. ${order.note}`,
     orderId: order._id,
   });

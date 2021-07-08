@@ -18,11 +18,34 @@ import { Console } from "console";
 
 export function InforPayment() {
   const [openDialog, setOpenDialog] = useState(false);
-  const { orderInput, setOrderInput } = useCartContext();
+  const { orderInput, setOrderInput, draftOrder } = useCartContext();
   const [openInputAddress, setOpenInputAddress] = useState(false);
   const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
   const [addressTemp, setAddressTemp] = useState("");
-  useEffect(() => {}, [addressTemp]);
+  const getAddress = async (data, fullData) => {
+    let fullAddress = {
+      ward: fullData.wardId?.label || draftOrder?.order?.buyerWard,
+      province: fullData.provinceId?.label || draftOrder?.order?.buyerDistrict,
+      district: fullData.districtId?.label || draftOrder?.order?.buyerProvince,
+      address: data.address || draftOrder?.order?.buyerAddress,
+    };
+    setAddressTemp(getAddressText(fullAddress));
+  };
+  useEffect(() => {
+    let location = {
+      type: "Point",
+      coordinates: [106.702564, 10.797478],
+    };
+    // let res = await HereMapService.getCoordinatesFromAddress(getAddressText(addressTemp));
+    // if (res) {
+    //   location.coordinates = [res.position.lng, res.position.lat];
+    // }
+    setOrderInput({
+      ...orderInput,
+      longitude: location.coordinates[0],
+      latitude: location.coordinates[1],
+    });
+  }, [addressTemp]);
 
   //TODO: viết tách ra input time thành 1 component mới
 
@@ -76,7 +99,15 @@ export function InforPayment() {
                     {branchSelecting ? (
                       <>
                         <p className="font-medium">{branchSelecting.name}</p>
-                        <p className="font-medium">{branchSelecting.address}</p>
+                        <p className="font-medium">
+                          {branchSelecting.address +
+                            ", " +
+                            branchSelecting.ward +
+                            ", " +
+                            branchSelecting.district +
+                            ", " +
+                            branchSelecting.province}
+                        </p>
                       </>
                     ) : (
                       <p className="font-medium">Chưa chọn chi nhánh</p>
@@ -118,8 +149,8 @@ export function InforPayment() {
             }}
             isOpen={openInputAddress}
             onClose={() => setOpenInputAddress(false)}
-            onSubmit={async (data, fullData) => {
-              console.log("fullData", fullData);
+            onSubmit={(data, fullData) => {
+              console.log("fullData", data);
               setOrderInput({
                 ...orderInput,
                 buyerAddress: data.address,
@@ -127,27 +158,7 @@ export function InforPayment() {
                 buyerDistrictId: data.districtId,
                 buyerProvinceId: data.provinceId,
               });
-              let fullAddress = {
-                ward: fullData.wardId?.label || "",
-                province: fullData.provinceId?.label || "",
-                district: fullData.districtId?.label || "",
-                address: data.address || "",
-              };
-              setAddressTemp(getAddressText(fullAddress));
-              let location = {
-                type: "Point",
-                coordinates: [106.6968302, 10.7797855],
-              };
-              let res = await HereMapService.getCoordinatesFromAddress(getAddressText(fullAddress));
-              if (res) {
-                location.coordinates = [res.position.lng, res.position.lat];
-              }
-              console.log("location.coordinates", location.coordinates);
-              setOrderInput({
-                ...orderInput,
-                longitude: location.coordinates[0],
-                latitude: location.coordinates[1],
-              });
+              getAddress(data, fullData);
               setOpenInputAddress(false);
             }}
           >

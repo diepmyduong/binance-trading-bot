@@ -25,6 +25,7 @@ export function PaymentPage() {
     totalMoney,
     generateOrder,
     generateDraftOrder,
+    resetOrderInput,
     orderInput,
     draftOrder: order,
   } = useCartContext();
@@ -152,7 +153,13 @@ export function PaymentPage() {
 }
 
 const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
-  const { totalMoney, generateOrder, draftOrder: order, generateDraftOrder } = useCartContext();
+  const {
+    totalMoney,
+    generateOrder,
+    draftOrder: order,
+    generateDraftOrder,
+    resetOrderInput,
+  } = useCartContext();
   const toast = useToast();
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">

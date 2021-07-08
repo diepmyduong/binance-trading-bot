@@ -172,6 +172,8 @@ const schema = gql`
 
     "Lý do huỷ"
     cancelReason: String
+    "Ghim đơn"
+    pin: Boolean
   }
 
 

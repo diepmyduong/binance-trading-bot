@@ -3,6 +3,7 @@ import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { Context } from "../../context";
+import { counterService } from "../counter/counter.service";
 import { OperatingTimeStatus } from "./operatingTime.graphql";
 import { ShopBranchModel } from "./shopBranch.model";
 import { shopBranchService } from "./shopBranch.service";
@@ -31,6 +32,9 @@ const Mutation = {
       timeFrames: [["07:00", "21:00"]],
       status: OperatingTimeStatus.OPEN,
     }));
+    if (!data.code) {
+      data.code = await counterService.trigger("shopBranch").then((res) => "CN" + res);
+    }
 
     return await shopBranchService.create({
       shipPreparationTime: "30 phút",

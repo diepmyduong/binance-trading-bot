@@ -132,6 +132,7 @@ export type IOrder = BaseDocument & {
 
   confirmTime?: Date; // Thời gian confirm
   cancelReason?: string; // Lý do huỷ
+  pin?: boolean; // Ghim đơn
 };
 
 const orderSchema = new Schema(
@@ -220,6 +221,7 @@ const orderSchema = new Schema(
     shopBranchId: { type: Schema.Types.ObjectId, ref: "ShopBranch" },
     confirmTime: { type: Date },
     cancelReason: { type: String },
+    pin: { type: Boolean },
   },
   { timestamps: true }
 );

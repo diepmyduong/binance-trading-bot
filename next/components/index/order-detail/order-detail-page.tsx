@@ -8,6 +8,7 @@ import { useAlert } from "../../../lib/providers/alert-provider";
 import { Button } from "../../shared/utilities/form/button";
 import { Order, OrderService } from "../../../lib/repo/order.repo";
 import { Spinner } from "../../shared/utilities/spinner";
+import formatDate from "date-fns/format";
 interface PropsType extends ReactProps {
   id: string;
 }
@@ -38,6 +39,9 @@ export function OrderDetailPage({ id, ...props }: PropsType) {
               <div className="flex flex-col space-y-1">
                 <p className="text-xs text-gray-500">Mã đơn hàng</p>
                 <p className="uppercase font-bold">{order.code}</p>
+                <p className="text-xs text-gray-500">
+                  Ngày: {formatDate(new Date(order.createdAt), "dd-MM-yyyy mm:HH")}
+                </p>
               </div>
               <div className="flex flex-col space-y-1 pl-2 border-l">
                 <p className="text-xs text-gray-500">Tình trạng</p>
@@ -53,7 +57,10 @@ export function OrderDetailPage({ id, ...props }: PropsType) {
                 <p className="">
                   <span className="font-bold">{order.buyerName}</span>({order.buyerPhone})
                 </p>
-                <p className="">{order.buyerAddress}</p>
+                <p className="">
+                  {order.buyerAddress}, {order.buyerWard}, {order.buyerDistrict},{" "}
+                  {order.buyerProvince}
+                </p>
               </div>
             </div>
           </div>
@@ -86,24 +93,24 @@ export function OrderDetailPage({ id, ...props }: PropsType) {
             <div className="px-4 py-6 border-b border-gray-300">
               <div className="flex justify-between items-center">
                 <div className="">
-                  Tạm tính: <span className="font-bold">2 món</span>
+                  Tạm tính: <span className="font-bold">{order.itemCount} món</span>
                 </div>
-                <div className="">{NumberPipe(519000)}đ</div>
+                <div className="">{NumberPipe(order.subtotal, true)}</div>
               </div>
               <div className="flex justify-between items-center">
                 <div className="">
-                  Phí áp dụng: <span className="font-bold">1.2 km</span>
+                  Phí áp dụng: <span className="font-bold">{order.shipDistance} km</span>
                 </div>
-                <div className="">{NumberPipe(20000)}đ</div>
+                <div className="">{NumberPipe(order.shipfee, true)}</div>
               </div>
               <div className="flex justify-between items-center">
                 <div className="">Giảm giá:</div>
-                <div className="text-accent">{NumberPipe(40000)}đ</div>
+                <div className="text-accent">{NumberPipe(0, true)}</div>
               </div>
             </div>
             <div className="px-4 py-6 flex items-center justify-between">
               <div className="">Tổng cộng:</div>
-              <div className="font-bold">{NumberPipe(900000)}đ</div>
+              <div className="font-bold">{NumberPipe(order.amount, true)}</div>
             </div>
             <div className="p-2 sticky bottom-0 w-full bg-white">
               <Button text="Gọi nhà hàng" primary large className="w-full" />

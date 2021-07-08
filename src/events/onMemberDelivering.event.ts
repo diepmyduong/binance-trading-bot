@@ -3,6 +3,7 @@ import { Subject } from "rxjs";
 import { IOrder } from "../graphql/modules/order/order.model";
 import { orderService } from "../graphql/modules/order/order.service";
 import { OrderLogModel, OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
+import { PubSubHelper } from "../helpers/pubsub.helper";
 
 export const onMemberDelivering = new Subject<IOrder>();
 

@@ -13,6 +13,7 @@ import {
   VNPostFailedStatus,
   VNPostSuccessStatus,
 } from "../helpers";
+import { PubSubHelper } from "../helpers/pubsub.helper";
 import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
 import { onApprovedCompletedOrder } from "./onApprovedCompletedOrder.event";
 import { onApprovedFailureOrder } from "./onApprovedFailureOrder.event";
@@ -105,4 +106,9 @@ onDelivering.subscribe(async (order) => {
   });
   await NotificationModel.create(notify);
   await SendNotificationJob.trigger();
+});
+
+// Publish order stream
+onDelivering.subscribe(async (order) => {
+  PubSubHelper.publish("order", order);
 });

@@ -1,17 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Product, ProductService } from "../repo/product.repo";
 import { OrderItemToppingInput, ToppingOption } from "../repo/product-topping.repo";
-import {
-  CreateOrderInput,
-  Order,
-  OrderInput,
-  OrderItemInput,
-  OrderService,
-} from "../repo/order.repo";
+import { Order, OrderInput, OrderItemInput, OrderService } from "../repo/order.repo";
 import { useShopContext } from "./shop-provider";
 import { useToast } from "./toast-provider";
 import { useRouter } from "next/router";
-import { RiNurseFill } from "react-icons/ri";
 
 export const CartContext = createContext<
   Partial<{
@@ -23,13 +16,12 @@ export const CartContext = createContext<
     totalFood: number;
     totalMoney: number;
     cartProducts: CartProduct[];
-    setCartProducts: Function;
-    addProductToCart: Function;
     resetOrderInput: Function;
     generateOrder: () => any;
     generateDraftOrder: Function;
-    changeProductQuantity: Function;
-    removeProductFromCart: Function;
+    addProductToCart: (product: Product, qty: number) => any;
+    changeProductQuantity: (productIndex: number, qty: number) => any;
+    removeProductFromCart: (productIndex: number) => any;
   }>
 >({});
 export interface CartProduct {
@@ -46,7 +38,6 @@ export function CartProvider(props) {
   const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
   const [totalFood, setTotalFood] = useState(0);
   const [totalMoney, setTotalMoney] = useState(0);
-  const [itemProducts, setItemProducts] = useState<OrderItemInput[]>();
   const [draftOrder, setDraftOrder] = useState<{
     invalid: boolean;
     invalidReason: string;
@@ -93,26 +84,32 @@ export function CartProvider(props) {
       items: null,
     });
   };
+  const router = useRouter();
+  const toast = useToast();
+
   useEffect(() => {
     let itemProduct: OrderItemInput[] = [];
-    cartProducts.forEach((item) => {
+    cartProducts.forEach((cartProduct) => {
       let OrderItem: OrderItemInput = {
-        productId: item.productId,
-        quantity: item.qty,
-        toppings: item.topping,
+        productId: cartProduct.productId,
+        quantity: cartProduct.qty,
+        toppings: cartProduct.product.selectedToppings,
       };
       itemProduct.push(OrderItem);
     });
     setOrderInput({ ...orderInput, items: itemProduct });
   }, [cartProducts]);
+
   useEffect(() => {
     if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
   }, [branchSelecting]);
+
   useEffect(() => {
     if (customer) {
       setOrderInput({ ...orderInput, buyerName: customer.name, buyerPhone: customer.phone });
     }
   }, [customer]);
+
   useEffect(() => {
     let listCart = JSON.parse(localStorage.getItem("cartProducts"));
     if (listCart) {
@@ -125,103 +122,89 @@ export function CartProvider(props) {
             },
           },
         }).then((res) => {
+          let cartProducts = [];
           if (res.data) {
             listCart.forEach((cartProduct) => {
-              let product = res.data.find((x) => x.id === cartProduct.productId);
-              let priceProduct =
-                product.basePrice +
-                cartProduct.topping.reduce((total, item) => (total += item.price), 0);
+              const product = res.data.find((x) => x.id === cartProduct.productId);
+
               if (product) {
-                cartProduct.price = priceProduct;
-                cartProduct.amount = priceProduct * cartProduct.qty;
-                cartProduct.product = product;
+                let isValid = true;
+                for (let cartProductTopping of cartProduct.product
+                  .selectedToppings as OrderItemToppingInput[]) {
+                  const topping = product.toppings.find(
+                    (x) => x.id == cartProductTopping.toppingId
+                  );
+                  if (!topping) {
+                    isValid = false;
+                    break;
+                  } else {
+                    const option = topping.options.find(
+                      (x) => x.name == cartProductTopping.optionName
+                    );
+                    if (!option || option.price != cartProductTopping.price) {
+                      isValid = false;
+                      break;
+                    }
+                  }
+                }
+                if (isValid) cartProducts.push(cartProduct);
               }
             });
-            listCart = listCart.filter((x) => x.product);
-            setCartProducts([...listCart]);
           }
+          setCartProducts(cartProducts);
         });
       }
     }
   }, []);
-  const router = useRouter();
-  const toast = useToast();
+
   useEffect(() => {
     setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
     setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
     localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
   }, [cartProducts]);
-  function checkInCart(
-    product: Product,
-    topping: OrderItemToppingInput[],
-    cartProduct: CartProduct
-  ): boolean {
-    if (cartProduct && JSON.stringify(cartProduct.topping) == JSON.stringify(topping)) {
-      return true;
-    }
-    return false;
-  }
-  const addProductToCart = (
-    product: Product,
-    qty: number,
-    topping: OrderItemToppingInput[]
-  ): boolean => {
+
+  const addProductToCart = (product: Product, qty: number): boolean => {
     if (!qty) return false;
-    let cartProduct = cartProducts.find(
-      (x) => x.productId == product.id && checkInCart(product, topping, x)
+    let productIndex = cartProducts.findIndex(
+      (x) =>
+        x.productId == product.id &&
+        JSON.stringify(x.product.selectedToppings) == JSON.stringify(product.selectedToppings)
     );
-    if (cartProduct) {
-      cartProduct.qty += qty;
-      cartProduct.amount = cartProduct.price * cartProduct.qty;
+    if (productIndex >= 0) {
+      changeProductQuantity(productIndex, cartProducts[productIndex].qty + qty);
     } else {
-      let priceProduct =
-        product.basePrice + topping.reduce((total, item) => (total += item.price), 0);
+      let price =
+        product.basePrice +
+        product.selectedToppings.reduce((total, topping) => total + topping.price, 0);
       cartProducts.push({
         productId: product.id,
         product: product,
         qty,
-        price: priceProduct,
-        amount: priceProduct * qty,
-        topping: topping,
+        price: price,
+        amount: price * qty,
       });
     }
     setCartProducts([...cartProducts]);
     return true;
   };
-  const changeProductQuantity = (
-    product: Product,
-    qty: number,
-    topping: OrderItemToppingInput[]
-  ) => {
-    if (!qty) return;
-    let cartProduct = cartProducts.find(
-      (x) => x.productId == product.id && checkInCart(product, topping, x)
-    );
-    if (cartProduct) {
-      cartProduct.qty = qty;
-      cartProduct.amount = cartProduct.price * qty;
+
+  const changeProductQuantity = (productIndex: number, qty: number) => {
+    if (productIndex < 0 || productIndex >= cartProducts.length) return;
+
+    if (qty) {
+      cartProducts[productIndex].qty = qty;
+      cartProducts[productIndex].amount = cartProducts[productIndex].price * qty;
+      setCartProducts([...cartProducts]);
     } else {
-      let priceProduct =
-        product.basePrice + topping.reduce((total, item) => (total += item.price), 0);
-      cartProducts.push({
-        productId: product.id,
-        product: product,
-        qty,
-        price: priceProduct,
-        amount: priceProduct * qty,
-        topping: topping,
-      });
+      removeProductFromCart(productIndex);
     }
-    setCartProducts([...cartProducts]);
   };
-  const removeProductFromCart = (product: Product, topping: OrderItemToppingInput[]) => {
-    let cartProductIndex = cartProducts.findIndex(
-      (x) => x.productId == product.id && checkInCart(product, topping, x)
-    );
-    if (cartProductIndex >= 0) {
-      cartProducts.splice(cartProductIndex, 1);
+
+  const removeProductFromCart = (productIndex: number) => {
+    if (productIndex >= 0) {
+      cartProducts.splice(productIndex, 1);
+      setCartProducts([...cartProducts]);
     }
-    setCartProducts([...cartProducts]);
   };
 
   const generateDraftOrder = () => {
@@ -258,7 +241,6 @@ export function CartProvider(props) {
         setOrderInput,
         generateOrder,
         generateDraftOrder,
-        setCartProducts,
         addProductToCart,
         removeProductFromCart,
         changeProductQuantity,

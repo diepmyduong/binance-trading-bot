@@ -411,8 +411,8 @@ export class OrderGenerator {
     const products = await ProductModel.find({ _id: { $in: productIds }, allowSale: true })
       // .then((res) => res.filter((p) => (orderInput.isPrimary ? p.isPrimary : p.isCrossSale)))
       .then((res) => keyBy(res, "_id"));
-    if (Object.values(products).length != orderInput.items.length) {
-      throw Error("Không thể đặt hàng, sản phẩm không hợp lệ.");
+    for (const i of orderInput.items) {
+      if (!products[i.productId]) throw Error("Không thể đặt hàng, sản phẩm không hợp lệ.");
     }
     return products;
   }

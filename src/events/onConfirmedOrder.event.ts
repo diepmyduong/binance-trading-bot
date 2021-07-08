@@ -39,7 +39,7 @@ onConfirmedOrder.subscribe(async (order) => {
     target: NotificationTarget.CUSTOMER,
     type: NotificationType.ORDER,
     customerId: order.buyerId,
-    title: `Đơn hàng hàng #${order.code}`,
+    title: `Đơn hàng #${order.code}`,
     body: `Món ăn đang được chuẩn bị.`,
     orderId: order._id,
   });

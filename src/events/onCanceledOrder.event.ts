@@ -128,7 +128,7 @@ onCanceledOrder.subscribe(async (order) => {
     target: NotificationTarget.CUSTOMER,
     type: NotificationType.ORDER,
     customerId: order.buyerId,
-    title: `Đơn hàng hàng #${order.code}`,
+    title: `Đơn hàng #${order.code}`,
     body: `Đơn hàng đã huỷ`,
     orderId: order._id,
   });
@@ -145,7 +145,7 @@ onCanceledOrder.subscribe(async (order) => {
         target: NotificationTarget.STAFF,
         type: NotificationType.ORDER,
         staffId: s._id,
-        title: `Đơn hàng hàng #${order.code}`,
+        title: `Đơn hàng #${order.code}`,
         body: `Đơn hàng đã huỷ`,
         orderId: order._id,
       })
@@ -162,7 +162,7 @@ onCanceledOrder.subscribe(async (order) => {
     target: NotificationTarget.MEMBER,
     type: NotificationType.ORDER,
     staffId: order.sellerId,
-    title: `Đơn hàng hàng #${order.code}`,
+    title: `Đơn hàng #${order.code}`,
     body: `Đơn hàng đã huỷ`,
     orderId: order._id,
   });

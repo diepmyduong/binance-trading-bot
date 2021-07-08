@@ -226,6 +226,7 @@ const orderSchema = new Schema(
   { timestamps: true }
 );
 
+orderSchema.index({ code: 1 }, { unique: true });
 orderSchema.index(
   {
     code: "text",

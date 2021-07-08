@@ -120,14 +120,14 @@ export function ShopCategory(props: ShopCategoryPropsType) {
           {props.list.map((item: Product, index: number) => (
             <div
               key={index}
-              className="py-2  hover:bg-primary-light cursor-pointer border-b transition-all duration-300"
+              className={`py-2  hover:bg-primary-light cursor-pointer border-b transition-all duration-300  ${
+                item.allowSale ? "" : "hidden"
+              }`}
+              onClick={() => {
+                handleClick(item.code);
+              }}
             >
-              <div
-                className={`flex items-center px-4  ${item.allowSale ? "" : "hidden"}`}
-                onClick={() => {
-                  handleClick(item.code);
-                }}
-              >
+              <div className={`flex items-center px-4 `}>
                 <div className="flex-1 flex flex-col">
                   <p className="font-semibold items-start">{item.name}</p>
                   <p className="text-gray-500 text-sm">{item.subtitle}</p>

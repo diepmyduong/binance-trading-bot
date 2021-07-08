@@ -67,11 +67,18 @@ export function ShopProvider(props) {
       let branchs = await ShopBranchService.getAll();
       if (branchs) {
         setShopBranch(cloneDeep(branchs.data));
+        setBranchSelecting(branchs.data[0]);
       }
     }
     let res = await ShopService.getShopData();
     if (res) {
       setShop(cloneDeep(res));
+      let phoneUser = localStorage.getItem("phoneUser");
+      if (phoneUser) {
+        setCustomer(phoneUser);
+      } else {
+        setCustomer(null);
+      }
     } else {
       setShop(null);
     }
@@ -100,12 +107,6 @@ export function ShopProvider(props) {
   }, []);
   useEffect(() => {
     getShop();
-    let phoneUser = localStorage.getItem("phoneUser");
-    if (phoneUser) {
-      setCustomer(phoneUser);
-    } else {
-      setCustomer(null);
-    }
   }, []);
   return (
     <ShopContext.Provider

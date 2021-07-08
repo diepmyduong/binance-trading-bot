@@ -49,7 +49,7 @@ export function ProductDetailProvider({ productId, ...props }) {
     let total = 0;
     if (productDetail) {
       toppings.forEach((item) => (total += item.price));
-      total += productDetail.downPrice * qty;
+      total += productDetail.basePrice * qty;
       setTotalMoney(total);
     }
   }, [qty, toppings]);

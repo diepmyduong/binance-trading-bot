@@ -16,6 +16,7 @@ import { TicketVoucher } from "./components/ticket-voucher";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import { useToast } from "../../../lib/providers/toast-provider";
 import BranchsDialog from "../homepage/components/branchs-dialog";
+import { useRouter } from "next/router";
 // SwiperCore.use([Pagination]);
 
 export function PaymentPage() {
@@ -26,25 +27,28 @@ export function PaymentPage() {
     generateOrder,
     generateDraftOrder,
     resetOrderInput,
+    setOrderInput,
     orderInput,
     draftOrder: order,
   } = useCartContext();
-  console.log("order", order);
   const { branchSelecting, shopBranchs, setBranchSelecting } = useShopContext();
   const [voucherApplied, setVoucherApplied] = useState(null);
   const [note, setNote] = useState({ note: "" });
   const [openDialogSelectBranch, setopenDialogSelectBranch] = useState(false);
-
   const toast = useToast();
+  const router = useRouter();
+  useEffect(() => {
+    setOrderInput({ ...orderInput, shopBranchId: branchSelecting?.id });
+  }, [branchSelecting]);
+  useEffect(() => {
+    generateDraftOrder();
+  }, [orderInput]);
   useEffect(() => {
     if (!branchSelecting) {
       toast.error("Chưa chọn quán chi nhánh");
       setopenDialogSelectBranch(true);
     }
   }, [branchSelecting]);
-  useEffect(() => {
-    generateDraftOrder();
-  }, [orderInput]);
   useEffect(() => {
     setVoucherApplied(null);
   }, []);

@@ -39,6 +39,7 @@ import {
 type OrderItemInput = {
   productId: string;
   quantity: number;
+  note: string;
   toppings: OrderItemTopping[];
 };
 export type CreateOrderInput = {
@@ -439,6 +440,7 @@ export class OrderGenerator {
       orderType: this.order.orderType,
       toppings: input.toppings,
       toppingAmount: toppingAmount * input.quantity,
+      note: input.note,
     });
     // Điểm thưởng khách hàng
     if (product.enabledCustomerBonus)

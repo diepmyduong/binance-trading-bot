@@ -6,7 +6,7 @@ export class HereMapRepository {
   appId: string = "E1sWiTZV6gtYhE7W6XYg";
   apiKey: string = "p03Ve2KqJ-IIsk-o2JvXG1j3Q2JrQsmkl6IpDg_mefc";
 
-  async getCoordinatesFromAddress(fullAddress: string = ""): Promise<H.service.ServiceResult> {
+  async getCoordinatesFromAddress(fullAddress: string = ""): Promise<any> {
     return axios
       .get(`https://geocode.search.hereapi.com/v1/geocode`, {
         params: {

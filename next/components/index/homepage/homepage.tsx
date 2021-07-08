@@ -7,40 +7,17 @@ import { ShopCategories } from "./components/shop-categories";
 import { CartDialog } from "./components/cart-dialog";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { ShopInfo } from "./components/shop-info";
-import { ProductDetail } from "../../shop/product-detail/detail";
 import { useRouter } from "next/router";
-import { ProductDetailProvider } from "../../shop/product-detail/provider/product-detail-provider";
+import { ProductDetail } from "../../shared/product-detail/detail";
+import { ProductDetailProvider } from "../../shared/product-detail/provider/product-detail-provider";
 
-interface PropsType extends ReactProps {
-  productId?: string;
-}
 export function Homepage() {
-  const { shop, loading, categoriesShop } = useShopContext();
+  const { shop } = useShopContext();
   const router = useRouter();
   const { productId } = router.query;
-  const {
-    cartProducts,
-    totalFood,
-    totalMoney,
-    changeProductQuantity,
-    removeProductFromCart,
-  } = useCartContext();
+  const { cartProducts, totalFood, totalMoney } = useCartContext();
   const [showDialogCart, setShowDialogCart] = useState(false);
-  const [productIdCode, setProductIdCode] = useState(productId);
-  const [openDialog, setOpenDialog] = useState(false);
-  useEffect(() => {
-    if (productIdCode && productId) setOpenDialog(true);
-  }, [productIdCode]);
 
-  useEffect(() => {
-    setProductIdCode(productId);
-  }, [productId]);
-
-  useEffect(() => {
-    if (totalFood === 0) {
-      setShowDialogCart(false);
-    }
-  }, [totalFood]);
   return (
     <>
       <div className={`z-0 relative bg-white min-h-screen text-gray-800`}>
@@ -52,60 +29,53 @@ export function Homepage() {
             <ShopCategories />
           </>
         )}
-        {cartProducts && cartProducts.length > 0 && (
-          <FloatingButton
-            totalFood={totalFood}
-            totalMoney={totalMoney}
-            onClick={() => setShowDialogCart(true)}
-          />
+        {!!cartProducts?.length && (
+          <>
+            <FloatingButton
+              totalFood={totalFood}
+              totalMoney={totalMoney}
+              onClick={() => setShowDialogCart(true)}
+            />
+            <CartDialog
+              isOpen={showDialogCart && !!cartProducts.length}
+              onClose={() => setShowDialogCart(false)}
+              slideFromBottom="all"
+            />
+          </>
         )}
-        <CartDialog
-          isOpen={showDialogCart}
-          onClose={() => setShowDialogCart(false)}
-          cart={cartProducts}
-          slideFromBottom="all"
-          money={totalMoney}
-          onChange={changeProductQuantity}
-          onRemove={removeProductFromCart}
-        />
       </div>
-      <ProductDetailProvider productId={productIdCode}>
+      <ProductDetailProvider productCode={productId}>
         <ProductDetail
-          isOpen={openDialog}
+          isOpen={!!productId}
           onClose={() => {
-            setOpenDialog(false);
-            setProductIdCode(null);
             const url = new URL(location.href);
             url.searchParams.delete("productId");
             router.push(url.toString(), null, { shallow: true });
           }}
-        ></ProductDetail>
+        />
       </ProductDetailProvider>
-
       <Footer />
     </>
   );
 }
+
 interface FloatButtonProps extends ReactProps {
   totalFood: string | number;
   totalMoney: string | number;
   onClick?: Function;
 }
-
 const FloatingButton = (props: FloatButtonProps) => {
   return (
-    <div className="w-full mt-3 sticky bottom-5 sm:bottom-7 left-0 flex flex-col items-center z-100">
-      <div className="max-w-lg flex flex-col items-center w-full px-4">
-        <button
-          className={`z-50 flex text-sm btn-primary mx-4 w-full max-w-sm sm:h-14`}
-          onClick={() => props.onClick()}
-        >
-          <span className="flex-1">Giỏ hàng</span>
-          <span className="flex-1 text-right whitespace-nowrap pl-4">
-            {props.totalFood} món - {NumberPipe(props.totalMoney, true)}
-          </span>
-        </button>
-      </div>
-    </div>
+    // <div className="w-full mt-3 sticky bottom-5 sm:bottom-7 left-0 flex flex-col items-center z-100">
+    <button
+      className={`mt-4 mb-2 sticky md:bottom-6 bottom-7 z-50 justify-between shadow-lg flex btn-primary mx-auto w-11/12 sm:w-5/6 max-w-md h-12 sm:h-14 animate-emerge`}
+      onClick={() => props.onClick()}
+    >
+      <span>Giỏ hàng</span>
+      <span className="text-right whitespace-nowrap pl-4">
+        {props.totalFood} món - {NumberPipe(props.totalMoney, true)}
+      </span>
+    </button>
+    // </div>
   );
 };

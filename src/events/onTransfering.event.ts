@@ -3,6 +3,7 @@ import { IOrder } from "../graphql/modules/order/order.model";
 import { orderService } from "../graphql/modules/order/order.service";
 import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
 import { OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
+import { PubSubHelper } from "../helpers/pubsub.helper";
 
 export const onTransfering = new Subject<IOrder>();
 
@@ -22,4 +23,9 @@ onTransfering.subscribe(async (order) => {
   await log.save().then((log) => {
     orderService.updateLogToOrder({ order, log });
   });
+});
+
+// Publish order stream
+onTransfering.subscribe(async (order) => {
+  PubSubHelper.publish("order", order);
 });

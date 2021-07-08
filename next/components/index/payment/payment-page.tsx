@@ -57,9 +57,9 @@ export function PaymentPage() {
         <InforPayment />
         <div className="mt-1 bg-white">
           <div className="flex items-center justify-between">
-            <p className="font-semibold px-4 py-2">
+            <div className="font-semibold px-4 py-2">
               {branchSelecting ? branchSelecting.name : "Chưa chọn chi nhánh"}
-            </p>
+            </div>
             <Button
               textPrimary
               text="Đổi chi nhánh"
@@ -68,7 +68,7 @@ export function PaymentPage() {
             />
           </div>
           <div className="">
-            {cartProducts.map((item, index) => {
+            {cartProducts.map((cartProduct, index) => {
               const last = cartProducts.length - 1 == index;
               return (
                 <div
@@ -76,17 +76,21 @@ export function PaymentPage() {
                   key={index}
                 >
                   <div className="font-bold text-primary flex items-center">
-                    <p className="min-w-5 text-center">{item.qty}</p>
-                    <p className="px-2">X</p>
+                    <div className="min-w-4 text-center">{cartProduct.qty}</div>
+                    <div className="px-1">X</div>
                   </div>
-                  <div className="flex-1 flex flex-col">
-                    <p className="">{item.product.name}</p>
-                    <p className=" text-gray-500">{item.note}</p>
-                    {item.topping.map((topping, index) => (
-                      <p className=" text-gray-500 text-sm ml-2">{topping.optionName}</p>
-                    ))}
+                  <div className="flex-1 flex flex-col text-gray-700">
+                    <div className="font-semibold">{cartProduct.product.name}</div>
+                    {!!cartProduct.product.selectedToppings.length && (
+                      <div>
+                        {cartProduct.product.selectedToppings
+                          .map((topping) => topping.optionName)
+                          .join(", ")}
+                      </div>
+                    )}
+                    {cartProduct.note && <div>{cartProduct.note}</div>}
                   </div>
-                  <div className="font-bold">{NumberPipe(item.amount)}đ</div>
+                  <div className="font-bold">{NumberPipe(cartProduct.amount, true)}</div>
                 </div>
               );
             })}
@@ -188,7 +192,7 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
           disabled={order.invalid}
           text={order.order ? `Đặt hàng ${NumberPipe(order?.order?.amount)}đ` : "Đặt hàng"}
           primary
-          className="w-full"
+          className="w-full bg-gradient h-12"
           onClick={async () => {
             await generateOrder();
           }}

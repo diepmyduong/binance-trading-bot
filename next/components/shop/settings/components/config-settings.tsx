@@ -243,7 +243,7 @@ export function ConfigSettings() {
             >
               <div className="flex items-center">
                 <div className="flex-1 pr-2 font-semibold">{group.name}</div>
-                <div className="flex items-center" onClick={(e) => e.stopPropagation}>
+                <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
                   <Switch
                     value={group.isPublic}
                     onChange={(isPublic) => {

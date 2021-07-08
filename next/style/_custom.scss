@@ -1,4 +1,7 @@
 // Custom project-specific class here
 .bg-gradient {
   @apply bg-gradient-to-r from-accent to-primary hover:from-accent-dark hover:to-primary-dark;
+  &:not(.loading)[disabled] {
+    background-image: none !important;
+  }
 }

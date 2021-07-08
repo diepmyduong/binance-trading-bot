@@ -24,6 +24,7 @@ import { OrderLogModel, OrderLogType } from "../graphql/modules/orderLog/orderLo
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { StaffModel } from "../graphql/modules/staff/staff.model";
 import { UserModel } from "../graphql/modules/user/user.model";
+import { PubSubHelper } from "../helpers/pubsub.helper";
 import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
 import { EventHelper } from "./event.helper";
 import { onSendChatBotText } from "./onSendToChatbot.event";
@@ -362,4 +363,9 @@ onApprovedCompletedOrder.subscribe(async (order) => {
   });
   await NotificationModel.create(notify);
   await SendNotificationJob.trigger();
+});
+
+// Publish order stream
+onApprovedCompletedOrder.subscribe(async (order) => {
+  PubSubHelper.publish("order", order);
 });

@@ -30,6 +30,7 @@ interface PropsType extends DialogPropsType {
 export function ProductDetail({ item, productId, ...props }: PropsType) {
   const { cartProducts, addProductToCart } = useCartContext();
   const [opacity, setOpacity] = useState<number>();
+  const [note, setNote] = useState("");
   const ref = useRef(null);
   const [intervalScroll, setIntervalScroll] = useState(0);
   const {
@@ -134,7 +135,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
             )}
           </div>
           <p className="px-4 text-sm text-gray-500">{productDetail.subtitle}</p>
-          <Note />
+          <Note note={note} setNote={setNote} />
           <Toppings toppings={productDetail.toppings} />
         </div>
         <div className="h-22"></div>
@@ -146,7 +147,7 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
               text={`Thêm ${NumberPipe(totalMoney)} đ`}
               className="w-full"
               onClick={() => {
-                addProductToCart(productDetail, qty, toppings);
+                addProductToCart(productDetail, qty, toppings, note);
                 props.onClose();
               }}
               small
@@ -157,14 +158,16 @@ export function ProductDetail({ item, productId, ...props }: PropsType) {
     </Dialog>
   );
 }
-
-const Note = () => {
-  const [note, setNote] = useState({ note: "" });
+interface NoteProps extends ReactProps {
+  note: string;
+  setNote: Function;
+}
+const Note = ({ note, setNote, ...props }: NoteProps) => {
   const [openDialog, setOpenDialog] = useState(false);
   return (
     <div className="">
       <div className="mt-1 text-xs">
-        {note.note != "" ? (
+        {note != "" ? (
           <div className="px-4 py-2 bg-white w-full">
             <div className="flex items-center justify-between">
               <p className="font-bold">Lời nhắn cho cửa hàng</p>
@@ -172,7 +175,7 @@ const Note = () => {
                 <FaPen />
               </i>
             </div>
-            <p className="">{note.note}</p>
+            <p className="">{note}</p>
           </div>
         ) : (
           <Button
@@ -192,7 +195,7 @@ const Note = () => {
         onClose={() => setOpenDialog(false)}
         initialData={note}
         onSubmit={(data) => {
-          setNote({ ...data });
+          setNote(data.note);
           setOpenDialog(false);
         }}
         className=""

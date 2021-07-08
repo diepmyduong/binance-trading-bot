@@ -164,7 +164,8 @@ export function CartProvider(props) {
   const addProductToCart = (
     product: Product,
     qty: number,
-    topping: OrderItemToppingInput[]
+    topping: OrderItemToppingInput[],
+    note: string
   ): boolean => {
     if (!qty) return false;
     let cartProduct = cartProducts.find(
@@ -183,8 +184,10 @@ export function CartProvider(props) {
         price: priceProduct,
         amount: priceProduct * qty,
         topping: topping,
+        note: note,
       });
     }
+    console.log(cartProducts);
     setCartProducts([...cartProducts]);
     return true;
   };
@@ -212,6 +215,7 @@ export function CartProvider(props) {
         topping: topping,
       });
     }
+    console.log(cartProducts);
     setCartProducts([...cartProducts]);
   };
   const removeProductFromCart = (product: Product, topping: OrderItemToppingInput[]) => {

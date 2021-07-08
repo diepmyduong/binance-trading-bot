@@ -21,6 +21,7 @@ export enum SettingKey {
   SEO_TITLE = "SEO_TITLE",
   SEO_DESCRIPTION = "SEO_DESCRIPTION",
   SEO_IMAGE = "SEO_IMAGE",
+  HERE_MAP_KEY = "HERE_MAP_KEY",
 
   // THONG_BAO_CHATBOT
   REGIS_SERVICE_COMMISSION_MSG = "REGIS_SERVICE_COMMISSION_MSG",
@@ -229,6 +230,15 @@ export const SETTING_DATA = [
         name: "SEO: Hình ảnh",
         key: SettingKey.SEO_IMAGE,
         value: "https://i.ibb.co/RCh1LhV/Screen-Shot-2021-05-18-at-14-08-33.png",
+        isActive: true,
+        isPrivate: false,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "HERE MAP KEY",
+        key: SettingKey.HERE_MAP_KEY,
+        value: "x5Skw8UvomphDTa7DCKInmYU0T3qjrs0GfFoLYsrqvA",
         isActive: true,
         isPrivate: false,
         readOnly: false,

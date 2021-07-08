@@ -94,6 +94,7 @@ export function DataTable<T extends BaseModel>({
   };
 
   const onFilterChange = (registeredFilter: any) => {
+    console.log(registeredFilter);
     let newFilter = { ...filter, ...registeredFilter };
     newFilter = Object.keys(newFilter)
       .filter(

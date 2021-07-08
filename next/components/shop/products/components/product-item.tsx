@@ -43,8 +43,13 @@ export function ProductItem({ product, ...props }: PropsType) {
       <div className="px-4 text-gray-700 font-semibold text-right">
         <div>{NumberPipe(product.basePrice, true)}</div>
         {product.downPrice > 0 && (
-          <div className="text-gray-400 line-through font-medium">
-            {NumberPipe(product.downPrice, true)}
+          <div className="text-gray-400 font-medium flex items-center">
+            {!!product.saleRate && (
+              <span className="inline-block bg-danger text-white text-sm font-bold py-0.5 px-2 rounded mr-2">
+                -{product.saleRate}%
+              </span>
+            )}
+            <span className="line-through">{NumberPipe(product.downPrice, true)}</span>
           </div>
         )}
       </div>

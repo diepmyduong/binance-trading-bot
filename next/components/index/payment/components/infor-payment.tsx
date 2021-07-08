@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { Fa500Px, FaAddressCard, FaBlenderPhone, FaUserAlt } from "react-icons/fa";
-import { Dialog } from "../../../shared/utilities/dialog/dialog";
-import { Button } from "../../../shared/utilities/form/button";
 import { Field } from "../../../shared/utilities/form/field";
 import { Form, FormConsumer } from "../../../shared/utilities/form/form";
 import { Input } from "../../../shared/utilities/form/input";
@@ -13,8 +11,8 @@ import { AddressGroup } from "../../../shared/utilities/form/address-group";
 import { useCartContext } from "../../../../lib/providers/cart-provider";
 import { Spinner } from "../../../shared/utilities/spinner";
 import { getAddressText } from "../../../../lib/helpers/get-address-text";
-import { HereMapService } from "../../../../lib/repo/map.repo";
-import { Console } from "console";
+import { AddressService } from "../../../../lib/repo/address.repo";
+import { compact } from "lodash";
 
 export function InforPayment() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -22,6 +20,7 @@ export function InforPayment() {
   const [openInputAddress, setOpenInputAddress] = useState(false);
   const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
   const [addressTemp, setAddressTemp] = useState("");
+
   const getAddress = async (data, fullData) => {
     let fullAddress = {
       address: data.address || draftOrder?.order?.buyerAddress,
@@ -35,23 +34,6 @@ export function InforPayment() {
     setAddressTemp(getAddressText(fullAddress));
   };
 
-  useEffect(() => {
-    let location = {
-      type: "Point",
-      coordinates: [106.702564, 10.797478],
-    };
-    // let res = await HereMapService.getCoordinatesFromAddress(getAddressText(addressTemp));
-    // if (res) {
-    //   location.coordinates = [res.position.lng, res.position.lat];
-    // }
-    setOrderInput({
-      ...orderInput,
-      longitude: location.coordinates[0],
-      latitude: location.coordinates[1],
-    });
-  }, [addressTemp]);
-
-  //TODO: viết tách ra input time thành 1 component mới
   return (
     <div className="pt-4 bg-white">
       <div className="">
@@ -150,7 +132,7 @@ export function InforPayment() {
             isOpen={openInputAddress}
             onClose={() => setOpenInputAddress(false)}
             onSubmit={(data, fullData) => {
-              console.log("fullData", data);
+              console.log("fullData", fullData);
               setOrderInput({
                 ...orderInput,
                 buyerAddress: data.address,
@@ -162,7 +144,15 @@ export function InforPayment() {
               setOpenInputAddress(false);
             }}
           >
-            <AddressGroup required />
+            <AddressGroup
+              {...{
+                wardId: orderInput.buyerWardId,
+                districtId: orderInput.buyerDistrictId,
+                provinceId: orderInput.buyerProvinceId,
+                address: orderInput.buyerAddress,
+              }}
+              required
+            />
             <SaveButtonGroup onCancel={() => setOpenInputAddress(false)} />
           </Form>
         </div>
@@ -174,8 +164,7 @@ export function InforPayment() {
 const SelectTime = () => {
   const { branchSelecting } = useShopContext();
   const { orderInput, setOrderInput } = useCartContext();
-  const [times, setTimes] = useState([]);
-  console.log("branchSelecting", branchSelecting);
+  const [times, setTimes] = useState<{ label: string; value: string }[]>([]);
   const getDate = (time) => {
     var today = new Date();
     return new Date(
@@ -183,17 +172,19 @@ const SelectTime = () => {
     ).toISOString();
   };
   const onChangeTime = (time) => {
-    let temp = getDate(time);
-    setOrderInput({ ...orderInput, pickupTime: temp });
+    // let temp = getDate(time);
+    setOrderInput({ ...orderInput, pickupTime: time });
   };
   const generateTime = () => {
     var today = new Date();
     var current_day = today.getDay();
     let openTimes = branchSelecting.operatingTimes;
-    let closeTime;
+    let closeTime, openTime;
     if (openTimes[0].day == 0) {
+      openTime = openTimes[current_day].timeFrames[0][0];
       closeTime = openTimes[current_day].timeFrames[0][1];
     } else if (openTimes[0].day == 1) {
+      openTime = openTimes[(current_day + 1) % 7].timeFrames[0][0];
       closeTime = openTimes[(current_day + 1) % 7].timeFrames[0][1];
     }
     var time = today.getHours();
@@ -206,25 +197,33 @@ const SelectTime = () => {
       time++;
     }
     var timess = [];
+    let openT = new Date(getDate(openTime));
+    let closeT = new Date(getDate(closeTime));
     for (var i = time; i < 24; i++) {
       for (var j = 0; j < 2; j++) {
         let temp = i + ":" + halfHours[j];
-        if (temp <= closeTime) timess.push(i + ":" + halfHours[j]);
+        let tempT = new Date(getDate(temp));
+        if (openT <= tempT && closeT >= tempT)
+          timess.push({ value: getDate(temp), label: i + ":" + halfHours[j] });
       }
     }
+    timess.sort((a, b) => {
+      return new Date(a.value) < new Date(b.value) ? -1 : 1;
+    });
+    console.log(timess);
     setTimes(timess);
   };
-  // useEffect(() => {
-  //   console.log("times", times);
-  //   if (times) onChangeTime(times[0]);
-  // }, [times]);
+  useEffect(() => {
+    console.log("times", times);
+    if (times.length > 0) onChangeTime(times[0].value);
+  }, [times]);
   useEffect(() => {
     generateTime();
   }, []);
   return (
     <Select
       onChange={(data) => onChangeTime(data)}
-      options={times.map((item) => ({ value: item, label: item }))}
+      options={times}
       className="w-32"
       searchable={false}
       native

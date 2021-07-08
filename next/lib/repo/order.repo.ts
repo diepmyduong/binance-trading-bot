@@ -41,6 +41,7 @@ export interface CreateOrderInput {
 export interface OrderItemInput {
   productId: string;
   quantity: number;
+  note?: string;
   toppings: OrderItemToppingInput[];
 }
 export interface OrderItemToppingInput {

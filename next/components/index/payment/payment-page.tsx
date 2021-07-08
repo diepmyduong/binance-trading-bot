@@ -37,12 +37,13 @@ export function PaymentPage() {
   const [openDialogSelectBranch, setopenDialogSelectBranch] = useState(false);
   const toast = useToast();
   const router = useRouter();
-  useEffect(() => {
-    setOrderInput({ ...orderInput, shopBranchId: branchSelecting?.id });
-  }, [branchSelecting]);
+
   useEffect(() => {
     generateDraftOrder();
   }, [orderInput]);
+  useEffect(() => {
+    if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting?.id });
+  }, [branchSelecting]);
   useEffect(() => {
     if (!branchSelecting) {
       toast.error("Chưa chọn quán chi nhánh");

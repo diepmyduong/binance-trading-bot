@@ -1,12 +1,12 @@
 import { NextSeo } from "next-seo";
-import { CustomersPage } from "../../components/shop/customers/customers-page";
+import { StaffsPage } from "../../components/shop/staffs/staffs-page";
 import { ShopLayout } from "../../layouts/shop-layout/shop-layout";
 
 export default function Page() {
   return (
     <>
-      <NextSeo title="Khách hàng" />
-      <CustomersPage />
+      <NextSeo title="Nhân viên" />
+      <StaffsPage />
     </>
   );
 }

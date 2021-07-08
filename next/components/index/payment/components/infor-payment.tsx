@@ -16,38 +16,16 @@ import { getAddressText } from "../../../../lib/helpers/get-address-text";
 import { HereMapService } from "../../../../lib/repo/map.repo";
 import { Console } from "console";
 
-export function InforPayment({ onChange }) {
+export function InforPayment() {
   const [openDialog, setOpenDialog] = useState(false);
   const { orderInput, setOrderInput } = useCartContext();
-  const [times, setTimes] = useState([]);
   const [openInputAddress, setOpenInputAddress] = useState(false);
   const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
   const [addressTemp, setAddressTemp] = useState("");
   useEffect(() => {}, [addressTemp]);
 
-  const generateTime = () => {
-    var today = new Date();
-    var time = today.getHours();
-    var min = today.getMinutes();
-    var halfHours = ["00", "30"];
-    if (min < 30) {
-      halfHours = ["30", "00"];
-    } else {
-      halfHours = ["00", "30"];
-      time++;
-    }
-    var timess = [];
-    for (var i = time; i < 24; i++) {
-      for (var j = 0; j < 2; j++) {
-        timess.push(i + ":" + halfHours[j]);
-      }
-    }
-    setTimes(timess);
-  };
   //TODO: viết tách ra input time thành 1 component mới
-  useEffect(() => {
-    generateTime();
-  }, []);
+
   return (
     <div className="pt-4 bg-white">
       <div className="">
@@ -114,12 +92,7 @@ export function InforPayment({ onChange }) {
                 </div>
                 <div className="flex items-center justify-between pt-6">
                   <p className="">Chọn thời gian lấy:</p>
-                  <Select
-                    options={times.map((item) => ({ value: item, label: item }))}
-                    className="w-32"
-                    searchable={false}
-                    native
-                  />
+                  <SelectTime />
                 </div>
               </div>
             )}
@@ -186,6 +159,40 @@ export function InforPayment({ onChange }) {
     </div>
   );
 }
+
+const SelectTime = () => {
+  const [times, setTimes] = useState([]);
+  const generateTime = () => {
+    var today = new Date();
+    var time = today.getHours();
+    var min = today.getMinutes();
+    var halfHours = ["00", "30"];
+    if (min < 30) {
+      halfHours = ["30", "00"];
+    } else {
+      halfHours = ["00", "30"];
+      time++;
+    }
+    var timess = [];
+    for (var i = time; i < 24; i++) {
+      for (var j = 0; j < 2; j++) {
+        timess.push(i + ":" + halfHours[j]);
+      }
+    }
+    setTimes(timess);
+  };
+  useEffect(() => {
+    generateTime();
+  }, []);
+  return (
+    <Select
+      options={times.map((item) => ({ value: item, label: item }))}
+      className="w-32"
+      searchable={false}
+      native
+    />
+  );
+};
 
 const TabCustom = () => {
   const { orderInput, setOrderInput } = useCartContext();

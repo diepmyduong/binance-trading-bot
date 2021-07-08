@@ -77,7 +77,6 @@ export function ShopProvider(props) {
     }
     setLoading(false);
   }
-  const loginCustomerByPhone = (phone) => {};
   function customerLogin(phone: string) {
     if (phone) {
       UserService.loginCustomerByPhone(phone).then((res: { loginCustomerByPhone: any }) => {
@@ -103,7 +102,7 @@ export function ShopProvider(props) {
     let phoneUser = localStorage.getItem("phoneUser");
     if (phoneUser) {
       setCustomer(phoneUser);
-      loginCustomerByPhone(phoneUser);
+      customerLogin(phoneUser);
     } else {
       setCustomer(null);
     }
@@ -123,7 +122,6 @@ export function ShopProvider(props) {
         setShopCode,
         branchSelecting,
         shopBranchs,
-        loginCustomerByPhone,
         setBranchSelecting,
         loading,
       }}

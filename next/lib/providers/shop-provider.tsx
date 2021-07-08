@@ -103,6 +103,7 @@ export function ShopProvider(props) {
     let phoneUser = localStorage.getItem("phoneUser");
     if (phoneUser) {
       setCustomer(phoneUser);
+      loginCustomerByPhone(phoneUser);
     } else {
       setCustomer(null);
     }

@@ -9,13 +9,13 @@ import {
   OrderService,
 } from "../repo/order.repo";
 import { useShopContext } from "./shop-provider";
-import cloneDeep from "lodash/cloneDeep";
 import { useToast } from "./toast-provider";
-import { PickupTypes } from "../../../src/helpers/vietnamPost/resources/type";
 
 export const CartContext = createContext<
   Partial<{
-    order?: Order;
+    draftOrder?: any;
+    orderInput?: OrderInput;
+    setOrderInput?: any;
     inforBuyers: any;
     setInforBuyers: any;
     totalFood: number;
@@ -38,24 +38,63 @@ export interface CartProduct {
   amount?: number;
   topping?: OrderItemToppingInput[];
 }
+
 export function CartProvider(props) {
   const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
   const [totalFood, setTotalFood] = useState(0);
   const [totalMoney, setTotalMoney] = useState(0);
   const [itemProducts, setItemProducts] = useState<OrderItemInput[]>();
-  const [order, setOrder] = useState<any>({ invalid: true, invalidReason: "", order: null });
-  const [note, setNote] = useState({ note: "" });
-  const { branchSelecting } = useShopContext();
-  const [inforBuyers, setInforBuyers] = useState({
-    name: "",
-    phone: "",
-    address: {
-      provinceId: "",
-      districtId: "",
-      wardId: "",
-      address: "",
-    },
+  const [draftOrder, setDraftOrder] = useState<{
+    invalid: boolean;
+    invalidReason: string;
+    order: Order;
+  }>({
+    invalid: true,
+    invalidReason: "",
+    order: null,
   });
+
+  const { branchSelecting, customer } = useShopContext();
+  const [orderInput, setOrderInput] = useState<OrderInput>({
+    buyerName: "",
+    buyerPhone: "",
+    pickupMethod: "DELIVERY",
+    shopBranchId: branchSelecting?.id,
+    pickupTime: null,
+    buyerAddress: "",
+    buyerProvinceId: "",
+    buyerDistrictId: "",
+    buyerWardId: "",
+    latitude: 0,
+    longitude: 0,
+    paymentMethod: "COD",
+    note: "",
+    items: null,
+  });
+  console.log("ORDERINPUT", orderInput);
+  useEffect(() => {
+    let itemProduct: OrderItemInput[] = [];
+    cartProducts.forEach((item) => {
+      let OrderItem: OrderItemInput = {
+        productId: item.productId,
+        quantity: item.qty,
+        toppings: item.topping,
+      };
+      itemProduct.push(OrderItem);
+    });
+    setOrderInput({ ...orderInput, items: itemProduct });
+  }, [cartProducts]);
+  useEffect(() => {
+    if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
+  }, [branchSelecting]);
+  useEffect(() => {
+    if (customer) {
+      setOrderInput({ ...orderInput, buyerName: customer.name, buyerPhone: customer.phone });
+    }
+  }, [customer]);
+  useEffect(() => {
+    generateDraftOrder();
+  }, [orderInput]);
   useEffect(() => {
     let listCart = JSON.parse(localStorage.getItem("cartProducts"));
     if (listCart) {
@@ -88,14 +127,7 @@ export function CartProvider(props) {
     }
   }, []);
 
-  const getPhone = () => {
-    if (typeof window === "undefined") return;
-    return localStorage.getItem("phoneUser");
-  };
   const toast = useToast();
-  // useEffect(() => {
-  //   generateOrder(inforBuyers, "");
-  // }, []);
   useEffect(() => {
     setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
     setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
@@ -174,67 +206,17 @@ export function CartProvider(props) {
     setCartProducts([...cartProducts]);
   };
 
-  const generateDraftOrder = (inforBuyer, note) => {
-    if (!inforBuyer) return;
-    setInforBuyers({ ...inforBuyer });
-    let itemProduct: OrderItemInput[] = [];
-
-    cartProducts.forEach((item) => {
-      let OrderItem: OrderItemInput = {
-        productId: item.productId,
-        quantity: item.qty,
-        toppings: item.topping,
-      };
-      itemProduct.push(OrderItem);
-    });
-    setItemProducts(itemProduct);
-    let longtitude = 106.70788626891724,
-      lattitude = 10.795957687020659;
-    console.log("inforBuyerinforBuyer", inforBuyer);
-    let data: OrderInput = {
-      buyerName: inforBuyer.name,
-      buyerPhone: inforBuyer.phone || getPhone(),
-      pickupMethod: "DELIVERY",
-      shopBranchId: branchSelecting?.id,
-      pickupTime: null,
-      buyerAddress: inforBuyer.address?.address,
-      buyerProvinceId: inforBuyer.address?.provinceId,
-      buyerDistrictId: inforBuyer.address?.districtId,
-      buyerWardId: inforBuyer.address?.wardId,
-      latitude: lattitude,
-      longitude: longtitude,
-      paymentMethod: "COD",
-      note: note.note,
-      items: itemProduct,
-    };
-    OrderService.generateDraftOrder(data)
-      .then((res) => {
-        setOrder({ ...res });
+  const generateDraftOrder = () => {
+    OrderService.generateDraftOrder(orderInput)
+      .then((res: any) => {
+        setDraftOrder({ ...res });
       })
       .catch((err) => console.log("Loi generate", err));
   };
 
   const generateOrder = () => {
-    let longtitude = 106.70788626891724,
-      lattitude = 10.795957687020659;
-    let data: OrderInput = {
-      buyerName: inforBuyers.name,
-      buyerPhone: inforBuyers.phone || getPhone(),
-      pickupMethod: "DELIVERY",
-      shopBranchId: branchSelecting?.id,
-      pickupTime: null,
-      buyerAddress: inforBuyers.address?.address,
-      buyerProvinceId: inforBuyers.address?.provinceId,
-      buyerDistrictId: inforBuyers.address?.districtId,
-      buyerWardId: inforBuyers.address?.wardId,
-      latitude: lattitude,
-      longitude: longtitude,
-      paymentMethod: "COD",
-      note: note.note,
-      items: itemProducts,
-    };
-    if (!order.invalid) {
-      return OrderService.generateOrder(data)
+    if (!draftOrder.invalid) {
+      return OrderService.generateOrder(orderInput)
         .then((res) => {
           toast.success("Đặt hàng thành công");
         })
@@ -245,14 +227,14 @@ export function CartProvider(props) {
   return (
     <CartContext.Provider
       value={{
-        order,
+        draftOrder: draftOrder,
         totalFood,
         totalMoney,
         cartProducts,
-        inforBuyers,
+        orderInput,
+        setOrderInput,
         generateOrder,
         generateDraftOrder,
-        setInforBuyers,
         setCartProducts,
         addProductToCart,
         removeProductFromCart,

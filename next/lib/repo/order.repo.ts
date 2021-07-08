@@ -9,7 +9,7 @@ import { User } from "./user.repo";
 export interface OrderInput {
   buyerName: string;
   buyerPhone: string;
-  pickupMethod: string;
+  pickupMethod: "DELIVERY" | "STORE";
   shopBranchId: string;
   pickupTime: string;
   buyerAddress: string;
@@ -59,6 +59,7 @@ export interface Order extends BaseModel {
   toppingAmount: number;
   shipMethod: string;
   shipfee: number;
+  shipDistance: number;
   paymentMethod: string;
   note: string;
   itemCount: number;
@@ -188,6 +189,7 @@ export class OrderRepository extends CrudRepository<Order> {
     toppingAmount: Float
     shipMethod: String
     shipfee: Float
+    shipDistance: Float
     paymentMethod: String
     note: String
     itemCount: Int
@@ -247,6 +249,7 @@ export class OrderRepository extends CrudRepository<Order> {
     toppingAmount: Float
     shipMethod: String
     shipfee: Float
+    shipDistance: Float
     paymentMethod: String
     note: String
     itemCount: Int
@@ -403,7 +406,7 @@ export class OrderRepository extends CrudRepository<Order> {
     driverLicense: String
   `);
 
-  async generateDraftOrder(data: OrderInput): Promise<Order> {
+  async generateDraftOrder(data: OrderInput): Promise<any> {
     return await this.mutate({
       mutation: `generateDraftOrder(data: $data) {
           order{

@@ -16,12 +16,14 @@ export function ProductsGroup(props: Propstype) {
   return (
     <div>
       {props.productGroups.map((item: ShopProductGroup, index) => (
-        <div className="border-t-8 border-b-8 py-2" key={index}>
+        <div className={`border-t-8 border-b-8 py-2 ${item.isPublic ? "" : "hidden"}`} key={index}>
           <h3 className="font-semibold pb-2 px-4 text-lg text-primary">{item.name}</h3>
           <div className="grid grid-cols-2 gap-4 px-4">
             {item.products?.map((item: Product, index) => (
               <div
-                className="col-span-1 transition-all duration-300 cursor-pointer group"
+                className={`col-span-1 transition-all duration-300 cursor-pointer group  ${
+                  item.allowSale ? "" : "hidden"
+                }`}
                 key={index}
                 onClick={() => handleClick(item.code)}
               >

@@ -41,6 +41,9 @@ export function PaymentPage() {
     setOrderInput({ ...orderInput, shopBranchId: branchSelecting?.id });
   }, [branchSelecting]);
   useEffect(() => {
+    generateDraftOrder();
+  }, [orderInput]);
+  useEffect(() => {
     if (!branchSelecting) {
       toast.error("Chưa chọn quán chi nhánh");
       setopenDialogSelectBranch(true);

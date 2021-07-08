@@ -16,6 +16,7 @@ import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { StaffModel } from "../graphql/modules/staff/staff.model";
 import { UserModel } from "../graphql/modules/user/user.model";
 import { UtilsHelper } from "../helpers";
+import { PubSubHelper } from "../helpers/pubsub.helper";
 import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
 import { onSendChatBotText } from "./onSendToChatbot.event";
 
@@ -156,4 +157,9 @@ onOrderedProduct.subscribe(async (order) => {
   });
   await NotificationModel.create(notify);
   await SendNotificationJob.trigger();
+});
+
+// Publish order stream
+onOrderedProduct.subscribe(async (order) => {
+  PubSubHelper.publish("order", order);
 });

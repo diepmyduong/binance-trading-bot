@@ -18,6 +18,7 @@ import {
 } from "../graphql/modules/notification/notification.model";
 import { StaffModel } from "../graphql/modules/staff/staff.model";
 import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
+import { PubSubHelper } from "../helpers/pubsub.helper";
 
 export const onCanceledOrder = new Subject<IOrder>();
 
@@ -167,4 +168,9 @@ onCanceledOrder.subscribe(async (order) => {
   });
   await NotificationModel.create(notify);
   await SendNotificationJob.trigger();
+});
+
+// Publish order stream
+onCanceledOrder.subscribe(async (order) => {
+  PubSubHelper.publish("order", order);
 });

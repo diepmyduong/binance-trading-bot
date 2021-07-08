@@ -9,6 +9,7 @@ import { orderService } from "../graphql/modules/order/order.service";
 import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
 import { OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 import { StaffModel } from "../graphql/modules/staff/staff.model";
+import { PubSubHelper } from "../helpers/pubsub.helper";
 import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
 
 export const onApprovedFailureOrder = new Subject<IOrder>();
@@ -82,4 +83,9 @@ onApprovedFailureOrder.subscribe(async (order) => {
   });
   await NotificationModel.create(notify);
   await SendNotificationJob.trigger();
+});
+
+// Publish order stream
+onApprovedFailureOrder.subscribe(async (order) => {
+  PubSubHelper.publish("order", order);
 });

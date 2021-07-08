@@ -1,109 +1,45 @@
-import { HiChevronRight } from "react-icons/hi";
-import { NumberPipe } from "../../../lib/pipes/number";
-import { Button } from "../../shared/utilities/form/button";
 import { TabGroup } from "../../shared/utilities/tab/tab-group";
 import { Billed } from "./component/billed";
+import { useOrderContext } from "./providers/order-provider";
+import { Spinner } from "../../shared/utilities/spinner";
+import { ORDER_STATUS, Order } from "../../../lib/repo/order.repo";
+import { SwitchTabs } from "../../shared/utilities/tab/switch-tabs";
+import { useEffect, useState } from "react";
+import cloneDeep from "lodash/cloneDeep";
 
 export function OrderPage() {
-  const status = ["Đang làm món", "Đang giao", "Đã giao", "Đã hủy"];
+  const { orders, statusOrder, setStatusCur, statusCur } = useOrderContext();
   return (
-    <div className="w-full">
-      <TabGroup>
-        <TabGroup.Tab label="Đang làm món">
-          {dataBill.map((item, index) => {
-            return <Billed item={item} index={index} status="Đang làm món" />;
-          })}
-        </TabGroup.Tab>
-        <TabGroup.Tab label="Đang giao">
-          {dataBill.map((item, index) => {
-            return <Billed item={item} index={index} status="Đang giao" />;
-          })}
-        </TabGroup.Tab>
-        <TabGroup.Tab label="Đã giao">
-          {dataBill.map((item, index) => {
-            return <Billed item={item} index={index} status="Đã giao" />;
-          })}
-        </TabGroup.Tab>
-        <TabGroup.Tab label="Đã hủy">
-          {dataBill.map((item, index) => {
-            return <Billed item={item} index={index} status="Đã hủy" />;
-          })}
-        </TabGroup.Tab>
-      </TabGroup>
+    <div className="w-full relative">
+      <SwitchTabs
+        options={[
+          ...statusOrder.map((x, index) => {
+            return { value: index, label: x.label };
+          }),
+        ]}
+        native
+        chevron
+        className="sticky top-14 bg-white z-10"
+        value={statusCur}
+        onChange={(val) => {
+          setStatusCur(val);
+        }}
+      />
+      {orders ? (
+        <>
+          {orders.length > 0 ? (
+            <>
+              {orders.map((order, index) => (
+                <Billed order={order} key={index} status={statusOrder[statusCur]} />
+              ))}
+            </>
+          ) : (
+            <div className="px-4 text-center mt-20">Chưa có đơn hàng thuộc trạng thái này</div>
+          )}
+        </>
+      ) : (
+        <Spinner />
+      )}
     </div>
   );
 }
-const dataBill = [
-  {
-    title: "Cộng rau má",
-    address: "Tạ Quang Bửu",
-    price: 114000,
-    count: 3,
-  },
-  {
-    title: "Trà Phúc Long",
-    address: "AOE Mall",
-    price: 114000,
-    count: 3,
-  },
-  {
-    title: "Bắp rang bơ",
-    address: "CGV",
-    price: 114000,
-    count: 3,
-  },
-  {
-    title: "Cộng rau má",
-    address: "Tạ Quang Bửu",
-    price: 114000,
-    count: 3,
-  },
-  {
-    title: "Trà Phúc Long",
-    address: "AOE Mall",
-    price: 114000,
-    count: 3,
-  },
-  {
-    title: "Bắp rang bơ",
-    address: "CGV",
-    price: 114000,
-    count: 3,
-  },
-  {
-    title: "Cộng rau má",
-    address: "Tạ Quang Bửu",
-    price: 114000,
-    count: 3,
-  },
-  {
-    title: "Trà Phúc Long",
-    address: "AOE Mall",
-    price: 114000,
-    count: 3,
-  },
-  {
-    title: "Bắp rang bơ",
-    address: "CGV",
-    price: 114000,
-    count: 3,
-  },
-  {
-    title: "Cộng rau má",
-    address: "Tạ Quang Bửu",
-    price: 114000,
-    count: 3,
-  },
-  {
-    title: "Trà Phúc Long",
-    address: "AOE Mall",
-    price: 114000,
-    count: 3,
-  },
-  {
-    title: "Bắp rang bơ",
-    address: "CGV",
-    price: 114000,
-    count: 3,
-  },
-];

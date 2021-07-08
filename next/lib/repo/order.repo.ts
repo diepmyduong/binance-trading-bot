@@ -214,6 +214,13 @@ export class OrderRepository extends CrudRepository<Order> {
     seller {
       id: String
       name: String
+      address: String
+    }: Member
+    fromMember {
+      id: String
+      name: String
+      phone: String
+      address: String
     }: Member
     updatedByUser {
       id: String
@@ -302,10 +309,12 @@ export class OrderRepository extends CrudRepository<Order> {
     seller {
       id: String
       name: String
+      address: String
     }: Member
     fromMember {
       id: String
       name: String
+      phone: String
     }: Member
     updatedByUser {
       id: String

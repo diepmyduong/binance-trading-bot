@@ -11,6 +11,7 @@ export function OrderProvider(props) {
   const statusOrder = ORDER_STATUS;
   const [statusCur, setStatusCur] = useState<number>(0);
   async function loadOrders() {
+    setOrders(null);
     let res = await OrderService.getAll({
       query: { filter: { status: statusOrder[statusCur].value } },
     });

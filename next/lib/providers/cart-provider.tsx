@@ -66,8 +66,8 @@ export function CartProvider(props) {
     buyerProvinceId: "70",
     buyerDistrictId: "",
     buyerWardId: "",
-    latitude: 0,
-    longitude: 0,
+    latitude: 10.72883,
+    longitude: 106.725484,
     paymentMethod: "COD",
     note: "",
   });

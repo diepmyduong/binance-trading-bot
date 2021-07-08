@@ -19,7 +19,7 @@ export const CartContext = createContext<
     resetOrderInput: Function;
     generateOrder: () => any;
     generateDraftOrder: Function;
-    addProductToCart: (product: Product, qty: number) => any;
+    addProductToCart: (product: Product, qty: number, note: string) => any;
     changeProductQuantity: (productIndex: number, qty: number) => any;
     removeProductFromCart: (productIndex: number) => any;
   }>
@@ -163,7 +163,7 @@ export function CartProvider(props) {
     localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
   }, [cartProducts]);
 
-  const addProductToCart = (product: Product, qty: number): boolean => {
+  const addProductToCart = (product: Product, qty: number, note: string): boolean => {
     if (!qty) return false;
     let productIndex = cartProducts.findIndex(
       (x) =>
@@ -182,8 +182,10 @@ export function CartProvider(props) {
         qty,
         price: price,
         amount: price * qty,
+        note: note,
       });
     }
+    console.log(cartProducts);
     setCartProducts([...cartProducts]);
     return true;
   };

@@ -2,12 +2,14 @@ import { GetServerSidePropsContext } from "next";
 import { NextSeo } from "next-seo";
 import { OrderDetailPage } from "../../components/index/order-detail/order-detail-page";
 import { DefaultLayout } from "../../layouts/default-layout/default-layout";
+import { OrderModel } from "../../../dist/graphql/modules/order/order.model";
+import { Redirect } from "../../lib/helpers/redirect";
 
 export default function Page(props) {
   return (
     <>
       <NextSeo title="Chi tiết đơn hàng" />
-      <OrderDetailPage />
+      <OrderDetailPage id={props.id} />
     </>
   );
 }
@@ -15,11 +17,15 @@ export default function Page(props) {
 Page.Layout = DefaultLayout;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { code } = context.query;
+  const { code } = context.params;
+  const order = await OrderModel.findOne({ code }, "_id");
+  console.log(order);
+  if (!order) Redirect(context.res, "/404");
+  const { id } = order;
   return {
     props: JSON.parse(
       JSON.stringify({
-        code,
+        id,
       })
     ),
   };

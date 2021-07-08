@@ -65,6 +65,8 @@ export function ShopProvider(props) {
         setcategoriesShop(cloneDeep(cats.data));
       }
       let branchs = await ShopBranchService.getAll();
+      console.log(branchs);
+
       if (branchs) {
         setShopBranch(cloneDeep(branchs.data));
         setBranchSelecting(branchs.data[0]);
@@ -101,11 +103,15 @@ export function ShopProvider(props) {
       router.push(location.href, null, { shallow: true });
     }
   }
-
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        console.log(position);
+      });
+    }
+  }
   useEffect(() => {
-    let res = sessionStorage.getItem("shop");
-  }, []);
-  useEffect(() => {
+    getLocation();
     getShop();
   }, []);
   return (

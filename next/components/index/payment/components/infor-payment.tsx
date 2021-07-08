@@ -94,11 +94,11 @@ export function InforPayment() {
             ) : (
               <div className="py-2">
                 <div className="font-bold">Chi nhánh</div>
-                <div className="flex items-start justify-between pt-2">
+                <div className="flex items-start pt-2 w-full">
                   <div className="flex flex-col">
                     {branchSelecting ? (
                       <>
-                        <p className="font-medium">{branchSelecting.name}</p>
+                        <p className="font-semibold ">{branchSelecting.name}</p>
                         <p className="font-medium">
                           {branchSelecting.address && branchSelecting.address}
                           {branchSelecting.ward && ", " + branchSelecting.ward}
@@ -110,13 +110,13 @@ export function InforPayment() {
                       <p className="font-medium">Chưa chọn chi nhánh</p>
                     )}
                   </div>
-                  <Button
+                  {/* <Button
                     text="Đổi chi nhánh"
                     textPrimary
                     unfocusable
                     className="px-0 py-0 ml-4 min-w-max text-sm"
                     onClick={() => setOpenDialog(true)}
-                  />
+                  /> */}
                 </div>
                 <div className="flex items-center justify-between pt-6">
                   <p className="">Chọn thời gian lấy:</p>

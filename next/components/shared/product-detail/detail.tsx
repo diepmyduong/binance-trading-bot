@@ -157,9 +157,9 @@ const Note = ({ note, setNote, ...props }: NoteProps) => {
         mobileSizeMode
         isOpen={openDialog}
         onClose={() => setOpenDialog(false)}
-        initialData={note}
+        initialData={{ note }}
         onSubmit={(data) => {
-          setNote({ ...data });
+          setNote(data.note);
           setOpenDialog(false);
         }}
         className=""

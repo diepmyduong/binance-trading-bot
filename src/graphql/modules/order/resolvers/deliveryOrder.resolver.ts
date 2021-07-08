@@ -37,7 +37,7 @@ const Mutation = {
     // Chuyển trạng thái đơn hàng
     order.status = OrderStatus.DELIVERING;
 
-    // láy ra service method default
+    // lấy ra service method default
 
     const defaultServiceCode = await SettingHelper.load(
       SettingKey.VNPOST_DEFAULT_SHIP_SERVICE_METHOD_CODE

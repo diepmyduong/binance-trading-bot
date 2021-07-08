@@ -21,7 +21,7 @@ const apiKeyDev = "4cd543d3e4e4fbe97db216828c18644f77558275";
 const statusText = {
   IDLE: "Đã tạo đơn",
   ASSIGNING: "Đang tìm tài xế",
-  ACCEPTED: "Tài xế đang láy món",
+  ACCEPTED: "Tài xế đang lấy món",
   "IN PROCESS": "Món đang được giao",
   COMPLETED: "Món đã được giao",
   CANCELLED: "Đơn hàng đã huỷ",

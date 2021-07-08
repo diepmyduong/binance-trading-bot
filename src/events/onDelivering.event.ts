@@ -66,7 +66,7 @@ onDelivering.subscribe(async (order) => {
     target: NotificationTarget.CUSTOMER,
     type: NotificationType.ORDER,
     customerId: order.buyerId,
-    title: `Đơn hàng hàng #${order.code}`,
+    title: `Đơn hàng #${order.code}`,
     body: order.deliveryInfo.statusText,
     orderId: order._id,
   });
@@ -83,7 +83,7 @@ onDelivering.subscribe(async (order) => {
         target: NotificationTarget.STAFF,
         type: NotificationType.ORDER,
         staffId: s._id,
-        title: `Đơn hàng hàng #${order.code}`,
+        title: `Đơn hàng #${order.code}`,
         body: order.deliveryInfo.statusText,
         orderId: order._id,
       })
@@ -100,7 +100,7 @@ onDelivering.subscribe(async (order) => {
     target: NotificationTarget.MEMBER,
     type: NotificationType.ORDER,
     staffId: order.sellerId,
-    title: `Đơn hàng hàng #${order.code}`,
+    title: `Đơn hàng #${order.code}`,
     body: order.deliveryInfo.statusText,
     orderId: order._id,
   });

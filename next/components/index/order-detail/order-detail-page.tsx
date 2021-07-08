@@ -72,7 +72,11 @@ export function OrderDetailPage({ id, ...props }: PropsType) {
                 {status && <p className={`text-${status.color}`}>{status.label}</p>}
               </div>
             </div>
-            <div className="p-4 text-gray-500 bg-gray-50 my-2">Lý do hủy: {order.cancelReason}</div>
+            {order.cancelReason && (
+              <div className="p-4 text-gray-500 bg-gray-50 my-2">
+                Lý do hủy: {order.cancelReason}
+              </div>
+            )}
             <div className="flex items-center">
               <i className="text-primary text-xl ">
                 <CgRadioChecked />

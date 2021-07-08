@@ -6,7 +6,7 @@ import { ErrorHelper } from "../../../helpers";
 import { Ahamove } from "../../../helpers/ahamove/ahamove";
 import { Context } from "../../context";
 import { OrderItemModel } from "../orderItem/orderItem.model";
-import { OrderModel, OrderStatus, ShipMethod } from "./order.model";
+import { OrderModel, OrderStatus, PickupMethod, ShipMethod } from "./order.model";
 
 export default {
   schema: gql`
@@ -22,21 +22,28 @@ export default {
         const order = await OrderModel.findById(orderId);
         if (!order) throw Error("Không tìm thấy đơn hàng");
         if (order.sellerId.toString() != context.sellerId) throw ErrorHelper.permissionDeny();
-        if (order.status != OrderStatus.DELIVERING)
-          throw Error("Không thể xác nhận đơn này. " + order.deliveryInfo.statusText);
-        order.status = status;
-        order.note = note;
-        if (order.shipMethod == ShipMethod.DRIVER) {
-          if (order.status === OrderStatus.COMPLETED) {
-            order.deliveryInfo.status = "COMPLETED";
-            order.deliveryInfo.statusText = Ahamove.StatusText.COMPLETED;
+        switch (order.pickupMethod) {
+          case PickupMethod.DELIVERY: {
+            if (order.status != OrderStatus.DELIVERING)
+              throw Error("Không thể xác nhận đơn này. " + order.deliveryInfo.statusText);
+            order.status = status;
+            if (order.shipMethod == ShipMethod.DRIVER) {
+              if (order.status === OrderStatus.COMPLETED) {
+                order.deliveryInfo.status = "COMPLETED";
+                order.deliveryInfo.statusText = Ahamove.StatusText.COMPLETED;
+              }
+              if (order.status === OrderStatus.FAILURE) {
+                order.deliveryInfo.status = "COMPLETED";
+                order.deliveryInfo.statusText = "Giao hàng không thành công.";
+              }
+              order.markModified("deliveryInfo");
+            }
           }
-          if (order.status === OrderStatus.FAILURE) {
-            order.deliveryInfo.status = "COMPLETED";
-            order.deliveryInfo.statusText = "Giao hàng không thành công.";
+          case PickupMethod.STORE: {
+            order.status = status;
           }
-          order.markModified("deliveryInfo");
         }
+        order.note = note;
         await order.save();
         await OrderItemModel.updateMany(
           { orderId: order._id },

@@ -18,14 +18,14 @@ export interface Product extends BaseModel {
   downPrice: number;
   subtitle?: string;
   image: string;
-  categoryId?: string;
-  priority?: number;
-  allowSale?: boolean;
-  rating?: number;
-  saleRate?: number;
-  soldQty?: number;
+  categoryId: string;
+  priority: number;
+  allowSale: boolean;
+  rating: number;
+  saleRate: number;
+  soldQty: number;
   labels: ProductLabel[];
-  toppings?: ProductTopping[];
+  toppings: ProductTopping[];
 }
 export interface ProductLabel extends BaseModel {
   name: string;
@@ -43,6 +43,7 @@ export class ProductRepository extends CrudRepository<Product> {
     allowSale: Boolean
     basePrice: Float
     downPrice: Float
+    saleRate: Float
     subtitle: String
     image: String
     categoryId: ID
@@ -82,6 +83,7 @@ export class ProductRepository extends CrudRepository<Product> {
     allowSale: Boolean
     basePrice: Float
     downPrice: Floa
+    saleRate: Float
     subtitle: String
     image: String
     categoryId: ID

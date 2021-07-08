@@ -151,13 +151,21 @@ export function ProductForm({ product, category, ...props }: PropsType) {
         <Field name="name" label="Tên sản phẩm" cols={12} required>
           <Input className="h-12 mt-2" />
         </Field>
-        <Field name="basePrice" label="Giá bán" cols={product ? 6 : 12} required>
+        <Field name="basePrice" label="Giá bán" cols={product ? 4 : 12} required>
           <Input className="h-12 mt-2" number currency />
         </Field>
         {product && (
           <>
-            <Field name="downPrice" label="Giá bị giảm nếu có" cols={6}>
+            <Field name="downPrice" label="Giá bị giảm" cols={4}>
               <Input className="h-12 mt-2" number currency />
+            </Field>
+            <Field
+              name="saleRate"
+              label="Phần trăm giảm"
+              cols={4}
+              constraints={{ min: 0, max: 100 }}
+            >
+              <Input className="h-12 mt-2" number currency="%" />
             </Field>
             <Field name="subtitle" label="Mô tả ngắn" cols={12}>
               <Input className="h-12 mt-2" />

@@ -20,7 +20,7 @@ export interface OrderInput {
   longitude: number;
   paymentMethod: string;
   note: string;
-  items: OrderItemInput[];
+  items?: OrderItemInput[];
 }
 
 export interface CreateOrderInput {
@@ -434,11 +434,12 @@ export class OrderRepository extends CrudRepository<Order> {
          toppingAmount
          shipfee
          amount
+         status
         }`,
       variablesParams: `($data:CreateDraftOrderInput!)`,
       options: { variables: { data } },
     }).then((res) => {
-      return res.data;
+      return res.data["g0"];
     });
   }
 }
@@ -454,4 +455,15 @@ export const ORDER_STATUS: Option[] = [
   { value: "CANCELED", label: "Đã huỷ", color: "bluegray" },
   { value: "RETURNED", label: "Đã hoàn hàng", color: "orange" },
   { value: "UNCOMPLETED", label: "Chưa hoàn thành", color: "teal" },
+];
+
+export const PICKUP_METHODS: Option[] = [
+  { value: "DELIVERY", label: "Giao hàng" },
+  { value: "STORE", label: "Lấy tại cửa hàng" },
+];
+
+export const PAYMENT_METHODS: Option[] = [
+  { value: "COD", label: "Nhận tiền khi giao hàng" },
+  { value: "MOMO", label: "Ví điện tử MoMo" },
+  { value: "VNPAY", label: "Cổng thanh toán VNPAY" },
 ];

@@ -4,7 +4,7 @@ export class HereMapRepository {
   constructor() {}
 
   appId: string = "E1sWiTZV6gtYhE7W6XYg";
-  apiKey: string = "p03Ve2KqJ-IIsk-o2JvXG1j3Q2JrQsmkl6IpDg_mefc";
+  apiKey: string = "UKSqYDqmHydjyZRvBlq2wxhf3C2lH_GW2cTyd-wprW8";
 
   async getCoordinatesFromAddress(fullAddress: string = ""): Promise<any> {
     return axios

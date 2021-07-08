@@ -27,7 +27,7 @@ export function Quantity(props: PropsType) {
           </i>
         </button>
         <input
-          className={"w-6 h-10 text-center " + props.inputClassName}
+          className={"w-6 h-10 text-center font-semibold " + props.inputClassName}
           value={props.quantity}
           type="number"
           onChange={(e) => handleSetQuantity(Number(e.target.value))}

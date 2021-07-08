@@ -12,6 +12,7 @@ export interface ToppingOption {
   name: string;
   price: number;
   isDefault: boolean;
+  [key: string]: any;
 }
 export interface OrderItemToppingInput {
   toppingId: string;

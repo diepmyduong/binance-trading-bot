@@ -85,41 +85,54 @@ export class ShopRepository extends CrudRepository<Shop> {
     rating: Float
     ratingQty: Int
     soldQty: Int
-    tags{
-      name:String
-      icon:String
-      qty:Int
+    banners {
+      image: String
+      title: String
+      subtitle: String
+      actionType: String
+      link: String
+      productId: ID
+      voucherId: ID
+      isPublic: Boolean
+      product {
+        id: String
+        code: String
+        name: String
+      }: Product
+      voucher {
+        id: String
+        code: String
+      }: ShopVoucher
+    }: [ShopBanner]
+    productGroups {
+      name: String
+      isPublic: Boolean
+      productIds: [ID]
+      products {
+        id: String
+        code: String
+        name: String
+        allowSale: Boolean
+        basePrice: Float
+        downPrice: Float
+        saleRate: Int
+        subtitle: String
+        image: String
+        rating: Float
+        soldQty: Int
+        labelIds: [ID]
+        labels {
+          id: String
+          name: String
+          color: String
+        }: [ProductLabel]
+      }: [Product]
+    }: [ShopProductGroup]
+    tags { 
+      name: String
+      icon: String
+      qty: Int 
     }: [ShopTag]
-    banners{
-      image:String
-      title:String
-      subtitle:String
-      actionType:String
-      link:String
-      product{
-        name:String
-        image:String
-        code:String
-      }
-      voucher{
-        code:String
-      }
-    }:[ShopBanner]
-    productGroups{
-      name:String
-      products{
-        image :String
-        name :String
-        priority 
-        basePrice:Float 
-        downPrice :Float
-        code :String
-        labels{
-          name :String
-          color:String
-        }:[ProductLabel]
-      }
-    }
   }:[ShopConfig]
   `);
 

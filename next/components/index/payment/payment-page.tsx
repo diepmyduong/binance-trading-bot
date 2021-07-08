@@ -25,6 +25,8 @@ export function PaymentPage() {
     totalMoney,
     generateOrder,
     generateDraftOrder,
+    resetOrderInput,
+    orderInput,
     draftOrder: order,
   } = useCartContext();
   console.log("order", order);
@@ -32,7 +34,6 @@ export function PaymentPage() {
   const [voucherApplied, setVoucherApplied] = useState(null);
   const [note, setNote] = useState({ note: "" });
   const [openDialogSelectBranch, setopenDialogSelectBranch] = useState(false);
-  const [inforBuyers, setInforBuyers] = useState({});
 
   const toast = useToast();
   useEffect(() => {
@@ -42,15 +43,15 @@ export function PaymentPage() {
     }
   }, [branchSelecting]);
   useEffect(() => {
-    generateDraftOrder(inforBuyers, note);
-  }, [inforBuyers, note, branchSelecting]);
+    generateDraftOrder();
+  }, [orderInput]);
   useEffect(() => {
     setVoucherApplied(null);
   }, []);
   return (
     <>
       <div className="text-gray-700 bg-gray-100">
-        <InforPayment onChange={(data) => setInforBuyers({ ...data })} />
+        <InforPayment />
         <div className="mt-1 bg-white">
           <div className="flex items-center justify-between">
             <p className="font-semibold px-4 py-2">
@@ -152,7 +153,13 @@ export function PaymentPage() {
 }
 
 const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
-  const { totalMoney, generateOrder, draftOrder: order, generateDraftOrder } = useCartContext();
+  const {
+    totalMoney,
+    generateOrder,
+    draftOrder: order,
+    generateDraftOrder,
+    resetOrderInput,
+  } = useCartContext();
   const toast = useToast();
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">

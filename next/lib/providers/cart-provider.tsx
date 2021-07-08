@@ -10,6 +10,8 @@ import {
 } from "../repo/order.repo";
 import { useShopContext } from "./shop-provider";
 import { useToast } from "./toast-provider";
+import { useRouter } from "next/router";
+import { RiNurseFill } from "react-icons/ri";
 
 export const CartContext = createContext<
   Partial<{
@@ -23,6 +25,7 @@ export const CartContext = createContext<
     cartProducts: CartProduct[];
     setCartProducts: Function;
     addProductToCart: Function;
+    resetOrderInput: Function;
     generateOrder: () => any;
     generateDraftOrder: Function;
     changeProductQuantity: Function;
@@ -62,7 +65,7 @@ export function CartProvider(props) {
     shopBranchId: branchSelecting?.id,
     pickupTime: null,
     buyerAddress: "",
-    buyerProvinceId: "",
+    buyerProvinceId: "70",
     buyerDistrictId: "",
     buyerWardId: "",
     latitude: 0,
@@ -72,6 +75,24 @@ export function CartProvider(props) {
     items: null,
   });
   console.log("ORDERINPUT", orderInput);
+  const resetOrderInput = () => {
+    setOrderInput({
+      buyerName: "",
+      buyerPhone: "",
+      pickupMethod: "DELIVERY",
+      shopBranchId: branchSelecting?.id,
+      pickupTime: null,
+      buyerAddress: "",
+      buyerProvinceId: "70",
+      buyerDistrictId: "",
+      buyerWardId: "",
+      latitude: 0,
+      longitude: 0,
+      paymentMethod: "COD",
+      note: "",
+      items: null,
+    });
+  };
   useEffect(() => {
     let itemProduct: OrderItemInput[] = [];
     cartProducts.forEach((item) => {
@@ -92,9 +113,6 @@ export function CartProvider(props) {
       setOrderInput({ ...orderInput, buyerName: customer.name, buyerPhone: customer.phone });
     }
   }, [customer]);
-  useEffect(() => {
-    generateDraftOrder();
-  }, [orderInput]);
   useEffect(() => {
     let listCart = JSON.parse(localStorage.getItem("cartProducts"));
     if (listCart) {
@@ -126,7 +144,7 @@ export function CartProvider(props) {
       }
     }
   }, []);
-
+  const router = useRouter();
   const toast = useToast();
   useEffect(() => {
     setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
@@ -219,6 +237,10 @@ export function CartProvider(props) {
       return OrderService.generateOrder(orderInput)
         .then((res) => {
           toast.success("Đặt hàng thành công");
+          localStorage.removeItem("cartProducts");
+          setCartProducts([]);
+          resetOrderInput();
+          router.push("/");
         })
         .catch((err) => toast.error("Đặt hàng thất bại"));
     }
@@ -232,6 +254,7 @@ export function CartProvider(props) {
         totalMoney,
         cartProducts,
         orderInput,
+        resetOrderInput,
         setOrderInput,
         generateOrder,
         generateDraftOrder,

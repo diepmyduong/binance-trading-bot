@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Product, ProductService } from "../repo/product.repo";
 import { OrderItemToppingInput, ToppingOption } from "../repo/product-topping.repo";
+import cloneDeep from "lodash/cloneDeep";
 import {
   CreateOrderInput,
   Order,
@@ -72,28 +73,24 @@ export function CartProvider(props) {
     longitude: 0,
     paymentMethod: "COD",
     note: "",
-    items: null,
   });
   console.log("ORDERINPUT", orderInput);
   const resetOrderInput = () => {
     setOrderInput({
-      buyerName: "",
-      buyerPhone: "",
+      ...orderInput,
       pickupMethod: "DELIVERY",
-      shopBranchId: branchSelecting?.id,
       pickupTime: null,
       buyerAddress: "",
       buyerProvinceId: "70",
       buyerDistrictId: "",
       buyerWardId: "",
-      latitude: 0,
-      longitude: 0,
-      paymentMethod: "COD",
       note: "",
-      items: null,
+      paymentMethod: "COD",
     });
+    console.log("orderInputorderInputorderInputorderInputorderInput", orderInput);
   };
-  useEffect(() => {
+
+  const getItemsOrderInput = () => {
     let itemProduct: OrderItemInput[] = [];
     cartProducts.forEach((item) => {
       let OrderItem: OrderItemInput = {
@@ -103,11 +100,11 @@ export function CartProvider(props) {
       };
       itemProduct.push(OrderItem);
     });
-    setOrderInput({ ...orderInput, items: itemProduct });
-  }, [cartProducts]);
+    return itemProduct;
+  };
   useEffect(() => {
     if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
-  }, [branchSelecting]);
+  }, []);
   useEffect(() => {
     if (customer) {
       setOrderInput({ ...orderInput, buyerName: customer.name, buyerPhone: customer.phone });
@@ -225,16 +222,18 @@ export function CartProvider(props) {
   };
 
   const generateDraftOrder = () => {
-    OrderService.generateDraftOrder(orderInput)
+    let items = getItemsOrderInput();
+    OrderService.generateDraftOrder({ ...orderInput, items: items })
       .then((res: any) => {
-        setDraftOrder({ ...res });
+        setDraftOrder(cloneDeep(res));
       })
-      .catch((err) => console.log("Loi generate", err));
+      .catch((err) => {});
   };
 
   const generateOrder = () => {
     if (!draftOrder.invalid) {
-      return OrderService.generateOrder(orderInput)
+      let items = getItemsOrderInput();
+      return OrderService.generateOrder({ ...orderInput, items: items })
         .then((res) => {
           toast.success("Đặt hàng thành công");
           localStorage.removeItem("cartProducts");

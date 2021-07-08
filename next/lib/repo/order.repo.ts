@@ -20,7 +20,7 @@ export interface OrderInput {
   longitude: number;
   paymentMethod: string;
   note: string;
-  items: OrderItemInput[];
+  items?: OrderItemInput[];
 }
 
 export interface CreateOrderInput {

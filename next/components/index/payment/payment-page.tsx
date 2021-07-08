@@ -26,24 +26,27 @@ export function PaymentPage() {
     generateOrder,
     generateDraftOrder,
     resetOrderInput,
+    setOrderInput,
     orderInput,
     draftOrder: order,
   } = useCartContext();
-  console.log("order", order);
   const { branchSelecting, shopBranchs, setBranchSelecting } = useShopContext();
   const [voucherApplied, setVoucherApplied] = useState(null);
   const [note, setNote] = useState({ note: "" });
   const [openDialogSelectBranch, setopenDialogSelectBranch] = useState(false);
-
   const toast = useToast();
+
   useEffect(() => {
-    if (!branchSelecting) {
+    setOrderInput({ ...orderInput, shopBranchId: branchSelecting?.id });
+  }, [branchSelecting]);
+  useEffect(() => {
+    if (!branchSelecting?.id) {
       toast.error("Chưa chọn quán chi nhánh");
       setopenDialogSelectBranch(true);
     }
   }, [branchSelecting]);
   useEffect(() => {
-    generateDraftOrder();
+    if (cartProducts.length > 0) generateDraftOrder();
   }, [orderInput]);
   useEffect(() => {
     setVoucherApplied(null);

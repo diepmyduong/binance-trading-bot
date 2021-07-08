@@ -21,16 +21,21 @@ export function InforPayment() {
   const { orderInput, setOrderInput, draftOrder } = useCartContext();
   const [openInputAddress, setOpenInputAddress] = useState(false);
   const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
+  console.log("branchSelecting", branchSelecting);
   const [addressTemp, setAddressTemp] = useState("");
   const getAddress = async (data, fullData) => {
     let fullAddress = {
-      ward: fullData.wardId?.label || draftOrder?.order?.buyerWard,
-      province: fullData.provinceId?.label || draftOrder?.order?.buyerDistrict,
-      district: fullData.districtId?.label || draftOrder?.order?.buyerProvince,
       address: data.address || draftOrder?.order?.buyerAddress,
+      ward: fullData.wardId?.label || draftOrder?.order?.buyerWard,
+      district: fullData.districtId?.label || draftOrder?.order?.buyerProvince,
+      province:
+        fullData.provinceId?.label ||
+        draftOrder?.order?.buyerDistrict ||
+        (orderInput.buyerProvinceId == "70" && "Hồ Chí Minh"),
     };
     setAddressTemp(getAddressText(fullAddress));
   };
+
   useEffect(() => {
     let location = {
       type: "Point",

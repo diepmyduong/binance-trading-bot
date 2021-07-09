@@ -34,16 +34,18 @@ const BranchsDialog = (props: Propstype) => {
                 <p className="text-ellipsis-2">{item.address}</p>
                 <StatusTime isActive={item.isOpen} />
               </div>
-              <Button
-                outline
-                primary
-                text="Chọn"
-                className="rounded-full"
-                onClick={() => {
-                  props.onSelect({ ...item });
-                  props.onClose();
-                }}
-              />
+              {item.isOpen && (
+                <Button
+                  outline
+                  primary
+                  text="Chọn"
+                  className="rounded-full"
+                  onClick={() => {
+                    props.onSelect({ ...item });
+                    props.onClose();
+                  }}
+                />
+              )}
             </div>
           ))}
         </div>

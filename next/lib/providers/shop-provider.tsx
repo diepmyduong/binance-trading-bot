@@ -12,6 +12,7 @@ export const ShopContext = createContext<
     shop: Shop;
     setShop: Function;
     customer: any;
+    locationCustomer: any;
     productIdSelected: any;
     setProductIdSelected: any;
     customerLogin: Function;
@@ -36,6 +37,7 @@ export function ShopProvider(props) {
   const [categoriesShop, setcategoriesShop] = useState<Category[]>(null);
   const [customer, setCustomer] = useState<any>();
   const [shopBranchs, setShopBranch] = useState<ShopBranch[]>();
+  const [locationCustomer, setLocationCustomer] = useState<any>();
   async function getShop() {
     setLoading(true);
     let haveShop = "";
@@ -106,7 +108,7 @@ export function ShopProvider(props) {
   function getLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
-        console.log(position);
+        setLocationCustomer(position.coords);
       });
     }
   }
@@ -120,6 +122,7 @@ export function ShopProvider(props) {
         shop,
         shopCode,
         customer,
+        locationCustomer,
         customerLogin,
         customerLogout,
         productIdSelected,

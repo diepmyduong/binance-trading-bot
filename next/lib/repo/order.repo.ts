@@ -41,6 +41,7 @@ export interface CreateOrderInput {
 export interface OrderItemInput {
   productId: string;
   quantity: number;
+  note?: string;
   toppings: OrderItemToppingInput[];
 }
 export interface OrderItemToppingInput {
@@ -52,6 +53,7 @@ export interface OrderItemToppingInput {
 
 export interface Order extends BaseModel {
   code: string;
+  cancelReason: string;
   isPrimary: boolean;
   itemIds: string[];
   amount: number;
@@ -213,6 +215,13 @@ export class OrderRepository extends CrudRepository<Order> {
     seller {
       id: String
       name: String
+      address: String
+    }: Member
+    fromMember {
+      id: String
+      name: String
+      phone: String
+      address: String
     }: Member
     updatedByUser {
       id: String
@@ -252,6 +261,7 @@ export class OrderRepository extends CrudRepository<Order> {
     shipDistance: Float
     paymentMethod: String
     note: String
+    cancelReason: String
     itemCount: Int
     sellerId: ID
     sellerCode: String
@@ -300,10 +310,12 @@ export class OrderRepository extends CrudRepository<Order> {
     seller {
       id: String
       name: String
+      address: String
     }: Member
     fromMember {
       id: String
       name: String
+      phone: String
     }: Member
     updatedByUser {
       id: String
@@ -442,8 +454,16 @@ export class OrderRepository extends CrudRepository<Order> {
       return res.data["g0"];
     });
   }
+  async cancelOrder(id: string, note: string): Promise<Order> {
+    return await this.mutate({
+      mutation: `cancelOrder(id: "${id}", note: "${note}") {
+        ${this.fullFragment}
+      }`,
+    }).then((res) => {
+      return res.data["g0"];
+    });
+  }
 }
-
 export const OrderService = new OrderRepository();
 
 export const ORDER_STATUS: Option[] = [

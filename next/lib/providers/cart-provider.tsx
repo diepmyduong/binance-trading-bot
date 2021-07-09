@@ -55,7 +55,7 @@ export function CartProvider(props) {
     order: null,
   });
 
-  const { branchSelecting, customer } = useShopContext();
+  const { branchSelecting, customer, locationCustomer } = useShopContext();
   const [orderInput, setOrderInput] = useState<OrderInput>({
     buyerName: "",
     buyerPhone: "",
@@ -66,8 +66,8 @@ export function CartProvider(props) {
     buyerProvinceId: "70",
     buyerDistrictId: "",
     buyerWardId: "",
-    latitude: 0,
-    longitude: 0,
+    latitude: 10.72883,
+    longitude: 106.725484,
     paymentMethod: "COD",
     note: "",
   });
@@ -84,16 +84,17 @@ export function CartProvider(props) {
       note: "",
       paymentMethod: "COD",
     });
-    console.log("orderInputorderInputorderInputorderInputorderInput", orderInput);
   };
   const router = useRouter();
   const toast = useToast();
   const getItemsOrderInput = () => {
     let itemProduct: OrderItemInput[] = [];
+    console.log("cartProducts", cartProducts);
     cartProducts.forEach((cartProduct) => {
       let OrderItem: OrderItemInput = {
         productId: cartProduct.productId,
         quantity: cartProduct.qty,
+        note: cartProduct.note,
         toppings: cartProduct.product.selectedToppings,
       };
       itemProduct.push(OrderItem);
@@ -103,6 +104,14 @@ export function CartProvider(props) {
   useEffect(() => {
     if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
   }, []);
+  useEffect(() => {
+    if (locationCustomer)
+      setOrderInput({
+        ...orderInput,
+        longitude: locationCustomer.longitude,
+        latitude: locationCustomer.latitude,
+      });
+  }, [locationCustomer]);
   useEffect(() => {
     if (customer) {
       setOrderInput({ ...orderInput, buyerPhone: customer });
@@ -212,6 +221,9 @@ export function CartProvider(props) {
     OrderService.generateDraftOrder({ ...orderInput, items: items })
       .then((res: any) => {
         setDraftOrder(cloneDeep(res));
+        if (res.invalid) {
+          // toast.error(res.invalidReason);
+        }
       })
       .catch((err) => {});
   };

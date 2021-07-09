@@ -18,11 +18,10 @@ import { Spinner } from "../utilities/spinner";
 interface PropsType extends DialogPropsType {}
 export function ProductDetail({ ...props }: PropsType) {
   const { addProductToCart } = useCartContext();
-  const [note, setNote] = useState("");
   const [opacity, setOpacity] = useState<number>(0);
   const ref = useRef(null);
   const { product, totalMoney, qty, toppings, onChangeQuantity } = useProductDetailContext();
-
+  const [note, setNote] = useState("");
   const checkScrollTop = (scrollTop) => {
     let temp = scrollTop / 50;
     setOpacity(temp > 1 ? 1 : temp);
@@ -98,7 +97,7 @@ export function ProductDetail({ ...props }: PropsType) {
                 )}
               </div>
               <p className="px-4 text-sm text-gray-500">{product.subtitle}</p>
-              <Note note={note} setNote={setNote} />
+              <Note onChange={(data) => setNote(data)} />
               <Toppings />
             </div>
           </div>
@@ -123,15 +122,15 @@ export function ProductDetail({ ...props }: PropsType) {
   );
 }
 interface NoteProps extends ReactProps {
-  note: string;
-  setNote: Function;
+  onChange: Function;
 }
-const Note = ({ note, setNote, ...props }: NoteProps) => {
+const Note = ({ onChange, ...props }: NoteProps) => {
   const [openDialog, setOpenDialog] = useState(false);
+  const [noteText, setNoteText] = useState({ note: "" });
   return (
     <div className="">
       <div className="mt-1 text-xs">
-        {note != "" ? (
+        {noteText.note !== "" ? (
           <div className="px-4 py-2 bg-white w-full">
             <div className="flex items-center justify-between">
               <p className="font-bold">Lời nhắn cho cửa hàng</p>
@@ -139,7 +138,7 @@ const Note = ({ note, setNote, ...props }: NoteProps) => {
                 <FaPen />
               </i>
             </div>
-            <p className="text-gray-700">{note}</p>
+            <p className="text-gray-700">{noteText.note}</p>
           </div>
         ) : (
           <Button
@@ -156,10 +155,12 @@ const Note = ({ note, setNote, ...props }: NoteProps) => {
         slideFromBottom="mobile-only"
         mobileSizeMode
         isOpen={openDialog}
+        initialData={noteText}
         onClose={() => setOpenDialog(false)}
-        initialData={note}
         onSubmit={(data) => {
-          setNote({ ...data });
+          console.log("data", data);
+          setNoteText(data);
+          onChange(data.note);
           setOpenDialog(false);
         }}
         className=""

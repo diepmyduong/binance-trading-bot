@@ -20,7 +20,7 @@ export function Billed({ order, status }: PropsType) {
             <div className="flex items-center justify-start">
               <p className={`text-${status.color} font-bold text-sm`}>{order.statusText}</p>
               <p className="px-2">-</p>
-              <p className="">{formatDate(new Date(order.createdAt), "dd-MM-yyyy mm:HH")}</p>
+              <p className="">{formatDate(new Date(order.createdAt), "dd-MM-yyyy HH:mm")}</p>
             </div>
             <div className="flex flex-col pt-1">
               <div className="flex items-center">

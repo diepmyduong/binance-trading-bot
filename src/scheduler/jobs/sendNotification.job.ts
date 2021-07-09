@@ -9,6 +9,7 @@ import { NotificationHelper } from "../../graphql/modules/notification/notificat
 import {
   INotification,
   NotificationModel,
+  NotificationStackModel,
   NotificationTarget,
 } from "../../graphql/modules/notification/notification.model";
 import { firebaseHelper } from "../../helpers";
@@ -38,8 +39,8 @@ export class SendNotificationJob {
     return Agenda.create(this.jobName, data);
   }
   static async execute(job: Job, done: any) {
-    const counter = await CounterModel.findOne({ name: "notify" });
-    if (!counter || counter.value <= 0) return done();
+    const count = await NotificationStackModel.count({});
+    if (count == 0) return done();
     await Promise.all([
       sendNotificationToMembers(job),
       sendNotificationToStaff(job),
@@ -48,19 +49,14 @@ export class SendNotificationJob {
     logger.info("Send Done");
     done();
   }
-
-  static trigger(step?: number) {
-    counterService.trigger("notify", 0, step);
-  }
 }
 
 export default SendNotificationJob;
 async function sendNotificationToMembers(job: Job) {
   const match = {
-    sentAt: { $exists: false },
     target: NotificationTarget.MEMBER,
   };
-  for (let i = 0; i < (await NotificationModel.count(match)); ) {
+  for (let i = 0; i < (await NotificationStackModel.count(match)); ) {
     const members = await getMemberNotifications();
     const memberDevices = await getMemberDevices(members);
     const task: Promise<any>[] = [];
@@ -86,10 +82,9 @@ async function sendNotificationToMembers(job: Job) {
 }
 async function sendNotificationToStaff(job: Job) {
   const match = {
-    sentAt: { $exists: false },
     target: NotificationTarget.STAFF,
   };
-  for (let i = 0; i < (await NotificationModel.count(match)); ) {
+  for (let i = 0; i < (await NotificationStackModel.count(match)); ) {
     const staffs = await getStaffNotifications();
     const staffDevices = await getStaffDevices(staffs);
     const task: Promise<any>[] = [];
@@ -115,10 +110,9 @@ async function sendNotificationToStaff(job: Job) {
 }
 async function sendNotificationToCustomer(job: Job) {
   const match = {
-    sentAt: { $exists: false },
     target: NotificationTarget.CUSTOMER,
   };
-  for (let i = 0; i < (await NotificationModel.count(match)); ) {
+  for (let i = 0; i < (await NotificationStackModel.count(match)); ) {
     const customers = await getCustomerNotifications();
     const customerDevices = await getCustomerDevices(customers);
     const task: Promise<any>[] = [];
@@ -160,6 +154,7 @@ function sendNotificationToDevices(
 }
 
 async function updateNoficationCounter(notificationIds: string[]) {
+  console.log("updateNoficationCounter", notificationIds);
   if (notificationIds.length > 0) {
     logger.info(`Sended ${notificationIds.length} Notifications`);
     // Cập nhật tin nhắn đã gửi
@@ -167,12 +162,7 @@ async function updateNoficationCounter(notificationIds: string[]) {
       { _id: { $in: notificationIds } },
       { $set: { sentAt: new Date() } }
     ).exec();
-    await CounterModel.updateOne(
-      { name: "notify" },
-      { $inc: { value: -notificationIds.length } }
-    ).exec();
-  } else {
-    await CounterModel.updateOne({ name: "notify" }, { $set: { value: 0 } }).exec();
+    await NotificationStackModel.remove({ _id: { $in: notificationIds } });
   }
 }
 
@@ -194,8 +184,8 @@ function getMemberDevices(members: any[]) {
 }
 
 function getStaffNotifications(): any[] | PromiseLike<any[]> {
-  return NotificationModel.aggregate([
-    { $match: { sentAt: { $exists: false }, target: NotificationTarget.STAFF } },
+  return NotificationStackModel.aggregate([
+    { $match: { target: NotificationTarget.STAFF } },
     { $limit: 1000 },
     {
       $group: {
@@ -206,8 +196,8 @@ function getStaffNotifications(): any[] | PromiseLike<any[]> {
   ]);
 }
 function getCustomerNotifications(): any[] | PromiseLike<any[]> {
-  return NotificationModel.aggregate([
-    { $match: { sentAt: { $exists: false }, target: NotificationTarget.CUSTOMER } },
+  return NotificationStackModel.aggregate([
+    { $match: { target: NotificationTarget.CUSTOMER } },
     { $limit: 1000 },
     {
       $group: {
@@ -219,8 +209,8 @@ function getCustomerNotifications(): any[] | PromiseLike<any[]> {
 }
 
 function getMemberNotifications(): any[] | PromiseLike<any[]> {
-  return NotificationModel.aggregate([
-    { $match: { sentAt: { $exists: false }, target: NotificationTarget.MEMBER } },
+  return NotificationStackModel.aggregate([
+    { $match: { target: NotificationTarget.MEMBER } },
     { $limit: 1000 },
     {
       $group: {

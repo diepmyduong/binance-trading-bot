@@ -346,7 +346,7 @@ export class OrderRepository extends CrudRepository<Order> {
       receiverTel: String
       receiverProvinceId: String
       receiverDistrictId: String
-      receiverWardId: String!
+      receiverWardId: String
       receiverAddressType: Int
       serviceName: String
       serviceIcon: String

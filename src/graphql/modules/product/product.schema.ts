@@ -72,6 +72,8 @@ const schema = gql`
     soldQty: Int
     "Mã label"
     labelIds: [ID]
+    "Sản phẩm up sale"
+    upsaleProductIds: [ID]
   }
 
   type Product {
@@ -153,11 +155,14 @@ const schema = gql`
     soldQty: Int
     "Mã label"
     labelIds: [ID]
+    "Sản phẩm up sale"
+    upsaleProductIds: [ID]
 
     category: Category
     member: Member
     collaboratorProduct: CollaboratorProduct
     labels: [ProductLabel]
+    upsaleProducts: [Product]
   }
 
   type ProductPageData {

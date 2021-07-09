@@ -8,29 +8,20 @@ import { useEffect, useState } from "react";
 import cloneDeep from "lodash/cloneDeep";
 
 export function OrderPage() {
-  const { orders, statusOrder, setStatusCur, statusCur } = useOrderContext();
+  const { orders, statusOrder } = useOrderContext();
   return (
     <div className="w-full relative">
-      <SwitchTabs
-        options={[
-          ...statusOrder.map((x, index) => {
-            return { value: index, label: x.label };
-          }),
-        ]}
-        native
-        chevron
-        className="sticky top-14 bg-white z-10"
-        value={statusCur}
-        onChange={(val) => {
-          setStatusCur(val);
-        }}
-      />
+      <h3 className="text-lg font-semibold text-primary p-4 bg-white">Danh sách đơn hàng</h3>
       {orders ? (
         <>
           {orders.length > 0 ? (
             <>
               {orders.map((order, index) => (
-                <Billed order={order} key={index} status={statusOrder[statusCur]} />
+                <Billed
+                  order={order}
+                  key={index}
+                  status={statusOrder.find((stus) => stus.value === order.status)}
+                />
               ))}
             </>
           ) : (

@@ -3,6 +3,10 @@ import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 const Schema = mongoose.Schema;
 
+export enum StaffScope {
+  REPORT = "REPORT", // Xem thống kê
+}
+
 export type IStaff = BaseDocument & {
   memberId?: string; // Mã chủ shop
   username?: string; // Tên đăng nhập
@@ -12,6 +16,7 @@ export type IStaff = BaseDocument & {
   avatar?: string; // Ảnh đại diện
   address?: string; // Địa chỉ liên hệ
   branchId?: string; // Mã chi nhánh
+  scopes?: StaffScope[]; // Danh sách phân quyền
 };
 
 const staffSchema = new Schema(
@@ -24,6 +29,7 @@ const staffSchema = new Schema(
     avatar: { type: String },
     address: { type: String },
     branchId: { type: Schema.Types.ObjectId, ref: "ShopBranch", required: true },
+    scopes: { type: [{ type: String, enum: Object.values(StaffScope) }], default: [] },
   },
   { timestamps: true }
 );

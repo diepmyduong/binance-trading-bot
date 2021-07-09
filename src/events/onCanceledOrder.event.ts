@@ -12,6 +12,7 @@ import { UserModel } from "../graphql/modules/user/user.model";
 import { onSendChatBotText } from "./onSendToChatbot.event";
 import { orderService } from "../graphql/modules/order/order.service";
 import {
+  InsertNotification,
   NotificationModel,
   NotificationTarget,
   NotificationType,
@@ -132,8 +133,7 @@ onCanceledOrder.subscribe(async (order) => {
     body: `Đơn hàng đã huỷ`,
     orderId: order._id,
   });
-  await NotificationModel.create(notify);
-  await SendNotificationJob.trigger();
+  InsertNotification([notify]);
 });
 
 // Thông báo nhân viên cập nhật trang thái giao hàng
@@ -151,8 +151,7 @@ onCanceledOrder.subscribe(async (order) => {
       })
   );
   if (notifies.length > 0) {
-    await NotificationModel.insertMany(notifies);
-    await SendNotificationJob.trigger(notifies.length);
+    InsertNotification(notifies);
   }
 });
 
@@ -166,8 +165,7 @@ onCanceledOrder.subscribe(async (order) => {
     body: `Đơn hàng đã huỷ`,
     orderId: order._id,
   });
-  await NotificationModel.create(notify);
-  await SendNotificationJob.trigger();
+  InsertNotification([notify]);
 });
 
 // Publish order stream

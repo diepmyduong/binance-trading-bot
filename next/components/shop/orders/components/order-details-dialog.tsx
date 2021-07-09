@@ -8,12 +8,21 @@ import format from "date-fns/format";
 import { getAddressText } from "../../../../lib/helpers/get-address-text";
 import { Img } from "../../../shared/utilities/img";
 import { NumberPipe } from "../../../../lib/pipes/number";
+import { Button } from "../../../shared/utilities/form/button";
+import { OrderLog, OrderLogService } from "../../../../lib/repo/order-log.repo";
+import { DeliveryLog, DeliveryLogService } from "../../../../lib/repo/delivery-log.repo";
 
 interface PropsType extends DialogPropsType {
   orderId: string;
 }
 export function OrderDetailsDialog({ orderId, ...props }: PropsType) {
   const [order, setOrder] = useState<Order>(null);
+  const ORDER_TABS: Option[] = [
+    { value: "products", label: "Danh sách món" },
+    { value: "order_history", label: "Lịch sử đơn hàng" },
+    { value: "delivery_history", label: "Lịch sử giao hàng" },
+  ];
+  const [selectedTab, setSelectedTab] = useState("products");
   const alert = useAlert();
 
   useEffect(() => {
@@ -137,71 +146,193 @@ export function OrderDetailsDialog({ orderId, ...props }: PropsType) {
               </div>
             </>
           )}
-          <table className="mt-4 w-full border-collapse border rounded border-gray-400">
-            <thead>
-              <tr className="border-b border-gray-400 text-gray-700 font-semibold whitespace-nowrap">
-                <th className="p-2 text-center w-6">STT</th>
-                <th className="p-2 text-left">Sản phẩm</th>
-                <th className="p-2 text-center">Số lượng</th>
-                <th className="p-2 text-right">Giá</th>
-                <th className="p-2 text-right">Tổng giá</th>
-              </tr>
-            </thead>
-            <tbody>
-              {!order.items.length && (
-                <tr>
-                  <td colSpan={6} className="table-cell text-gray-300 text-center">
-                    Không có sản phẩm
-                  </td>
-                </tr>
-              )}
-              {order.items.map((item, index) => (
-                <tr
-                  className={`text-gray-700 ${
-                    index != order.items.length - 1 ? "border-b border-gray-300" : ""
-                  }`}
-                  key={item.id}
-                >
-                  <td className="p-2 text-center w-6">{index + 1}</td>
-                  <td className="p-2 text-left">
-                    <div className="flex">
-                      <Img
-                        compress={200}
-                        className="w-14 rounded"
-                        src={item.product.image}
-                        showImageOnClick
-                      />
-                      <div className="flex-1 pl-2">
-                        <div className="font-semibold">{item.productName}</div>
-                        <div className="text-gray-500">
-                          {item.toppings.map((x) => x.optionName).join(", ")}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="p-2 text-center">{item.qty}</td>
-                  <td className="p-2 text-right">{NumberPipe(item.basePrice, true)}</td>
-                  <td className="p-2 text-right">{NumberPipe(item.amount, true)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="mt-3 w-72 ml-auto font-semibold grid gap-y-1 text-gray-800 pr-1">
-            <div className="flex justify-between">
-              <div>Tiền hàng</div>
-              <div>{NumberPipe(order.subtotal, true)}</div>
-            </div>
-            <div className="flex justify-between">
-              <div>Phí ship</div>
-              <div>{NumberPipe(order.shipfee, true)}</div>
-            </div>
-            <div className="flex justify-between font-bold text-lg">
-              <div>Tổng tiền</div>
-              <div className="text-danger">{NumberPipe(order.amount, true)}</div>
-            </div>
+          <div className="my-3 border-group rounded-sm">
+            {ORDER_TABS.map((tab) => (
+              <Button
+                outline={selectedTab != tab.value}
+                primary={selectedTab == tab.value}
+                className="border"
+                medium
+                text={tab.label}
+                onClick={() => setSelectedTab(tab.value)}
+              />
+            ))}
           </div>
+          {
+            {
+              products: <ProductsTab order={order} />,
+              order_history: <OrderHistoryTabs order={order} />,
+              delivery_history: <DeliveryHistoryTabs order={order} />,
+            }[selectedTab]
+          }
         </Dialog.Body>
       )}
     </Dialog>
+  );
+}
+
+function ProductsTab({ order }: { order: Order }) {
+  return (
+    <div className="animate-emerge">
+      <table className="w-full border-collapse border rounded border-gray-400">
+        <thead>
+          <tr className="border-b border-gray-400 text-gray-700 font-semibold whitespace-nowrap">
+            <th className="p-2 text-center w-6">STT</th>
+            <th className="p-2 text-left">Sản phẩm</th>
+            <th className="p-2 text-center">Số lượng</th>
+            <th className="p-2 text-right">Giá</th>
+            <th className="p-2 text-right">Tổng giá</th>
+          </tr>
+        </thead>
+        <tbody>
+          {!order.items.length && (
+            <tr>
+              <td colSpan={6} className="table-cell text-gray-300 text-center">
+                Không có sản phẩm
+              </td>
+            </tr>
+          )}
+          {order.items.map((item, index) => (
+            <tr
+              className={`text-gray-700 ${
+                index != order.items.length - 1 ? "border-b border-gray-300" : ""
+              }`}
+              key={item.id}
+            >
+              <td className="p-2 text-center w-6">{index + 1}</td>
+              <td className="p-2 text-left">
+                <div className="flex">
+                  <Img
+                    compress={200}
+                    className="w-14 rounded"
+                    src={item.product.image}
+                    showImageOnClick
+                  />
+                  <div className="flex-1 pl-2">
+                    <div className="font-semibold">{item.productName}</div>
+                    <div className="text-gray-500">
+                      {item.toppings.map((x) => x.optionName).join(", ")}
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td className="p-2 text-center">{item.qty}</td>
+              <td className="p-2 text-right">{NumberPipe(item.basePrice, true)}</td>
+              <td className="p-2 text-right">{NumberPipe(item.amount, true)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="mt-3 w-72 ml-auto font-semibold grid gap-y-1 text-gray-800 pr-1">
+        <div className="flex justify-between">
+          <div>Tiền hàng</div>
+          <div>{NumberPipe(order.subtotal, true)}</div>
+        </div>
+        <div className="flex justify-between">
+          <div>Phí ship</div>
+          <div>{NumberPipe(order.shipfee, true)}</div>
+        </div>
+        <div className="flex justify-between font-bold text-lg">
+          <div>Tổng tiền</div>
+          <div className="text-danger">{NumberPipe(order.amount, true)}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OrderHistoryTabs({ order }: { order: Order }) {
+  const [orderLogs, setOrderLogs] = useState<OrderLog[]>(null);
+
+  useEffect(() => {
+    OrderLogService.getAll({ query: { limit: 0, filter: { orderId: order.id } } }).then((res) => {
+      setOrderLogs(res.data);
+    });
+  }, []);
+
+  if (!orderLogs) return <Spinner />;
+  return (
+    <div className="animate-emerge">
+      <table className="w-full border-collapse border rounded border-gray-400">
+        <thead>
+          <tr className="border-b border-gray-400 text-gray-700 font-semibold whitespace-nowrap">
+            <th className="p-2 text-center w-6">Thời điểm</th>
+            <th className="p-2 text-left">Nội dung</th>
+          </tr>
+        </thead>
+        <tbody>
+          {!orderLogs.length ? (
+            <tr>
+              <td colSpan={6} className="table-cell text-gray-300 text-center h-32">
+                Không có lịch sử đơn hàng
+              </td>
+            </tr>
+          ) : (
+            orderLogs.map((orderLog, index) => (
+              <tr
+                key={orderLog.id}
+                className={`text-gray-700 ${
+                  index != orderLogs.length - 1 ? "border-b border-gray-300" : ""
+                }`}
+              >
+                <td className="p-2 text-center whitespace-nowrap">
+                  {format(new Date(orderLog.createdAt), "dd-MM-yyyy HH:mm")}
+                </td>
+                <td className="p-2 text-left">{orderLog.note}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function DeliveryHistoryTabs({ order }: { order: Order }) {
+  const [deliveryLogs, setDeliveryLogs] = useState<DeliveryLog[]>(null);
+
+  useEffect(() => {
+    DeliveryLogService.getAll({ query: { limit: 0, filter: { orderId: order.id } } }).then(
+      (res) => {
+        setDeliveryLogs(res.data);
+      }
+    );
+  }, []);
+
+  if (!deliveryLogs) return <Spinner />;
+  return (
+    <div className="animate-emerge">
+      <table className="w-full border-collapse border rounded border-gray-400">
+        <thead>
+          <tr className="border-b border-gray-400 text-gray-700 font-semibold whitespace-nowrap">
+            <th className="p-2 text-center w-6">Thời điểm</th>
+            <th className="p-2 text-left">Nội dung</th>
+          </tr>
+        </thead>
+        <tbody>
+          {!deliveryLogs.length ? (
+            <tr>
+              <td colSpan={6} className="table-cell text-gray-300 text-center h-32">
+                Không có lịch sử giao hàng
+              </td>
+            </tr>
+          ) : (
+            deliveryLogs.map((deliveryLog, index) => (
+              <tr
+                key={deliveryLog.id}
+                className={`text-gray-700 ${
+                  index != deliveryLogs.length - 1 ? "border-b border-gray-300" : ""
+                }`}
+              >
+                <td className="p-2 text-center whitespace-nowrap">
+                  {format(new Date(deliveryLog.createdAt), "dd-MM-yyyy HH:mm")}
+                </td>
+                <td className="p-2 text-left">{deliveryLog.note}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 }

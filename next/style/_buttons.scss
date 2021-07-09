@@ -238,6 +238,7 @@
   @extend .btn;
   @apply bg-primary;
   @apply text-gray-50;
+  @apply border-primary;
   &:not(.loading)[disabled] {
     pointer-events: none;
     @apply border border-gray-300 bg-gray-100 text-gray-400 #{!important};
@@ -252,6 +253,7 @@
   @extend .btn;
   @apply bg-accent;
   @apply text-gray-50;
+  @apply border-accent;
   &:not(.loading)[disabled] {
     pointer-events: none;
     @apply border border-gray-300 bg-gray-100 text-gray-400 #{!important};
@@ -266,6 +268,7 @@
   @extend .btn;
   @apply bg-info;
   @apply text-gray-50;
+  @apply border-info;
   &:not(.loading)[disabled] {
     pointer-events: none;
     @apply border border-gray-300 bg-gray-100 text-gray-400 #{!important};
@@ -280,6 +283,7 @@
   @extend .btn;
   @apply bg-success;
   @apply text-gray-50;
+  @apply border-success;
   &:not(.loading)[disabled] {
     pointer-events: none;
     @apply border border-gray-300 bg-gray-100 text-gray-400 #{!important};
@@ -294,6 +298,7 @@
   @extend .btn;
   @apply bg-warning;
   @apply text-gray-50;
+  @apply border-warning;
   &:not(.loading)[disabled] {
     pointer-events: none;
     @apply border border-gray-300 bg-gray-100 text-gray-400 #{!important};
@@ -308,6 +313,7 @@
   @extend .btn;
   @apply bg-danger;
   @apply text-gray-50;
+  @apply border-danger;
   &:not(.loading)[disabled] {
     pointer-events: none;
     @apply border border-gray-300 bg-gray-100 text-gray-400 #{!important};

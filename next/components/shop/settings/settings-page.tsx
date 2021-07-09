@@ -51,6 +51,6 @@ export const SETTINGS_TABS: Option[] = [
   { value: "general", label: "Thông tin cơ bản" },
   { value: "config", label: "Thiết lập cửa hàng" },
   { value: "account", label: "Tài khoản" },
-  // { value: "delivery", label: "Giao hàng" },
+  { value: "delivery", label: "Giao hàng" },
   { value: "payment", label: "Thanh toán" },
 ];

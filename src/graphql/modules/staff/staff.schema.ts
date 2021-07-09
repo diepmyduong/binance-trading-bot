@@ -1,4 +1,5 @@
 import { gql } from "apollo-server-express";
+import { StaffScope } from "./staff.model";
 
 const schema = gql`
   extend type Query {
@@ -29,6 +30,8 @@ const schema = gql`
     avatar: String
     "Địa chỉ liên hệ"
     address: String
+    "Danh sách phân quyền ${Object.values(StaffScope)}"
+    scopes: String
   }
 
   input UpdateStaffInput {
@@ -44,6 +47,8 @@ const schema = gql`
     address: String
     "Mã chi nhánh"
     branchId: ID
+    "Danh sách phân quyền ${Object.values(StaffScope)}"
+    scopes: String
   }
 
   type Staff {
@@ -65,6 +70,8 @@ const schema = gql`
     address: String
     "Mã chi nhánh"
     branchId: ID
+    "Danh sách phân quyền ${Object.values(StaffScope)}"
+    scopes: String
 
     branch: ShopBranch
   }

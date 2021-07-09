@@ -4,6 +4,7 @@ import { SettingKey } from "../configs/settingData";
 import { CustomerLoader } from "../graphql/modules/customer/customer.model";
 import { MemberLoader, MemberModel } from "../graphql/modules/member/member.model";
 import {
+  InsertNotification,
   NotificationModel,
   NotificationTarget,
   NotificationType,
@@ -138,8 +139,7 @@ onOrderedProduct.subscribe(async (order) => {
       })
   );
   if (notifies.length > 0) {
-    await NotificationModel.insertMany(notifies);
-    await SendNotificationJob.trigger(notifies.length);
+    InsertNotification(notifies);
   }
 });
 
@@ -155,8 +155,7 @@ onOrderedProduct.subscribe(async (order) => {
     body: `${order.itemCount} món - ${UtilsHelper.toMoney(order.amount)}`,
     orderId: order._id,
   });
-  await NotificationModel.create(notify);
-  await SendNotificationJob.trigger();
+  InsertNotification([notify]);
 });
 
 // Publish order stream

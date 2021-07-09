@@ -4,6 +4,7 @@ import { Button } from "../../../components/shared/utilities/form/button";
 import { Img } from "../../../components/shared/utilities/img";
 import { useAuth } from "../../../lib/providers/auth-provider";
 import {
+  IconComment,
   IconCustomer,
   IconDiscount,
   IconDriver,
@@ -156,6 +157,11 @@ export const SIDEBAR_MENUS = [
         title: "Quản lý nhân viên",
         path: "/shop/staffs",
         icon: (active: boolean) => <IconEmployee hasGradient={!active} />,
+      },
+      {
+        title: "Bình luận",
+        path: "/shop/comments",
+        icon: (active: boolean) => <IconComment hasGradient={!active} />,
       },
       {
         title: "Cấu hình cửa hàng",

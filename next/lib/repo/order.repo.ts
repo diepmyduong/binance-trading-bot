@@ -384,34 +384,6 @@ export class OrderRepository extends CrudRepository<Order> {
     pickupMethod: String
     pickupTime: DateTime
     shopBranchId: String
-    logs {
-      id: String
-      createdAt: DateTime
-      updatedAt: DateTime
-      orderId: ID
-      type: String
-      memberId: ID
-      toMemberId: ID
-      customerId: ID
-      note: String
-      statusText: String
-      order {
-        id: String
-        code: String
-      }: Order
-      member {
-        id: String
-        name: String
-      }: Member
-      toMember {
-        id: String
-        name: String
-      }: Member
-      customer {
-        id: String
-        name: String
-      }: Customer
-    }: [OrderLog]
     driverId: ID
     driverName: String
     driverPhone: String

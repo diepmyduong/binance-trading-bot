@@ -27,7 +27,8 @@ interface Option {
     | "cyan"
     | "purple"
     | "pink"
-    | string;
+    | (string & {});
+
   cols?: Cols;
   data?: any;
 }

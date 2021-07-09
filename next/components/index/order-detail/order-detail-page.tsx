@@ -64,7 +64,7 @@ export function OrderDetailPage({ id, ...props }: PropsType) {
                 <p className="text-xs text-gray-500">Mã đơn hàng</p>
                 <p className="uppercase font-bold">{order.code}</p>
                 <p className="text-xs text-gray-500">
-                  Ngày: {formatDate(new Date(order.createdAt), "dd-MM-yyyy mm:HH")}
+                  Ngày: {formatDate(new Date(order.createdAt), "dd-MM-yyyy HH:mm")}
                 </p>
               </div>
               <div className="flex flex-col space-y-1 pl-2 border-l">
@@ -87,7 +87,9 @@ export function OrderDetailPage({ id, ...props }: PropsType) {
                   <span className="font-bold">{order.buyerName}</span> ({order.buyerPhone})
                 </p>
                 <p className="">
-                  {order.buyerAddress}, {order.buyerWard}, {order.buyerDistrict},{" "}
+                  {order.buyerAddress && order.buyerAddress + ", "}
+                  {order.buyerWard && order.buyerWard + ", "}
+                  {order.buyerDistrict && order.buyerDistrict + ", "}
                   {order.buyerProvince}
                 </p>
               </div>
@@ -168,24 +170,44 @@ export function OrderDetailPage({ id, ...props }: PropsType) {
                     </>
                   ),
                   CANCELED: (
-                    <Button
-                      text="Đặt lại"
-                      outline
-                      primary
-                      asyncLoading={loading}
-                      large
-                      className="w-full my-2"
-                    />
+                    <>
+                      <Button
+                        text="Đến trang lịch sử"
+                        outline
+                        primary
+                        asyncLoading={loading}
+                        large
+                        className="w-full my-2"
+                        href="/order"
+                      />
+                      <Button
+                        text="Đặt lại"
+                        outline
+                        asyncLoading={loading}
+                        large
+                        className="w-full my-2"
+                      />
+                    </>
                   ),
                   COMPLETED: (
-                    <Button
-                      text="Đặt lại"
-                      outline
-                      primary
-                      asyncLoading={loading}
-                      large
-                      className="w-full my-2"
-                    />
+                    <>
+                      <Button
+                        text="Đến trang lịch sử"
+                        outline
+                        primary
+                        asyncLoading={loading}
+                        large
+                        className="w-full my-2"
+                        href="/order"
+                      />
+                      <Button
+                        text="Đặt lại"
+                        outline
+                        asyncLoading={loading}
+                        large
+                        className="w-full my-2"
+                      />
+                    </>
                   ),
                 }[order.status]
               }

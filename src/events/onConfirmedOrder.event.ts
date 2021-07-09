@@ -1,6 +1,7 @@
 import { Subject } from "rxjs";
 import { MemberModel } from "../graphql/modules/member/member.model";
 import {
+  InsertNotification,
   NotificationModel,
   NotificationTarget,
   NotificationType,
@@ -43,8 +44,7 @@ onConfirmedOrder.subscribe(async (order) => {
     body: `Món ăn đang được chuẩn bị.`,
     orderId: order._id,
   });
-  await NotificationModel.create(notify);
-  await SendNotificationJob.trigger();
+  InsertNotification([notify]);
 });
 
 // Publish order stream

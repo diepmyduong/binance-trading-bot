@@ -55,6 +55,8 @@ notificationSchema.index({ staffId: 1 });
 notificationSchema.index({ title: "text" }, { weights: { title: 2 } });
 notificationSchema.index({ sentAt: 1 });
 
+export const NotificationStackModel = MainConnection.model("NotificationStack", notificationSchema);
+
 export const NotificationHook = new ModelHook<INotification>(notificationSchema);
 export const NotificationModel: mongoose.Model<INotification> = MainConnection.model(
   "Notification",
@@ -62,3 +64,14 @@ export const NotificationModel: mongoose.Model<INotification> = MainConnection.m
 );
 
 export const NotificationLoader = ModelLoader<INotification>(NotificationModel, NotificationHook);
+
+NotificationHook.onSaved.subscribe((notification) => {
+  NotificationStackModel.insertMany([notification]);
+});
+
+export function InsertNotification(notifies: INotification[]) {
+  return Promise.all([
+    NotificationModel.insertMany(notifies),
+    NotificationStackModel.insertMany(notifies),
+  ]);
+}

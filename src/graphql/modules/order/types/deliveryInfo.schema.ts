@@ -27,7 +27,7 @@ export default gql`
     "Mã quận người nhận"
     receiverDistrictId: String
     "Mã phường người nhận"
-    receiverWardId: String!
+    receiverWardId: String
     "Loại địa chỉ người nhận '1=Nhà riêng | 2=Cơ quan | null=Không có thông tin'"
     receiverAddressType: Int
 

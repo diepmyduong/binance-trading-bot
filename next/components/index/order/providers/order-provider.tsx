@@ -2,18 +2,15 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Order, OrderService, ORDER_STATUS } from "../../../../lib/repo/order.repo";
 import cloneDeep from "lodash/cloneDeep";
 
-export const OrderContext = createContext<
-  Partial<{ orders: Order[]; statusOrder: Option[]; statusCur: number; setStatusCur: Function }>
->({});
+export const OrderContext = createContext<Partial<{ orders: Order[]; statusOrder: Option[] }>>({});
 
 export function OrderProvider(props) {
   const [orders, setOrders] = useState<Order[]>();
   const statusOrder = ORDER_STATUS;
-  const [statusCur, setStatusCur] = useState<number>(0);
   async function loadOrders() {
     setOrders(null);
     let res = await OrderService.getAll({
-      query: { filter: { status: statusOrder[statusCur].value } },
+      query: { order: { createdAt: -1 } },
     });
     if (res) {
       setOrders(cloneDeep(res.data));
@@ -21,11 +18,9 @@ export function OrderProvider(props) {
   }
   useEffect(() => {
     loadOrders();
-  }, [statusCur]);
+  }, []);
   return (
-    <OrderContext.Provider value={{ orders, statusOrder, statusCur, setStatusCur }}>
-      {props.children}
-    </OrderContext.Provider>
+    <OrderContext.Provider value={{ orders, statusOrder }}>{props.children}</OrderContext.Provider>
   );
 }
 

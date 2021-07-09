@@ -397,7 +397,7 @@ export function ProductForm({ product, category, ...props }: PropsType) {
                           parseOption: (data) => ({
                             value: data.id,
                             label: data.name,
-                            color: data.color as any,
+                            color: data.color,
                             data,
                           }),
                         })

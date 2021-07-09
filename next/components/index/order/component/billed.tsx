@@ -18,24 +18,24 @@ export function Billed({ order, status }: PropsType) {
         <div className="flex items-center justify-between cursor-pointer hover:bg-primary-light">
           <div className="p-2 flex flex-col w-full">
             <div className="flex items-center justify-start">
-              <p className={`bg-${status.color} font-bold text-sm text-white rounded-sm px-2`}>
+              <span className={`bg-${status.color} font-bold text-sm text-white rounded-full px-2`}>
                 {order.statusText}
-              </p>
-              <p className="px-2">-</p>
-              <p className="">{formatDate(new Date(order.createdAt), "dd-MM-yyyy HH:mm")}</p>
+              </span>
+              <span className="px-2">-</span>
+              <span className="">{formatDate(new Date(order.createdAt), "dd-MM-yyyy HH:mm")}</span>
             </div>
             <div className="flex flex-col pt-1">
               <div className="flex items-center">
-                <p className="">{order.sellerName}</p>
-                {/* <p className="px-2">-</p>
-                <p className="">{order.buyerAddress}</p> */}
+                <span className="">{order.sellerName}</span>
+                {/* <span className="px-2">-</span>
+                <span className="">{order.buyerAddress}</span> */}
               </div>
               <div className="flex pt-1 justify-between flex-wrap">
                 <div className="flex  pt-1 whitespace-nowrap flex-1">
-                  <p className="font-bold">{NumberPipe(order.subtotal)}đ</p>
-                  <p className="ml-1">({order.paymentMethod})</p>
-                  <p className="px-2">-</p>
-                  <p className="">{order.itemCount} món</p>
+                  <span className="font-bold">{NumberPipe(order.subtotal)}đ</span>
+                  <span className="ml-1">({order.paymentMethod})</span>
+                  <span className="px-2">-</span>
+                  <span className="">{order.itemCount} món</span>
                 </div>
                 <div
                   className="w-full mt-2 sm:mt-0 sm:w-auto flex justify-end "

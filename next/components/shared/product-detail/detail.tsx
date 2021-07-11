@@ -129,7 +129,7 @@ const Note = ({ onChange, ...props }: NoteProps) => {
   const [noteText, setNoteText] = useState({ note: "" });
   return (
     <div className="">
-      <div className="mt-1 text-xs">
+      <div className="mt-1 text-sm">
         {noteText.note !== "" ? (
           <div className="px-4 py-2 bg-white w-full">
             <div className="flex items-center justify-between">
@@ -152,7 +152,6 @@ const Note = ({ onChange, ...props }: NoteProps) => {
       </div>
       <Form
         dialog
-        slideFromBottom="mobile-only"
         mobileSizeMode
         isOpen={openDialog}
         initialData={noteText}
@@ -168,7 +167,9 @@ const Note = ({ onChange, ...props }: NoteProps) => {
         <Field label="Lời nhắn của khách hàng" name="note">
           <Textarea placeholder="Nhập Lời nhắn của khách hàng" />
         </Field>
-        <SaveButtonGroup cancelText="" />
+        <Form.Footer>
+          <SaveButtonGroup />
+        </Form.Footer>
       </Form>
     </div>
   );

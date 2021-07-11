@@ -195,9 +195,6 @@ export class OrderRepository extends CrudRepository<Order> {
     paymentMethod: String
     note: String
     itemCount: Int
-    sellerId: ID
-    sellerCode: String
-    sellerName: String
     status: String
     buyerId: ID
     buyerName: String
@@ -212,11 +209,6 @@ export class OrderRepository extends CrudRepository<Order> {
     paymentMethodText: String
     shipMethodText: String
     statusText: String
-    seller {
-      id: String
-      name: String
-      address: String
-    }: Member
     fromMember {
       id: String
       name: String
@@ -235,13 +227,6 @@ export class OrderRepository extends CrudRepository<Order> {
       id: String
       name: String
     }: Member
-    deliveryInfo {
-      senderFullname: String
-      senderTel: String
-      senderAddress: String
-      status: String
-      statusText: String
-    }: DeliveryInfo
     orderType: String
     orderTypeText: String
     pickupMethod: String
@@ -422,7 +407,7 @@ export class OrderRepository extends CrudRepository<Order> {
     return await this.mutate({
       mutation: `generateDraftOrder(data: $data) {
           order{
-            ${this.fullFragment}
+            ${this.shortFragment}
           }
           invalid
           invalidReason
@@ -438,16 +423,16 @@ export class OrderRepository extends CrudRepository<Order> {
       mutation: `generateOrder(data: $data) {
         id
         code
-         seller { id shopName }
-         buyerName buyerPhone
-         buyerAddress buyerProvince buyerDistrict buyerWard
-         pickupMethod
-         subtotal
-         toppingAmount
-         shipfee
-         amount
-         status
-        }`,
+        seller { id shopName }
+        buyerName buyerPhone
+        buyerAddress buyerProvince buyerDistrict buyerWard
+        pickupMethod
+        subtotal
+        toppingAmount
+        shipfee
+        amount
+        status
+      }`,
       variablesParams: `($data:CreateDraftOrderInput!)`,
       options: { variables: { data } },
     }).then((res) => {

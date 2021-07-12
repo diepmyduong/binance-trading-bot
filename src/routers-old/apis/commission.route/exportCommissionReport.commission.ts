@@ -32,7 +32,7 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
 
   if (!isEmpty(memberId)) {
     if (!isValidObjectId(memberId)) {
-      throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+      throw ErrorHelper.requestDataInvalid("Mã cửa hàng");
     }
   }
 
@@ -210,7 +210,7 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
       district: member.district,
       branchCode: member.branchCode,
       branchName: member.branchName,
-      type: "Bưu cục",
+      type: "Cửa hàng",
       commission1: memberCommissionStat ? memberCommissionStat.commission1 : 0,
       commission2: memberCommissionStat ? memberCommissionStat.commission2 : 0,
       commission3: memberCommissionStat ? memberCommissionStat.commission3 : 0,
@@ -246,8 +246,8 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
     const sheet = workbook.addWorksheet(name);
     const excelHeaders = [
       STT,
-      "Mã bưu cục",
-      "Bưu cục",
+      "Mã cửa hàng",
+      "Cửa hàng",
       "Mã cộng tác viên",
       "Cộng tác viên",
       "Loại",
@@ -264,8 +264,8 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
     data.forEach((d: any, i: number) => {
       const dataRow = [
         i + 1, //STT
-        d.memberCode, //"Mã bưu cục",
-        d.shopName, // "Bưu cục",
+        d.memberCode, //"Mã cửa hàng",
+        d.shopName, // "Cửa hàng",
         d.collaboratorCode,
         d.collaboratorName,
         d.type,
@@ -318,7 +318,7 @@ export const exportPortCommissionReport = async (req: Request, res: Response) =>
     };
   };
 
-  const POSTS_SHEET_NAME = "Danh sách Hoa hồng Bưu cục";
+  const POSTS_SHEET_NAME = "Danh sách Hoa hồng Cửa hàng";
   createSheetData(data, POSTS_SHEET_NAME);
 
   if (!context.isMember() && isEmpty(memberId)) {

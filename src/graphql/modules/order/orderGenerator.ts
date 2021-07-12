@@ -422,6 +422,8 @@ export class OrderGenerator {
     const toppingAmount = sumBy(input.toppings, "price");
     const orderItem = new OrderItemModel({
       orderId: this.order._id,
+      sellerId: this.seller._id,
+      buyerId: this.buyer._id,
       productId: product.id,
       productName: product.name,
       isPrimary: product.isPrimary,

@@ -7,11 +7,10 @@ import { OrderItemModel } from "../../orderItem/orderItem.model";
 import { onApprovedFailureOrder } from "../../../../events/onApprovedFailureOrder.event";
 import { onApprovedCompletedOrder } from "../../../../events/onApprovedCompletedOrder.event";
 
-
 //[Backend] Cung cấp API duyệt lịch sử đăng ký dịch vụ SMS
 const approveToMemberOrder = async (root: any, args: any, context: Context) => {
   AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-  const { id, note , status} = args;
+  const { id, note, status } = args;
 
   if (!id) throw ErrorHelper.requestDataInvalid("mã đơn hàng");
 
@@ -33,7 +32,7 @@ const approveToMemberOrder = async (root: any, args: any, context: Context) => {
 
   if (!order) throw ErrorHelper.mgRecoredNotFound("Đơn hàng");
 
-  // nhận hàng tại bưu cục
+  // nhận hàng tại cửa hàng
   if (order.shipMethod === ShipMethod.VNPOST) {
     if (order.status === OrderStatus.CONFIRMED) {
       throw ErrorHelper.somethingWentWrong(
@@ -48,20 +47,16 @@ const approveToMemberOrder = async (root: any, args: any, context: Context) => {
 
   order.status = status;
   order.note = note;
-  
+
   for (const orderItemId of order.itemIds) {
-    await OrderItemModel.findByIdAndUpdate(
-      orderItemId,
-      { $set: { status } },
-      { new: true }
-    );
+    await OrderItemModel.findByIdAndUpdate(orderItemId, { $set: { status } }, { new: true });
   }
 
   return await order.save().then(async (order) => {
-    if(order.status === OrderStatus.COMPLETED){
+    if (order.status === OrderStatus.COMPLETED) {
       onApprovedCompletedOrder.next(order);
     }
-    if(order.status === OrderStatus.FAILURE){
+    if (order.status === OrderStatus.FAILURE) {
       onApprovedFailureOrder.next(order);
     }
     return order;

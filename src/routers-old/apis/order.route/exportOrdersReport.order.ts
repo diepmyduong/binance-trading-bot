@@ -57,11 +57,11 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
   let memberIds: any = null;
   if (memberIdsString) {
     memberIds = memberIdsString.split("|");
-    if (memberIds.length < 0) throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+    if (memberIds.length < 0) throw ErrorHelper.requestDataInvalid("Mã cửa hàng");
 
     memberIds.map((m: string) => {
       if (!isValidObjectId(m)) {
-        throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+        throw ErrorHelper.requestDataInvalid("Mã cửa hàng");
       }
     });
 
@@ -69,7 +69,7 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
   }
 
   if (!isValidObjectId(memberId)) {
-    throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+    throw ErrorHelper.requestDataInvalid("Mã cửa hàng");
   }
 
   const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
@@ -136,7 +136,7 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
   for (let i = 0; i < orders.length; i++) {
     const order = orders[i];
     const shipMethod =
-      order.shipMethod === ShipMethod.POST ? "Nhận hàng tại bưu cục" : "Giao hàng tại địa chỉ";
+      order.shipMethod === ShipMethod.POST ? "Nhận hàng tại cửa hàng" : "Giao hàng tại địa chỉ";
     const seller = sellers.find((member) => member.id.toString() === order.sellerId.toString());
     const addressDelivery = order.addressDeliveryId
       ? addressDeliverys.find((addr) => addr.id.toString() === order.addressDeliveryId.toString())
@@ -222,8 +222,8 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
       "STT",
       "Mã đơn",
 
-      "Bưu cục",
-      "Mã bưu cục",
+      "Cửa hàng",
+      "Mã cửa hàng",
       "Quận / Huyện",
       "Chi nhánh",
 
@@ -233,13 +233,13 @@ export const exportOrdersReport = async (req: Request, res: Response) => {
 
       "PTVC",
 
-      "Mã bưu cục nhận",
-      "Tên bưu cục nhận",
-      "Địa chỉ bưu cục nhận",
+      "Mã cửa hàng nhận",
+      "Tên cửa hàng nhận",
+      "Địa chỉ cửa hàng nhận",
 
-      "Mã bưu cục giao",
-      "Tên bưu cục giao",
-      "Địa chỉ bưu cục giao",
+      "Mã cửa hàng giao",
+      "Tên cửa hàng giao",
+      "Địa chỉ cửa hàng giao",
 
       "Ghi chú",
       "HH điểm bán",

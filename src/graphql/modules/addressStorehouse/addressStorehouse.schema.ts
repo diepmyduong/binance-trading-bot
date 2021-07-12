@@ -8,13 +8,8 @@ const schema = gql`
   }
 
   extend type Mutation {
-    createAddressStorehouse(
-      data: CreateAddressStorehouseInput!
-    ): AddressStorehouse
-    updateAddressStorehouse(
-      id: ID!
-      data: UpdateAddressStorehouseInput!
-    ): AddressStorehouse
+    createAddressStorehouse(data: CreateAddressStorehouseInput!): AddressStorehouse
+    updateAddressStorehouse(id: ID!, data: UpdateAddressStorehouseInput!): AddressStorehouse
     deleteOneAddressStorehouse(id: ID!): AddressStorehouse
     importAddressStorehouses(file: Upload!): String
     # Add Mutation
@@ -82,7 +77,6 @@ const schema = gql`
     longitude: Float
     "Hiệu lực"
     activated: Boolean
-    
   }
 
   type AddressStorehouse {
@@ -120,7 +114,7 @@ const schema = gql`
     latitude: Float
     "kinh độ"
     longitude: Float
-    "Bưu cục"
+    "Cửa hàng"
     member: Member
   }
 

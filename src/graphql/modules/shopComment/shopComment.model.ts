@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
+import { ShopTag, ShopTagSchema } from "../shopConfig/shopTag.graphql";
 const Schema = mongoose.Schema;
 
 export enum ShopCommentStatus {
@@ -16,6 +17,7 @@ export type IShopComment = BaseDocument & {
   message?: string; // Nội dung bình luận
   rating?: number; // Điểm đánh giá
   status?: ShopCommentStatus; // Trạng thái bình luận
+  tags?: ShopTag[]; // Tag lựa chọn
 };
 
 const shopCommentSchema = new Schema(
@@ -31,6 +33,7 @@ const shopCommentSchema = new Schema(
       enum: Object.values(ShopCommentStatus),
       default: ShopCommentStatus.PENDING,
     },
+    tags: { type: [ShopTagSchema], default: [] },
   },
   { timestamps: true }
 );

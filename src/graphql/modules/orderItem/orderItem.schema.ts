@@ -38,6 +38,8 @@ const schema = gql`
     campaignId: ID
     "Mã kết quả chiến dịch"
     campaignSocialResultId: String
+    "Ghi chú"
+    note: String
 
     product: Product
     campaign: Campaign

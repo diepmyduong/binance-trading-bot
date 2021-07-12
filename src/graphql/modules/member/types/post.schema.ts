@@ -10,7 +10,7 @@ const schema = gql`
   type Post {
     id: String
 
-    "Mã bưu cục"
+    "Mã cửa hàng"
     code: String
     "Họ tên"
     name: String
@@ -38,7 +38,7 @@ const schema = gql`
     ward: String
     "Chủ shop đã kích hoạt"
     activated: Boolean
-    "Loại chủ shop ${Object.values(MemberType).join('|')}"
+    "Loại chủ shop ${Object.values(MemberType).join("|")}"
     type: String
   }
 

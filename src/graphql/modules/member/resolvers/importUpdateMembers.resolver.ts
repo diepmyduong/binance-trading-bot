@@ -1,23 +1,15 @@
 import { ROLES } from "../../../../constants/role.const";
-import {
-  AuthHelper,
-  ErrorHelper,
-  firebaseHelper,
-  UtilsHelper,
-} from "../../../../helpers";
+import { AuthHelper, ErrorHelper, firebaseHelper, UtilsHelper } from "../../../../helpers";
 import { Context } from "../../../context";
-import {
-  getDataFromExcelStream,
-  modifyExcelData,
-} from "../../../../helpers/workSheet";
+import { getDataFromExcelStream, modifyExcelData } from "../../../../helpers/workSheet";
 import { SettingHelper } from "../../setting/setting.helper";
 import { SettingKey } from "../../../../configs/settingData";
 import { MemberImportingLogModel } from "../../memberImportingLog/memberImportingLog.model";
 import { Gender, MemberModel, MemberType } from "../member.model";
 
 const STT = "STT";
-const SHOP_NAME = "Tên bưu cục";
-const CODE = "Mã bưu cục";
+const SHOP_NAME = "Tên cửa hàng";
+const CODE = "Mã cửa hàng";
 const EMAIL = "Email";
 const NAME = "Họ tên";
 const GENDER = "Giới tính";
@@ -25,7 +17,7 @@ const PHONE = "Số điện thoại";
 const LINE = "line";
 const PASSWORD = "Pshop#2021";
 
-// STT	Mã trung tâm	Tên trung tâm	Tên bưu cục	Mã bưu cục	Email	Họ tên	Giới tính	Số điện thoại	Ngày sinh	CMND	Địa chỉ	Phường/Xã	Quận/Huyện	Tỉnh/Thành	Tình trạng
+// STT	Mã trung tâm	Tên trung tâm	Tên cửa hàng	Mã cửa hàng	Email	Họ tên	Giới tính	Số điện thoại	Ngày sinh	CMND	Địa chỉ	Phường/Xã	Quận/Huyện	Tỉnh/Thành	Tình trạng
 
 const HEADER_DATA = [STT, SHOP_NAME, CODE, EMAIL, NAME, GENDER, PHONE];
 
@@ -94,55 +86,37 @@ const importUpdateMembers = async (root: any, args: any, context: Context) => {
     const email = excelRow[EMAIL];
     const gioiTinh = excelRow[GENDER];
     const gender =
-      gioiTinh === "Nam"
-        ? Gender.MALE
-        : gioiTinh === "Khác"
-        ? Gender.OTHER
-        : Gender.FEMALE;
+      gioiTinh === "Nam" ? Gender.MALE : gioiTinh === "Khác" ? Gender.OTHER : Gender.FEMALE;
     // console.log("---->raw", rawBirthDay)
 
     if (!code) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${CODE}]`).message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${CODE}]`).message);
     }
 
     if (!shopName) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${SHOP_NAME}]`)
-          .message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${SHOP_NAME}]`).message);
     }
 
     if (!name) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${NAME}]`).message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${NAME}]`).message);
     }
 
     if (!phone) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${PHONE}]`).message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${PHONE}]`).message);
     }
 
     if (email && !UtilsHelper.isEmail(email)) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(".Email không đúng định dạng").message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(".Email không đúng định dạng").message);
     }
 
     if (!gender) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${GENDER}]`)
-          .message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${GENDER}]`).message);
     }
 
     const params: any = {
@@ -178,10 +152,7 @@ const importUpdateMembers = async (root: any, args: any, context: Context) => {
       // console.log("fbUser", fbUser);
 
       if (!fbUser) {
-        fbUser = await firebaseHelper.createUser(
-          params.username,
-          params.password
-        );
+        fbUser = await firebaseHelper.createUser(params.username, params.password);
       }
 
       if (existedMember) {

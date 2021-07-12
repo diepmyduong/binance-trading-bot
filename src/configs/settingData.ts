@@ -191,7 +191,7 @@ export const SETTING_DATA = [
       },
       {
         type: SettingType.string,
-        name: "Bưu cục mặc định",
+        name: "Cửa hàng mặc định",
         key: SettingKey.DEFAULT_SHOP_CODE,
         value: "PKDBDHCM",
         isActive: true,
@@ -391,9 +391,9 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
 {{orderItems.map(i=>\`🛒\${i.productName} x \${i.qty}: \${$money(i.amount)}đ\`).join('\\n')}}
 + Tổng hóa đơn: {{$money(order.amount)}}đ
 + Thông tin khách hàng: {{order.buyerName}} - {{order.buyerPhone}}
-+ Thông tin bưu cục: {{seller.shopName}} - Số điện thoại:{{seller.phone}}
++ Thông tin cửa hàng: {{seller.shopName}} - Số điện thoại:{{seller.phone}}
 + {{order.shipMethod === 'POST' ? \`Địa chỉ nhận hàng: \${order.deliveryInfo.receiverAddress} - Số điện thoại : \${order.deliveryInfo.receiverTel} \`: "" }}
-+ {{order.shipMethod === 'NONE' ? \`Bưu cục sẽ liên hệ quý khách hàng trong thời gian sớm nhất.\` : "" }}
++ {{order.shipMethod === 'NONE' ? \`Cửa hàng sẽ liên hệ quý khách hàng trong thời gian sớm nhất.\` : "" }}
 Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 của Bưu điện thành phố Hồ Chí Minh để được hỗ trợ chi tiết.`,
         isActive: true,
         isPrivate: true,
@@ -948,9 +948,9 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
 
       {
         type: SettingType.richText,
-        name: "Thông báo cho bưu cục khi đơn hàng đang giao",
+        name: "Thông báo cho cửa hàng khi đơn hàng đang giao",
         key: SettingKey.DELIVERY_PENDING_MSG_FOR_MEMBER,
-        value: `[Thông báo tự động dành cho bưu cục]
+        value: `[Thông báo tự động dành cho cửa hàng]
 Đơn hàng {{order.code}} đang được giao. Thông tin đơn hàng:
 + Danh sách sản phẩm: 
 {{orderItems.map(i=>\`🛒\${i.productName} x \${i.qty}: \${$money(i.amount)}đ\`).join('\\n')}}
@@ -964,9 +964,9 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
       },
       {
         type: SettingType.richText,
-        name: "Thông báo cho bưu cục khi vận đơn thất bại",
+        name: "Thông báo cho cửa hàng khi vận đơn thất bại",
         key: SettingKey.DELIVERY_FAILURE_MSG_FOR_MEMBER,
-        value: `[Thông báo tự động dành cho bưu cục]
+        value: `[Thông báo tự động dành cho cửa hàng]
 Đơn hàng {{order.code}} đã giao thất bại. Thông tin đơn hàng:
 + Danh sách sản phẩm: 
 {{orderItems.map(i=>\`🛒\${i.productName} x \${i.qty}: \${$money(i.amount)}đ\`).join('\\n')}}
@@ -980,9 +980,9 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
       },
       {
         type: SettingType.richText,
-        name: "Thông báo cho bưu cục khi vận đơn thành công",
+        name: "Thông báo cho cửa hàng khi vận đơn thành công",
         key: SettingKey.DELIVERY_COMPLETED_MSG_FOR_MEMBER,
-        value: `[Thông báo tự động dành cho bưu cục]
+        value: `[Thông báo tự động dành cho cửa hàng]
 Đơn hàng {{order.code}} đã được giao thành công. Thông tin đơn hàng:
 + Danh sách sản phẩm: 
 {{orderItems.map(i=>\`🛒\${i.productName} x \${i.qty}: \${$money(i.amount)}đ\`).join('\\n')}}
@@ -1005,9 +1005,9 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
       },
       {
         type: SettingType.richText,
-        name: "Nhãn nhận hàng tại bưu cục",
+        name: "Nhãn nhận hàng tại cửa hàng",
         key: SettingKey.DELIVERY_POST_LABEL,
-        value: `Nhận hàng tại bưu cục`,
+        value: `Nhận hàng tại cửa hàng`,
         isActive: true,
         isPrivate: true,
         readOnly: false,
@@ -1045,7 +1045,7 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
   {
     slug: SettingGroupSlug.CAU_HINH_DASHBOARD,
     name: "Cấu hình Dashboard",
-    desc: "Cấu hình Dashboard tổng cục và bưu cục",
+    desc: "Cấu hình Dashboard tổng cục và cửa hàng",
     readOnly: true,
     settings: [
       {
@@ -1235,9 +1235,9 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
       /// loai san pham
       {
         type: SettingType.string,
-        name: "LOẠI THÀNH VIÊN - Bưu cục",
+        name: "LOẠI THÀNH VIÊN - Cửa hàng",
         key: SettingKey.MEMBER_TYPE_BRANCH,
-        value: "Bưu cục",
+        value: "Cửa hàng",
         isActive: true,
         isPrivate: true,
         readOnly: false,

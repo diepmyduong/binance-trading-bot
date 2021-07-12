@@ -73,20 +73,22 @@ const ChartBusiness = () => {
                 { value: "Tháng trước", label: "Tháng trước" },
               ]}
             />
-            <CardCustom.Body style={{ padding: 0 }} className="overflow-auto">
+            <CardCustom.Body style={{ padding: 0 }} className="">
               <div className="grid grid-cols-2 bg-gradient sticky top-0 shadow-md p-4 text-white">
                 <div className="">Tên sản phẩm</div>
                 <div className="">Số lượng</div>
               </div>
-              {DataProduct.map((item, ind) => {
-                let backgroundGray = ind % 2 == 1 && " bg-gray-100 ";
-                return (
-                  <div className={`grid grid-cols-2 p-4 ${backgroundGray}`}>
-                    <div className="">{item.name}</div>
-                    <div className="">{item.amount}</div>
-                  </div>
-                );
-              })}
+              <div className=" overflow-auto" style={{ height: "372px" }}>
+                {DataProduct.map((item, ind) => {
+                  let backgroundGray = ind % 2 == 1 && " bg-gray-200 ";
+                  return (
+                    <div className={`grid grid-cols-2 p-4 ${backgroundGray}`}>
+                      <div className="">{item.name}</div>
+                      <div className="">{item.amount}</div>
+                    </div>
+                  );
+                })}
+              </div>
             </CardCustom.Body>
           </CardCustom>
         </div>

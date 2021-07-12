@@ -307,6 +307,7 @@ export class OrderRepository extends CrudRepository<Order> {
       id: String
       name: String
       address: String
+      shopName: String
     }: Member
     fromMember {
       id: String

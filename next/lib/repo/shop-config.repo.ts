@@ -140,3 +140,8 @@ export const SHOP_BANNER_ACTIONS: Option[] = [
   { value: "VOUCHER", label: "Voucher" },
   { value: "WEBSITE", label: "Trang web" },
 ];
+
+export const SHOP_KM_OPTIONS = [2, 3, 4, 5, 6, 7, 8, 9, 10].map((km) => ({
+  value: km,
+  label: `${km}km đầu tiên`,
+}));

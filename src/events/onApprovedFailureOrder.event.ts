@@ -1,5 +1,6 @@
 import { Subject } from "rxjs";
 import {
+  InsertNotification,
   NotificationModel,
   NotificationTarget,
   NotificationType,
@@ -47,8 +48,7 @@ onApprovedFailureOrder.subscribe(async (order) => {
     body: `Đơn hàng bị huỷ. ${order.note}`,
     orderId: order._id,
   });
-  await NotificationModel.create(notify);
-  await SendNotificationJob.trigger();
+  InsertNotification([notify]);
 });
 
 // Thông báo nhân viên đơn hàng thành công
@@ -66,8 +66,7 @@ onApprovedFailureOrder.subscribe(async (order) => {
       })
   );
   if (notifies.length > 0) {
-    await NotificationModel.insertMany(notifies);
-    await SendNotificationJob.trigger(notifies.length);
+    InsertNotification(notifies);
   }
 });
 
@@ -81,8 +80,7 @@ onApprovedFailureOrder.subscribe(async (order) => {
     body: `Đơn hàng bị huỷ. ${order.note}`,
     orderId: order._id,
   });
-  await NotificationModel.create(notify);
-  await SendNotificationJob.trigger();
+  InsertNotification([notify]);
 });
 
 // Publish order stream

@@ -1,5 +1,6 @@
 import { Subject } from "rxjs";
 import {
+  InsertNotification,
   NotificationModel,
   NotificationTarget,
   NotificationType,
@@ -70,8 +71,7 @@ onDelivering.subscribe(async (order) => {
     body: order.deliveryInfo.statusText,
     orderId: order._id,
   });
-  await NotificationModel.create(notify);
-  await SendNotificationJob.trigger();
+  InsertNotification([notify]);
 });
 
 // Thông báo nhân viên cập nhật trang thái giao hàng
@@ -89,8 +89,7 @@ onDelivering.subscribe(async (order) => {
       })
   );
   if (notifies.length > 0) {
-    await NotificationModel.insertMany(notifies);
-    await SendNotificationJob.trigger(notifies.length);
+    InsertNotification(notifies);
   }
 });
 
@@ -104,8 +103,7 @@ onDelivering.subscribe(async (order) => {
     body: order.deliveryInfo.statusText,
     orderId: order._id,
   });
-  await NotificationModel.create(notify);
-  await SendNotificationJob.trigger();
+  InsertNotification([notify]);
 });
 
 // Publish order stream

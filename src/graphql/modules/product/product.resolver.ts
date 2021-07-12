@@ -97,6 +97,7 @@ const Product = {
   member: GraphQLHelper.loadById(MemberLoader, "memberId"),
   crossSaleOrdered: GraphQLHelper.requireRoles(ROLES.ADMIN_EDITOR_MEMBER),
   labels: GraphQLHelper.loadManyById(ProductLabelLoader, "labelIds"),
+  upsaleProducts: GraphQLHelper.loadManyById(ProductLoader, "upsaleProductIds"),
   collaboratorProduct: async (root: IProduct, args: any, context: Context) => {
     let collaProduct = null;
     if (context.isCustomer()) {

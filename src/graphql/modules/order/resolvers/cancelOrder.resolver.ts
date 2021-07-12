@@ -54,9 +54,10 @@ const Mutation = {
 
     // Thực hiện huỷ đơn
     order.status = OrderStatus.CANCELED;
+    order.cancelReason = note;
     await OrderItemModel.updateMany(
       { orderId: order._id },
-      { $set: { status: OrderStatus.CANCELED, cancelReason: note } }
+      { $set: { status: OrderStatus.CANCELED } }
     ).exec;
 
     return await Promise.all([order.save()]).then(async (res) => {

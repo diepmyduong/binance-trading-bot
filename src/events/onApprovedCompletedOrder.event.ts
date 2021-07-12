@@ -13,6 +13,7 @@ import {
 import { CustomerPointLogType } from "../graphql/modules/customerPointLog/customerPointLog.model";
 import { IMember, MemberLoader, MemberModel } from "../graphql/modules/member/member.model";
 import {
+  InsertNotification,
   NotificationModel,
   NotificationTarget,
   NotificationType,
@@ -327,8 +328,7 @@ onApprovedCompletedOrder.subscribe(async (order) => {
     body: `Đơn hàng hoàn thành.`,
     orderId: order._id,
   });
-  await NotificationModel.create(notify);
-  await SendNotificationJob.trigger();
+  InsertNotification([notify]);
 });
 
 // Thông báo nhân viên đơn hàng thành công
@@ -346,8 +346,7 @@ onApprovedCompletedOrder.subscribe(async (order) => {
       })
   );
   if (notifies.length > 0) {
-    await NotificationModel.insertMany(notifies);
-    await SendNotificationJob.trigger(notifies.length);
+    InsertNotification(notifies);
   }
 });
 
@@ -361,8 +360,7 @@ onApprovedCompletedOrder.subscribe(async (order) => {
     body: `Đơn hàng hoàn thành`,
     orderId: order._id,
   });
-  await NotificationModel.create(notify);
-  await SendNotificationJob.trigger();
+  InsertNotification([notify]);
 });
 
 // Publish order stream

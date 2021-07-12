@@ -52,6 +52,8 @@ export type IProduct = BaseDocument & {
   rating?: number; // Điểm đánh giá
   soldQty?: number; // Số lượng đã bán
   labelIds?: string; // Mã label
+
+  upsaleProductIds?: string[]; // Sản phẩm up sale
 };
 
 const productSchema = new Schema(
@@ -99,6 +101,7 @@ const productSchema = new Schema(
     rating: { type: Number, default: 5, min: 1, max: 5 },
     soldQty: { type: Number, default: 0 },
     labelIds: { type: [{ type: Schema.Types.ObjectId, ref: "ProductLabel" }], default: [] },
+    upsaleProductIds: { type: [{ type: Schema.Types.ObjectId, ref: "Product" }], default: [] },
   },
   { timestamps: true }
 );

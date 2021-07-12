@@ -68,10 +68,24 @@ export function ShopProvider(props) {
       }
       let branchs = await ShopBranchService.getAll();
       console.log(branchs);
-
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          ShopBranchService.getAllBranchDistance(
+            position.coords.latitude,
+            position.coords.longitude
+          ).then((res) => {
+            let xMin = Math.min(...res.data.map((o: ShopBranch) => o.distance));
+            let minDistanceBranch = res.data.find((o) => o.distance === xMin);
+            if (branchs) {
+              let branch = branchs.data.find((item) => item.id === minDistanceBranch.id);
+              setBranchSelecting(branch);
+            }
+          });
+          setLocationCustomer(position.coords);
+        });
+      }
       if (branchs) {
         setShopBranch(cloneDeep(branchs.data));
-        setBranchSelecting(branchs.data[0]);
       }
     }
     let res = await ShopService.getShopData();
@@ -105,15 +119,7 @@ export function ShopProvider(props) {
       router.push(location.href, null, { shallow: true });
     }
   }
-  function getLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setLocationCustomer(position.coords);
-      });
-    }
-  }
   useEffect(() => {
-    getLocation();
     getShop();
   }, []);
   return (

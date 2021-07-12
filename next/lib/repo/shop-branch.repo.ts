@@ -23,6 +23,7 @@ export interface ShopBranch extends BaseModel {
   shipUseOneKmFee?: boolean;
   shipNote?: string;
   operatingTimes?: OperatingTime[];
+  distance: number;
 }
 interface OperatingTime {
   day: number;
@@ -94,6 +95,14 @@ export class ShopBranchRepository extends CrudRepository<ShopBranch> {
       status: String
     }: [OperatingTime]
   `);
+  async getAllBranchDistance(lat: number, lng: number) {
+    return await this.apollo
+      .query({
+        query: this.gql`query {  getAllShopBranch { data{id code
+          name distance(lat:${lat}, lng:${lng}) } }}`,
+      })
+      .then((res) => res.data["getAllShopBranch"] as ShopBranch);
+  }
 }
 
 export const ShopBranchService = new ShopBranchRepository();

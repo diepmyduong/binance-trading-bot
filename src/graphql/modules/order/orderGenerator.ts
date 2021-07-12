@@ -51,6 +51,8 @@ export type CreateOrderInput = {
   buyerProvinceId: string;
   buyerDistrictId: string;
   buyerWardId: string;
+  buyerFullAddress: string;
+  buyerAddressNote: string;
   shipMethod: string;
   paymentMethod: string;
   addressDeliveryId: string;
@@ -96,6 +98,8 @@ export class OrderGenerator {
       buyerProvinceId: orderInput.buyerProvinceId,
       buyerDistrictId: orderInput.buyerDistrictId,
       buyerWardId: orderInput.buyerWardId,
+      buyerFullAddress: orderInput.buyerFullAddress,
+      buyerAddressNote: orderInput.buyerAddressNote,
       sellerBonusPoint: 0,
       buyerBonusPoint: 0,
       // delivery
@@ -121,7 +125,10 @@ export class OrderGenerator {
   }
   async generate() {
     await this.getUnitPrice();
-    await Promise.all([this.setOrderItems(), this.setBuyerAddress()]);
+    await Promise.all([
+      this.setOrderItems(),
+      // this.setBuyerAddress()
+    ]);
     this.calculateAmount(); // Tính tiền trước phí ship
     await this.setOrderSeller();
     await this.setCollaborator();

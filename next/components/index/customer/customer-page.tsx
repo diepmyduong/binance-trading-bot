@@ -26,7 +26,7 @@ export function CustomerPage() {
               console.log(data);
             }}
           >
-            <div className="w-full pt-8 grid grid-cols-2 gap-x-4">
+            <div className="w-full pt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-4">
               <Field label="Họ và Tên" name="name">
                 <Input defaultValue="Lê Huỳnh Thảo Nguyên" className=" border-gray-300" />
               </Field>

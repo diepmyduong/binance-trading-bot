@@ -97,25 +97,16 @@ export function ShopProvider(props) {
     let res = await ShopService.getShopData();
     if (res) {
       setShop(cloneDeep(res));
-      let phoneUser = localStorage.getItem("phoneUser");
-      if (phoneUser) {
-        setCustomer(phoneUser);
-      } else {
-        setCustomer(null);
-      }
     } else {
       setShop(null);
     }
+    let phoneUser = localStorage.getItem("phoneUser");
+    if (phoneUser) {
+      setCustomer(phoneUser);
+    } else {
+      setCustomer(null);
+    }
     setLoading(false);
-  }
-  function compare(a: ShopBranch, b: ShopBranch) {
-    if (a.distance < b.distance) {
-      return -1;
-    }
-    if (a.distance > b.distance) {
-      return 1;
-    }
-    return 0;
   }
   function customerLogin(phone: string) {
     if (phone) {
@@ -128,9 +119,10 @@ export function ShopProvider(props) {
   }
   function customerLogout() {
     localStorage.removeItem("phoneUser");
+    localStorage.removeItem("customer-token");
     setCustomer(null);
     if (router.pathname !== "/") {
-      router.push(location.href, null, { shallow: true });
+      router.push(`/?=${shopCode}`);
     }
   }
   useEffect(() => {

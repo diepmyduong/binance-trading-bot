@@ -98,8 +98,8 @@ export class ShopBranchRepository extends CrudRepository<ShopBranch> {
   async getAllBranchDistance(lat: number, lng: number) {
     return await this.apollo
       .query({
-        query: this.gql`query {  getAllShopBranch { data{id code
-          name distance(lat:${lat}, lng:${lng}) } }}`,
+        query: this
+          .gql`query {  getAllShopBranch { data{ ${this.fullFragment} distance(lat:${lat}, lng:${lng}) } }}`,
       })
       .then((res) => res.data["getAllShopBranch"] as ShopBranch);
   }

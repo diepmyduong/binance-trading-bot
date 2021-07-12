@@ -6,6 +6,7 @@ import cloneDeep from "lodash/cloneDeep";
 import { Category, CategoryService } from "../repo/category.repo";
 import { ShopBranchService, ShopBranch } from "../repo/shop-branch.repo";
 import { UserService } from "../repo/user.repo";
+import sortBy, { orderBy } from "lodash";
 
 export const ShopContext = createContext<
   Partial<{
@@ -66,26 +67,21 @@ export function ShopProvider(props) {
       if (cats) {
         setcategoriesShop(cloneDeep(cats.data));
       }
-      let branchs = await ShopBranchService.getAll();
-      console.log(branchs);
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
-          ShopBranchService.getAllBranchDistance(
-            position.coords.latitude,
-            position.coords.longitude
-          ).then((res) => {
-            let xMin = Math.min(...res.data.map((o: ShopBranch) => o.distance));
-            let minDistanceBranch = res.data.find((o) => o.distance === xMin);
-            if (branchs) {
-              let branch = branchs.data.find((item) => item.id === minDistanceBranch.id);
-              setBranchSelecting(branch);
-            }
+          ShopBranchService.getAll({
+            fragment: `${ShopBranchService.fullFragment} distance(lat:${position.coords.latitude}, lng:${position.coords.longitude})`,
+            query: { order: { distance: 1 } },
+          }).then((res) => {
+            let branchs = res.data;
+            let branchsSorted = orderBy(branchs, (o) => o.distance);
+            console.log(branchsSorted);
+            setShopBranch(cloneDeep(branchsSorted));
+            let neared = branchsSorted.findIndex((item) => item.activated && item.isOpen);
+            setBranchSelecting(branchsSorted[neared]);
           });
           setLocationCustomer(position.coords);
         });
-      }
-      if (branchs) {
-        setShopBranch(cloneDeep(branchs.data));
       }
     }
     let res = await ShopService.getShopData();
@@ -102,7 +98,15 @@ export function ShopProvider(props) {
     }
     setLoading(false);
   }
-  const loginCustomerByPhone = (phone) => {};
+  function compare(a: ShopBranch, b: ShopBranch) {
+    if (a.distance < b.distance) {
+      return -1;
+    }
+    if (a.distance > b.distance) {
+      return 1;
+    }
+    return 0;
+  }
   function customerLogin(phone: string) {
     if (phone) {
       UserService.loginCustomerByPhone(phone).then((res: { loginCustomerByPhone: any }) => {
@@ -138,7 +142,6 @@ export function ShopProvider(props) {
         setShopCode,
         branchSelecting,
         shopBranchs,
-        loginCustomerByPhone,
         setBranchSelecting,
         loading,
       }}

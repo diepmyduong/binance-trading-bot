@@ -37,7 +37,7 @@ export function ShopProvider(props) {
   const [productIdSelected, setProductIdSelected] = useState<any>(null);
   const [categoriesShop, setcategoriesShop] = useState<Category[]>(null);
   const [customer, setCustomer] = useState<any>();
-  const [shopBranchs, setShopBranch] = useState<ShopBranch[]>();
+  const [shopBranchs, setShopBranch] = useState<ShopBranch[]>([]);
   const [locationCustomer, setLocationCustomer] = useState<any>();
   async function getShop() {
     setLoading(true);

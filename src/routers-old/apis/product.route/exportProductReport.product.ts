@@ -1,13 +1,8 @@
 import { ROLES } from "../../../constants/role.const";
-import {
-  BaseRoute,
-  Request,
-  Response,
-  NextFunction,
-} from "../../../base/baseRoute";
+import { BaseRoute, Request, Response, NextFunction } from "../../../base/baseRoute";
 import { ErrorHelper } from "../../../base/error";
 import { Context } from "../../../graphql/context";
-import _, {  set } from "lodash";
+import _, { set } from "lodash";
 import numeral from "numeral";
 import { OrderItemModel } from "../../../graphql/modules/orderItem/orderItem.model";
 import { MemberModel } from "../../../graphql/modules/member/member.model";
@@ -29,25 +24,22 @@ export const exportProductReport = async (req: Request, res: Response) => {
   const branchId: any = req.query.branchId ? req.query.branchId.toString() : null;
   const memberIdsString = req.query.sellerIds ? req.query.sellerIds.toString() : null;
 
-
   let sellerIds: any = null;
   if (memberIdsString) {
     sellerIds = memberIdsString.split("|");
-    if (sellerIds.length < 0)
-      throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+    if (sellerIds.length < 0) throw ErrorHelper.requestDataInvalid("Mã cửa hàng");
 
     sellerIds.map((m: string) => {
       if (!isValidObjectId(m)) {
-        throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+        throw ErrorHelper.requestDataInvalid("Mã cửa hàng");
       }
     });
 
     sellerIds = sellerIds.map(Types.ObjectId);
   }
 
-
   if (!isValidObjectId(memberId)) {
-    throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+    throw ErrorHelper.requestDataInvalid("Mã cửa hàng");
   }
 
   const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
@@ -55,14 +47,12 @@ export const exportProductReport = async (req: Request, res: Response) => {
   const match2: any = {};
   if (context.isMember()) {
     set(match2, "sellerId.$in", [context.id]);
-  }
-  else {
+  } else {
     if (branchId) {
-      const memberIds = await MemberModel.find({ branchId ,activated: true }).select("_id");
-      const sellerIds = memberIds.map(m => m.id);
+      const memberIds = await MemberModel.find({ branchId, activated: true }).select("_id");
+      const sellerIds = memberIds.map((m) => m.id);
       set(match2, "sellerId.$in", sellerIds.map(Types.ObjectId));
-    }
-    else {
+    } else {
       if (sellerIds) {
         if (sellerIds.length > 0) {
           set(match2, "sellerId.$in", sellerIds);
@@ -72,7 +62,7 @@ export const exportProductReport = async (req: Request, res: Response) => {
   }
 
   const productIds = await ProductModel.find({}).select("_id");
-  const objectIds = productIds.map(m => m.id).map(Types.ObjectId);
+  const objectIds = productIds.map((m) => m.id).map(Types.ObjectId);
 
   const $match: any = {};
   if ($gte) {
@@ -83,20 +73,19 @@ export const exportProductReport = async (req: Request, res: Response) => {
   }
   set($match, "productId.$in", objectIds);
 
-
   const data: any = await OrderItemModel.aggregate([
     {
-      $match
+      $match,
     },
     {
       $lookup: {
-        from: 'orders',
-        localField: 'orderId',
-        foreignField: '_id',
-        as: 'order'
-      }
+        from: "orders",
+        localField: "orderId",
+        foreignField: "_id",
+        as: "order",
+      },
     },
-    { $unwind: '$order' },
+    { $unwind: "$order" },
     {
       $project: {
         _id: 1,
@@ -108,12 +97,12 @@ export const exportProductReport = async (req: Request, res: Response) => {
         sellerId: "$order.sellerId",
         amount: 1,
         qty: 1,
-      }
+      },
     },
     {
       $match: {
-        ...match2
-      }
+        ...match2,
+      },
     },
     {
       $group: {
@@ -140,8 +129,8 @@ export const exportProductReport = async (req: Request, res: Response) => {
         deliveringAmount: { $sum: { $cond: [{ $eq: ["$status", "DELIVERING"] }, "$amount", 0] } },
         completedAmount: { $sum: { $cond: [{ $eq: ["$status", "COMPLETED"] }, "$amount", 0] } },
         failureAmount: { $sum: { $cond: [{ $eq: ["$status", "FAILURE"] }, "$amount", 0] } },
-        canceledAmount: { $sum: { $cond: [{ $eq: ["$status", "CANCELED"] }, "$amount", 0] } }
-      }
+        canceledAmount: { $sum: { $cond: [{ $eq: ["$status", "CANCELED"] }, "$amount", 0] } },
+      },
     },
     {
       $project: {
@@ -172,8 +161,8 @@ export const exportProductReport = async (req: Request, res: Response) => {
         completedAmount: 1,
         failureAmount: 1,
         canceledAmount: 1,
-      }
-    }
+      },
+    },
   ]);
   const workbook = new Excel.Workbook();
   const createSheetData = (data: [], name: string) => {
@@ -187,7 +176,7 @@ export const exportProductReport = async (req: Request, res: Response) => {
       "Tổng số đơn",
       "Tổng số lượng hàng",
       "Tổng tiền",
-      
+
       "Số lượng chờ duyệt",
       "Tổng tiền chờ duyệt",
 
@@ -241,10 +230,10 @@ export const exportProductReport = async (req: Request, res: Response) => {
     });
 
     UtilsHelper.setThemeExcelWorkBook(sheet);
-  }
+  };
 
   const POSTS_SHEET_NAME = "Danh sách sản phẩm";
   createSheetData(data, POSTS_SHEET_NAME);
 
   return UtilsHelper.responseExcel(res, workbook, "danh_sach_san_pham");
-}
+};

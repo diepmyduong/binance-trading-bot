@@ -51,7 +51,7 @@ const schema = gql`
     sellerId: ID 
     "Chủ shop bán chéo"
     fromMemberId: ID
-    "Trạng thái ${Object.values(OrderStatus).join('|')}"
+    "Trạng thái ${Object.values(OrderStatus).join("|")}"
     status: String
     "Hoa hồng VNPOST"
     commission0: Float
@@ -97,7 +97,7 @@ const schema = gql`
     collaboratorId: ID
     "Là nội thành"
     isUrbanDelivery: Boolean
-    "Bưu cục được chuyển đơn"
+    "Cửa hàng được chuyển đơn"
     toMemberId: ID
     "Ghi chú chuyển đơn"
     toMemberNote: String

@@ -149,7 +149,7 @@ const OverviewCommission = {
       return {
         code: member.code,
         name: member.name,
-        type: "Bưu Cục",
+        type: "Cửa Hàng",
         value: commission2,
       };
     }
@@ -161,7 +161,7 @@ const OverviewCommission = {
     return {
       code: member.code,
       name: member.shopName,
-      type: "Bưu Cục",
+      type: "Cửa Hàng",
       value: commission1,
     };
   },
@@ -181,7 +181,7 @@ const OverviewCommission = {
       return {
         code: member.code,
         name: member.shopName,
-        type: "Bưu Cục giao hàng",
+        type: "Cửa Hàng giao hàng",
         value: commission3,
       };
     } else {
@@ -190,7 +190,7 @@ const OverviewCommission = {
         return {
           code: member.code,
           name: member.shopName,
-          type: "Bưu Cục giao hàng",
+          type: "Cửa Hàng giao hàng",
           value: commission3,
         };
       } else {
@@ -200,7 +200,7 @@ const OverviewCommission = {
           return {
             code: member.code,
             name: member.shopName,
-            type: "Bưu Cục giao hàng",
+            type: "Cửa Hàng giao hàng",
             value: commission3,
           };
         }
@@ -210,7 +210,7 @@ const OverviewCommission = {
           return {
             code: member.code,
             name: member.shopName,
-            type: "Bưu Cục giao hàng",
+            type: "Cửa Hàng giao hàng",
             value: commission3,
           };
         }
@@ -345,7 +345,7 @@ async function getMatchQuery(args: any, context: Context) {
   if ($gte) set($match, "createdAt.$gte", $gte);
   if ($lte) set($match, "loggedAt.$lte", $lte);
 
-  //theo bưu cục nào
+  //theo cửa hàng nào
   const memberIds: Types.ObjectId[] = await getMemberIds(context, branchId, sellerIds);
   if (memberIds.length > 0) {
     set($match, "$or", [

@@ -5,7 +5,7 @@ export const VietnamPostDeliveryStatusDetail = {
   20: "Gửi sang hệ thống MyVNPOST thành công",
   60: "Đơn hàng đã hủy",
 
-  70: "Bưu cục đã nhận đơn hàng và nhập vào hệ thống chuyển phát của VNPost",
+  70: "Cửa hàng đã nhận đơn hàng và nhập vào hệ thống chuyển phát của VNPost",
 
   // giao hang ko dc
   91: "Đã đi phát hàng cho người nhận nhưng không thành công",
@@ -29,7 +29,7 @@ export const VNPostOrderStatusMap = new Map([
   [60, "Đã huỷ đơn hàng"],
   [61, "Báo Hủy"],
   [62, "Đã nhân báo huỷ"],
-  [70, "Bưu cục đã nhận đơn hàng và đang giao hàng"],
+  [70, "Cửa hàng đã nhận đơn hàng và đang giao hàng"],
   [91, "Phát không thành công"],
   [100, "Phát thành công"],
   [110, "Vào hệ thống Paypost/Chờ trả tiền"],
@@ -44,7 +44,7 @@ export const VNPostOrderStatusDetailMap = new Map([
   [60, "Hủy"],
   [61, "Hủy"],
   [62, "Hủy"],
-  [70, "Bưu cục đã nhận Order và nhập vào hệ thống chuyển phát của VNPost"],
+  [70, "Cửa hàng đã nhận Order và nhập vào hệ thống chuyển phát của VNPost"],
   [91, "Đã đi phát hàng cho người nhận nhưng không thành công"],
   [100, "Hàng đã phát thành công cho người nhận"],
   [110, "Bưu tá đã nhận tiền COD của người nhận và nhập vào hệ thống"],
@@ -66,7 +66,7 @@ export function GetVietnamPostDeliveryStatusText(status: string) {
     case ["60", "62"].includes(status):
       return "Đã hủy đơn hàng";
     case ["70"].includes(status):
-      return "Bưu cục đã nhận đơn hàng và đang giao hàng";
+      return "Cửa hàng đã nhận đơn hàng và đang giao hàng";
     case ["91"].includes(status):
       return "Giao hàng thất bại";
     case ["100"].includes(status):

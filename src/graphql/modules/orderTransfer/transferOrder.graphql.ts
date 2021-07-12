@@ -25,7 +25,7 @@ export default {
         if (context.isMember() && order.sellerId.toString() != context.id.toString())
           throw ErrorHelper.permissionDeny();
         const member = await MemberModel.findById(memberId);
-        if (!member) throw Error("Bưu cục không hợp lệ");
+        if (!member) throw Error("Cửa hàng không hợp lệ");
         order.toMemberId = member.id;
         order.status = OrderStatus.CONFIRMED;
         order.toMemberNote = note;

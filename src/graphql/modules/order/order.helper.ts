@@ -189,7 +189,7 @@ export class OrderHelper {
       const shopConditions = p.memberId == sellerId && p.isCrossSale === false;
       return shopConditions || p.isPrimary;
     };
-    // lấy ra danh sách sản phẩm của shop đó bán + sản phẩm chính (hảng bưu điện chuyển về cho bưu cục quản trị)
+    // lấy ra danh sách sản phẩm của shop đó bán + sản phẩm chính (hảng bưu điện chuyển về cho cửa hàng quản trị)
     const directShoppingProducts: any = allProducts
       .filter((p) => validDirectShop(p))
       .map(addQuantitytoProduct);

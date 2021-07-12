@@ -51,16 +51,16 @@ const CommissionLog = {
     ]);
     switch (root.type) {
       case CommissionLogType.RECEIVE_COMMISSION_1_FROM_ORDER:
-        return `Bưu cục ${member.shopName} nhận hoa hồng điểm bán từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
+        return `Cửa hàng ${member.shopName} nhận hoa hồng điểm bán từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
 
       // case CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER_FOR_PRESENTER:
       //   return `Hoa hồng giới thiệu cho chủ shop giới thiệu từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
 
       case CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR:
-        return `Bưu cục ${member.shopName} nhận hoa hồng cộng tác viên từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
+        return `Cửa hàng ${member.shopName} nhận hoa hồng cộng tác viên từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
 
       case CommissionLogType.RECEIVE_COMMISSION_3_FROM_ORDER:
-        return `Bưu cục ${member.shopName} nhận hoa hồng kho từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
+        return `Cửa hàng ${member.shopName} nhận hoa hồng kho từ đơn hàng ${order.code} - khách hàng: ${order.buyerName}`;
 
       default:
         return "";

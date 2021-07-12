@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import BannerPromtion from "./banner-promtion";
 import { EmotionsEvaluate } from "./emotions-evaluate";
 import { AiOutlineRight } from "react-icons/ai";
-import { HiShoppingCart } from "react-icons/hi";
+import { HiShoppingCart, HiArrowRight } from "react-icons/hi";
 import { FaPercent } from "react-icons/fa";
 import { MoneyBag, Package, SmileIcon } from "../../../../public/assets/svg/svg";
 import { Button } from "../../../shared/utilities/form/button";
@@ -94,11 +94,10 @@ const ShopBranch = (props: ShopInfoProps) => {
         <Button
           textPrimary
           onClick={() => setShowBranchs(true)}
-          text="Xem chi nhánh khác"
-          className="pr-0 text-sm xs:text-base text-ellipsis"
-          icon={<AiOutlineRight />}
+          className="pl-6 pr-0 xs:text-base text-ellipsis"
+          icon={<HiArrowRight />}
           iconPosition="end"
-          iconClassName="text-gray-400"
+          iconClassName="text-gray-400 text-lg"
         />
       </div>
       {shopBranchs && (

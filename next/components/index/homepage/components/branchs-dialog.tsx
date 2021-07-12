@@ -7,7 +7,6 @@ import { ShopBranch } from "../../../../lib/repo/shop-branch.repo";
 interface Propstype extends DialogPropsType {
   onSelect?: (string) => void;
   shopBranchs: ShopBranch[];
-  selected: ShopBranch;
 }
 const BranchsDialog = (props: Propstype) => {
   const { isMobile } = useDevice();

@@ -19,6 +19,7 @@ export function Table({ className = "", style = {}, ...props }: TableProps) {
   const {
     itemName,
     items,
+    loadingItems,
     selection,
     selectedItems,
     setSelectedItems,
@@ -112,13 +113,19 @@ export function Table({ className = "", style = {}, ...props }: TableProps) {
           ))}
         </tr>
       </thead>
-      <tbody>
-        {!tableItems && (
-          <tr>
-            <td className="border-b" colSpan={100}>
-              <Spinner className="py-20" />
-            </td>
-          </tr>
+      <tbody className="relative">
+        {loadingItems && (
+          <>
+            {tableItems?.length ? (
+              <Spinner className="absolute py-0 h-full max-h-44" />
+            ) : (
+              <tr>
+                <td className="border-b" colSpan={100}>
+                  <Spinner className="py-20" />
+                </td>
+              </tr>
+            )}
+          </>
         )}
         {tableItems && !tableItems.length && (
           <tr>
@@ -135,11 +142,16 @@ export function Table({ className = "", style = {}, ...props }: TableProps) {
               onItemClick(item);
             }}
             key={index}
-            className={`border-b text-gray-800 transition-colors duration-75 h-12 ${
+            style={{ transitionProperty: "background-color" }}
+            className={`border-b text-gray-800 duration-75 h-12 ${
               selection && selectedItems.find((x) => x.id == item.id)
                 ? "bg-primary-light"
                 : "hover:bg-gray-50"
-            } ${index == tableItems.length - 1 ? "" : "border-gray-200"}`}
+            } ${
+              loadingItems
+                ? "opacity-0 border-transparent pointer-events-none"
+                : `${index == tableItems.length - 1 ? "border-transparent" : "border-gray-200"}`
+            }`}
           >
             {columns.map((col, index, arr) => (
               <td

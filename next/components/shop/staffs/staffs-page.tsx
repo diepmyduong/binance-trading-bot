@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { RiHome3Line, RiPhoneLine } from "react-icons/ri";
-import { Driver } from "../../../lib/repo/driver.repo";
 import { ShopBranchService } from "../../../lib/repo/shop-branch.repo";
-import { StaffService, Staff } from "../../../lib/repo/staff.repo";
+import { Staff, StaffService, STAFF_SCOPES } from "../../../lib/repo/staff.repo";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
 import { Field } from "../../shared/utilities/form/field";
 import { ImageInput } from "../../shared/utilities/form/image-input";
@@ -117,6 +115,9 @@ export function StaffsPage(props: ReactProps) {
                 </Field>
                 <Field name="avatar" label="Avatar" cols={12}>
                   <ImageInput avatar />
+                </Field>
+                <Field name="scopes" label="Quyền hạn" cols={12}>
+                  <Select multi options={STAFF_SCOPES} />
                 </Field>
               </>
             )}

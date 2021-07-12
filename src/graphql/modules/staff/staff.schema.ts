@@ -31,7 +31,7 @@ const schema = gql`
     "Địa chỉ liên hệ"
     address: String
     "Danh sách phân quyền ${Object.values(StaffScope)}"
-    scopes: String
+    scopes: [String]
   }
 
   input UpdateStaffInput {
@@ -48,7 +48,7 @@ const schema = gql`
     "Mã chi nhánh"
     branchId: ID
     "Danh sách phân quyền ${Object.values(StaffScope)}"
-    scopes: String
+    scopes: [String]
   }
 
   type Staff {
@@ -71,7 +71,7 @@ const schema = gql`
     "Mã chi nhánh"
     branchId: ID
     "Danh sách phân quyền ${Object.values(StaffScope)}"
-    scopes: String
+    scopes: [String]
 
     branch: ShopBranch
   }

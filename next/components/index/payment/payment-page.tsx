@@ -165,11 +165,16 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
   const {
     totalMoney,
     generateOrder,
+    orderInput,
     draftOrder: order,
     generateDraftOrder,
     resetOrderInput,
   } = useCartContext();
   const toast = useToast();
+  const validData = () => {
+    if (!orderInput.buyerName) toast.error("Chưa nhập tên người nhận");
+    else if (!orderInput.buyerPhone) toast.error("Chưa nhập số điện thoại");
+  };
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
       <div className="grid grid-cols-2 px-4 border-t border-b border-gray-100 items-center justify-between">
@@ -196,6 +201,7 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
           primary
           className="w-full bg-gradient h-12"
           onClick={async () => {
+            validData();
             await generateOrder();
           }}
         />
@@ -246,7 +252,9 @@ const InputNote = () => {
         <Field label="Ghi chú" name="note">
           <Textarea placeholder="Nhập ghi chú" />
         </Field>
-        <SaveButtonGroup cancelText="" />
+        <Form.Footer>
+          <SaveButtonGroup />
+        </Form.Footer>
       </Form>
     </>
   );

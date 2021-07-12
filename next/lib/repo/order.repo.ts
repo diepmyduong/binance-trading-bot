@@ -1,3 +1,4 @@
+import { ShopBranch } from "./shop-branch.repo";
 import { PaymentMethod } from "./../../../src/graphql/modules/order/order.model";
 import { String } from "lodash";
 import { BaseModel, CrudRepository } from "./crud.repo";
@@ -113,6 +114,7 @@ export interface Order extends BaseModel {
   driverName: string;
   driverPhone: string;
   driverLicense: string;
+  shopBranch: ShopBranch;
 }
 export interface OrderItem extends BaseModel {
   orderId: string;
@@ -227,6 +229,14 @@ export class OrderRepository extends CrudRepository<Order> {
       id: String
       name: String
     }: Member
+    shopBranch{
+        name:String
+        code:String
+        address:String
+      }:ShopBranch
+    seller{
+      shopName:string
+    }:Member
     orderType: String
     orderTypeText: String
     pickupMethod: String
@@ -275,6 +285,7 @@ export class OrderRepository extends CrudRepository<Order> {
       orderId: ID
       sellerId: ID
       buyerId: ID
+      note:String
       isPrimary: Boolean
       productId: ID
       productName: String

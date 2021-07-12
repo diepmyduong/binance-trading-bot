@@ -20,6 +20,7 @@ export function CustomerPage() {
             <h1 className="text-2xl font-bold text-gray-700 text-center">Nguyễn Nhật Ninh</h1>
           </div>
           <Form
+            initialData={{}}
             className="w-full px-4"
             onSubmit={async (data) => {
               console.log(data);
@@ -33,9 +34,7 @@ export function CustomerPage() {
                 <Input defaultValue="032 77 33 883" className=" border-gray-300" type="number" />
               </Field>
             </div>
-            <Field name="customerAddress">
-              <AddressGroup />
-            </Field>
+            <AddressGroup />
             <div className=" w-full">
               <SaveButtonGroup />
             </div>

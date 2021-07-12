@@ -41,6 +41,10 @@ export default {
       buyerDistrictId: String
       "Phường / xã nhận"
       buyerWardId: String
+      "Địa chỉ giao đầy đủ"
+      buyerFullAddress: String!
+      "Ghi chú địa chỉ"
+      buyerAddressNote: String
       "Toạ độ"
       latitude: Float!
       longitude: Float!

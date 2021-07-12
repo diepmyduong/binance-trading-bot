@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import BannerPromtion from "./banner-promtion";
-import { EmotionsEvaluate } from "./emotions-evaluate";
 import { AiOutlineRight } from "react-icons/ai";
-import { HiShoppingCart } from "react-icons/hi";
+import { HiShoppingCart, HiArrowRight } from "react-icons/hi";
 import { FaPercent } from "react-icons/fa";
-import { MoneyBag, Package, SmileIcon } from "../../../../public/assets/svg/svg";
-import { Button } from "../../../shared/utilities/form/button";
-import { Rating } from "../../../shared/homepage-layout/rating";
-import { CommentsDialog } from "./comments-dialog";
-import BranchsDialog from "./branchs-dialog";
+
 import { useShopContext } from "../../../../lib/providers/shop-provider";
+import { Rating } from "../../../shared/homepage-layout/rating";
+import { Button } from "../../../shared/utilities/form/button";
 import { Img } from "../../../shared/utilities/img";
+import { Spinner } from "../../../shared/utilities/spinner";
+import BannerPromtion from "./banner-promtion";
+import BranchsDialog from "./branchs-dialog";
+import { CommentsDialog } from "./comments-dialog";
+import { EmotionsEvaluate } from "./emotions-evaluate";
+
 interface Propstype extends ReactProps {}
 
 export function ShopInfo(props: Propstype) {
@@ -68,7 +70,7 @@ const MoreInfomation = (props) => {
           />
         </div>
       </div>
-      <EmotionsEvaluate reactions={shop.config.tags} />
+      <EmotionsEvaluate reactions={shop.config.tags} shopName={shop.shopName} />
       <CommentsDialog isOpen={showComments} onClose={() => setShowComments(false)} />
     </>
   );
@@ -79,7 +81,7 @@ interface ShopInfoProps extends ReactProps {}
 const ShopBranch = (props: ShopInfoProps) => {
   const [showBranchs, setShowBranchs] = useState(false);
   const { branchSelecting, setBranchSelecting, shopBranchs, shop } = useShopContext();
-
+  if (!shopBranchs) return <Spinner />;
   return (
     <div className={`bg-white p-3 pb-0 rounded-md shadow-lg text-center  ${props.className || ""}`}>
       <h2 className="text-xl font-semibold pb-2">{shop.shopName}</h2>
@@ -89,16 +91,16 @@ const ShopBranch = (props: ShopInfoProps) => {
       </p>
       <div className="flex justify-between items-center">
         <p className="whitespace-nowrap">
-          {(!branchSelecting && shopBranchs.length + " chi nhánh") || branchSelecting.name}
+          {(!branchSelecting && "Chọn chi nhánh") || branchSelecting.name}
         </p>
         <Button
           textPrimary
           onClick={() => setShowBranchs(true)}
-          text="Xem chi nhánh khác"
-          className="pr-0 text-sm xs:text-base text-ellipsis"
-          icon={<AiOutlineRight />}
+          text={`(${shopBranchs.length})`}
+          className="pl-6 pr-0 text-sm xs:text-base text-ellipsis"
+          icon={<HiArrowRight />}
           iconPosition="end"
-          iconClassName="text-gray-400"
+          iconClassName="text-gray-400 text-lg"
         />
       </div>
       {shopBranchs && (

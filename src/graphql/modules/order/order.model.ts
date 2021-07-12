@@ -90,6 +90,8 @@ export type IOrder = BaseDocument & {
   buyerProvinceId?: string; // Mã Tỉnh / thành
   buyerDistrictId?: string; // Mã Quận / huyện
   buyerWardId?: string; // Mã Phường / xã
+  buyerFullAddress?: string; // Địa chỉ đầy đủ
+  buyerAddressNote?: string; // Ghi chú địa chỉ
   sellerBonusPoint?: number; // Điểm thường người bán
   buyerBonusPoint?: number; // Điểm thưởng người mua
   fromMemberId?: string; // Shoper bán chéo
@@ -171,6 +173,8 @@ const orderSchema = new Schema(
     buyerProvinceId: { type: String },
     buyerDistrictId: { type: String },
     buyerWardId: { type: String },
+    buyerFullAddress: { type: String },
+    buyerAddressNote: { type: String },
     sellerBonusPoint: { type: Number, default: 0, min: 0 },
     buyerBonusPoint: { type: Number, default: 0, min: 0 },
     // delivery

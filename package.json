@@ -35,8 +35,10 @@
   "dependencies": {
     "@apollo/client": "^3.3.19",
     "@ckeditor/ckeditor5-react": "^3.0.2",
+    "@goongmaps/goong-geocoder": "^1.1.1",
     "@jtfell/lru-map": "^1.0.1",
     "@lynxerious/ckeditor5-build-mcom": "^15.0.2",
+    "@next/bundle-analyzer": "^10.2.3",
     "@tailwindcss/aspect-ratio": "^0.2.1",
     "@tippyjs/react": "^4.2.5",
     "agenda": "^3.1.0",
@@ -114,8 +116,7 @@
     "wink-nlp-utils": "^2.0.6",
     "winston": "^3.3.3",
     "winston-mongodb": "^5.0.1",
-    "written-number": "^0.9.1",
-    "@next/bundle-analyzer": "^10.2.3"
+    "written-number": "^0.9.1"
   },
   "devDependencies": {
     "@types/agenda": "^3.0.2",

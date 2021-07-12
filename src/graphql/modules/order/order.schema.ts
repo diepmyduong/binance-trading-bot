@@ -118,6 +118,10 @@ const schema = gql`
     buyerDistrictId: String 
     "Mã Phường / xã"
     buyerWardId: String 
+    "Địa chỉ đầy đủ"
+    buyerFullAddress: String
+    "Ghi chú địa chỉ"
+    buyerAddressNote: String
     "Điểm thường người bán"
     sellerBonusPoint: Float
     "Điểm thưởng người mua"

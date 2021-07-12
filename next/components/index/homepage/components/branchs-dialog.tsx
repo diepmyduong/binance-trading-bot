@@ -8,7 +8,7 @@ interface Propstype extends DialogPropsType {
   onSelect?: (string) => void;
   shopBranchs: ShopBranch[];
 }
-const BranchsDialog = (props: Propstype) => {
+const BranchsDialog = ({ shopBranchs = [], ...props }: Propstype) => {
   const { isMobile } = useDevice();
   const [dayCur, setDayCur] = useState(0);
   useEffect(() => {
@@ -20,14 +20,14 @@ const BranchsDialog = (props: Propstype) => {
     <Dialog
       isOpen={props.isOpen}
       onClose={props.onClose}
-      title={`Chọn chi nhánh (${props.shopBranchs.length})`}
+      title={`Chọn chi nhánh (${shopBranchs.length})`}
       mobileSizeMode
       slideFromBottom="all"
       bodyClass="relative bg-white rounded"
     >
       <Dialog.Body>
         <div className={`flex flex-col text-sm sm:text-base ${isMobile ? "pb-12" : ""}`}>
-          {props.shopBranchs.map((item: ShopBranch, index) => (
+          {shopBranchs.map((item: ShopBranch, index) => (
             <div className="flex px-4 mt-2 border-b pb-2" key={index}>
               <div className="flex-1 leading-7">
                 <h3 className="text-primary text-base sm:text-lg">{item.name}</h3>

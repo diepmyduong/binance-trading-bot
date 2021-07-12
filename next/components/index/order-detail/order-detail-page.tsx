@@ -114,7 +114,7 @@ export function OrderDetailPage({ id, ...props }: PropsType) {
                       {!!item.toppings.length && (
                         <div>{item.toppings.map((topping) => topping.optionName).join(", ")}</div>
                       )}
-                      {item.note && <div>{item.note}</div>}
+                      {item.note && <div>Ghi chú: {item.note}</div>}
                     </div>
                     <div className="font-bold">{NumberPipe(item.amount, true)}</div>
                   </div>

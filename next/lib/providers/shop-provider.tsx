@@ -37,7 +37,7 @@ export function ShopProvider(props) {
   const [productIdSelected, setProductIdSelected] = useState<any>(null);
   const [categoriesShop, setcategoriesShop] = useState<Category[]>(null);
   const [customer, setCustomer] = useState<any>();
-  const [shopBranchs, setShopBranch] = useState<ShopBranch[]>();
+  const [shopBranchs, setShopBranch] = useState<ShopBranch[]>([]);
   const [locationCustomer, setLocationCustomer] = useState<any>();
   async function getShop() {
     setLoading(true);
@@ -54,6 +54,8 @@ export function ShopProvider(props) {
         haveShop = scode;
       }
     }
+    let brsnav = null;
+
     if (haveShop) {
       let token = await ShopService.loginAnonymous(haveShop);
       SetAnonymousToken(token);
@@ -73,6 +75,7 @@ export function ShopProvider(props) {
             fragment: `${ShopBranchService.fullFragment} distance(lat:${position.coords.latitude}, lng:${position.coords.longitude})`,
             query: { order: { distance: 1 } },
           }).then((res) => {
+            brsnav = res.data;
             let branchs = res.data;
             let branchsSorted = orderBy(branchs, (o) => o.distance);
             console.log(branchsSorted);
@@ -82,30 +85,28 @@ export function ShopProvider(props) {
           });
           setLocationCustomer(position.coords);
         });
+      } else {
       }
+    }
+    let brs = await ShopBranchService.getAll();
+    if (brs && !brsnav) {
+      setShopBranch(cloneDeep(brs.data));
+      let active = brs.data.findIndex((item) => item.activated && item.isOpen);
+      setBranchSelecting(brs.data[active]);
     }
     let res = await ShopService.getShopData();
     if (res) {
       setShop(cloneDeep(res));
-      let phoneUser = localStorage.getItem("phoneUser");
-      if (phoneUser) {
-        setCustomer(phoneUser);
-      } else {
-        setCustomer(null);
-      }
     } else {
       setShop(null);
     }
+    let phoneUser = localStorage.getItem("phoneUser");
+    if (phoneUser) {
+      setCustomer(phoneUser);
+    } else {
+      setCustomer(null);
+    }
     setLoading(false);
-  }
-  function compare(a: ShopBranch, b: ShopBranch) {
-    if (a.distance < b.distance) {
-      return -1;
-    }
-    if (a.distance > b.distance) {
-      return 1;
-    }
-    return 0;
   }
   function customerLogin(phone: string) {
     if (phone) {
@@ -118,9 +119,10 @@ export function ShopProvider(props) {
   }
   function customerLogout() {
     localStorage.removeItem("phoneUser");
+    localStorage.removeItem("customer-token");
     setCustomer(null);
     if (router.pathname !== "/") {
-      router.push(location.href, null, { shallow: true });
+      router.push(`/?=${shopCode}`);
     }
   }
   useEffect(() => {

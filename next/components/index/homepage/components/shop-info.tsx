@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineRight } from "react-icons/ai";
-<<<<<<< HEAD
 import { HiShoppingCart, HiArrowRight } from "react-icons/hi";
-=======
->>>>>>> e9a5fef86aa36dea36efb3fe99e3ebc7709c7fad
 import { FaPercent } from "react-icons/fa";
 
 import { useShopContext } from "../../../../lib/providers/shop-provider";

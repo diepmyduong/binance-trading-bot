@@ -20,16 +20,13 @@ export function InforPayment() {
   const [openInputAddress, setOpenInputAddress] = useState(false);
   const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
   const [addressTemp, setAddressTemp] = useState("");
-
+  console.log("branchSelecting", branchSelecting);
   const getAddress = async (data, fullData) => {
     let fullAddress = {
       address: data.address || draftOrder?.order?.buyerAddress,
       ward: fullData.wardId?.label || draftOrder?.order?.buyerWard,
-      district: fullData.districtId?.label || draftOrder?.order?.buyerProvince,
-      province:
-        fullData.provinceId?.label ||
-        draftOrder?.order?.buyerDistrict ||
-        (orderInput.buyerProvinceId == "70" && "Hồ Chí Minh"),
+      district: fullData.districtId?.label || draftOrder?.order?.buyerDistrict,
+      province: fullData.provinceId?.label || draftOrder?.order?.buyerProvince,
     };
     setAddressTemp(getAddressText(fullAddress));
   };
@@ -85,10 +82,12 @@ export function InforPayment() {
                       <>
                         <p className="font-semibold ">{branchSelecting.name}</p>
                         <p className="font-medium">
-                          {branchSelecting.address && branchSelecting.address}
-                          {branchSelecting.ward && ", " + branchSelecting.ward}
-                          {branchSelecting.district && ", " + branchSelecting.district}
-                          {branchSelecting.province && ", " + branchSelecting.province}
+                          {getAddressText({
+                            address: branchSelecting.address,
+                            ward: branchSelecting.ward,
+                            district: branchSelecting.district,
+                            province: branchSelecting.province,
+                          })}
                         </p>
                       </>
                     ) : (

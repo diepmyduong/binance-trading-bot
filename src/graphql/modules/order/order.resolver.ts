@@ -16,6 +16,7 @@ import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { CustomerLoader, CustomerModel } from "../customer/customer.model";
 import { MemberLoader, MemberModel } from "../member/member.model";
 import { OrderItemLoader } from "../orderItem/orderItem.model";
+import { ShopBranchLoader } from "../shopBranch/shopBranch.model";
 import { getShipMethods, IOrder, OrderStatus, PaymentMethod, ShipMethod } from "./order.model";
 import { orderService } from "./order.service";
 
@@ -56,6 +57,7 @@ const Order = {
   fromMember: GraphQLHelper.loadById(MemberLoader, "fromMemberId"),
   toMember: GraphQLHelper.loadById(MemberLoader, "toMemberId"),
   buyer: GraphQLHelper.loadById(CustomerLoader, "buyerId"),
+  shopBranch: GraphQLHelper.loadById(ShopBranchLoader, "shopBranchId"),
   collaborator: async (root: IOrder, args: any, context: Context) => {
     const collaborator = await CollaboratorModel.findById(root.collaboratorId);
     const member = await MemberModel.findById(root.sellerId);

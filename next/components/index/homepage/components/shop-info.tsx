@@ -68,7 +68,7 @@ const MoreInfomation = (props) => {
           />
         </div>
       </div>
-      <EmotionsEvaluate reactions={shop.config.tags} />
+      <EmotionsEvaluate reactions={shop.config.tags} shopName={shop.shopName} />
       <CommentsDialog isOpen={showComments} onClose={() => setShowComments(false)} />
     </>
   );

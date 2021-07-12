@@ -174,6 +174,8 @@ const schema = gql`
     cancelReason: String
     "Ghim đơn"
     pin: Boolean
+
+    shopBranch: ShopBranch
   }
 
 

@@ -25,6 +25,7 @@ interface DataTableProps<T extends BaseModel> extends ReactProps {
   updateItemHref?: (item: Partial<T>) => string;
   postProcessItem?: (item: Partial<T>) => Partial<T>;
   crudService: CrudRepository<Partial<T>>;
+  autoRefresh?: number;
 }
 export function DataTable<T extends BaseModel>({
   crudService,
@@ -36,6 +37,7 @@ export function DataTable<T extends BaseModel>({
   const [refreshing, setRefreshing] = useState(false);
   const [itemName, setItemName] = useState(props.itemName ? props.itemName.toLowerCase() : "");
   const [loadDone, setLoadDone] = useState(false);
+  const [loadingItems, setLoadingItems] = useState(false);
   const [filter, setFilter] = useState({});
   const [search, setSearch] = useState("");
   const [currentOrder, setCurrentOrder] = useState<{ property: string; type: "asc" | "desc" }>(
@@ -60,13 +62,29 @@ export function DataTable<T extends BaseModel>({
   }, []);
 
   useEffect(() => {
+    let interval = null;
+    if (props.autoRefresh) {
+      interval = setInterval(() => {
+        loadAll(true, false);
+      }, props.autoRefresh);
+    }
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [props.autoRefresh]);
+
+  useEffect(() => {
     if (loadDone) {
       loadAll();
     }
   }, [loadDone, search, filter, props.filter, currentOrder, pagination.page, pagination.limit]);
 
-  const loadAll = async (refresh = false) => {
-    setItems(null);
+  const loadAll = async (refresh = false, showLoading: boolean = true) => {
+    if (showLoading) {
+      setLoadingItems(true);
+    }
     if (refresh) await crudService.clearStore();
     const currentQueryNumber = queryNumber + 1;
     queryNumber = currentQueryNumber;
@@ -85,6 +103,9 @@ export function DataTable<T extends BaseModel>({
       .then((res) => {
         if (currentQueryNumber != queryNumber) return;
         setItems(res.data.map((x) => (props.postProcessItem ? props.postProcessItem(x) : x)));
+        if (showLoading) {
+          setLoadingItems(false);
+        }
         setPagination({ ...pagination, ...res.pagination });
       })
       .catch((err) => {
@@ -174,6 +195,7 @@ export function DataTable<T extends BaseModel>({
         pagination,
         setPagination,
         items,
+        loadingItems,
         search,
         onSearchChange,
         onFilterChange,
@@ -206,6 +228,7 @@ interface DataTableContextProps<T extends BaseModel> extends ReactProps {
   pagination: Pagination;
   setPagination: (val: Pagination) => any;
   items: T[];
+  loadingItems: boolean;
   search: string;
   onSearchChange: (search: string) => any;
   onFilterChange: (filter: any) => any;

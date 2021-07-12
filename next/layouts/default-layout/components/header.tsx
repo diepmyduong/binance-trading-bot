@@ -25,11 +25,11 @@ export function Header({ code, ...props }: HeaderPropsType) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const menus = [
-    // {
-    //   label: "Thông tin tài khoản",
-    //   icon: <FaUserAlt />,
-    //   onClick: () => router.push("#"),
-    // },
+    {
+      label: "Thông tin tài khoản",
+      icon: <FaUserAlt />,
+      href: "/customer",
+    },
     // {
     //   label: "Quản lý tài khoản",
     //   icon: <HiOutlineUserCircle />,
@@ -38,12 +38,12 @@ export function Header({ code, ...props }: HeaderPropsType) {
     {
       label: "Lịch sử đặt hàng",
       icon: <FaHistory />,
-      onClick: () => router.push("/order", null, { shallow: true }),
+      href: "/order",
     },
     {
       label: "Khuyến mãi",
       icon: <FaPercent />,
-      onClick: () => router.push("/promotion", null, { shallow: true }),
+      href: "/promotion",
     },
     {
       label: "Đăng xuất",
@@ -59,7 +59,7 @@ export function Header({ code, ...props }: HeaderPropsType) {
           <Link href={`/?code=${shopCode}`}>
             <div className="flex items-center cursor-pointer">
               {shop && <Img src={shop.shopLogo || ""} className="w-10 rounded-full" />}
-              <p className="text-ellipsis-2 font-semibold px-2 text-sm sm:text-base">
+              <p className="text-ellipsis font-semibold px-2 text-sm sm:text-base">
                 {shop?.shopName}
               </p>
             </div>
@@ -83,7 +83,6 @@ export function Header({ code, ...props }: HeaderPropsType) {
             <i className="text-18 pr-1">
               <FaUserAlt />
             </i>
-            {customer}
           </button>
           <Dropdown reference={userRef}>
             {menus.map((item, index) => {
@@ -93,8 +92,9 @@ export function Header({ code, ...props }: HeaderPropsType) {
                   text={item.label}
                   onClick={item.onClick}
                   key={index}
-                  className="flex justify-start border-b border-gray-200 rounded-none "
+                  className={`flex justify-start border-b border-gray-200 rounded-none`}
                   icon={item.icon}
+                  href={item.href}
                 />
               );
             })}

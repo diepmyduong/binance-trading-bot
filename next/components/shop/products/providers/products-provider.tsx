@@ -15,11 +15,14 @@ export const ProductsContext = createContext<
     onToggleProduct: (product: Product, category: Category) => Promise<any>;
     toppings: ProductTopping[];
     loadToppings: () => Promise<any>;
+    filter: any;
+    onFilterChange: (data: any) => any;
   }>
 >({});
 export function ProductsProvider(props) {
   const [categories, setCategories] = useState<Category[]>(null);
   const [toppings, setToppings] = useState<ProductTopping[]>(null);
+  const [filter, setFilter] = useState({});
   const toast = useToast();
 
   useEffect(() => {
@@ -106,6 +109,10 @@ export function ProductsProvider(props) {
     });
   };
 
+  const onFilterChange = (data: any) => {
+    setFilter({ ...filter, ...data });
+  };
+
   return (
     <ProductsContext.Provider
       value={{
@@ -117,6 +124,8 @@ export function ProductsProvider(props) {
         onToggleProduct,
         toppings,
         loadToppings,
+        filter,
+        onFilterChange,
       }}
     >
       {props.children}

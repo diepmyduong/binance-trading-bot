@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineRight } from "react-icons/ai";
+import { HiShoppingCart, HiArrowRight } from "react-icons/hi";
 import { FaPercent } from "react-icons/fa";
 
 import { useShopContext } from "../../../../lib/providers/shop-provider";
@@ -69,7 +70,7 @@ const MoreInfomation = (props) => {
           />
         </div>
       </div>
-      <EmotionsEvaluate reactions={shop.config.tags} />
+      <EmotionsEvaluate reactions={shop.config.tags} shopName={shop.shopName} />
       <CommentsDialog isOpen={showComments} onClose={() => setShowComments(false)} />
     </>
   );
@@ -90,16 +91,16 @@ const ShopBranch = (props: ShopInfoProps) => {
       </p>
       <div className="flex justify-between items-center">
         <p className="whitespace-nowrap">
-          {(!branchSelecting && shopBranchs.length + " chi nhánh") || branchSelecting.name}
+          {(!branchSelecting && "Chọn chi nhánh") || branchSelecting.name}
         </p>
         <Button
           textPrimary
           onClick={() => setShowBranchs(true)}
-          text="Xem chi nhánh khác"
-          className="pr-0 text-sm xs:text-base text-ellipsis"
-          icon={<AiOutlineRight />}
+          text={`(${shopBranchs.length})`}
+          className="pl-6 pr-0 text-sm xs:text-base text-ellipsis"
+          icon={<HiArrowRight />}
           iconPosition="end"
-          iconClassName="text-gray-400"
+          iconClassName="text-gray-400 text-lg"
         />
       </div>
       {shopBranchs && (

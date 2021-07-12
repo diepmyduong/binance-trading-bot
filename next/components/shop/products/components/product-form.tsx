@@ -214,7 +214,30 @@ export function ProductForm({ product, category, ...props }: PropsType) {
             <Field name="soldQty" label="Đã bán" cols={4}>
               <Input className="h-12 mt-2" number />
             </Field>
-
+            <Field name="upsaleProductIds" label="Món mua kèm" cols={12}>
+              <Select
+                autocompletePromise={({ id, search }) =>
+                  ProductService.getAllAutocompletePromise(
+                    { id, search },
+                    {
+                      fragment: "id name image basePrice",
+                      parseOption: (data) => ({
+                        value: data.id,
+                        label: data.name,
+                        image: data.image,
+                        basePrice: data.basePrice,
+                      }),
+                      query: {
+                        filter: { _id: { $ne: product.id } },
+                      },
+                    }
+                  )
+                }
+                placeholder="Nhập hoặc tìm kiếm món mua kèm"
+                multi
+                hasImage
+              />
+            </Field>
             <div className="col-span-12 mb-6">
               <Label text="Nhãn sản phẩm (Tối đa 3 nhãn)" />
               <div className="flex flex-wrap gap-3 mt-2">
@@ -315,7 +338,7 @@ export function ProductForm({ product, category, ...props }: PropsType) {
                 text="Chọn mẫu topping"
                 innerRef={ref}
               />
-              <Popover reference={ref} trigger="click" arrow={true} placement="top-start">
+              <Popover reference={ref} trigger="click" arrow={true} placement="auto-start">
                 <ToppingSelection
                   onToppingSelect={(topping) => {
                     onToppingSelect(topping);

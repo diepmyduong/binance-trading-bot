@@ -15,7 +15,13 @@ interface PropsType extends ReactProps {
   onEditClick: (category: Category) => any;
 }
 export function CategoryList({ onEditClick, ...props }: PropsType) {
-  const { categories, removeCategory, onDeleteProduct, onToggleProduct } = useProductsContext();
+  const {
+    categories,
+    removeCategory,
+    onDeleteProduct,
+    onToggleProduct,
+    filter,
+  } = useProductsContext();
   const [openProduct, setOpenProduct] = useState<Product>(undefined);
   const [openCategory, setOpenCategory] = useState<Category>(null);
   const ref = useRef();
@@ -40,23 +46,29 @@ export function CategoryList({ onEditClick, ...props }: PropsType) {
               />
             </Dropdown>
           </div>
-          {category.products.map((product) => (
-            <ProductItem
-              key={product.id}
-              product={product}
-              onClick={() => {
-                setOpenProduct(product);
-                setOpenCategory(category);
-              }}
-              onToggleClick={async () => {
-                onToggleProduct(product, category);
-              }}
-              onDeleteClick={async () => {
-                if (!(await alert.danger(`Xoá món "${product.name}"`, "", "Xoá món"))) return;
-                await onDeleteProduct(product, category);
-              }}
-            />
-          ))}
+          {category.products
+            .filter((x) => {
+              if (filter.allowSale === true || filter.allowSale === false)
+                return x.allowSale == filter.allowSale;
+              else return true;
+            })
+            .map((product) => (
+              <ProductItem
+                key={product.id}
+                product={product}
+                onClick={() => {
+                  setOpenProduct(product);
+                  setOpenCategory(category);
+                }}
+                onToggleClick={async () => {
+                  onToggleProduct(product, category);
+                }}
+                onDeleteClick={async () => {
+                  if (!(await alert.danger(`Xoá món "${product.name}"`, "", "Xoá món"))) return;
+                  await onDeleteProduct(product, category);
+                }}
+              />
+            ))}
           <Button
             className="bg-white h-12"
             outline

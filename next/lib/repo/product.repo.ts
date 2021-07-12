@@ -1,7 +1,7 @@
 import axios from "axios";
 import { GetAuthToken } from "../graphql/auth.link";
 import { BaseModel, CrudRepository } from "./crud.repo";
-import { ProductTopping, ToppingOption } from "./product-topping.repo";
+import { ProductTopping } from "./product-topping.repo";
 
 export interface ProductParam {
   value: string;
@@ -26,6 +26,8 @@ export interface Product extends BaseModel {
   soldQty: number;
   labels: ProductLabel[];
   toppings: ProductTopping[];
+  upsaleProductIds: string[];
+  upsaleProducts: Product[];
 }
 export interface ProductLabel extends BaseModel {
   name: string;
@@ -113,6 +115,11 @@ export class ProductRepository extends CrudRepository<Product> {
       name: String
       color: String
     }: [ProductLabel]
+    upsaleProductIds: string[];
+    upsaleProducts {
+      id: String
+      name: String
+    }: Product[];
   `);
 
   async copyProduct(productId: string, parentCategoryId: string): Promise<Product> {

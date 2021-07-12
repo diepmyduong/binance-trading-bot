@@ -46,7 +46,7 @@ export function ToppingSelection({ onToppingSelect }: PropsType) {
         value={searchText}
         onChange={setSearchText}
       />
-      <div className="p-4 border-t border-gray-200 v-scrollbar" style={{ maxHeight: "550px" }}>
+      <div className="p-4 border-t border-gray-200 v-scrollbar" style={{ height: "450px" }}>
         {!filteredToppings?.length && (
           <NotFound icon={<RiCloseCircleLine />} text="Không có mẫu topping nào" />
         )}

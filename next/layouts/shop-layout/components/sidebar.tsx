@@ -154,7 +154,7 @@ export const SIDEBAR_MENUS = [
         icon: (active: boolean) => <IconDriver hasGradient={!active} />,
       },
       {
-        title: "Quản lý nhân viên",
+        title: "Nhân viên",
         path: "/shop/staffs",
         icon: (active: boolean) => <IconEmployee hasGradient={!active} />,
       },

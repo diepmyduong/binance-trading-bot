@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import LazyLoad, { forceCheck } from "react-lazyload";
+import { compressImage } from "../../../lib/helpers/compress-image";
 import { ImageDialog } from "./dialog/image-dialog";
 
 const defaultImage = "/assets/default/default.png";
@@ -47,9 +48,7 @@ export function Img({
   useEffect(() => {
     if (src) {
       if (props.compress) {
-        setImage(
-          `https://images.weserv.nl/?url=${src}${props.compress ? `&w=${props.compress}` : ""}`
-        );
+        setImage(compressImage(src, props.compress));
       } else {
         setImage(src);
       }

@@ -7,6 +7,7 @@ import { Button } from "../../shared/utilities/form/button";
 import { Field } from "../../shared/utilities/form/field";
 import { Form } from "../../shared/utilities/form/form";
 import { Input } from "../../shared/utilities/form/input";
+import { Select } from "../../shared/utilities/form/select";
 import { CategoryList } from "./components/category-list";
 import { ProductLabelTableDialog } from "./components/product-label-table-dialog";
 import { ProductsContext, ProductsProvider } from "./providers/products-provider";
@@ -20,7 +21,7 @@ export function ProductsPage(props: ReactProps) {
     <>
       <ProductsProvider>
         <ProductsContext.Consumer>
-          {({ loadCategories }) => (
+          {({ loadCategories, filter, onFilterChange }) => (
             <>
               <div className="flex justify-between items-center pb-6 pt-4 border-b border-gray-300 bg-gray-100 sticky top-0 z-10 transition-all">
                 <ShopPageTitle
@@ -28,6 +29,23 @@ export function ProductsPage(props: ReactProps) {
                   subtitle="Quản lý danh mục và các món thuộc danh mục"
                 />
                 <div className="flex gap-x-2">
+                  <Select
+                    className="h-12 w-44"
+                    clearable
+                    placeholder="Tất cả trạng thái"
+                    value={filter.allowSale}
+                    onChange={(val) => onFilterChange({ allowSale: val })}
+                    options={[
+                      {
+                        value: true,
+                        label: "Đang mở bán",
+                      },
+                      {
+                        value: false,
+                        label: "Không mở bán",
+                      },
+                    ]}
+                  />
                   <Button
                     outline
                     className="h-12 bg-white"

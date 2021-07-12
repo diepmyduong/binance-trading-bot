@@ -4,6 +4,7 @@ import CreatableSelect from "react-select/creatable";
 import useDebounce from "./../../../../lib/hooks/useDebounce";
 import isEqual from "lodash/isEqual";
 import { useToast } from "../../../../lib/providers/toast-provider";
+import { compressImage } from "../../../../lib/helpers/compress-image";
 const tailwindConfig = require("./../../../../tailwind.config");
 
 const getTailwindColor = (color): { light: string; DEFAULT: string; dark: string } => {
@@ -191,12 +192,12 @@ export function Select({
           display: "flex",
           ":before": {
             backgroundImage: image
-              ? `url(${image})`
+              ? `url(${compressImage(image, 100)})`
               : isAvatarImage
               ? "url(/assets/default/avatar.png)"
               : "url(/assets/default/default.png)",
             backgroundRepeat: "no-repeat",
-            backgroundColor: image !== null ? "#ddd" : "transparent",
+            backgroundColor: image !== null ? "#eee" : "transparent",
             backgroundPosition: "center center",
             backgroundSize: "cover",
             border: "0.5px solid #eee",
@@ -453,9 +454,9 @@ export function Select({
           value={value}
           onChange={onChange}
           onInputChange={onInputChange}
-          className={`${controlClassName} px-0 ${props.error ? "error" : ""} ${className} ${
-            props.autosize ? "react-select-autosize" : ""
-          }`}
+          className={`${controlClassName} inline-grid px-0 ${
+            props.error ? "error" : ""
+          } ${className} ${props.autosize ? "react-select-autosize" : ""}`}
           style={{ ...style }}
           classNamePrefix="react-select"
           placeholder={

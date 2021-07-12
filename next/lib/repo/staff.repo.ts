@@ -10,6 +10,7 @@ export interface Staff extends BaseModel {
   address: string;
   branchId: string;
   branch: ShopBranch;
+  scopes: string[];
 }
 export class StaffRepository extends CrudRepository<Staff> {
   apiName: string = "Staff";
@@ -29,6 +30,7 @@ export class StaffRepository extends CrudRepository<Staff> {
       id: String
       name: String
     }: ShopBranch
+    scopes: String
   `);
   fullFragment: string = this.parseFragment(`
     id: String
@@ -45,7 +47,10 @@ export class StaffRepository extends CrudRepository<Staff> {
       id: String
       name: String
     }: ShopBranch
+    scopes: String
   `);
 }
 
 export const StaffService = new StaffRepository();
+
+export const STAFF_SCOPES: Option[] = [{ value: "REPORT", label: "Xem báo cáo" }];

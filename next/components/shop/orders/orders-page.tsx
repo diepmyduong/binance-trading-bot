@@ -13,13 +13,14 @@ import { OrderDetailsDialog } from "./components/order-details-dialog";
 import format from "date-fns/format";
 import { Field } from "../../shared/utilities/form/field";
 import { Select } from "../../shared/utilities/form/select";
+import { ShopBranchService } from "../../../lib/repo/shop-branch.repo";
 
 export function OrdersPage(props: ReactProps) {
   const [orderId, setOrderId] = useState<string>("");
 
   return (
     <>
-      <DataTable<Order> crudService={OrderService} order={{ createdAt: -1 }}>
+      <DataTable<Order> crudService={OrderService} order={{ createdAt: -1 }} autoRefresh={30000}>
         <DataTable.Header>
           <ShopPageTitle title="Đơn hàng" subtitle="Kiểm tra trạng thái đơn hàng" />
           <DataTable.Buttons>
@@ -38,6 +39,15 @@ export function OrdersPage(props: ReactProps) {
         <DataTable.Toolbar>
           <DataTable.Search className="h-12" />
           <DataTable.Filter>
+            <Field name="shopBranchId" noError>
+              <Select
+                className="h-12 inline-grid"
+                autosize
+                clearable
+                placeholder="Tất cả chi nhánh"
+                optionsPromise={() => ShopBranchService.getAllOptionsPromise()}
+              />
+            </Field>
             <Field name="pickupMethod" noError>
               <Select
                 className="h-12 inline-grid"
@@ -100,15 +110,12 @@ export function OrdersPage(props: ReactProps) {
             label="Hình thức lấy hàng"
             render={(item: Order) => (
               <DataTable.CellText
-                value={
-                  <div>
-                    <div className={"font-semibold"}>{`${
-                      PICKUP_METHODS.find((x) => x.value == item.pickupMethod)?.label
-                    }${
-                      item.pickupTime ? `【${format(new Date(item.pickupTime), "HH:mm")}】` : ""
-                    }`}</div>
-                    <div>{item.deliveryInfo?.statusText}</div>
-                  </div>
+                className="font-semibold"
+                value={PICKUP_METHODS.find((x) => x.value == item.pickupMethod)?.label}
+                subText={
+                  item.pickupMethod == "DELIVERY"
+                    ? item.deliveryInfo?.statusText
+                    : `【${format(new Date(item.pickupTime), "HH:mm dd-MM")}】`
                 }
               />
             )}

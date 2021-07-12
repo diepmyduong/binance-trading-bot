@@ -14,6 +14,7 @@ export function Chart() {
         data: data,
         borderColor: ["rgba(13, 87, 239)"],
         borderWidth: 2,
+        backgroundColor: "rgba(13, 87, 239, 0.0)",
         label: "Tăng trưởng",
       },
     ],
@@ -24,10 +25,10 @@ export function Chart() {
     datasets: [
       {
         data: data,
-        backgroundColor: ["rgba(13, 87, 239)"],
+        backgroundColor: ["rgba(13, 87, 239, 1)"],
+        borderColor: ["rgba(13, 87, 239, 1)"],
         borderWidth: 2,
         label: "Tăng trưởng",
-        barThickness: 5,
       },
     ],
     labels: labels,

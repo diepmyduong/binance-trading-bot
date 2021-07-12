@@ -89,12 +89,13 @@ const ShopBranch = (props: ShopInfoProps) => {
       </p>
       <div className="flex justify-between items-center">
         <p className="whitespace-nowrap">
-          {(!branchSelecting && shopBranchs.length + " chi nhánh") || branchSelecting.name}
+          {(!branchSelecting && "Chọn chi nhánh") || branchSelecting.name}
         </p>
         <Button
           textPrimary
           onClick={() => setShowBranchs(true)}
-          className="pl-6 pr-0 xs:text-base text-ellipsis"
+          text={`(${shopBranchs.length})`}
+          className="pl-6 pr-0 text-sm xs:text-base text-ellipsis"
           icon={<HiArrowRight />}
           iconPosition="end"
           iconClassName="text-gray-400 text-lg"

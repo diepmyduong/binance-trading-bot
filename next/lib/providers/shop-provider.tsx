@@ -54,6 +54,8 @@ export function ShopProvider(props) {
         haveShop = scode;
       }
     }
+    let brsnav = null;
+
     if (haveShop) {
       let token = await ShopService.loginAnonymous(haveShop);
       SetAnonymousToken(token);
@@ -73,6 +75,7 @@ export function ShopProvider(props) {
             fragment: `${ShopBranchService.fullFragment} distance(lat:${position.coords.latitude}, lng:${position.coords.longitude})`,
             query: { order: { distance: 1 } },
           }).then((res) => {
+            brsnav = res.data;
             let branchs = res.data;
             let branchsSorted = orderBy(branchs, (o) => o.distance);
             console.log(branchsSorted);
@@ -82,7 +85,14 @@ export function ShopProvider(props) {
           });
           setLocationCustomer(position.coords);
         });
+      } else {
       }
+    }
+    let brs = await ShopBranchService.getAll();
+    if (brs && !brsnav) {
+      setShopBranch(cloneDeep(brs.data));
+      let active = brs.data.findIndex((item) => item.activated && item.isOpen);
+      setBranchSelecting(brs.data[active]);
     }
     let res = await ShopService.getShopData();
     if (res) {

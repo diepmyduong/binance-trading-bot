@@ -3,7 +3,7 @@ interface Propstype extends ReactProps {
   isActive: boolean;
   openAt?: string;
   closeAt?: string;
-  range?: string | number;
+  distance?: number;
 }
 
 export function StatusTime(props: Propstype) {
@@ -20,7 +20,7 @@ export function StatusTime(props: Propstype) {
       ) : (
         ""
       )}
-      {props.range && <li> - Cách bạn {props.range}km</li>}
+      {props.distance && <li> - Cách bạn {props.distance}km</li>}
     </ul>
   );
 }

@@ -1,9 +1,4 @@
-import {
-  BaseRoute,
-  Request,
-  Response,
-  NextFunction,
-} from "../../../base/baseRoute";
+import { BaseRoute, Request, Response, NextFunction } from "../../../base/baseRoute";
 import { ROLES } from "../../../constants/role.const";
 import { Context } from "../../../graphql/context";
 import Excel from "exceljs";
@@ -15,31 +10,21 @@ import { isValidObjectId, Types } from "mongoose";
 import { ErrorHelper } from "../../../base/error";
 import { BranchModel } from "../../../graphql/modules/branch/branch.model";
 import moment from "moment";
-import {
-  OrderModel,
-  OrderStatus,
-} from "../../../graphql/modules/order/order.model";
+import { OrderModel, OrderStatus } from "../../../graphql/modules/order/order.model";
 
 const STT = "STT";
 
-export const exportCollaboratorsReport = async (
-  req: Request,
-  res: Response
-) => {
+export const exportCollaboratorsReport = async (req: Request, res: Response) => {
   const context = (req as any).context as Context;
   context.auth(ROLES.ADMIN_EDITOR_MEMBER);
 
-  let fromDate: string = req.query.fromDate
-    ? req.query.fromDate.toString()
-    : null;
+  let fromDate: string = req.query.fromDate ? req.query.fromDate.toString() : null;
   let toDate: string = req.query.toDate ? req.query.toDate.toString() : null;
-  const memberId: string = req.query.memberId
-    ? req.query.memberId.toString()
-    : null;
+  const memberId: string = req.query.memberId ? req.query.memberId.toString() : null;
 
   if (!isEmpty(memberId)) {
     if (!isValidObjectId(memberId)) {
-      throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+      throw ErrorHelper.requestDataInvalid("Mã cửa hàng");
     }
   }
 
@@ -157,9 +142,7 @@ export const exportCollaboratorsReport = async (
     BranchModel.find({}),
   ]);
 
-  const collaboratorIds = collaborators
-    .map((col) => col._id.toString())
-    .map(Types.ObjectId);
+  const collaboratorIds = collaborators.map((col) => col._id.toString()).map(Types.ObjectId);
 
   set(orderMatch, "collaboratorId.$in", collaboratorIds);
   set(orderMatch, "status", OrderStatus.COMPLETED);
@@ -181,10 +164,7 @@ export const exportCollaboratorsReport = async (
       (order) => order.collaboratorId.toString() === collaborator._id.toString()
     ).length;
     const ordersAmount = orders
-      .filter(
-        (order) =>
-          order.collaboratorId.toString() === collaborator._id.toString()
-      )
+      .filter((order) => order.collaboratorId.toString() === collaborator._id.toString())
       .reduce((total: number, m: any) => (total += m.amount), 0);
     data.push({
       ...collaborator,
@@ -204,8 +184,8 @@ export const exportCollaboratorsReport = async (
       STT,
       "Mã nhân viên",
       "Cộng tác viên",
-      "Mã bưu cục",
-      "Bưu cục",
+      "Mã cửa hàng",
+      "Cửa hàng",
       "Quận / Huyện",
       "Chi nhánh",
       "Hoa hồng cộng tác viên",
@@ -220,8 +200,8 @@ export const exportCollaboratorsReport = async (
         i + 1, //STT
         d.collaboratorCode,
         d.collaboratorName,
-        d.memberCode, //"Mã bưu cục",
-        d.memberShopName, // "Bưu cục",
+        d.memberCode, //"Mã cửa hàng",
+        d.memberShopName, // "Cửa hàng",
         d.memberDistrict,
         d.branchName, //"Chi nhánh",
         d.commission,

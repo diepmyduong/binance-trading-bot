@@ -177,7 +177,7 @@ const schema = gql`
     addressDeliveryIds: [ID]
     addressDeliverys: [AddressDelivery]
 
-    "Điểm nhận hàng bưu cục"
+    "Điểm nhận hàng cửa hàng"
     addressDelivery: AddressDelivery
 
     "Đường dẩn cửa hàng"

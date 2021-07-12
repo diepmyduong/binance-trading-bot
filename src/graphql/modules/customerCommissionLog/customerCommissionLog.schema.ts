@@ -18,7 +18,7 @@ const schema = gql`
     orderId: ID
     "Ghi chú"
     note: String
-    "Mã bưu cục ctv"
+    "Mã cửa hàng ctv"
     returnMemberId : ID
 
     order: Order
@@ -44,7 +44,7 @@ const schema = gql`
     collaboratorId: ID
     "Giá trị"
     value: String
-    "Loại sự kiện ${Object.values(CustomerCommissionLogType).join('|')}"
+    "Loại sự kiện ${Object.values(CustomerCommissionLogType).join("|")}"
     type: String
     "Mã đơn hàng"
     orderId: ID

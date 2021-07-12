@@ -102,7 +102,7 @@ const schema = gql`
     "Hiệu lực"
     activated: Boolean
 
-    "Bưu cục"
+    "Cửa hàng"
     member: Member
   }
 

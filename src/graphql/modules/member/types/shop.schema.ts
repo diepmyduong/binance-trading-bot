@@ -45,7 +45,7 @@ const schema = gql`
     district: String
     "Phường/xã"
     ward: String
-    "Điểm nhận hàng bưu cục"
+    "Điểm nhận hàng cửa hàng"
     addressDelivery: AddressDelivery
 
     "Danh sách mã điểm nhận hàng"

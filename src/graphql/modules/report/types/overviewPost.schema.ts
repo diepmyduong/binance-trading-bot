@@ -2,26 +2,29 @@ import { gql } from "apollo-server-express";
 
 const schema = gql`
   extend type Query {
-    getPostReports(q: QueryGetListInput): OverviewPostPageData 
-    getPostReportsOverview(fromDate: String, toDate: String, memberId: ID, branchId: ID): OverviewPostsReport 
+    getPostReports(q: QueryGetListInput): OverviewPostPageData
+    getPostReportsOverview(
+      fromDate: String
+      toDate: String
+      memberId: ID
+      branchId: ID
+    ): OverviewPostsReport
     # Add Query
   }
 
-  
-  type CustomerStats{
+  type CustomerStats {
     "Số lượng khách hàng"
     customersCount: Int
   }
 
-
-  type CollaboratorStats{
+  type CollaboratorStats {
     "Số lượng cộng tác viên"
     collaboratorsCount: Int
     "Số lượng khách hàng CTV"
     customersAsCollaboratorCount: Int
   }
 
-  type MemberStatistics{
+  type MemberStatistics {
     "Số lượng khách hàng"
     customersCount: Int
     "Số lượng cộng tác viên"
@@ -50,7 +53,6 @@ const schema = gql`
     estimatedIncome: Float
     "Doanh thu thực nhận"
     income: Float
-    
   }
 
   type OverviewPostsReport {
@@ -59,10 +61,10 @@ const schema = gql`
     "Tổng số CTV"
     totalCollaboratorsCount: Int
     "Số lượng CTV là khách hàng"
-    collaboratorsAsCustomerCount:Int
+    collaboratorsAsCustomerCount: Int
     "Tổng hoa hồng đã nhận"
     totalRealCommission: Float
-    "Tổng số bưu cục"
+    "Tổng số cửa hàng"
     totalMembersCount: Int
     "Tổng đơn hàng"
     totalOrdersCount: Int
@@ -70,7 +72,7 @@ const schema = gql`
 
   type OverviewPost {
     id: String
-    "Mã bưu cục"
+    "Mã cửa hàng"
     code: String
     "Hình Fanpage"
     fanpageImage: String
@@ -98,7 +100,7 @@ const schema = gql`
     lastLoginDate: DateTime
     memberStatistics(fromDate: String, toDate: String): MemberStatistics
     collaboratorStats(fromDate: String, toDate: String): CollaboratorStats
-    customerStats(fromDate: String, toDate: String): CustomerStats 
+    customerStats(fromDate: String, toDate: String): CustomerStats
   }
 
   type OverviewPostPageData {
@@ -106,7 +108,6 @@ const schema = gql`
     total: Int
     pagination: Pagination
   }
-  
 `;
 
 export default schema;

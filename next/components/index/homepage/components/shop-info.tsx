@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
-import BannerPromtion from "./banner-promtion";
-import { EmotionsEvaluate } from "./emotions-evaluate";
 import { AiOutlineRight } from "react-icons/ai";
+<<<<<<< HEAD
 import { HiShoppingCart, HiArrowRight } from "react-icons/hi";
+=======
+>>>>>>> e9a5fef86aa36dea36efb3fe99e3ebc7709c7fad
 import { FaPercent } from "react-icons/fa";
-import { MoneyBag, Package, SmileIcon } from "../../../../public/assets/svg/svg";
-import { Button } from "../../../shared/utilities/form/button";
-import { Rating } from "../../../shared/homepage-layout/rating";
-import { CommentsDialog } from "./comments-dialog";
-import BranchsDialog from "./branchs-dialog";
+
 import { useShopContext } from "../../../../lib/providers/shop-provider";
+import { Rating } from "../../../shared/homepage-layout/rating";
+import { Button } from "../../../shared/utilities/form/button";
 import { Img } from "../../../shared/utilities/img";
+import { Spinner } from "../../../shared/utilities/spinner";
+import BannerPromtion from "./banner-promtion";
+import BranchsDialog from "./branchs-dialog";
+import { CommentsDialog } from "./comments-dialog";
+import { EmotionsEvaluate } from "./emotions-evaluate";
+
 interface Propstype extends ReactProps {}
 
 export function ShopInfo(props: Propstype) {
@@ -79,7 +84,7 @@ interface ShopInfoProps extends ReactProps {}
 const ShopBranch = (props: ShopInfoProps) => {
   const [showBranchs, setShowBranchs] = useState(false);
   const { branchSelecting, setBranchSelecting, shopBranchs, shop } = useShopContext();
-
+  if (!shopBranchs) return <Spinner />;
   return (
     <div className={`bg-white p-3 pb-0 rounded-md shadow-lg text-center  ${props.className || ""}`}>
       <h2 className="text-xl font-semibold pb-2">{shop.shopName}</h2>

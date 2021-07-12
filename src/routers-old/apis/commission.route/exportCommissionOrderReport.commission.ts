@@ -41,11 +41,11 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
   let sellerIds: any = null;
   if (memberIdsString) {
     sellerIds = memberIdsString.split("|");
-    if (sellerIds.length < 0) throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+    if (sellerIds.length < 0) throw ErrorHelper.requestDataInvalid("Mã cửa hàng");
 
     sellerIds.map((m: string) => {
       if (!isValidObjectId(m)) {
-        throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+        throw ErrorHelper.requestDataInvalid("Mã cửa hàng");
       }
     });
 
@@ -53,7 +53,7 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
   }
 
   if (!isValidObjectId(memberId)) {
-    throw ErrorHelper.requestDataInvalid("Mã bưu cục");
+    throw ErrorHelper.requestDataInvalid("Mã cửa hàng");
   }
 
   const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
@@ -68,7 +68,7 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
     set(params, "createdAt.$lte", $lte);
   }
 
-  //theo bưu cục nào
+  //theo cửa hàng nào
   if (context.isMember()) {
     set(params, "sellerId.$in", [context.id]);
   } else {
@@ -152,7 +152,7 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
   for (let i = 0; i < orders.length; i++) {
     const order = orders[i];
     const shipMethod =
-      order.shipMethod === ShipMethod.POST ? "Nhận hàng tại bưu cục" : "Giao hàng tại địa chỉ";
+      order.shipMethod === ShipMethod.POST ? "Nhận hàng tại cửa hàng" : "Giao hàng tại địa chỉ";
     const seller = sellers.find((member) => member.id.toString() === order.sellerId.toString());
     const collaborator = collaboratorId
       ? collaborators.find((c) => c.id.toString() === order.collaboratorId.toString())
@@ -195,8 +195,8 @@ export const exportCommissionOrderReport = async (req: Request, res: Response) =
       "Mã cộng tác viên",
       "Cộng tác viên",
 
-      "Bưu cục",
-      "Mã bưu cục",
+      "Cửa hàng",
+      "Mã cửa hàng",
       "Quận / Huyện",
       "Chi nhánh",
 

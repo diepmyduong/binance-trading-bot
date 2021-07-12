@@ -68,7 +68,7 @@ export enum PickupType {
 
 export const PickupTypes = [
   { code: PickupType.PICK_UP, name: "Thu gom tận nơi" },
-  { code: PickupType.DROP_OFF, name: "Gửi hàng tại bưu cục" },
+  { code: PickupType.DROP_OFF, name: "Gửi hàng tại cửa hàng" },
 ];
 
 export type IWardTypeResponse = {

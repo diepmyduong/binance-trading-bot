@@ -32,7 +32,7 @@ const BranchsDialog = (props: Propstype) => {
               <div className="flex-1 leading-7">
                 <h3 className="text-primary text-base sm:text-lg">{item.name}</h3>
                 <p className="text-ellipsis-2">{item.address}</p>
-                <StatusTime isActive={item.isOpen} />
+                <StatusTime isActive={item.isOpen} distance={item.distance} />
               </div>
               {item.isOpen && (
                 <Button

@@ -79,7 +79,7 @@ const FilteredCollaborator = {
       } else {
         customer = {
           code: root.code,
-          name: root.name + " - Chưa có Bưu cục",
+          name: root.name + " - Chưa có Cửa hàng",
           facebookName: root.name,
           uid: root.code,
           phone: root.phone,

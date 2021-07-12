@@ -134,7 +134,7 @@ const schema = gql`
     collaboratorId: ID
     "Là nội thành"
     isUrbanDelivery: Boolean
-    "Bưu cục được chuyển đơn"
+    "Cửa hàng được chuyển đơn"
     toMemberId: ID
     "Ghi chú chuyển đơn"
     toMemberNote: String

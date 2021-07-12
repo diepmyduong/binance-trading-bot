@@ -27,7 +27,7 @@ const schema = gql`
     "Hoa hồng giao hàng"
     commission3:Float
 
-    "Hoa hồng bưu cục dự kiến"
+    "Hoa hồng cửa hàng dự kiến"
     unCompletedCommission1:Float
     "Hoa hồng điểm bán dự kiến"
     unCompletedcommission2:Float
@@ -122,7 +122,7 @@ const schema = gql`
     collaboratorId: ID
     "Là nội thành"
     isUrbanDelivery: Boolean
-    "Bưu cục được chuyển đơn"
+    "Cửa hàng được chuyển đơn"
     toMemberId: ID
     "Ghi chú chuyển đơn"
     toMemberNote: String

@@ -1,15 +1,7 @@
 import { ROLES } from "../../../../constants/role.const";
-import {
-  AuthHelper,
-  ErrorHelper,
-  firebaseHelper,
-  UtilsHelper,
-} from "../../../../helpers";
+import { AuthHelper, ErrorHelper, firebaseHelper, UtilsHelper } from "../../../../helpers";
 import { Context } from "../../../context";
-import {
-  getDataFromExcelStream,
-  modifyExcelData,
-} from "../../../../helpers/workSheet";
+import { getDataFromExcelStream, modifyExcelData } from "../../../../helpers/workSheet";
 import { SettingHelper } from "../../setting/setting.helper";
 import { SettingKey } from "../../../../configs/settingData";
 import { MemberImportingLogModel } from "../../memberImportingLog/memberImportingLog.model";
@@ -22,8 +14,8 @@ import { BranchModel } from "../../branch/branch.model";
 const STT = "STT";
 const BRANCH_CODE = "Mã trung tâm";
 const BRANCH = "Tên trung tâm";
-const SHOP_NAME = "Tên bưu cục";
-const CODE = "Mã bưu cục";
+const SHOP_NAME = "Tên cửa hàng";
+const CODE = "Mã cửa hàng";
 const EMAIL = "Email";
 const NAME = "Họ tên";
 const GENDER = "Giới tính";
@@ -41,7 +33,7 @@ const STATUS = "Tình trạng";
 const LINE = "line";
 const PASSWORD = "Pshop#2021";
 
-// STT	Mã trung tâm	Tên trung tâm	Tên bưu cục	Mã bưu cục
+// STT	Mã trung tâm	Tên trung tâm	Tên cửa hàng	Mã cửa hàng
 // Email	Họ tên	Giới tính	Số điện thoại	Ngày sinh	CMND	Địa chỉ	Phường/Xã	Quận/Huyện	Tỉnh/Thành	Tình trạng
 
 const HEADER_DATA = [
@@ -106,142 +98,93 @@ const importMembers = async (root: any, args: any, context: Context) => {
 
     const gioiTinh = excelRow[GENDER];
     const gender =
-      gioiTinh === "Nam"
-        ? Gender.MALE
-        : gioiTinh === "Khác"
-        ? Gender.OTHER
-        : Gender.FEMALE;
+      gioiTinh === "Nam" ? Gender.MALE : gioiTinh === "Khác" ? Gender.OTHER : Gender.FEMALE;
     const rawBirthDay = excelRow[BIRTHDAY];
     // console.log("---->raw", rawBirthDay);
     const trueDate = moment(rawBirthDay, "DD-MM-YYYY");
     const liteDate = moment(rawBirthDay, "D-MM-YYYY");
     const liteMonth = moment(rawBirthDay, "DD-M-YYYY");
     const liteAll = moment(rawBirthDay, "D-M-YYYY");
-    const birthday = trueDate
-      ? trueDate
-      : liteDate
-      ? liteDate
-      : liteMonth
-      ? liteMonth
-      : liteAll;
+    const birthday = trueDate ? trueDate : liteDate ? liteDate : liteMonth ? liteMonth : liteAll;
     // console.log("birthday", birthday);
     const identityCardNumber = excelRow[IDENTITY_CARD_NUMBER];
     const status = excelRow[STATUS];
 
     if (!branchCode) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${BRANCH_CODE}]`)
-          .message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${BRANCH_CODE}]`).message);
     }
 
     if (!branch) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${BRANCH}]`)
-          .message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${BRANCH}]`).message);
     }
 
     if (!code) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${CODE}]`).message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${CODE}]`).message);
     }
 
     if (!shopName) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${SHOP_NAME}]`)
-          .message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${SHOP_NAME}]`).message);
     }
 
     if (!name) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${NAME}]`).message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${NAME}]`).message);
     }
 
     if (!phone) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${PHONE}]`).message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${PHONE}]`).message);
     }
 
     if (email && !UtilsHelper.isEmail(email)) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(".Email không đúng định dạng").message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(".Email không đúng định dạng").message);
     }
 
     if (!gender) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${ADDRESS}]`)
-          .message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${ADDRESS}]`).message);
     }
 
     if (!birthday) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${BIRTHDAY}]`)
-          .message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${BIRTHDAY}]`).message);
     }
 
     if (!identityCardNumber) {
       success = false;
       errors.push(
-        ErrorHelper.requestDataInvalid(
-          `. Thiếu dữ liệu cột [${IDENTITY_CARD_NUMBER}]`
-        ).message
+        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${IDENTITY_CARD_NUMBER}]`).message
       );
     }
 
     if (!status) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${STATUS}]`)
-          .message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${STATUS}]`).message);
     }
 
     if (!address) {
       success = false;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${ADDRESS}]`)
-          .message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${ADDRESS}]`).message);
     }
 
     if (!province) {
       success = true;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${PROVINCE}]`)
-          .message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${PROVINCE}]`).message);
     }
 
     if (!district) {
       success = true;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${DISTRICT}]`)
-          .message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${DISTRICT}]`).message);
     }
 
     if (!ward) {
       success = true;
-      errors.push(
-        ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${WARD}]`).message
-      );
+      errors.push(ErrorHelper.requestDataInvalid(`. Thiếu dữ liệu cột [${WARD}]`).message);
     }
 
     // if (email) {
@@ -261,10 +204,7 @@ const importMembers = async (root: any, args: any, context: Context) => {
       const branch = await BranchModel.findOne({ code: branchCode });
       if (!branch) {
         success = false;
-        errors.push(
-          ErrorHelper.requestDataInvalid(`. Sai dữ liệu cột [${BRANCH_CODE}]`)
-            .message
-        );
+        errors.push(ErrorHelper.requestDataInvalid(`. Sai dữ liệu cột [${BRANCH_CODE}]`).message);
       }
       branchId = branch.id;
     }
@@ -310,17 +250,19 @@ const importMembers = async (root: any, args: any, context: Context) => {
       ]);
       helper.setActivedAt();
 
-      const existedMember = await MemberModel.findOne({code: helper.member.code});
+      const existedMember = await MemberModel.findOne({ code: helper.member.code });
 
-      if(existedMember){
-        await MemberModel.findByIdAndUpdate(existedMember.id, { provinceId: helper.member.id, wardId:helper.member.wardId  } ,{new:true});
-      }
-      else{
+      if (existedMember) {
+        await MemberModel.findByIdAndUpdate(
+          existedMember.id,
+          { provinceId: helper.member.id, wardId: helper.member.wardId },
+          { new: true }
+        );
+      } else {
         // let fbUser = await firebaseHelper.app
         //   .auth()
         //   .getUserByEmail(helper.member.username)
         //   .catch((error) => null);
-
         // if (!fbUser) {
         //   fbUser = await firebaseHelper.createUser(
         //     helper.member.username,
@@ -330,7 +272,7 @@ const importMembers = async (root: any, args: any, context: Context) => {
         // helper.member.uid = fbUser.uid;
         // console.log("params", params);
       }
-      
+
       // dataList.push(helper.member);
     }
   }

@@ -24,6 +24,8 @@ const schema = gql`
     rating: Int
     "Trạng thái bình luận ${Object.values(ShopCommentStatus)}"
     status: String
+    "Tag"
+    tags: [ShopTagInput]
   }
 
   input UpdateShopCommentInput {
@@ -35,6 +37,8 @@ const schema = gql`
     rating: Int
     "Trạng thái bình luận ${Object.values(ShopCommentStatus)}"
     status: String
+    "Tag"
+    tags: [ShopTagInput]
   }
 
   type ShopComment {
@@ -56,6 +60,8 @@ const schema = gql`
     rating: Int
     "Trạng thái bình luận ${Object.values(ShopCommentStatus)}"
     status: String
+    "Tag"
+    tags: [ShopTag]
   }
 
   type ShopCommentPageData {

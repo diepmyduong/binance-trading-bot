@@ -7,18 +7,18 @@ const Schema = mongoose.Schema;
 export enum OrderLogType {
   CREATED = "CREATED", // Khách hàng đặt đơn hàng
   CONFIRMED = "CONFIRMED", // Xác nhận nhận đơn hàng
-  TRANSFERED = "TRANSFERED", // Chuyển đơn cho bưu cục khác
+  TRANSFERED = "TRANSFERED", // Chuyển đơn cho cửa hàng khác
 
   CUSTOMER_CANCELED = "CUSTOMER_CANCELED", // Khách hàng huỷ đơn
-  MEMBER_CANCELED = "MEMBER_CANCELED", // Bưu cục huỷ đơn
+  MEMBER_CANCELED = "MEMBER_CANCELED", // Cửa hàng huỷ đơn
 
-  MEMBER_DELIVERING = "MEMBER_DELIVERING", // Bưu cục đổi trạng thái Đơn hàng giao
-  MEMBER_COMPLETED = "MEMBER_COMPLETED", // Bưu cục đổi trạng thái Đơn hàng thành công
-  MEMBER_FAILURE = "MEMBER_FAILURE", // Bưu cục đổi trạng thái Đơn hàng thất bại
+  MEMBER_DELIVERING = "MEMBER_DELIVERING", // Cửa hàng đổi trạng thái Đơn hàng giao
+  MEMBER_COMPLETED = "MEMBER_COMPLETED", // Cửa hàng đổi trạng thái Đơn hàng thành công
+  MEMBER_FAILURE = "MEMBER_FAILURE", // Cửa hàng đổi trạng thái Đơn hàng thất bại
 
-  TO_MEMBER_DELIVERING = "TO_MEMBER_DELIVERING", // Bưu cục giao hàng đổi trạng thái Đơn hàng giao
-  TO_MEMBER_COMPLETED = "TO_MEMBER_COMPLETED", // Bưu cục giao hàng đổi trạng thái Đơn hàng thành công
-  TO_MEMBER_FAILURE = "TO_MEMBER_FAILURE", // Bưu cục giao hàng đổi trạng thái Đơn hàng thất bại
+  TO_MEMBER_DELIVERING = "TO_MEMBER_DELIVERING", // Cửa hàng giao hàng đổi trạng thái Đơn hàng giao
+  TO_MEMBER_COMPLETED = "TO_MEMBER_COMPLETED", // Cửa hàng giao hàng đổi trạng thái Đơn hàng thành công
+  TO_MEMBER_FAILURE = "TO_MEMBER_FAILURE", // Cửa hàng giao hàng đổi trạng thái Đơn hàng thất bại
 }
 
 export type IOrderLog = BaseDocument & {

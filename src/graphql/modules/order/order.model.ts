@@ -34,7 +34,7 @@ export enum ShipMethod {
 }
 export enum OrderType {
   POST = "POST", // Đơn bưu điện,
-  SHOP = "SHOP", // Đơn bưu cục,
+  SHOP = "SHOP", // Đơn cửa hàng,
   CROSSSALE = "CROSSSALE", // Bán chéo,
 }
 export enum PickupMethod {
@@ -112,7 +112,7 @@ export type IOrder = BaseDocument & {
   collaboratorId?: string;
   note?: string;
   toMemberNote?: string;
-  toMemberId?: string; // Bưu cục được chuyển đơn
+  toMemberId?: string; // Cửa hàng được chuyển đơn
   longitude?: string;
   latitude?: string;
   orderLogIds?: string[];

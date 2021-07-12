@@ -248,7 +248,7 @@ const getOrderReports = async (root: any, args: any, context: Context) => {
     set(args, "q.filter.loggedAt.$lte", $lte);
   }
 
-  //theo bưu cục nào
+  //theo cửa hàng nào
   if (context.isMember()) {
     set(args, "q.filter.sellerId.$in", [new ObjectId(context.id)]);
   } else {

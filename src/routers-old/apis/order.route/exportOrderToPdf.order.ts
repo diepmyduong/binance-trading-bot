@@ -1,10 +1,5 @@
 import { ROLES } from "../../../constants/role.const";
-import {
-  BaseRoute,
-  Request,
-  Response,
-  NextFunction,
-} from "../../../base/baseRoute";
+import { BaseRoute, Request, Response, NextFunction } from "../../../base/baseRoute";
 import { ErrorHelper } from "../../../base/error";
 import { Context } from "../../../graphql/context";
 
@@ -18,7 +13,7 @@ import { AddressDeliveryModel } from "../../../graphql/modules/addressDelivery/a
 import { MemberModel } from "../../../graphql/modules/member/member.model";
 import { SettingHelper } from "../../../graphql/modules/setting/setting.helper";
 import { SettingKey } from "../../../configs/settingData";
-import { createCanvas, loadImage } from 'canvas';
+import { createCanvas, loadImage } from "canvas";
 
 export const exportOrderToPdf = async (req: Request, res: Response) => {
   const context = (req as any).context as Context;
@@ -46,26 +41,23 @@ export const exportOrderToPdf = async (req: Request, res: Response) => {
     throw ErrorHelper.requestDataInvalid("Tham số đầu vào không hợp lệ!");
   }
 
-  const addressDelivery = await AddressDeliveryModel.findById(
-    order.addressDeliveryId
-  );
+  const addressDelivery = await AddressDeliveryModel.findById(order.addressDeliveryId);
   const member = await MemberModel.findById(order.sellerId);
   const logoImageUrl = await SettingHelper.load(SettingKey.LOGO);
 
   const pdfContent = await getPDFOrder({ order, addressDelivery, member, logoImageUrl });
   return PrinterHelper.responsePDF(res, pdfContent, `don-hang-${order.code}`);
-}
+};
 
 const getBase64ImageFromURL = async (url: string) => {
-  const canvas = createCanvas(400, 400)
-  const ctx = canvas.getContext('2d');
+  const canvas = createCanvas(400, 400);
+  const ctx = canvas.getContext("2d");
   const image = await loadImage(url);
   ctx.drawImage(image, 0, 0, 300, 300);
   return ctx.canvas.toDataURL();
 };
 
 const getPDFOrder = async ({ order, addressDelivery, member, logoImageUrl }: any) => {
-
   const imgBase64 = await getBase64ImageFromURL(logoImageUrl);
 
   const PHIEU_XUAT_KHO = {
@@ -162,7 +154,7 @@ const getPDFOrder = async ({ order, addressDelivery, member, logoImageUrl }: any
   const CUA_HANG = {
     columns: [
       {
-        text: "Bưu cục",
+        text: "Cửa hàng",
         color: "#aaaaab",
         bold: true,
         fontSize: 14,
@@ -311,7 +303,7 @@ const getPDFOrder = async ({ order, addressDelivery, member, logoImageUrl }: any
         {
           text:
             ShipMethod.POST === order.shipMethod
-              ? "Nhận hàng tại bưu cục"
+              ? "Nhận hàng tại cửa hàng"
               : "Giao hàng tại địa chỉ",
           alignment: "left",
         },
@@ -326,80 +318,80 @@ const getPDFOrder = async ({ order, addressDelivery, member, logoImageUrl }: any
   const DIA_DIEM_GIAO_NHAN =
     ShipMethod.POST === order.shipMethod
       ? [
-        {
-          columns: [
-            {
-              text: "Tên điểm nhận",
-              bold: true,
-              color: "#333333",
-              margin: [0, 20, 0, 5],
-              alignment: "left",
-            },
-            {
-              text: "SĐT điểm nhận",
-              bold: true,
-              color: "#333333",
-              margin: [0, 20, 0, 5],
-              alignment: "left",
-            },
-            {
-              text: "Địa chỉ điểm nhận",
-              bold: true,
-              color: "#333333",
-              margin: [0, 20, 0, 5],
-              alignment: "left",
-            },
-          ],
-        },
-        {
-          columns: [
-            {
-              text: addressDelivery.name,
-              alignment: "left",
-            },
-            {
-              text: addressDelivery.phone,
-              alignment: "left",
-            },
-            {
-              text: addressDelivery.address,
-              alignment: "left",
-            },
-          ],
-        },
-      ]
+          {
+            columns: [
+              {
+                text: "Tên điểm nhận",
+                bold: true,
+                color: "#333333",
+                margin: [0, 20, 0, 5],
+                alignment: "left",
+              },
+              {
+                text: "SĐT điểm nhận",
+                bold: true,
+                color: "#333333",
+                margin: [0, 20, 0, 5],
+                alignment: "left",
+              },
+              {
+                text: "Địa chỉ điểm nhận",
+                bold: true,
+                color: "#333333",
+                margin: [0, 20, 0, 5],
+                alignment: "left",
+              },
+            ],
+          },
+          {
+            columns: [
+              {
+                text: addressDelivery.name,
+                alignment: "left",
+              },
+              {
+                text: addressDelivery.phone,
+                alignment: "left",
+              },
+              {
+                text: addressDelivery.address,
+                alignment: "left",
+              },
+            ],
+          },
+        ]
       : [
-        {
-          columns: [
-            {
-              text: "Địa chỉ giao",
-              bold: true,
-              color: "#333333",
-              margin: [0, 20, 0, 5],
-              alignment: "left",
-            },
-            {
-              text: "SĐT khách hàng",
-              bold: true,
-              color: "#333333",
-              margin: [0, 20, 0, 5],
-              alignment: "left",
-            },
-          ],
-        },
-        {
-          columns: [
-            {
-              text: `${order.buyerAddress} - ${order.buyerWard} -  ${order.buyerDistrict} -  ${order.buyerProvince}`,
-              alignment: "left",
-            },
-            {
-              text: order.buyerPhone,
-              alignment: "left",
-            },
-          ],
-        },
-      ];
+          {
+            columns: [
+              {
+                text: "Địa chỉ giao",
+                bold: true,
+                color: "#333333",
+                margin: [0, 20, 0, 5],
+                alignment: "left",
+              },
+              {
+                text: "SĐT khách hàng",
+                bold: true,
+                color: "#333333",
+                margin: [0, 20, 0, 5],
+                alignment: "left",
+              },
+            ],
+          },
+          {
+            columns: [
+              {
+                text: `${order.buyerAddress} - ${order.buyerWard} -  ${order.buyerDistrict} -  ${order.buyerProvince}`,
+                alignment: "left",
+              },
+              {
+                text: order.buyerPhone,
+                alignment: "left",
+              },
+            ],
+          },
+        ];
 
   const GHI_CHU = {
     columns: [
@@ -514,7 +506,7 @@ const getPDFOrder = async ({ order, addressDelivery, member, logoImageUrl }: any
   const CHU_KY = {
     columns: [
       {
-        text: "Trưởng bưu cục",
+        text: "Trưởng cửa hàng",
         bold: true,
         fontSize: 14,
         alignment: "left",
@@ -550,8 +542,6 @@ const getPDFOrder = async ({ order, addressDelivery, member, logoImageUrl }: any
       columnGap: 20,
     },
   };
-
-
 
   const LOGO = {
     image: imgBase64,

@@ -71,7 +71,6 @@ export function CartProvider(props) {
     paymentMethod: "COD",
     note: "",
   });
-  console.log("ORDERINPUT", orderInput);
   const resetOrderInput = () => {
     setOrderInput({
       ...orderInput,

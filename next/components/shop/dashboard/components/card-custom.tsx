@@ -29,7 +29,7 @@ CardCustom.Header = (props: HeaderProps) => {
     </div>
   );
 };
-CardCustom.Body = (props: PropsType) => {
+CardCustom.Body = (props: PropsType & ReactProps) => {
   return (
     <div className={`w-full p-4 ${props.className}`} style={props.style}>
       {props.children}

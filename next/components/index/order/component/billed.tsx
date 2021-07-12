@@ -26,9 +26,9 @@ export function Billed({ order, status }: PropsType) {
             </div>
             <div className="flex flex-col pt-1">
               <div className="flex items-center">
-                <span className="">{order.sellerName}</span>
-                {/* <span className="px-2">-</span>
-                <span className="">{order.buyerAddress}</span> */}
+                <span className="">{order.seller.shopName}</span>
+                <span className="px-2">-</span>
+                <span className="">{order.shopBranch.name}</span>
               </div>
               <div className="flex pt-1 justify-between flex-wrap">
                 <div className="flex  pt-1 whitespace-nowrap flex-1">

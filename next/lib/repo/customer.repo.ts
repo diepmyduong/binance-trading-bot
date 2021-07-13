@@ -31,6 +31,18 @@ interface CustomerPageAccount {
   memberId: string;
   member: Member;
 }
+export interface CustomeUpdateMeInput {
+  name: string;
+  address: string;
+  phone: string;
+  provinceId: string;
+  districtId: string;
+  wardId: string;
+  avatar: string;
+  gender: string;
+  latitude: number;
+  longitude: number;
+}
 export class CustomerRepository extends CrudRepository<Customer> {
   apiName: string = "Customer";
   displayName: string = "khách hàng";
@@ -86,6 +98,13 @@ export class CustomerRepository extends CrudRepository<Customer> {
     latitude: Float
     longitude: Float
   `);
+  async getCustomer() {
+    return await this.apollo
+      .query({
+        query: this.gql`query {  customerGetMe { ${this.fullFragment} }}`,
+      })
+      .then((res) => res.data["customerGetMe"] as Customer);
+  }
 }
 
 export const CustomerService = new CustomerRepository();

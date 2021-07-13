@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CartProduct, useCartContext } from "../../../../lib/providers/cart-provider";
+import { useCartContext } from "../../../../lib/providers/cart-provider";
 import { Dialog, DialogPropsType } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
 import { NumberPipe } from "../../../../lib/pipes/number";
@@ -9,7 +9,9 @@ import { useRouter } from "next/router";
 import { Price } from "../../../shared/homepage-layout/price";
 import { Quantity } from "../../../shared/homepage-layout/quantity";
 import useDevice from "../../../../lib/hooks/useDevice";
-import { FaDivide } from "react-icons/fa";
+import { Product, ProductService } from "../../../../lib/repo/product.repo";
+import { ImgProduct } from "../../../shared/homepage-layout/img-product";
+import { Rating } from "../../../shared/homepage-layout/rating";
 
 interface Propstype extends DialogPropsType {}
 export function CartDialog(props: Propstype) {
@@ -18,6 +20,25 @@ export function CartDialog(props: Propstype) {
   const [showLogin, setShowLogin] = useState(false);
   const { cartProducts, totalMoney, changeProductQuantity } = useCartContext();
   const { isMobile } = useDevice();
+  const [saleUpProducts, setSaleUpProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    let upSalePros = saleUpProducts;
+    cartProducts.forEach((cart) => {
+      let upSale = cart.product.upsaleProducts;
+      if (upSale && upSale.length > 0) {
+        upSale.forEach((product) => {
+          let index = upSalePros.findIndex((p) => p.id === product.id);
+          if (index === -1) {
+            ProductService.getOne({ id: product.id }).then((res) => {
+              upSalePros.push(res);
+              setSaleUpProducts(cloneDeep(upSalePros));
+            });
+          }
+        });
+      }
+    });
+  }, [cartProducts]);
 
   return (
     <Dialog
@@ -61,6 +82,7 @@ export function CartDialog(props: Propstype) {
               )}
             </div>
           ))}
+          {saleUpProducts.length > 0 && <SaleUpProduct saleUpProduct={saleUpProducts} />}
         </div>
       </Dialog.Body>
       <Dialog.Footer>
@@ -88,5 +110,80 @@ export function CartDialog(props: Propstype) {
         }}
       />
     </Dialog>
+  );
+}
+import { Swiper, SwiperSlide } from "swiper/react";
+import SwiperCore, { Navigation } from "swiper/core";
+import { useEffect } from "react";
+import cloneDeep from "lodash/cloneDeep";
+
+SwiperCore.use([Navigation]);
+interface SaleUpProductProps extends ReactProps {
+  saleUpProduct: Product[];
+}
+export function SaleUpProduct(props: SaleUpProductProps) {
+  const router = useRouter();
+  const query = router.query;
+  const url = new URL(location.href);
+  const handleClick = (code) => {
+    url.searchParams.set("productId", code);
+    router.push(url.toString(), null, { shallow: true });
+  };
+  return (
+    <div className="relative group mt-10">
+      <h3 className="text-lg font-semibold text-primary pb-2">Ngon hơn khi ăn kèm</h3>
+      <Swiper
+        spaceBetween={10}
+        freeMode={true}
+        grabCursor
+        slidesPerView={"auto"}
+        className="w-auto"
+        navigation
+      >
+        {props.saleUpProduct.map((item: Product, index: number) => (
+          <SwiperSlide key={index} className="w-auto sm:w-3/4">
+            <div
+              className={`py-2 shadow-md rounded-sm hover:bg-primary-light cursor-pointer border-b transition-all duration-300  ${
+                item.allowSale ? "" : "hidden"
+              }`}
+              onClick={() => {
+                handleClick(item.code);
+              }}
+            >
+              <div className={`flex items-center px-4 `}>
+                <div className="flex-1 flex flex-col h-20 sm:h-24">
+                  <p className="font-semibold items-start">{item.name}</p>
+                  <p className="text-gray-500 text-sm">{item.subtitle}</p>
+                  <Rating rating={item.rating || 4.8} textSm soldQty={item.soldQty} />
+                  <p className="text-gray-400 text-sm">{item.des}</p>
+                  <Price
+                    price={item.basePrice}
+                    saleRate={item.saleRate}
+                    downPrice={item.downPrice}
+                    textDanger
+                    className="justify-items-end"
+                  />
+                </div>
+                <ImgProduct
+                  native
+                  src={item.image || ""}
+                  className="w-20 sm:w-24 rounded-sm h-20 sm:h-24"
+                  saleRate={item.saleRate}
+                />
+              </div>
+              {item.labels?.map((label, index) => (
+                <div
+                  className="ml-2 inline-flex items-center text-white rounded-full font-semibold text-xs px-2 py-1 cursor-pointer whitespace-nowrap"
+                  style={{ backgroundColor: label.color }}
+                  key={index}
+                >
+                  <span>{label.name}</span>
+                </div>
+              ))}
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
   );
 }

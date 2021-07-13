@@ -3,12 +3,13 @@ import { ImgProps, Img } from "../utilities/img";
 interface Propstype extends ImgProps {
   saleRate: number;
   small?: boolean;
+  native?: boolean;
 }
 
-export function ImgProduct({ saleRate, small = false, ...props }: Propstype) {
+export function ImgProduct({ saleRate, small = false, native = false, ...props }: Propstype) {
   return (
     <div className="relative overflow-hidden rounded-md">
-      <Img {...props} />
+      {native ? <img {...props} /> : <Img {...props} />}
       {saleRate > 0 && (
         <div
           className={`absolute -top-2 -right-2 bg-danger text-white sm:text-lg font-semibold rounded-bl-3xl ${

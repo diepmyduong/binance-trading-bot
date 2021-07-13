@@ -173,13 +173,19 @@ const schema = gql`
     pickupTime: DateTime
     "Mã chi nhánh"
     shopBranchId: String
-
+    shopBranch: ShopBranch
     "Lý do huỷ"
     cancelReason: String
     "Ghim đơn"
     pin: Boolean
 
-    shopBranch: ShopBranch
+    "Mã voucher"
+    voucherId: ID
+    voucher: ShopVoucher
+    "Giảm giá"
+    discount: Float
+    "Chi tiết giảm giá"
+    discountDetail: String
   }
 
 

@@ -25,7 +25,10 @@ export function ProductDetailProvider({ productCode, ...props }) {
   const [totalMoney, setTotalMoney] = useState(0);
   const loadProduct = () => {
     setProduct(null);
-    ProductService.getAll({ query: { limit: 1, filter: { code: productCode } } })
+    ProductService.getAll({
+      fragment: ProductService.fullFragment,
+      query: { limit: 1, filter: { code: productCode } },
+    })
       .then((res) => {
         if (res) {
           let newProduct = cloneDeep(res.data[0]) as Product;

@@ -118,6 +118,7 @@ export class ProductRepository extends CrudRepository<Product> {
     upsaleProductIds: string[];
     upsaleProducts {
       id: String
+      code: String
       name: String
     }: Product[];
   `);

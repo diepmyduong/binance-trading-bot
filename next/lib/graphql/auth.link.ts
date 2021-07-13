@@ -55,12 +55,19 @@ export const AuthLink = setContext((_, { headers }) => {
     let token = GetAuthToken();
     if (location.pathname.startsWith("/shop")) {
       token = GetAuthTokenMember();
-      console.log("shop token", token);
+      // console.log("shop token", token);
     } else if (location.pathname.startsWith("/admin")) {
       token = GetAuthToken();
-      console.log("admin token", token);
+      // console.log("admin token", token);
     } else {
-      token = GetCustomerToken() || GetAnonymousToken();
+      const customerToken = GetCustomerToken();
+      const anonymousToken = GetAnonymousToken();
+      // if (customerToken) {
+      //   console.log("customer token", customerToken);
+      // } else {
+      //   console.log("anonymous token", anonymousToken);
+      // }
+      token = customerToken || anonymousToken;
     }
     const ip = GetIP();
     const context = {

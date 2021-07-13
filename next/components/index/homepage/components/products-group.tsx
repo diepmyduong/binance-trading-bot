@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { Price } from "../../../shared/homepage-layout/price";
 import { ShopProductGroup } from "../../../../lib/repo/shop-config.repo";
 import { Product } from "../../../../lib/repo/product.repo";
+import { ImgProduct } from "../../../shared/homepage-layout/img-product";
 interface Propstype extends ReactProps {
   productGroups: ShopProductGroup[];
 }
@@ -27,7 +28,12 @@ export function ProductsGroup(props: Propstype) {
                 key={index}
                 onClick={() => handleClick(item.code)}
               >
-                <Img src={item.image} className="min-w-4xs rounded-sm" compress={232} />
+                <ImgProduct
+                  src={item.image}
+                  className="min-w-4xs rounded-sm"
+                  compress={232}
+                  saleRate={item.saleRate}
+                />
                 <p className="font-semibold group-hover:text-primary-dark transition-all duration-200">
                   {item.name}
                 </p>

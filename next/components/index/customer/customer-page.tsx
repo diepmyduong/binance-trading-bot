@@ -17,7 +17,7 @@ export function CustomerPage() {
       <CustomerConsumer>
         {({ customer, customerUpdateMe }) => (
           <div className="flex items-center justify-center w-full py-20">
-            <div className="bg-white shadow relative rounded-md">
+            <div className="bg-white shadow relative rounded-md w-full">
               <div className="w-full flex flex-col items-center justify-center py-14">
                 {/* <div className="absolute -top-10 w-full flex justify-center">
                   <Img src={""} avatar className="w-20 h-20" />
@@ -60,7 +60,14 @@ export function CustomerPage() {
                         />
                       </Field>
                     </div>
-                    <AddressGroup />
+                    <AddressGroup
+                      {...{
+                        wardId: customer.wardId,
+                        districtId: customer.districtId,
+                        provinceId: customer.provinceId,
+                        address: customer.address,
+                      }}
+                    />
                     <div className=" w-full">
                       <SaveButtonGroup />
                     </div>

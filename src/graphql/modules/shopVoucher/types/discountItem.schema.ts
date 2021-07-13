@@ -1,7 +1,7 @@
 import { gql } from "apollo-server-express";
 import { Schema } from "mongoose";
 export enum DiscountUnit {
-  CASH = "CASH", // Tiền mặt
+  VND = "VND", // Tiền mặt
   PERCENT = "PERCENT", // Phần trăm
 }
 export type DiscountItem = {

@@ -135,6 +135,10 @@ export type IOrder = BaseDocument & {
   confirmTime?: Date; // Thời gian confirm
   cancelReason?: string; // Lý do huỷ
   pin?: boolean; // Ghim đơn
+
+  voucherId?: string; // Mã voucher
+  discount?: number; // Giảm giá
+  discountDetail?: string; // Chi tiết giảm giá
 };
 
 const orderSchema = new Schema(
@@ -226,6 +230,9 @@ const orderSchema = new Schema(
     confirmTime: { type: Date },
     cancelReason: { type: String },
     pin: { type: Boolean },
+    voucherId: { type: Schema.Types.ObjectId, ref: "ShopVoucher" },
+    discount: { type: Number, default: 0 },
+    discountDetail: { type: String },
   },
   { timestamps: true }
 );

@@ -17,6 +17,7 @@ import { CustomerLoader, CustomerModel } from "../customer/customer.model";
 import { MemberLoader, MemberModel } from "../member/member.model";
 import { OrderItemLoader } from "../orderItem/orderItem.model";
 import { ShopBranchLoader } from "../shopBranch/shopBranch.model";
+import { ShopVoucherLoader } from "../shopVoucher/shopVoucher.model";
 import { StaffModel } from "../staff/staff.model";
 import { getShipMethods, IOrder, OrderStatus, PaymentMethod, ShipMethod } from "./order.model";
 import { orderService } from "./order.service";
@@ -63,6 +64,7 @@ const Order = {
   toMember: GraphQLHelper.loadById(MemberLoader, "toMemberId"),
   buyer: GraphQLHelper.loadById(CustomerLoader, "buyerId"),
   shopBranch: GraphQLHelper.loadById(ShopBranchLoader, "shopBranchId"),
+  voucher: GraphQLHelper.loadById(ShopVoucherLoader, "voucherId"),
   collaborator: async (root: IOrder, args: any, context: Context) => {
     const collaborator = await CollaboratorModel.findById(root.collaboratorId);
     const member = await MemberModel.findById(root.sellerId);

@@ -1,10 +1,10 @@
-import { Dictionary, get, keyBy, maxBy, sumBy } from "lodash";
+import { Dictionary, get, groupBy, keyBy, maxBy, sumBy } from "lodash";
 import moment from "moment-timezone";
 import { Types } from "mongoose";
 
 import { SettingKey } from "../../../configs/settingData";
 import { onOrderedProduct } from "../../../events/onOrderedProduct.event";
-import { VietnamPostHelper } from "../../../helpers";
+import { UtilsHelper, VietnamPostHelper } from "../../../helpers";
 import {
   ICalculateAllShipFeeRequest,
   PickupType,
@@ -26,6 +26,8 @@ import { SettingHelper } from "../setting/setting.helper";
 import { OperatingTimeStatus } from "../shopBranch/operatingTime.graphql";
 import { ShopBranchModel } from "../shopBranch/shopBranch.model";
 import { ShopConfigModel } from "../shopConfig/shopConfig.model";
+import { IShopVoucher, ShopVoucherModel, ShopVoucherType } from "../shopVoucher/shopVoucher.model";
+import { DiscountUnit } from "../shopVoucher/types/discountItem.schema";
 import { OrderHelper } from "./order.helper";
 import {
   IOrder,
@@ -62,12 +64,14 @@ export type CreateOrderInput = {
   pickupMethod: PickupMethod;
   shopBranchId: string;
   pickupTime: Date;
+  promotionCode: string;
 };
 export class OrderGenerator {
   order: IOrder;
   orderItems: IOrderItem[] = [];
   products: Dictionary<IProduct>;
   unitPrice: number;
+  voucher: IShopVoucher;
   constructor(
     public orderInput: CreateOrderInput,
     public seller: IMember,
@@ -134,6 +138,192 @@ export class OrderGenerator {
     await this.setCollaborator();
     await Promise.all([this.setCampaign(), this.calculateShipfee()]);
     this.calculateAmount(); // Tính tiền sau phí ship
+    await Promise.all([this.applyVoucher()]);
+    this.calculateAmount(); // Tính tiền sau phí ship
+  }
+  private async applyVoucher() {
+    if (!this.orderInput.promotionCode) return;
+    try {
+      await this.validateVoucher();
+      switch (this.voucher.type) {
+        case ShopVoucherType.DISCOUNT_BILL: {
+          if (this.voucher.discountUnit == DiscountUnit.VND) {
+            this.order.discount =
+              this.voucher.discountValue > this.order.subtotal
+                ? this.order.subtotal
+                : this.voucher.discountValue;
+          } else {
+            const discountValue = (this.order.subtotal * this.voucher.discountValue) / 100;
+            this.order.discount =
+              this.voucher.maxDiscount > discountValue ? discountValue : this.voucher.maxDiscount;
+          }
+          this.order.discountDetail = this.voucher.description;
+          break;
+        }
+        case ShopVoucherType.DISCOUNT_ITEM: {
+          let hasItem = false;
+          let discount = 0;
+          let discountItems = keyBy(this.voucher.discountItems, "productId");
+          let orderItems = groupBy(this.orderItems, "productId");
+          for (const items of Object.values(orderItems)) {
+            const productId = items[0].productId.toString();
+            if (discountItems[productId]) {
+              hasItem = true;
+              const discountItem = discountItems[productId];
+              const totalAmount = sumBy(items, "amount");
+              if (discountItem.discountUnit == DiscountUnit.VND) {
+                discount +=
+                  discountItem.discountValue > totalAmount
+                    ? totalAmount
+                    : discountItem.discountValue;
+              } else {
+                const discountValue = (totalAmount * discountItem.discountValue) / 100;
+                discount +=
+                  discountItem.maxDiscount > discountValue
+                    ? discountValue
+                    : discountItem.maxDiscount;
+              }
+            }
+          }
+          if (!hasItem) throw Error();
+          this.order.discount = discount;
+          break;
+        }
+        case ShopVoucherType.OFFER_ITEM: {
+          let hasItem = false;
+          let discount = 0;
+          let offerItems = keyBy(this.voucher.offerItems, "productId");
+          let orderItems = groupBy(this.orderItems, "productId");
+          for (const items of Object.values(orderItems)) {
+            const productId = items[0].productId.toString();
+            if (offerItems[productId]) {
+              hasItem = true;
+              const offerItem = offerItems[productId];
+              const totalQty = sumBy(items, "qty");
+              const offerQty = totalQty > offerItem.qty ? offerItem.qty : totalQty;
+              discount += offerQty * items[0].basePrice;
+            }
+          }
+          if (!hasItem) throw Error();
+          this.order.discount = discount;
+          break;
+        }
+        case ShopVoucherType.SHIP_FEE: {
+          if (this.order.shipfee == 0) throw Error();
+          if (this.voucher.discountUnit == DiscountUnit.VND) {
+            this.order.discount =
+              this.voucher.discountValue > this.order.shipfee
+                ? this.order.shipfee
+                : this.voucher.discountValue;
+          } else {
+            const discountValue = (this.order.shipfee * this.voucher.discountValue) / 100;
+            this.order.discount =
+              this.voucher.maxDiscount > discountValue ? discountValue : this.voucher.maxDiscount;
+          }
+          this.order.discountDetail = this.voucher.description;
+          break;
+        }
+        default:
+          throw Error();
+      }
+      this.order.discountDetail = this.voucher.description;
+      this.order.voucherId = this.voucher._id;
+    } catch (err) {
+      if (err.message) {
+        throw err;
+      } else {
+        throw Error("Ưu đãi không hợp lệ.");
+      }
+    }
+  }
+  private async validateVoucher() {
+    this.voucher = await ShopVoucherModel.findOne({
+      code: this.orderInput.promotionCode,
+      memberId: this.seller._id,
+    });
+    if (!this.voucher) throw Error();
+    if (!this.voucher.isActive) throw Error();
+    if (this.voucher.startDate && moment(this.voucher.startDate).isAfter(new Date())) throw Error();
+    if (this.voucher.endDate && moment(this.voucher.endDate).isBefore(new Date())) throw Error();
+    if (this.voucher.minSubtotal > 0 && this.order.subtotal < this.voucher.minSubtotal)
+      throw Error(`Đơn hàng yêu cầu tối thiểu ${UtilsHelper.toMoney(this.voucher.minSubtotal)}đ`);
+    if (this.voucher.minItemQty > 0 && this.order.itemCount < this.voucher.minItemQty)
+      throw Error(`Số lượng món tối thiểu ${this.voucher.minItemQty} món`);
+    if (
+      this.voucher.applyPaymentMethods.length > 0 &&
+      !this.voucher.applyPaymentMethods.includes(this.order.paymentMethod)
+    )
+      throw Error(`Phương thức thanh toán không được áp dụng ưu đãi.`);
+    if (this.voucher.applyItemIds.length > 0) {
+      const applyItemIds = this.voucher.applyItemIds.map((id) => id.toString());
+      let hasApplyItem = false;
+      for (const item of this.orderItems) {
+        if (applyItemIds.includes(item.productId.toString())) {
+          hasApplyItem = true;
+          break;
+        }
+      }
+      if (!hasApplyItem) throw Error("Ưu đãi chỉ áp dụng cho một số sản phẩm.");
+    }
+    if (this.voucher.exceptItemIds.length > 0) {
+      const exceptItemIds = this.voucher.exceptItemIds.map((id) => id.toString());
+      for (const item of this.orderItems) {
+        if (exceptItemIds.includes(item.productId.toString())) {
+          throw Error("Ưu đãi chỉ áp dụng cho một số sản phẩm.");
+        }
+      }
+    }
+    if (this.voucher.issueNumber > 0) {
+      let issueNumber = 0;
+      if (!this.voucher.issueByDate) {
+        issueNumber = await OrderModel.aggregate([
+          { $match: { sellerId: this.seller._id, voucherId: this.voucher._id } },
+          { $group: { _id: null, total: { $sum: 1 } } },
+        ]).then((res) => get(res, "0.total", 0) as number);
+      } else {
+        const startDate = moment().startOf("day").toDate();
+        issueNumber = await OrderModel.aggregate([
+          {
+            $match: {
+              sellerId: this.seller._id,
+              voucherId: this.voucher._id,
+              createdAt: { $gte: startDate },
+            },
+          },
+          { $group: { _id: null, total: { $sum: 1 } } },
+        ]).then((res) => get(res, "0.total", 0) as number);
+      }
+      if (this.voucher.issueNumber <= issueNumber) throw Error("Ưu đãi đã hết");
+    }
+    if (this.voucher.useLimit > 0) {
+      let used = 0;
+      if (!this.voucher.useLimitByDate) {
+        used = await OrderModel.aggregate([
+          {
+            $match: {
+              sellerId: this.seller._id,
+              voucherId: this.voucher._id,
+              buyerId: this.buyer._id,
+            },
+          },
+          { $group: { _id: null, total: { $sum: 1 } } },
+        ]).then((res) => get(res, "0.total", 0) as number);
+      } else {
+        const startDate = moment().startOf("day").toDate();
+        used = await OrderModel.aggregate([
+          {
+            $match: {
+              sellerId: this.seller._id,
+              voucherId: this.voucher._id,
+              createdAt: { $gte: startDate },
+              buyerId: this.buyer._id,
+            },
+          },
+          { $group: { _id: null, total: { $sum: 1 } } },
+        ]).then((res) => get(res, "0.total", 0) as number);
+      }
+      if (this.voucher.issueNumber <= used) throw Error("Ưu đãi đã hết");
+    }
   }
   private async setOrderSeller() {
     this.order.fromMemberId = this.seller._id;
@@ -177,7 +367,7 @@ export class OrderGenerator {
     });
   }
   private async calculateAmount() {
-    this.order.amount = this.order.subtotal + this.order.shipfee;
+    this.order.amount = this.order.subtotal + this.order.shipfee - this.order.discount;
   }
   private async calculateShipfee() {
     switch (this.order.pickupMethod) {

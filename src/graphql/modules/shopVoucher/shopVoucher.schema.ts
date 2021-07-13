@@ -1,5 +1,6 @@
 import { gql } from "apollo-server-express";
-import { ShopVoucherType, DiscountUnit } from "./shopVoucher.model";
+import { ShopVoucherType } from "./shopVoucher.model";
+import { DiscountUnit } from "./types/discountItem.schema";
 
 const schema = gql`
   extend type Query {

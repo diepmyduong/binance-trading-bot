@@ -52,6 +52,8 @@ export default {
       paymentMethod: String!
       "Ghi chú"
       note: String
+      "Mã giảm giá"
+      promotionCode: String
     }
     input OrderItemInput {
       productId: ID!

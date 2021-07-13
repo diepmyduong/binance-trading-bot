@@ -2,17 +2,13 @@ import mongoose from "mongoose";
 import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 import { OfferItem, OfferItemSchema } from "./types/offerItem.schema";
-import { DiscountItem, DiscountItemSchema } from "./types/discountItem.schema";
+import { DiscountItem, DiscountItemSchema, DiscountUnit } from "./types/discountItem.schema";
 const Schema = mongoose.Schema;
 export enum ShopVoucherType {
   DISCOUNT_BILL = "DISCOUNT_BILL", // Giảm giá đơn
   DISCOUNT_ITEM = "DISCOUNT_ITEM", // Giảm giá sản phẩm
   OFFER_ITEM = "OFFER_ITEM", // Tặng sản phẩm
   SHIP_FEE = "SHIP_FEE", // Giảm phí ship
-}
-export enum DiscountUnit {
-  VND = "VND", // Tiền mặt
-  PERCENT = "PERCENT", // Phần trăm
 }
 export type IShopVoucher = BaseDocument & {
   memberId?: string; // Mã chủ shop

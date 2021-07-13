@@ -2,13 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Product, ProductService } from "../repo/product.repo";
 import { OrderItemToppingInput, ToppingOption } from "../repo/product-topping.repo";
 import cloneDeep from "lodash/cloneDeep";
-import {
-  CreateOrderInput,
-  Order,
-  OrderInput,
-  OrderItemInput,
-  OrderService,
-} from "../repo/order.repo";
+import { Order, OrderInput, OrderItemInput, OrderService } from "../repo/order.repo";
 import { useShopContext } from "./shop-provider";
 import { useToast } from "./toast-provider";
 import { useRouter } from "next/router";
@@ -17,7 +11,7 @@ export const CartContext = createContext<
   Partial<{
     draftOrder?: any;
     orderInput?: OrderInput;
-    setOrderInput?: any;
+    setOrderInput?: (val: OrderInput) => any;
     inforBuyers: any;
     setInforBuyers: any;
     totalFood: number;
@@ -66,6 +60,8 @@ export function CartProvider(props) {
     buyerProvinceId: "70",
     buyerDistrictId: "",
     buyerWardId: "",
+    buyerFullAddress: "",
+    buyerAddressNote: "",
     latitude: 10.72883,
     longitude: 106.725484,
     paymentMethod: "COD",

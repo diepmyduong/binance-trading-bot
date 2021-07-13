@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Fa500Px, FaAddressCard, FaBlenderPhone, FaUserAlt } from "react-icons/fa";
+import { Fa500Px, FaAddressCard, FaBlenderPhone, FaEdit, FaUserAlt } from "react-icons/fa";
 import { Field } from "../../../shared/utilities/form/field";
 import { Form, FormConsumer } from "../../../shared/utilities/form/form";
 import { Input } from "../../../shared/utilities/form/input";
@@ -13,66 +13,132 @@ import { Spinner } from "../../../shared/utilities/spinner";
 import { getAddressText } from "../../../../lib/helpers/get-address-text";
 import { AddressService } from "../../../../lib/repo/address.repo";
 import { compact } from "lodash";
+import { Dialog } from "../../../shared/utilities/dialog/dialog";
+import {
+  GoongAutocompletePlace,
+  GoongGeocoderService,
+  GoongPlaceDetail,
+} from "../../../../lib/helpers/goong";
+import { NotFound } from "../../../shared/utilities/not-found";
+import { RiAddFill, RiMapPinLine } from "react-icons/ri";
+import { Button } from "../../../shared/utilities/form/button";
+// import { GoongGeocoder, GoongPlaceDetail, GoongSearch } from "../../../../lib/helpers/goong";
 
 export function InforPayment() {
   const [openDialog, setOpenDialog] = useState(false);
   const { orderInput, setOrderInput, draftOrder } = useCartContext();
-  const [openInputAddress, setOpenInputAddress] = useState(false);
   const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
   const [addressTemp, setAddressTemp] = useState("");
-  console.log("branchSelecting", branchSelecting);
-  const getAddress = async (data, fullData) => {
-    let fullAddress = {
-      address: data.address || draftOrder?.order?.buyerAddress,
-      ward: fullData.wardId?.label || draftOrder?.order?.buyerWard,
-      district: fullData.districtId?.label || draftOrder?.order?.buyerDistrict,
-      province: fullData.provinceId?.label || draftOrder?.order?.buyerProvince,
-    };
-    setAddressTemp(getAddressText(fullAddress));
-  };
+  const [openAddress, setOpenAddress] = useState(false);
+  const [placeDetail, setPlaceDetail] = useState<GoongPlaceDetail>(null);
+  const [addressInput, setAddressInput] = useState("");
+  const [addressList, setAddressList] = useState<GoongAutocompletePlace[]>(null);
+  const [buyerAddressNote, setBuyerAddressNote] = useState<string>(undefined);
+
+  useEffect(() => {
+    if (openAddress && placeDetail) {
+      setAddressInput(placeDetail.formatted_address);
+    }
+  }, [openAddress]);
+
+  useEffect(() => {
+    if (addressInput) {
+      setAddressList(null);
+      GoongGeocoderService.getPlaces(addressInput).then((res) => {
+        setAddressList(res);
+      });
+    } else {
+      setAddressList(undefined);
+    }
+  }, [addressInput]);
+
+  useEffect(() => {
+    if (placeDetail) {
+      setOrderInput({
+        ...orderInput,
+        buyerFullAddress: placeDetail.name + ", " + placeDetail.formatted_address,
+        latitude: placeDetail.geometry.location.lat,
+        longitude: placeDetail.geometry.location.lng,
+      });
+    } else {
+      setOrderInput({
+        ...orderInput,
+        buyerFullAddress: "",
+        latitude: 10.72883,
+        longitude: 106.725484,
+      });
+    }
+  }, [placeDetail]);
+
+  useEffect(() => {
+    setOrderInput({
+      ...orderInput,
+      buyerAddressNote,
+    });
+  }, [buyerAddressNote]);
 
   return (
     <div className="pt-4 bg-white">
       <div className="">
         <TabCustom />
-        <div className="px-4 pt-6 text-sm">
-          <Form initialData={{ name: orderInput.buyerName, phone: orderInput.buyerPhone }}>
-            <Field name="name" noError className="pb-2" required>
-              <Input
-                placeholder="Nhập tên người nhận"
-                prefix={<FaUserAlt />}
-                className="rounded-2xl bg-primary-light"
-                onChange={(data) => setOrderInput({ ...orderInput, buyerName: data })}
-              />
-            </Field>
-            <Field name="phone" noError className="pb-2" required>
-              <Input
-                type="text"
-                placeholder="Nhập số điện thoại"
-                prefix={<FaBlenderPhone />}
-                className="rounded-2xl bg-primary-light"
-                onChange={(data) => setOrderInput({ ...orderInput, buyerPhone: data })}
-              />
-            </Field>
-
+        <div className="p-4 text-sm">
+          <div className="flex flex-col gap-y-2">
+            <Input
+              name="name"
+              placeholder="Nhập tên người nhận"
+              prefix={<FaUserAlt />}
+              className="rounded-2xl bg-primary-light"
+              value={orderInput.buyerName}
+              onChange={(data) => setOrderInput({ ...orderInput, buyerName: data })}
+            />
+            <Input
+              name="phone"
+              type="text"
+              placeholder="Nhập số điện thoại"
+              prefix={<FaBlenderPhone />}
+              className="rounded-2xl bg-primary-light"
+              value={orderInput.buyerPhone}
+              onChange={(data) => setOrderInput({ ...orderInput, buyerPhone: data })}
+            />
             {orderInput.pickupMethod == "DELIVERY" ? (
-              <div
-                className=""
-                onClick={() => {
-                  setOpenInputAddress(true);
-                }}
-              >
-                <Field noError className="pb-2">
+              <>
+                <div
+                  onClick={() => {
+                    setOpenAddress(true);
+                  }}
+                >
                   <Input
                     readonly
-                    value={addressTemp}
+                    value={
+                      placeDetail ? `${placeDetail?.name}, ${placeDetail?.formatted_address}` : ""
+                    }
                     type="text"
                     placeholder="Nhập địa chỉ giao đến"
                     prefix={<FaAddressCard />}
                     className="rounded-2xl bg-primary-light"
                   />
-                </Field>
-              </div>
+                </div>
+                {buyerAddressNote === undefined ? (
+                  <Button
+                    className="py-2 px-0 w-full justify-start no-focus"
+                    medium
+                    textPrimary
+                    icon={<RiAddFill />}
+                    text="Thêm ghi chú địa chỉ giao hàng"
+                    onClick={() => setBuyerAddressNote(null)}
+                  />
+                ) : (
+                  <Input
+                    autoFocus
+                    value={buyerAddressNote}
+                    onChange={setBuyerAddressNote}
+                    type="text"
+                    placeholder="Nhập ghi chú địa chỉ giao hàng (Toà nhà, Địa chỉ cụ thể)"
+                    prefix={<FaEdit />}
+                    className="rounded-2xl animate-emerge bg-primary-light"
+                  />
+                )}
+              </>
             ) : (
               <div className="py-2">
                 <div className="font-bold">Chi nhánh</div>
@@ -108,7 +174,7 @@ export function InforPayment() {
                 </div>
               </div>
             )}
-          </Form>
+          </div>
           {shopBranchs && (
             <BranchsDialog
               shopBranchs={shopBranchs}
@@ -119,31 +185,71 @@ export function InforPayment() {
               }}
             />
           )}
-          <Form
-            dialog
+          <Dialog
+            slideFromBottom="all"
             mobileSizeMode
-            initialData={{
-              wardId: orderInput.buyerWardId,
-              districtId: orderInput.buyerDistrictId,
-              provinceId: orderInput.buyerProvinceId,
-              address: orderInput.buyerAddress,
-            }}
-            isOpen={openInputAddress}
-            onClose={() => setOpenInputAddress(false)}
-            onSubmit={(data, fullData) => {
-              console.log("fullData", fullData);
-              setOrderInput({
-                ...orderInput,
-                buyerAddress: data.address,
-                buyerWardId: data.wardId,
-                buyerDistrictId: data.districtId,
-                buyerProvinceId: data.provinceId,
-              });
-              getAddress(data, fullData);
-              setOpenInputAddress(false);
-            }}
+            isOpen={openAddress}
+            onClose={() => setOpenAddress(false)}
+            title="Nhập địa chỉ giao hàng"
           >
-            <AddressGroup
+            <div className="relative v-scrollbar" style={{ height: "calc(100vh - 100px" }}>
+              <div className="p-4 bg-gray-100 sticky top-0">
+                <Input
+                  autoFocus
+                  className="h-14"
+                  debounce
+                  clearable
+                  name="address"
+                  placeholder="Tìm địa chỉ giao hàng tại đây"
+                  value={addressInput}
+                  onChange={(val) => {
+                    setAddressInput(val);
+                  }}
+                />
+              </div>
+              {addressInput === undefined && (
+                <NotFound
+                  icon={<RiMapPinLine />}
+                  text="Nhập địa chỉ để tìm kiếm địa điểm giao hàng"
+                />
+              )}
+              {addressList === null && <Spinner />}
+              {addressList && (
+                <>
+                  {addressList.length ? (
+                    <>
+                      {addressList.map((address) => (
+                        <button
+                          type="button"
+                          key={address.description}
+                          className="w-full animate-emerge p-4 flex items-start text-gray-600 border-b border-gray-200 hover:bg-primary-light"
+                          onClick={async () => {
+                            let placeDetail = await GoongGeocoderService.getPlaceDetail(
+                              address.place_id
+                            );
+                            setPlaceDetail(placeDetail);
+                            setOpenAddress(false);
+                          }}
+                        >
+                          <i className="text-xl mr-2 mt-1">
+                            <RiMapPinLine />
+                          </i>
+                          <div className="text-left">
+                            <div className="font-semibold text-lg">
+                              {address.structured_formatting.main_text}
+                            </div>
+                            <div>{address.structured_formatting.secondary_text}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </>
+                  ) : (
+                    <NotFound text="Không tìm thấy địa chỉ" />
+                  )}
+                </>
+              )}
+            </div>
+            {/* <AddressGroup
               {...{
                 wardId: orderInput.buyerWardId,
                 districtId: orderInput.buyerDistrictId,
@@ -152,8 +258,8 @@ export function InforPayment() {
               }}
               required
             />
-            <SaveButtonGroup onCancel={() => setOpenInputAddress(false)} />
-          </Form>
+            <SaveButtonGroup onCancel={() => setOpenInputAddress(false)} /> */}
+          </Dialog>
         </div>
       </div>
     </div>
@@ -232,7 +338,7 @@ const SelectTime = () => {
 
 const TabCustom = () => {
   const { orderInput, setOrderInput } = useCartContext();
-  const options: { label: string; value: string }[] = [
+  const options: Option[] = [
     { label: "Giao hàng", value: "DELIVERY" },
     { label: "Lấy tại quán", value: "STORE" },
   ];

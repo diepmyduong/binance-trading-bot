@@ -8,6 +8,7 @@ import { Product } from "./product.repo";
 import { User } from "./user.repo";
 
 export interface OrderInput {
+  promotionCode: string;
   buyerName: string;
   buyerPhone: string;
   pickupMethod: "DELIVERY" | "STORE";
@@ -117,6 +118,7 @@ export interface Order extends BaseModel {
   driverPhone: string;
   driverLicense: string;
   shopBranch: ShopBranch;
+  buyerFullAddress: string;
 }
 export interface OrderItem extends BaseModel {
   orderId: string;
@@ -213,6 +215,7 @@ export class OrderRepository extends CrudRepository<Order> {
     paymentMethodText: String
     shipMethodText: String
     statusText: String
+    buyerFullAddress: String;
     fromMember {
       id: String
       name: String
@@ -266,6 +269,7 @@ export class OrderRepository extends CrudRepository<Order> {
     status: String
     buyerId: ID
     buyerName: String
+    buyerFullAddress: String;
     buyerPhone: String
     buyerAddress: String
     buyerProvince: String

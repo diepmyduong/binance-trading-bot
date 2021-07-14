@@ -86,12 +86,7 @@ export function OrderDetailPage({ id, ...props }: PropsType) {
                 <p className="">
                   <span className="font-bold">{order.buyerName}</span> ({order.buyerPhone})
                 </p>
-                <p className="">
-                  {order.buyerAddress && order.buyerAddress + ", "}
-                  {order.buyerWard && order.buyerWard + ", "}
-                  {order.buyerDistrict && order.buyerDistrict + ", "}
-                  {order.buyerProvince}
-                </p>
+                <p className="">{order.buyerFullAddress}</p>
               </div>
             </div>
           </div>

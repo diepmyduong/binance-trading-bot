@@ -56,7 +56,7 @@ const PromotionsPage = (props: Propstype) => {
           <div className="bg-white">
             <BreadCrumbs
               breadcrumbs={[
-                { label: "Trang chủ", href: `$/?code=${shopCode}` },
+                { label: "Trang chủ", href: `/?code=${shopCode}` },
                 { label: "Khuyến mãi" },
               ]}
               className="pt-4 px-4"

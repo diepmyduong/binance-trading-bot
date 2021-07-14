@@ -1,5 +1,6 @@
 import React from "react";
 import { HiShoppingCart, HiStar } from "react-icons/hi";
+import formatDate from "date-fns/format";
 interface Propstype extends ReactProps {
   rating: number | string;
   numRated?: number | string;
@@ -18,7 +19,11 @@ export function Rating(props: Propstype) {
         </i>
         <span className="font-bold mx-1">{props.rating}</span>
         {props.numRated && <p className="text-gray-400"> ({props.numRated}+)</p>}
-        {props.ratingTime && <p className="text-gray-400 text-sm"> {props.ratingTime}</p>}
+        {props.ratingTime && (
+          <p className="text-gray-400 text-sm">
+            {formatDate(new Date(props.ratingTime), "dd-MM-yyyy HH:mm")}
+          </p>
+        )}
       </div>
       {props.soldQty > 0 && (
         <div className="flex items-center text-sm">

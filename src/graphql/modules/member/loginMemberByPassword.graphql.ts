@@ -27,7 +27,7 @@ export default {
         const passwordValid = passwordHash.verify(password, member.password);
         if (!passwordValid) throw Error("Mật khẩu không đúng.");
         if (deviceId && deviceToken) {
-          await DeviceInfoModel.remove({ $or: [{ memberId: member._id }, { deviceId: deviceId }] });
+          await DeviceInfoModel.remove({ $or: [{ deviceToken }, { deviceId }] });
           await DeviceInfoModel.create({ memberId: member._id, deviceId, deviceToken });
         }
         return {

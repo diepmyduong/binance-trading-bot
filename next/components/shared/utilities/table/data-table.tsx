@@ -9,6 +9,7 @@ import { TableToolbar } from "./table-toolbar";
 import { Table } from "./table";
 import { TablePagination } from "./table-pagination";
 import { TableForm } from "./table-form";
+import useInterval from "../../../../lib/hooks/useInterval";
 
 interface DataTableProps<T extends BaseModel> extends ReactProps {
   title?: string;
@@ -38,7 +39,7 @@ export function DataTable<T extends BaseModel>({
   const [itemName, setItemName] = useState(props.itemName ? props.itemName.toLowerCase() : "");
   const [loadDone, setLoadDone] = useState(false);
   const [loadingItems, setLoadingItems] = useState(false);
-  const [filter, setFilter] = useState({});
+  let [filter, setFilter] = useState({});
   const [search, setSearch] = useState("");
   const [currentOrder, setCurrentOrder] = useState<{ property: string; type: "asc" | "desc" }>(
     null
@@ -52,6 +53,9 @@ export function DataTable<T extends BaseModel>({
   });
   const [formItem, setFormItem] = useState(null);
   let [queryNumber] = useState(0);
+  let [isLoading] = useState(false);
+  let [timeout] = useState(null);
+  let [isRefreshing] = useState(false);
   const toast = useToast();
   const alert = useAlert();
 
@@ -61,19 +65,11 @@ export function DataTable<T extends BaseModel>({
     setLoadDone(true);
   }, []);
 
-  useEffect(() => {
-    let interval = null;
-    if (props.autoRefresh) {
-      interval = setInterval(() => {
-        loadAll(true, false);
-      }, props.autoRefresh);
+  useInterval(async () => {
+    if (!isLoading && !isRefreshing) {
+      await loadAll(true, false);
     }
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [props.autoRefresh]);
+  }, props.autoRefresh);
 
   useEffect(() => {
     if (loadDone) {
@@ -81,14 +77,37 @@ export function DataTable<T extends BaseModel>({
     }
   }, [loadDone, search, filter, props.filter, currentOrder, pagination.page, pagination.limit]);
 
+  const waitUntil = (condition) => {
+    return new Promise((resolve) => {
+      let interval = setInterval(() => {
+        if (!condition()) {
+          return;
+        }
+
+        clearInterval(interval);
+        resolve(true);
+      }, 100);
+    });
+  };
+
   const loadAll = async (refresh = false, showLoading: boolean = true) => {
+    if (isRefreshing) {
+      await waitUntil(() => isRefreshing == false);
+    }
     if (showLoading) {
       setLoadingItems(true);
     }
-    if (refresh) await crudService.clearStore();
+    isLoading = true;
+    if (refresh) {
+      isRefreshing = true;
+      await crudService.clearStore();
+      setTimeout(() => {
+        isRefreshing = false;
+      });
+    }
     const currentQueryNumber = queryNumber + 1;
     queryNumber = currentQueryNumber;
-    const query: QueryInput = {
+    let query: QueryInput = {
       limit: pagination.limit,
       page: pagination.page,
       filter: { ...filter, ...props.filter },
@@ -111,11 +130,13 @@ export function DataTable<T extends BaseModel>({
       .catch((err) => {
         console.error(err);
         toast.error("Lỗi khi tải danh sách " + itemName);
+      })
+      .finally(() => {
+        isLoading = false;
       });
   };
 
   const onFilterChange = (registeredFilter: any) => {
-    console.log(registeredFilter);
     let newFilter = { ...filter, ...registeredFilter };
     newFilter = Object.keys(newFilter)
       .filter(
@@ -126,6 +147,7 @@ export function DataTable<T extends BaseModel>({
         return obj;
       }, {});
     if (!isEqual(filter, newFilter)) {
+      filter = newFilter;
       setFilter(newFilter);
     }
   };

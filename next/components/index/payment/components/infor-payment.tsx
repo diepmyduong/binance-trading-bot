@@ -30,7 +30,7 @@ export function InforPayment() {
 
   useEffect(() => {
     if (openAddress && placeDetail) {
-      setAddressInput(placeDetail.formatted_address);
+      setAddressInput(placeDetail.name + ", " + placeDetail.formatted_address);
     }
   }, [openAddress]);
 
@@ -220,7 +220,11 @@ export function InforPayment() {
                             let placeDetail = await GoongGeocoderService.getPlaceDetail(
                               address.place_id
                             );
-                            setPlaceDetail(placeDetail);
+                            setPlaceDetail({
+                              ...placeDetail,
+                              name: address.structured_formatting.main_text,
+                              formatted_address: address.structured_formatting.secondary_text,
+                            });
                             setOpenAddress(false);
                           }}
                         >

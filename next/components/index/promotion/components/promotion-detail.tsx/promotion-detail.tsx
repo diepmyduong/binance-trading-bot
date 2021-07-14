@@ -2,76 +2,60 @@ import React, { useState } from "react";
 import { Promotion } from "../promotion";
 import { Button } from "../../../../shared/utilities/form/button";
 import useDevice from "../../../../../lib/hooks/useDevice";
+import { ShopVoucher } from "../../../../../lib/repo/shop-voucher.repo";
+import formatDate from "date-fns/format";
+interface Propstype extends ReactProps {
+  promotion: ShopVoucher;
+}
 
-export function PromotionDetail() {
+export function PromotionDetail({ promotion, ...props }: Propstype) {
   const des = [
     {
       label: "Ưu đãi",
-      content:
-        "Lượt sử dụng có hạn. Nhanh tay kẻo lỡ bạn nhé! Mã Miễn phí vận chuyển | Đơn hàng từ 150K",
+      content: promotion.description,
     },
     {
       label: "Có hiệu lực",
-      content: "11.06.2021 00:00 - 11.06.2021 23:59",
+      content: promotion.startDate
+        ? `${formatDate(new Date(promotion.startDate), "dd-MM-yyyy HH:mm")} - ${formatDate(
+            new Date(promotion.endDate),
+            "dd-MM-yyyy HH:mm"
+          )} `
+        : "",
     },
     {
-      label: "Thiết bị",
-      content: "Android, iOS",
+      label: "Phương thức thanh toán",
+      content: promotion.applyPaymentMethods.map((item) => item).join(", "),
     },
     {
-      label: "Thanh Toán",
-      content: "Tất cả các hình thức thanh toán",
+      label: "Giảm tối đa",
+      content: promotion.maxDiscount,
     },
     {
-      label: "Ưu đãi",
-      content:
-        "Lượt sử dụng có hạn. Nhanh tay kẻo lỡ bạn nhé! Mã Miễn phí vận chuyển | Đơn hàng từ 150K",
+      label: "Đơn hàng tối thiểu",
+      content: promotion.minSubtotal,
     },
     {
-      label: "Ưu đãi",
-      content:
-        "Lượt sử dụng có hạn. Nhanh tay kẻo lỡ bạn nhé! Mã Miễn phí vận chuyển | Đơn hàng từ 150K",
-    },
-    {
-      label: "Ưu đãi",
-      content:
-        "Lượt sử dụng có hạn. Nhanh tay kẻo lỡ bạn nhé! Mã Miễn phí vận chuyển | Đơn hàng từ 150K",
-    },
-    {
-      label: "Ưu đãi",
-      content:
-        "Lượt sử dụng có hạn. Nhanh tay kẻo lỡ bạn nhé! Mã Miễn phí vận chuyển | Đơn hàng từ 150K",
-    },
-    {
-      label: "Ưu đãi",
-      content:
-        "Lượt sử dụng có hạn. Nhanh tay kẻo lỡ bạn nhé! Mã Miễn phí vận chuyển | Đơn hàng từ 150K",
+      label: "Sảm phẩm tối thiểu",
+      content: promotion.minItemQty,
     },
   ];
   const [showMore, setShowMore] = useState(false);
   const { isMobile } = useDevice();
   return (
     <div className={`text-sm bg-primary-light ${isMobile ? "pb-12" : ""}`}>
-      <Promotion
-        promotion={{
-          name: "Giảm 40k cho đơn từ 150k",
-          img:
-            "https://file.hstatic.net/200000043306/file/banner_web_mobile_83c075fe49b44d8a8267ccd829a8748d.png",
-          dated: "6/8/2021",
-        }}
-        onClick={() => {}}
-      />
-      <h3 className="text-2xl">Giảm 40k cho đơn từ 150k</h3>
+      {promotion && <Promotion promotion={promotion} />}
+      <h3 className="text-2xl">{promotion.code}</h3>
       {des.map(
         (item, index) =>
           (showMore && (
-            <div key={index}>
+            <div key={index} className={`${item.content ? "" : "hidden"}`}>
               <p className="pt-6">{item.label}</p>
               <p>{item.content}</p>
             </div>
           )) ||
           (index < 4 && (
-            <div key={index}>
+            <div key={index} className={`${item.content ? "" : "hidden"}`}>
               <p className="pt-6">{item.label}</p>
               <p>{item.content}</p>
             </div>
@@ -81,13 +65,7 @@ export function PromotionDetail() {
         text={`${showMore ? "Ẩn bớt" : "...xem chi tiết"}`}
         onClick={() => setShowMore(!showMore)}
       />
-      <p>
-        Sử dụng mã miễn phí vận chuyển (tối đa 15K) cho đơn hàng bất kỳ từ 150K thỏa điều kiện ưu
-        đãi tại quán. Đơn vị vận chuyển khả dụng: tất cả Hình thức thanh toán: tất cả Mã chỉ được
-        hoàn theo quy định của quán. Áp dụng khi mua các sản phẩm có sườn. Hạn sử dụng 23:59 -
-        11/06/2021 Số lượt sử dụng có hạn, chương trình và mã có thể kết thúc khi hết lượt ưu đãi
-        hoặc khi hết hạn ưu đãi, tùy điều kiện nào đến trước.
-      </p>
+      <p>{promotion.description}</p>
     </div>
   );
 }

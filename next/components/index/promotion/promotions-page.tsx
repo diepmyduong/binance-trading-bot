@@ -5,6 +5,11 @@ import { Promotion } from "./components/promotion";
 import { SwitchTabs } from "../../shared/utilities/tab/switch-tabs";
 import useScreen from "../../../lib/hooks/useScreen";
 import { PromotionDetailDialog } from "./components/promotion-detail.tsx/promotion-detail-dialog";
+import { PromotionConsumer, PromotionProvider } from "./provider/promotion-provider";
+import { Spinner } from "../../shared/utilities/spinner";
+import { ShopVoucher } from "../../../lib/repo/shop-voucher.repo";
+import { useShopContext } from "../../../lib/providers/shop-provider";
+import BreadCrumbs from "../../shared/utilities/breadcrumbs/breadcrumbs";
 interface Propstype extends ReactProps {}
 const PromotionsPage = (props: Propstype) => {
   const promotions = [
@@ -41,44 +46,84 @@ const PromotionsPage = (props: Propstype) => {
   ];
   const [value, setValue] = useState(0);
   const screenSm = useScreen("sm");
-  const [showDialog, setShowDialog] = useState(false);
+  const { shopCode } = useShopContext();
+  const [voucherSelected, setVoucherSelected] = useState<ShopVoucher>(null);
   return (
-    <div>
-      <SwitchTabs
-        className="p-4"
-        onChange={(val) => setValue(val)}
-        value={value}
-        options={
-          (screenSm && [
-            { label: "Khuyến mãi của quán", value: 0 },
-            { label: "Khuyến mãi của tôi", value: 1 },
-          ]) || [
-            { label: "KM của quán", value: 0 },
-            { label: "KM của tôi", value: 1 },
-          ]
-        }
-      />
-      <div className="flex flex-col text-sm sm:text-base overscroll-y-auto px-4 bg-bluegray-light h-full min-h-xs">
-        <div className="flex my-4 border-group rounded-md h-12">
+    <PromotionProvider>
+      <PromotionConsumer>
+        {({ shopVouchers }) => (
+          <div className="bg-white">
+            <BreadCrumbs
+              breadcrumbs={[
+                { label: "Trang chủ", href: `$/?code=${shopCode}` },
+                { label: "Khuyến mãi" },
+              ]}
+              className="pt-4 px-4"
+            />
+            <SwitchTabs
+              className="p-4"
+              onChange={(val) => setValue(val)}
+              value={value}
+              options={
+                (screenSm && [
+                  { label: "Khuyến mãi của quán", value: 0 },
+                  { label: "Khuyến mãi của tôi", value: 1 },
+                ]) || [
+                  { label: "KM của quán", value: 0 },
+                  { label: "KM của tôi", value: 1 },
+                ]
+              }
+            />
+            <div className="mt-5 flex flex-col text-sm sm:text-base overscroll-y-auto px-4 bg-white h-full min-h-xs">
+              {/* <div className="flex my-4 border-group rounded-md h-12">
           <Input placeholder="Nhập mã giảm giá ở đây" />{" "}
           <Button className="h-12 whitespace-nowrap" primary text="Áp dụng" />
-        </div>
-        {(value === 0 && (
-          <div className="mb-4">
-            {promotions.map((item, index) => (
-              <Promotion key={index} promotion={item} onClick={() => setShowDialog(true)} />
-            ))}
-          </div>
-        )) || (
-          <div className="mb-4">
-            {promotions.map((item, index) => (
-              <Promotion key={index} promotion={item} onClick={() => setShowDialog(true)} />
-            ))}
+        </div> */}
+              {(value === 0 && (
+                <>
+                  {shopVouchers && shopVouchers.length > 0 ? (
+                    <div className="mb-4">
+                      {shopVouchers.map((item: ShopVoucher, index) => (
+                        <Promotion
+                          key={index}
+                          promotion={item}
+                          onClick={() => setVoucherSelected(item)}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <Spinner />
+                  )}
+                </>
+              )) || (
+                <div className="mb-4">
+                  <>
+                    {shopVouchers && shopVouchers.length > 0 ? (
+                      <div className="mb-4">
+                        {shopVouchers.map((item: ShopVoucher, index) => (
+                          <Promotion
+                            key={index}
+                            promotion={item}
+                            onClick={() => setVoucherSelected(item)}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <Spinner />
+                    )}
+                  </>
+                </div>
+              )}
+            </div>
+            <PromotionDetailDialog
+              promotion={voucherSelected}
+              isOpen={voucherSelected ? true : false}
+              onClose={() => setVoucherSelected(null)}
+            />
           </div>
         )}
-      </div>
-      <PromotionDetailDialog isOpen={showDialog} onClose={() => setShowDialog(false)} />
-    </div>
+      </PromotionConsumer>
+    </PromotionProvider>
   );
 };
 

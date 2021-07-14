@@ -32,7 +32,7 @@ export default {
         );
         if (deviceId && deviceToken) {
           await DeviceInfoModel.remove({
-            $or: [{ customerId: customer._id }, { deviceId: deviceId }],
+            $or: [{ deviceToken }, { deviceId }],
           });
           await DeviceInfoModel.create({ customerId: customer._id, deviceId, deviceToken });
         }

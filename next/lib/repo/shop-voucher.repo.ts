@@ -99,3 +99,10 @@ export class ShopVoucherRepository extends CrudRepository<ShopVoucher> {
   `);
 }
 export const ShopVoucherService = new ShopVoucherRepository();
+
+export const SHOP_VOUCHER_TYPES: Option[] = [
+  { value: "DISCOUNT_BILL", label: "Giảm giá đơn hàng", color: "danger" },
+  { value: "DISCOUNT_ITEM", label: "Giảm giá sản phẩm", color: "orange" },
+  { value: "OFFER_ITEM", label: "Tặng sản phẩm", color: "info" },
+  { value: "SHIP_FEE", label: "Giảm phí giao hàng", color: "success" },
+];

@@ -8,6 +8,7 @@ import { Rating } from "../../../shared/homepage-layout/rating";
 import { Img } from "../../../shared/utilities/img";
 import { SwitchTabs } from "../../../shared/utilities/tab/switch-tabs";
 import { ProductsGroup } from "./products-group";
+import { ImgProduct } from "../../../shared/homepage-layout/img-product";
 interface ShopCategoriesPropsType extends ReactProps {}
 
 export function ShopCategories(props: ShopCategoriesPropsType) {
@@ -141,7 +142,13 @@ export function ShopCategory(props: ShopCategoryPropsType) {
                     className="justify-items-end"
                   />
                 </div>
-                <Img src={item.image} className="w-20 sm:w-24 rounded-sm" compress={96} />
+                <ImgProduct
+                  src={item.image}
+                  className="w-20 sm:w-24 rounded-sm"
+                  compress={96}
+                  small
+                  saleRate={item.saleRate}
+                />
               </div>
               {item.labels?.map((label, index) => (
                 <div

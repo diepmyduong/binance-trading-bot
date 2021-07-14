@@ -65,6 +65,8 @@ const schema = gql`
     endDate: DateTime
     "Mã giảm giá riêng tư"
     isPrivate: Boolean
+    "Hình ảnh"
+    image: String
   }
 
   type ShopVoucher {
@@ -116,6 +118,8 @@ const schema = gql`
     endDate: DateTime
     "Mã giảm giá riêng tư"
     isPrivate: Boolean
+    "Hình ảnh"
+    image: String
   }
 
   type ShopVoucherPageData {

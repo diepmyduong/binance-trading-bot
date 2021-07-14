@@ -66,6 +66,7 @@ export function CartProvider(props) {
     longitude: 106.725484,
     paymentMethod: "COD",
     note: "",
+    promotionCode: "",
   });
   const resetOrderInput = () => {
     setOrderInput({

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import SwiperCore, { Pagination } from "swiper/core";
 import { HiChevronUp, HiDocumentAdd } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { useCartContext } from "../../../lib/providers/cart-provider";
@@ -16,7 +15,8 @@ import { TicketVoucher } from "./components/ticket-voucher";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import { useToast } from "../../../lib/providers/toast-provider";
 import BranchsDialog from "../homepage/components/branchs-dialog";
-import { useRouter } from "next/router";
+import { ShopVoucher, ShopVoucherService } from "../../../lib/repo/shop-voucher.repo";
+import cloneDeep from "lodash/cloneDeep";
 // SwiperCore.use([Pagination]);
 
 export function PaymentPage() {
@@ -24,20 +24,16 @@ export function PaymentPage() {
     cartProducts,
     totalFood,
     totalMoney,
-    generateOrder,
     generateDraftOrder,
-    resetOrderInput,
     setOrderInput,
     orderInput,
     draftOrder: order,
   } = useCartContext();
   const { branchSelecting, shopBranchs, setBranchSelecting } = useShopContext();
-  const [voucherApplied, setVoucherApplied] = useState(null);
-  const [note, setNote] = useState({ note: "" });
+  const [voucherApplied, setVoucherApplied] = useState<ShopVoucher>(null);
   const [openDialogSelectBranch, setopenDialogSelectBranch] = useState(false);
   const toast = useToast();
-  const router = useRouter();
-
+  const [vouchers, setVouchers] = useState<ShopVoucher[]>();
   useEffect(() => {
     generateDraftOrder();
   }, [orderInput]);
@@ -52,6 +48,9 @@ export function PaymentPage() {
   }, [branchSelecting]);
   useEffect(() => {
     setVoucherApplied(null);
+    ShopVoucherService.getAll()
+      .then((res) => setVouchers(cloneDeep(res.data)))
+      .catch((err) => setVouchers(null));
   }, []);
   return (
     <>
@@ -121,31 +120,31 @@ export function PaymentPage() {
           </div>
         </div>
         <div className="px-2 py-4 flex w-full md:overflow-hidden overflow-auto z-0">
-          <Swiper
-            spaceBetween={20}
-            freeMode
-            slidesPerView={"auto"}
-            className="main-container overflow-visible"
-          >
-            {dataVoucher.map((item, index) => {
-              return (
-                <SwiperSlide className="max-w-max cursor-pointer" key={index}>
-                  <TicketVoucher
-                    item={item}
-                    index={index}
-                    onClick={() => setVoucherApplied(item.title)}
-                  />
-                </SwiperSlide>
-              );
-            })}
-          </Swiper>
+          {vouchers && (
+            <Swiper
+              spaceBetween={20}
+              freeMode
+              slidesPerView={"auto"}
+              className="main-container overflow-visible"
+            >
+              {vouchers.map((item: ShopVoucher, index) => {
+                return (
+                  <SwiperSlide className="max-w-max cursor-pointer" key={index}>
+                    <TicketVoucher
+                      voucher={item}
+                      onClick={(val) => {
+                        setVoucherApplied(val);
+                        setOrderInput({ ...orderInput, promotionCode: val.code });
+                      }}
+                    />
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
+          )}
         </div>
         <div className="h-24"></div>
-        <ButtonPayment
-          voucherApplied={voucherApplied}
-          setVoucherApplied={setVoucherApplied}
-          note={note}
-        />
+        <ButtonPayment voucherApplied={voucherApplied} setVoucherApplied={setVoucherApplied} />
       </div>
       {shopBranchs && (
         <BranchsDialog
@@ -160,16 +159,12 @@ export function PaymentPage() {
     </>
   );
 }
-
-const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
-  const {
-    totalMoney,
-    generateOrder,
-    orderInput,
-    draftOrder: order,
-    generateDraftOrder,
-    resetOrderInput,
-  } = useCartContext();
+interface ButtonPaymentProps extends ReactProps {
+  voucherApplied: ShopVoucher;
+  setVoucherApplied: Function;
+}
+const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPaymentProps) => {
+  const { generateOrder, orderInput, draftOrder: order, setOrderInput } = useCartContext();
   const toast = useToast();
   const validData = () => {
     if (!orderInput.buyerName) toast.error("Chưa nhập tên người nhận");
@@ -187,8 +182,17 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, note }) => {
 
         {voucherApplied !== null ? (
           <div className="flex items-center justify-between px-2">
-            <p className="text-primary text-sm font-semibold text-center py-1">{voucherApplied}</p>
-            <Button text="Xóa" textDanger onClick={() => setVoucherApplied(null)} />
+            <p className="text-primary text-sm font-semibold text-center py-1">
+              {voucherApplied.code}
+            </p>
+            <Button
+              text="Xóa"
+              textDanger
+              onClick={() => {
+                setVoucherApplied(null);
+                setOrderInput({ ...orderInput, promotionCode: "" });
+              }}
+            />
           </div>
         ) : (
           <Button text="Mã khuyến mãi" textPrimary className="px-0" small />
@@ -259,42 +263,3 @@ const InputNote = () => {
     </>
   );
 };
-
-const dataVoucher = [
-  {
-    title: "Giảm 40k cho đơn từ 150k",
-    duedate: "6/8/2021",
-  },
-  {
-    title: "Giảm 40k cho đơn từ 550k",
-    duedate: "6/8/2021",
-  },
-  {
-    title: "Giảm 40k cho đơn từ 250k",
-    duedate: "6/8/2021",
-  },
-  {
-    title: "Giảm 40k cho đơn từ 650k",
-    duedate: "6/8/2021",
-  },
-  {
-    title: "Giảm 40k cho đơn từ 650k",
-    duedate: "6/8/2021",
-  },
-  {
-    title: "Giảm 40k cho đơn từ 950k",
-    duedate: "6/8/2021",
-  },
-  {
-    title: "Giảm 40k cho đơn từ 50k",
-    duedate: "6/8/2021",
-  },
-  {
-    title: "Giảm 40k cho đơn từ 7150k",
-    duedate: "6/8/2021",
-  },
-  {
-    title: "Giảm 40k cho đơn từ 1950k",
-    duedate: "6/8/2021",
-  },
-];

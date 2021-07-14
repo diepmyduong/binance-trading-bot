@@ -21,7 +21,6 @@ export interface HeaderPropsType extends ReactProps {
 }
 export function Header({ code, ...props }: HeaderPropsType) {
   const { customer, customerLogin, customerLogout, shop, shopCode } = useShopContext();
-  const { loginCustomerByPhone } = useDefaultLayoutContext();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const menus = [

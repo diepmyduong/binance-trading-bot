@@ -33,6 +33,7 @@ export type IShopVoucher = BaseDocument & {
   startDate?: Date; // Ngày bắt đầu
   endDate?: Date; // Ngày kết thúc
   isPrivate?: boolean; // Mã giảm giá riêng tư
+  image?: string; // Hình ảnh
 };
 
 const shopVoucherSchema = new Schema(
@@ -59,6 +60,7 @@ const shopVoucherSchema = new Schema(
     startDate: { type: Date },
     endDate: { type: Date },
     isPrivate: { type: Boolean, default: false },
+    image: { type: String },
   },
   { timestamps: true }
 );

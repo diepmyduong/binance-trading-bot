@@ -36,6 +36,7 @@
     "@apollo/client": "^3.3.19",
     "@ckeditor/ckeditor5-react": "^3.0.2",
     "@goongmaps/goong-geocoder": "^1.1.1",
+    "@goongmaps/goong-map-react": "^1.1.0",
     "@jtfell/lru-map": "^1.0.1",
     "@lynxerious/ckeditor5-build-mcom": "^15.0.2",
     "@next/bundle-analyzer": "^10.2.3",

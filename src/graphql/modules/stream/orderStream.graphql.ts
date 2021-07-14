@@ -24,6 +24,9 @@ export default {
             if (payload.sellerId.toString() != context.sellerId.toString()) {
               return false;
             }
+            if (context.isCustomer()) {
+              return payload.buyerId.toString() == context.id;
+            }
             return true;
           }
         ),

@@ -48,7 +48,9 @@ export function PaymentPage() {
   }, [branchSelecting]);
   useEffect(() => {
     setVoucherApplied(null);
-    ShopVoucherService.getAll()
+    ShopVoucherService.getAll({
+      query: { order: { createdAt: -1 }, filter: { isPrivate: false, isActive: true } },
+    })
       .then((res) => setVouchers(cloneDeep(res.data)))
       .catch((err) => setVouchers(null));
   }, []);
@@ -172,10 +174,21 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
     draftOrder,
   } = useCartContext();
   const toast = useToast();
-  const validData = () => {
-    if (!orderInput.buyerName) toast.error("Chưa nhập tên người nhận");
-    else if (!orderInput.buyerPhone) toast.error("Chưa nhập số điện thoại");
-  };
+  function validData() {
+    if (!orderInput.buyerName) {
+      toast.error("Chưa nhập tên người nhận");
+      return false;
+    }
+    if (!orderInput.buyerPhone) {
+      toast.error("Chưa nhập số điện thoại");
+      return false;
+    }
+    if (!orderInput.buyerFullAddress) {
+      toast.error("Chưa nhập địa chỉ giao hàng");
+      return false;
+    }
+    return true;
+  }
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
       <div className="grid grid-cols-2 px-4 border-t border-b border-gray-100 items-center justify-between">
@@ -211,10 +224,10 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
           primary
           className="w-full bg-gradient h-12"
           onClick={async () => {
-            validData();
             console.log(draftOrder);
-
-            // await generateOrder();
+            if (validData()) {
+              await generateOrder();
+            }
           }}
         />
       </div>

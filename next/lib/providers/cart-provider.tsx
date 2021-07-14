@@ -235,7 +235,7 @@ export function CartProvider(props) {
           localStorage.removeItem("cartProducts");
           setCartProducts([]);
           resetOrderInput();
-          router.push("/order/" + res.code);
+          router.replace("/order/" + res.code);
         })
         .catch((err) => toast.error("Đặt hàng thất bại"));
     }

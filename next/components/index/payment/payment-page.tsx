@@ -89,7 +89,7 @@ export function PaymentPage() {
                           .join(", ")}
                       </div>
                     )}
-                    {cartProduct.note && <div>{cartProduct.note}</div>}
+                    {cartProduct.note && <div>Ghi chú:{cartProduct.note}</div>}
                   </div>
                   <div className="font-bold">{NumberPipe(cartProduct.amount, true)}</div>
                 </div>
@@ -164,7 +164,13 @@ interface ButtonPaymentProps extends ReactProps {
   setVoucherApplied: Function;
 }
 const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPaymentProps) => {
-  const { generateOrder, orderInput, draftOrder: order, setOrderInput } = useCartContext();
+  const {
+    generateOrder,
+    orderInput,
+    draftOrder: order,
+    setOrderInput,
+    draftOrder,
+  } = useCartContext();
   const toast = useToast();
   const validData = () => {
     if (!orderInput.buyerName) toast.error("Chưa nhập tên người nhận");
@@ -200,13 +206,15 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
       </div>
       <div className="w-full py-2 px-4">
         <Button
-          disabled={order.invalid}
+          // disabled={order.invalid}
           text={order.order ? `Đặt hàng ${NumberPipe(order?.order?.amount)}đ` : "Đặt hàng"}
           primary
           className="w-full bg-gradient h-12"
           onClick={async () => {
             validData();
-            await generateOrder();
+            console.log(draftOrder);
+
+            // await generateOrder();
           }}
         />
       </div>

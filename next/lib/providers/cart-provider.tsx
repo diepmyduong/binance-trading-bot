@@ -217,9 +217,11 @@ export function CartProvider(props) {
     OrderService.generateDraftOrder({ ...orderInput, items: items })
       .then((res: any) => {
         setDraftOrder(cloneDeep(res));
-        if (res.invalid) {
-          // toast.error(res.invalidReason);
-        }
+        console.log(res);
+
+        // if (res.invalid) {
+        //   // toast.error(res.invalidReason);
+        // }
       })
       .catch((err) => {});
   };

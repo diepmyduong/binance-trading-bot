@@ -105,11 +105,11 @@ export function ProductDetail({ ...props }: PropsType) {
       )}
       <Dialog.Footer>
         {/* <div className="fixed shadow-2xl bg-white -bottom-0 max-w-lg w-full px-4 py-4 flex items-center space-x-7"> */}
-        <IncreaseButton onChange={onChangeQuantity} />
+        <IncreaseButton onChange={onChangeQuantity} className="flex-1 justify-between" />
         <Button
           primary
           text={`Thêm ${NumberPipe(totalMoney)} đ`}
-          className="w-full bg-gradient h-12 ml-2"
+          className="w-2/3 bg-gradient h-12 ml-2"
           large
           onClick={() => {
             addProductToCart(product, qty, note);

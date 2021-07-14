@@ -46,26 +46,25 @@ export function PromotionDetail({ promotion, ...props }: Propstype) {
     <div className={`text-sm bg-primary-light ${isMobile ? "pb-12" : ""}`}>
       {promotion && <Promotion promotion={promotion} />}
       <h3 className="text-2xl">{promotion.code}</h3>
-      {des.map(
-        (item, index) =>
-          (showMore && (
-            <div key={index} className={`${item.content ? "" : "hidden"}`}>
-              <p className="pt-6">{item.label}</p>
-              <p>{item.content}</p>
-            </div>
-          )) ||
+      {des.map((item, index) => (
+        <div key={index} className={`${item.content ? "" : "hidden"}`}>
+          <p className="pt-4">{item.label}</p>
+          <p>{item.content}</p>
+        </div>
+      ))}
+      {/* )) ||
           (index < 4 && (
             <div key={index} className={`${item.content ? "" : "hidden"}`}>
               <p className="pt-6">{item.label}</p>
               <p>{item.content}</p>
             </div>
           ))
-      )}
       <Button
+        small
         text={`${showMore ? "Ẩn bớt" : "...xem chi tiết"}`}
         onClick={() => setShowMore(!showMore)}
-      />
-      <p>{promotion.description}</p>
+      /> */}
+      <p className="pt-4">{promotion.description}</p>
     </div>
   );
 }

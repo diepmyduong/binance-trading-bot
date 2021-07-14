@@ -229,7 +229,7 @@ const orderSchema = new Schema(
     shopBranchId: { type: Schema.Types.ObjectId, ref: "ShopBranch" },
     confirmTime: { type: Date },
     cancelReason: { type: String },
-    pin: { type: Boolean },
+    pin: { type: Boolean, default: false },
     voucherId: { type: Schema.Types.ObjectId, ref: "ShopVoucher" },
     discount: { type: Number, default: 0 },
     discountDetail: { type: String },

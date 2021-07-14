@@ -56,7 +56,7 @@ export class UserHelper {
     return this;
   }
   async setDevice(deviceId: string, deviceToken: string) {
-    await DeviceInfoModel.remove({ $or: [{ userId: this.user._id }, { deviceId }] });
+    await DeviceInfoModel.remove({ $or: [{ deviceToken }, { deviceId }] });
     await DeviceInfoModel.create({
       userId: this.user._id,
       deviceId,

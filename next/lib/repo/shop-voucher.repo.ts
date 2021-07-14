@@ -24,6 +24,7 @@ export interface ShopVoucher extends BaseModel {
   startDate: string;
   endDate: string;
   isPrivate: boolean;
+  image: string;
 }
 interface OfferItem {
   productId: string;
@@ -96,6 +97,7 @@ export class ShopVoucherRepository extends CrudRepository<ShopVoucher> {
     startDate: DateTime
     endDate: DateTime
     isPrivate: Boolean
+    image: String
   `);
 }
 export const ShopVoucherService = new ShopVoucherRepository();

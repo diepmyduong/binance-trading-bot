@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Dialog, DialogPropsType } from "../../../../shared/utilities/dialog/dialog";
 import { PromotionDetail } from "./promotion-detail";
-interface Propstype extends DialogPropsType {}
+import { ShopVoucher } from "../../../../../lib/repo/shop-voucher.repo";
+import { Spinner } from "../../../../shared/utilities/spinner";
+interface Propstype extends DialogPropsType {
+  promotion: ShopVoucher;
+}
 
 export function PromotionDetailDialog(props: Propstype) {
   return (
@@ -13,7 +17,7 @@ export function PromotionDetailDialog(props: Propstype) {
       slideFromBottom="all"
     >
       <Dialog.Body>
-        <PromotionDetail />
+        {props.promotion ? <PromotionDetail promotion={props.promotion} /> : <Spinner />}
       </Dialog.Body>
     </Dialog>
   );

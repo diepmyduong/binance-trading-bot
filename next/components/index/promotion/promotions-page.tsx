@@ -10,6 +10,7 @@ import { Spinner } from "../../shared/utilities/spinner";
 import { ShopVoucher } from "../../../lib/repo/shop-voucher.repo";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import BreadCrumbs from "../../shared/utilities/breadcrumbs/breadcrumbs";
+import { CustomerVoucher } from "../../../lib/repo/customer-voucher.repo";
 interface Propstype extends ReactProps {}
 const PromotionsPage = (props: Propstype) => {
   const promotions = [
@@ -51,7 +52,7 @@ const PromotionsPage = (props: Propstype) => {
   return (
     <PromotionProvider>
       <PromotionConsumer>
-        {({ shopVouchers }) => (
+        {({ shopVouchers, customerVoucher }) => (
           <div className="bg-white">
             <BreadCrumbs
               breadcrumbs={[
@@ -81,38 +82,52 @@ const PromotionsPage = (props: Propstype) => {
         </div> */}
               {(value === 0 && (
                 <>
-                  {shopVouchers && shopVouchers.length > 0 ? (
+                  {shopVouchers ? (
                     <div className="mb-4">
-                      {shopVouchers.map((item: ShopVoucher, index) => (
-                        <Promotion
-                          key={index}
-                          promotion={item}
-                          onClick={() => setVoucherSelected(item)}
-                        />
-                      ))}
+                      {shopVouchers.length === 0 ? (
+                        <span className="h-screen font-semibold text-center">
+                          Cửa hàng hiện chưa có mã khuyến mãi nào
+                        </span>
+                      ) : (
+                        <>
+                          {shopVouchers.map((item: ShopVoucher, index) => (
+                            <Promotion
+                              key={index}
+                              promotion={item}
+                              onClick={() => setVoucherSelected(item)}
+                            />
+                          ))}
+                        </>
+                      )}
                     </div>
                   ) : (
                     <Spinner />
                   )}
                 </>
               )) || (
-                <div className="mb-4">
-                  <>
-                    {shopVouchers && shopVouchers.length > 0 ? (
-                      <div className="mb-4">
-                        {shopVouchers.map((item: ShopVoucher, index) => (
-                          <Promotion
-                            key={index}
-                            promotion={item}
-                            onClick={() => setVoucherSelected(item)}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <Spinner />
-                    )}
-                  </>
-                </div>
+                <>
+                  {customerVoucher ? (
+                    <div className="mb-4">
+                      {customerVoucher.length === 0 ? (
+                        <span className="min-h-screen font-semibold text-center">
+                          Bạn chưa có mã khuyến mãi nào
+                        </span>
+                      ) : (
+                        <>
+                          {customerVoucher.map((item: CustomerVoucher, index) => (
+                            <Promotion
+                              key={index}
+                              promotion={item.voucher}
+                              onClick={() => setVoucherSelected(item.voucher)}
+                            />
+                          ))}
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <Spinner />
+                  )}
+                </>
               )}
             </div>
             <PromotionDetailDialog

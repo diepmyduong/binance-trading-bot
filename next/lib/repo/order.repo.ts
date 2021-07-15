@@ -219,6 +219,8 @@ export class OrderRepository extends CrudRepository<Order> {
     shipMethodText: String
     statusText: String
     buyerFullAddress: String
+    discount: Float
+    discountDetail: String
     ahamoveTrackingLink: String
     fromMember {
       id: String

@@ -14,18 +14,18 @@ export function OrderDetailPage(props) {
   return (
     <>
       {order ? (
-        <div className="text-gray-800">
-          <div className="w-full text-sm bg-white px-4">
+        <div className="text-gray-800 text-sm sm:text-lg">
+          <div className="w-full bg-white px-4">
             <div className="grid grid-cols-2 w-full pt-4">
               <div className="flex flex-col space-y-1">
-                <p className="text-xs text-gray-500">Mã đơn hàng</p>
-                <p className="uppercase font-bold">{order.code}</p>
-                <p className="text-xs text-gray-500">
+                <p className="sm:text-base text-gray-500">Mã đơn hàng</p>
+                <p className="uppercase font-bold ">{order.code}</p>
+                <p className="sm:text-base text-gray-500">
                   Ngày: {formatDate(new Date(order.createdAt), "dd-MM-yyyy HH:mm")}
                 </p>
               </div>
               <div className="flex flex-col space-y-1 pl-2 border-l">
-                <p className="text-xs text-gray-500">Tình trạng</p>
+                <p className="sm:text-base text-gray-500">Tình trạng</p>
                 {status && <p className={`text-${status.color}`}>{status.label}</p>}
               </div>
             </div>
@@ -38,7 +38,7 @@ export function OrderDetailPage(props) {
               <i className="text-danger text-xl ">
                 <CgRadioChecked />
               </i>
-              <div className="text-xs py-6 flex flex-col space-y-1 ml-2">
+              <div className="sm:text-base py-2 sm:py-6 flex flex-col space-y-1 ml-2">
                 <p className="text-gray-500">
                   {order.pickupMethod === "DELIVERY" ? "Gửi từ" : "Lấy tại"}
                 </p>
@@ -59,7 +59,7 @@ export function OrderDetailPage(props) {
               <i className="text-primary text-xl ">
                 <CgRadioChecked />
               </i>
-              <div className="text-xs py-6 flex flex-col space-y-1 ml-2">
+              <div className="sm:text-base py-2 sm:py-6 flex flex-col space-y-1 ml-2">
                 <p className="text-gray-500">
                   {order.pickupMethod === "DELIVERY" ? "Gửi đến" : "Người lấy"}
                 </p>

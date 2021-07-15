@@ -405,6 +405,9 @@ export class OrderRepository extends CrudRepository<Order> {
       code:String
       address:String
       phone:String
+      province: String
+      district: String
+      ward: String
     }:ShopBranch
   `);
 

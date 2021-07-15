@@ -11,11 +11,9 @@ interface PropsType extends ReactProps {
 }
 export function Billed({ order, status }: PropsType) {
   return (
-    <div
-      className={`w-full mt-1 bg-white text-sm ${order.status !== status.value ? "hidden" : ""}`}
-    >
+    <div className={`w-full mb-3 bg-white text-sm`}>
       <Link href={`/order/${order.code}`}>
-        <div className="flex items-center justify-between cursor-pointer hover:bg-primary-light">
+        <div className="flex items-center  px-2 justify-between cursor-pointer transition-all duration-200 hover:bg-primary-light border-b-2">
           <div className="p-2 flex flex-col w-full">
             <div className="flex items-center justify-start">
               <span className={`bg-${status.color} font-bold text-sm text-white rounded-full px-2`}>
@@ -25,10 +23,11 @@ export function Billed({ order, status }: PropsType) {
               <span className="">{formatDate(new Date(order.createdAt), "dd-MM-yyyy HH:mm")}</span>
             </div>
             <div className="flex flex-col pt-1">
-              <div className="flex items-center">
-                <span className="">{order.seller.shopName}</span>
+              <div className="font-bold text-lg text-ellipsis-2">
+                {order.seller.shopName} - {order.shopBranch.name}
+                {/* <span className="">{order.seller.shopName}</span>
                 <span className="px-2">-</span>
-                <span className="">{order.shopBranch.name}</span>
+                <span className="">{order.shopBranch.name}</span> */}
               </div>
               <div className="flex pt-1 justify-between flex-wrap">
                 <div className="flex  pt-1 whitespace-nowrap flex-1">
@@ -36,42 +35,6 @@ export function Billed({ order, status }: PropsType) {
                   <span className="ml-1">({order.paymentMethod})</span>
                   <span className="px-2">-</span>
                   <span className="">{order.itemCount} món</span>
-                </div>
-                <div
-                  className="w-full mt-2 sm:mt-0 sm:w-auto flex justify-end "
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {
-                    {
-                      PENDING: (
-                        <>
-                          <Button
-                            text="Gọi nhà hàng"
-                            outline
-                            primary
-                            className="w-full ml-2 max-w-4xs whitespace-nowrap"
-                            href={`tel:${"0374196903"}`}
-                          />
-                        </>
-                      ),
-                      CANCELED: (
-                        <Button
-                          text="Đặt lại"
-                          outline
-                          primary
-                          className="w-full my-2 ml-2  max-w-4xs whitespace-nowrap"
-                        />
-                      ),
-                      COMPLETED: (
-                        <Button
-                          text="Đặt lại"
-                          outline
-                          primary
-                          className="w-full my-2 ml-2  max-w-4xs whitespace-nowrap"
-                        />
-                      ),
-                    }[order.status]
-                  }
                 </div>
               </div>
             </div>
@@ -81,6 +44,25 @@ export function Billed({ order, status }: PropsType) {
           </i>
         </div>
       </Link>
+      {
+        {
+          PENDING: (
+            <Button
+              text="Gọi nhà hàng"
+              className=" whitespace-nowrap w-full"
+              textPrimary
+              hoverSuccess
+              href={`tel:${"0374196903"}`}
+            />
+          ),
+          CANCELED: (
+            <Button text="Đặt lại" textPrimary hoverSuccess className=" whitespace-nowrap w-full" />
+          ),
+          COMPLETED: (
+            <Button text="Đặt lại" textPrimary hoverSuccess className=" whitespace-nowrap w-full" />
+          ),
+        }[order.status]
+      }
     </div>
   );
 }

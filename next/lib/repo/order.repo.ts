@@ -217,7 +217,8 @@ export class OrderRepository extends CrudRepository<Order> {
     paymentMethodText: String
     shipMethodText: String
     statusText: String
-    buyerFullAddress: String;
+    buyerFullAddress: String
+    ahamoveTrackingLink: String
     fromMember {
       id: String
       name: String
@@ -271,7 +272,7 @@ export class OrderRepository extends CrudRepository<Order> {
     status: String
     buyerId: ID
     buyerName: String
-    buyerFullAddress: String;
+    buyerFullAddress: String
     buyerPhone: String
     buyerAddress: String
     buyerProvince: String
@@ -288,6 +289,7 @@ export class OrderRepository extends CrudRepository<Order> {
     longitude: Float
     discount: Float
     discountDetail: String
+    ahamoveTrackingLink: String
     items {
       id: String
       createdAt: DateTime

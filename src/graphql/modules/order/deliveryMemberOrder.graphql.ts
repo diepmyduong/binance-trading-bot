@@ -1,10 +1,12 @@
 import { gql } from "apollo-server-express";
+import { remove } from "lodash";
 
 import { ROLES } from "../../../constants/role.const";
 import { onMemberDelivering } from "../../../events/onMemberDelivering.event";
 import { ErrorHelper } from "../../../helpers";
 import { Ahamove } from "../../../helpers/ahamove/ahamove";
 import { Context } from "../../context";
+import { DriverModel, DriverStatus } from "../driver/driver.model";
 import { OrderModel, OrderStatus, ShipMethod } from "./order.model";
 
 export default {
@@ -25,6 +27,10 @@ export default {
         if (order.shipMethod == ShipMethod.DRIVER) {
           order.deliveryInfo.status = "IN PROCESS";
           order.deliveryInfo.statusText = Ahamove.StatusText["IN PROCESS"];
+          await DriverModel.updateOne(
+            { _id: order.driverId },
+            { $set: { status: DriverStatus.DELIVERING } }
+          ).exec();
         }
         await order.save();
         onMemberDelivering.next(order);

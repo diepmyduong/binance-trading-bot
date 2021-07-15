@@ -1,23 +1,18 @@
 import { set } from "lodash";
+
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
-import { CollaboratorLoader, CollaboratorModel } from "../collaborator/collaborator.model";
-import { MemberHelper } from "../member/member.helper";
+import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { MemberLoader, MemberModel } from "../member/member.model";
 import { ICustomer } from "./customer.model";
 import { customerService } from "./customer.service";
 
 const Query = {
   getAllCustomer: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR_MEMBER);
-    const memberHelper = await MemberHelper.fromContext(context);
-    if (memberHelper) {
-      set(args, "q.filter.pageAccounts", {
-        $elemMatch: { memberId: memberHelper.member._id },
-      });
-    }
+    AuthHelper.acceptRoles(context, [ROLES.MEMBER]);
+    set(args, "q.filter.memberId", context.sellerId);
     return customerService.fetch(args.q);
   },
   getOneCustomer: async (root: any, args: any, context: Context) => {

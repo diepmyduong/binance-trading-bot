@@ -68,12 +68,7 @@ async function createAhamoveOrder(
   const address = compact([branch.address, branch.ward, branch.district, branch.province]).join(
     ", "
   );
-  const buyerAddress = compact([
-    order.buyerAddress,
-    order.buyerWard,
-    order.buyerDistrict,
-    order.buyerProvince,
-  ]).join(", ");
+  const buyerAddress = order.buyerFullAddress;
   const ahamoveOrder = await ahamove.createOrder({
     token: shopConfig.shipAhamoveToken,
     order_time: parseInt((Date.now() / 1000).toFixed(0)),

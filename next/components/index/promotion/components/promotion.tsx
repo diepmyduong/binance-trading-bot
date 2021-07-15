@@ -1,6 +1,7 @@
 import React from "react";
 import { Img } from "../../../shared/utilities/img";
 import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
+import formatDate from "date-fns/format";
 interface Propstype extends ReactProps {
   promotion: ShopVoucher;
   onClick?: (e) => void;
@@ -19,7 +20,9 @@ export function Promotion(props: Propstype) {
         />
         <div className="sm:leading-7 flex-1 px-3">
           <p className="font-bold">{props.promotion.description}</p>
-          {props.promotion.endDate && <p>HSD: {props.promotion.endDate}</p>}
+          {props.promotion.endDate && (
+            <p>HSD: {formatDate(new Date(props.promotion.endDate), "dd-MM-yyyy HH:mm")}</p>
+          )}
         </div>
       </div>
       {/* <hr className="h-14 border-r-2 bg-white border-dashed border-gray-400" />

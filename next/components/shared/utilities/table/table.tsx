@@ -117,7 +117,11 @@ export function Table({ className = "", style = {}, ...props }: TableProps) {
         {loadingItems && (
           <>
             {tableItems?.length ? (
-              <Spinner className="absolute py-0 h-full max-h-44" />
+              <tr>
+                <td className="border-b" colSpan={100}>
+                  <Spinner className="absolute py-0 h-full max-h-44" />
+                </td>
+              </tr>
             ) : (
               <tr>
                 <td className="border-b" colSpan={100}>

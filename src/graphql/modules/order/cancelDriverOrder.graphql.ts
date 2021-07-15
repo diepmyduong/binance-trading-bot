@@ -1,7 +1,9 @@
 import { gql } from "apollo-server-express";
+import { remove } from "lodash";
 import { ROLES } from "../../../constants/role.const";
 import { ErrorHelper } from "../../../helpers";
 import { Context } from "../../context";
+import { DriverModel, DriverStatus } from "../driver/driver.model";
 import { OrderModel, OrderStatus, ShipMethod } from "./order.model";
 
 export default {
@@ -21,6 +23,13 @@ export default {
         if (order.status != OrderStatus.CONFIRMED) throw Error("Không thể huỷ tài xế đơn này.");
         if (order.shipMethod != ShipMethod.DRIVER)
           throw Error("Đơn không được chuyển cho Tài xế nội bộ");
+        const driver = await DriverModel.findById(order.driverId);
+        remove(driver.orderIds, (id) => id.toString() == order._id.toString());
+        if (driver.orderIds.length == 0) {
+          driver.status == DriverStatus.ONLINE;
+        }
+        await driver.save();
+
         order = await OrderModel.findOneAndUpdate(
           { _id: order._id },
           {

@@ -1,10 +1,12 @@
 import { gql } from "apollo-server-express";
+import { remove } from "lodash";
 import { ROLES } from "../../../constants/role.const";
 import { onApprovedCompletedOrder } from "../../../events/onApprovedCompletedOrder.event";
 import { onApprovedFailureOrder } from "../../../events/onApprovedFailureOrder.event";
 import { ErrorHelper } from "../../../helpers";
 import { Ahamove } from "../../../helpers/ahamove/ahamove";
 import { Context } from "../../context";
+import { DriverModel, DriverStatus } from "../driver/driver.model";
 import { OrderItemModel } from "../orderItem/orderItem.model";
 import { OrderModel, OrderStatus, PickupMethod, ShipMethod } from "./order.model";
 
@@ -37,6 +39,12 @@ export default {
                 order.deliveryInfo.statusText = "Giao hàng không thành công.";
               }
               order.markModified("deliveryInfo");
+              const driver = await DriverModel.findById(order.driverId);
+              remove(driver.orderIds, (id) => id.toString() == order._id.toString());
+              if (driver.orderIds.length == 0) {
+                driver.status == DriverStatus.ONLINE;
+              }
+              await driver.save();
             }
           }
           case PickupMethod.STORE: {

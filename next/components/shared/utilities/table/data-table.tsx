@@ -54,8 +54,6 @@ export function DataTable<T extends BaseModel>({
   const [formItem, setFormItem] = useState(null);
   let [queryNumber] = useState(0);
   let [isLoading] = useState(false);
-  let [timeout] = useState(null);
-  let [isRefreshing] = useState(false);
   const toast = useToast();
   const alert = useAlert();
 
@@ -66,13 +64,15 @@ export function DataTable<T extends BaseModel>({
   }, []);
 
   useInterval(async () => {
-    if (!isLoading && !isRefreshing) {
+    if (!isLoading && !refreshing) {
+      console.log("CHECK THIS TOO");
       await loadAll(true, false);
     }
   }, props.autoRefresh);
 
   useEffect(() => {
     if (loadDone) {
+      console.log("RUN HERERE");
       loadAll();
     }
   }, [loadDone, search, filter, props.filter, currentOrder, pagination.page, pagination.limit]);
@@ -91,19 +91,16 @@ export function DataTable<T extends BaseModel>({
   };
 
   const loadAll = async (refresh = false, showLoading: boolean = true) => {
-    if (isRefreshing) {
-      await waitUntil(() => isRefreshing == false);
+    console.log("herererererer");
+    if (refreshing) {
+      await waitUntil(() => !refreshing);
     }
     if (showLoading) {
       setLoadingItems(true);
     }
     isLoading = true;
     if (refresh) {
-      isRefreshing = true;
       await crudService.clearStore();
-      setTimeout(() => {
-        isRefreshing = false;
-      });
     }
     const currentQueryNumber = queryNumber + 1;
     queryNumber = currentQueryNumber;
@@ -194,6 +191,7 @@ export function DataTable<T extends BaseModel>({
   const onRefresh = async () => {
     try {
       setRefreshing(true);
+      console.log("REFRESH");
       await loadAll(true);
     } finally {
       setRefreshing(false);

@@ -9,7 +9,7 @@ import {
 } from "../../../lib/repo/order.repo";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
 import { DataTable } from "../../shared/utilities/table/data-table";
-import { OrderDetailsDialog } from "./components/order-details-dialog";
+import { OrderDetailsDialog } from "../../shared/shop-layout/order-details-dialog";
 import format from "date-fns/format";
 import { Field } from "../../shared/utilities/form/field";
 import { Select } from "../../shared/utilities/form/select";

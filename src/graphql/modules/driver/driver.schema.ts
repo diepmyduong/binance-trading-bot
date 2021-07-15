@@ -1,4 +1,5 @@
 import { gql } from "apollo-server-express";
+import { DriverStatus } from "./driver.model";
 
 const schema = gql`
   extend type Query {
@@ -51,6 +52,12 @@ const schema = gql`
     avatar: String
     "Biển số xe"
     licensePlates: String
+    "Trạng thái ${Object.values(DriverStatus)}"
+    status: String
+    "Đơn hàng đang nhận, gần nhất"
+    orderIds: [ID]
+
+    orders: [Order]
   }
 
   type DriverPageData {

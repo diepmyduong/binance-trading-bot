@@ -50,6 +50,9 @@ export function OrderDetailPage(props) {
                   ({order.shopBranch.phone})
                 </p>
                 <p className="">{order.shopBranch.address}</p>
+                {order.pickupMethod !== "DELIVERY" && (
+                  <p>Lấy vào lúc: {formatDate(new Date(order.pickupTime), "dd-MM-yyyy HH:mm")}</p>
+                )}
               </div>
             </div>
             <div className="flex items-center">

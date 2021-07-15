@@ -207,6 +207,12 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
       toast.error("Chưa nhập địa chỉ giao hàng");
       return false;
     }
+    let dayCur = new Date();
+    let datePickup = new Date(orderInput.pickupTime);
+    if (orderInput.pickupMethod == "STORE" && datePickup < dayCur) {
+      toast.error("Thời gian nhận hàng không hợp lệ");
+      return false;
+    }
     return true;
   }
   return (

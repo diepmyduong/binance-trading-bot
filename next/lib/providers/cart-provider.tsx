@@ -211,14 +211,13 @@ export function CartProvider(props) {
       setCartProducts([...cartProducts]);
     }
   };
-
   const generateDraftOrder = () => {
     let items = getItemsOrderInput();
     OrderService.generateDraftOrder({ ...orderInput, items: items })
       .then((res: any) => {
         setDraftOrder(cloneDeep(res));
         console.log(res);
-        if (res.invalid) {
+        if (res.invalid && items.length > 0) {
           toast.error(res.invalidReason);
         }
       })

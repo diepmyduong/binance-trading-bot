@@ -30,7 +30,7 @@ export function EmotionsEvaluate(props: Propstype) {
             >
               {item.icon}
               <p className="pl-2">
-                {item.name} ({item.qty})
+                {item.name} ({item.qty}+)
               </p>
             </div>
           </SwiperSlide>
@@ -44,7 +44,7 @@ export function EmotionsEvaluate(props: Propstype) {
         mobileSizeMode
       >
         <div className=" flex flex-col py-4 text-center max-w-lg">
-          <span className="text-32 py-2">{reactSelected?.icon}</span>
+          <span className="text-48 py-2">{reactSelected?.icon}</span>
           <span className="text-28 py-2">{reactSelected?.name}</span>
           <span className=" py-2">{reactSelected?.qty}+ khách hàng đã đánh giá như vậy</span>
           <span className=" py-2">

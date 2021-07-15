@@ -11,16 +11,11 @@ interface Propstype extends ReactProps {
 }
 export function TicketVoucher({ voucher, onClick, showDetail, ...props }: Propstype) {
   return (
-    <div className="w-full flex items-center h-full">
+    <div className=" flex items-center h-full">
       <div className="h-full w-2 bg-primary rounded-l-2xl"></div>
-      <div className="w-full flex flex-col justify-center bg-white py-2 px-2 rounded-r-xl h-full">
-        <div className="h-full w-full">
-          <div className="text-sm font-bold">{voucher.description}</div>
-          {voucher.endDate && (
-            <p>HSD: {formatDate(new Date(voucher.endDate), "dd-MM-yyyy HH:mm")}</p>
-          )}
-        </div>
-        <Button text="Xem chi tiết" textPrimary onClick={() => showDetail(voucher)} />
+      <div className="w-2/3 flex flex-col justify-center bg-white py-2 px-2 rounded-r-xl h-full">
+        <div className="text-sm font-bold text-ellipsis w-full">{voucher.description}</div>
+        <Button text="Xem chi tiết" small textPrimary onClick={() => showDetail(voucher)} />
         {/* <Link href="">
           <a href="" className="text-xs font-semibold text-primary pt-1">
             Xem chi tiết

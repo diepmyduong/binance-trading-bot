@@ -255,8 +255,10 @@ const SelectTime = () => {
     ).toISOString();
   };
   const onChangeTime = (time) => {
-    // let temp = getDate(time);
-    setOrderInput({ ...orderInput, pickupTime: time });
+    let temp = getDate(selectTime, selectDate);
+    console.log(temp);
+
+    setOrderInput({ ...orderInput, pickupTime: temp });
   };
   const generateTime = () => {
     var today = new Date();
@@ -305,8 +307,9 @@ const SelectTime = () => {
     generateTime();
   }, [selectDate]);
   useEffect(() => {
-    onChangeTime(new Date(getDate(selectDate, selectTime)));
-  }, [selectTime]);
+    let temp = getDate(selectTime, selectDate);
+    setOrderInput({ ...orderInput, pickupTime: temp });
+  }, [selectTime || selectDate]);
 
   return (
     <>
@@ -315,6 +318,7 @@ const SelectTime = () => {
           placeholder="Chọn ngày"
           minDate={startDate}
           maxDate={endDate}
+          defaultValue={selectDate}
           onChange={(date) => {
             setTimes([]);
             setSelectDate(new Date(date));

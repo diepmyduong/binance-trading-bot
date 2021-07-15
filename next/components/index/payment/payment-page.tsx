@@ -121,7 +121,11 @@ export function PaymentPage() {
           </div>
           <div className="flex justify-between items-center">
             <div className="">Giảm giá:</div>
-            <div className="text-danger">-{NumberPipe(order?.order?.discount)}đ</div>
+            <div className="text-danger">
+              {order.discount > 0
+                ? NumberPipe(-order?.order?.discount, true)
+                : NumberPipe(order?.order?.discount, true)}
+            </div>
           </div>
         </div>
         <div className="px-2 py-4 flex w-full md:overflow-hidden overflow-auto z-0">
@@ -201,6 +205,12 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
     }
     if (orderInput.pickupMethod == "DELIVERY" && !orderInput.buyerFullAddress) {
       toast.error("Chưa nhập địa chỉ giao hàng");
+      return false;
+    }
+    let dayCur = new Date();
+    let datePickup = new Date(orderInput.pickupTime);
+    if (orderInput.pickupMethod == "STORE" && datePickup < dayCur) {
+      toast.error("Thời gian nhận hàng không hợp lệ");
       return false;
     }
     return true;

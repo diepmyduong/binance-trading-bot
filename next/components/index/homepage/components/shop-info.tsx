@@ -12,6 +12,8 @@ import BannerPromtion from "./banner-promtion";
 import BranchsDialog from "./branchs-dialog";
 import { CommentsDialog } from "./comments-dialog";
 import { EmotionsEvaluate } from "./emotions-evaluate";
+import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
+import { useHomeContext } from "../providers/homepage-provider";
 
 interface Propstype extends ReactProps {}
 
@@ -33,15 +35,16 @@ export function ShopInfo(props: Propstype) {
 const MoreInfomation = (props) => {
   const [showComments, setShowComments] = useState(false);
   const { shop } = useShopContext();
+  const { voucherShow } = useHomeContext();
   return (
     <>
       <div className={`pt-20`}>
         <div className="flex items-center justify-between border-b px-4 ">
-          <p className="flex items-center flex-1 text-ellipsis">
+          <p className="flex items-center flex-1 text-ellipsis font-semibold ">
             <i className="text-primary p-0.5 border rounded-full text-10 border-primary mr-1">
               {<FaPercent />}
-            </i>{" "}
-            Giảm 40k cho đơn từ 150k
+            </i>
+            {voucherShow?.description}
           </p>
           <Button
             textPrimary
@@ -92,6 +95,9 @@ const ShopBranch = (props: ShopInfoProps) => {
       <div className="flex justify-between items-center">
         <p className="whitespace-nowrap">
           {(!branchSelecting && "Chọn chi nhánh") || branchSelecting.name}
+          {branchSelecting.distance && (
+            <span className="font-semibold"> - {branchSelecting.distance}km</span>
+          )}
         </p>
         <Button
           textPrimary

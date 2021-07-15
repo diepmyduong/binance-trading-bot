@@ -53,7 +53,7 @@ const PromotionsPage = (props: Propstype) => {
     <PromotionProvider>
       <PromotionConsumer>
         {({ shopVouchers, customerVoucher }) => (
-          <div className="bg-white">
+          <div className="bg-white min-h-screen">
             <BreadCrumbs
               breadcrumbs={[
                 { label: "Trang chủ", href: `/?code=${shopCode}` },

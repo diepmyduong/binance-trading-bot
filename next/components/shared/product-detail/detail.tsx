@@ -38,7 +38,7 @@ export function ProductDetail({ ...props }: PropsType) {
       onClose={props.onClose}
       mobileSizeMode
       slideFromBottom="all"
-      extraFooterClass="border-t border-gray-300  xs:pb-10 items-center"
+      extraFooterClass="border-t border-gray-300 items-center"
     >
       {!product ? (
         <Spinner />
@@ -47,7 +47,7 @@ export function ProductDetail({ ...props }: PropsType) {
           <div
             ref={ref}
             className="v-scrollbar"
-            style={{ height: "calc(96vh - 95px)" }}
+            style={{ height: "calc(96vh - 120px)" }}
             onScroll={(e) => checkScrollTop(e.currentTarget.scrollTop)}
           >
             <div

@@ -1,16 +1,15 @@
-import { RiHome3Line, RiPhoneLine } from "react-icons/ri";
+import { useState } from "react";
+import { RiBillLine, RiHome3Line, RiPhoneLine } from "react-icons/ri";
 import { getAddressText } from "../../../lib/helpers/get-address-text";
-import { CustomerService, Customer } from "../../../lib/repo/customer.repo";
-import { ShopBranchService } from "../../../lib/repo/shop-branch.repo";
+import { Customer, CustomerService } from "../../../lib/repo/customer.repo";
 import { Staff } from "../../../lib/repo/staff.repo";
+import { OrdersDialog } from "../../shared/shop-layout/orders-dialog";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
-import { Field } from "../../shared/utilities/form/field";
-import { ImageInput } from "../../shared/utilities/form/image-input";
-import { Input } from "../../shared/utilities/form/input";
-import { Select } from "../../shared/utilities/form/select";
 import { DataTable } from "../../shared/utilities/table/data-table";
 
 export function CustomersPage(props: ReactProps) {
+  const [openCustomerOrder, setOpenCustomerOrder] = useState<string>("");
+
   return (
     <>
       <DataTable<Customer> crudService={CustomerService} order={{ createdAt: -1 }}>
@@ -81,7 +80,14 @@ export function CustomersPage(props: ReactProps) {
             right
             render={(item: Staff) => (
               <>
-                {/* <DataTable.CellButton value={item} isEditButton /> */}
+                <DataTable.CellButton
+                  value={item}
+                  icon={<RiBillLine />}
+                  tooltip="Xem đơn hàng"
+                  onClick={() => {
+                    setOpenCustomerOrder(item.id);
+                  }}
+                />
                 <DataTable.CellButton hoverDanger value={item} isDeleteButton />
               </>
             )}
@@ -101,6 +107,11 @@ export function CustomersPage(props: ReactProps) {
         </DataTable.Form> */}
         <DataTable.Pagination />
       </DataTable>
+      <OrdersDialog
+        isOpen={!!openCustomerOrder}
+        onClose={() => setOpenCustomerOrder("")}
+        filter={openCustomerOrder ? { buyerId: openCustomerOrder } : null}
+      />
     </>
   );
 }

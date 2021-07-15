@@ -40,7 +40,7 @@ export function Dialog({
   extraHeaderClass = "",
   bodyClass = "relative p-4 bg-white rounded",
   extraBodyClass = "",
-  footerClass = "relative flex px-4 pb-5 pt-2 bg-white z-5 rounded-b",
+  footerClass = "relative flex px-4 py-2 bg-white z-5 rounded-b",
   extraFooterClass = "",
   slideFromBottom = "mobile-only",
   width = "auto",

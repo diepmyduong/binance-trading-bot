@@ -31,11 +31,53 @@ export interface GoongPlaceDetail {
   name: string;
 }
 
+export interface GooongGeocodePlace {
+  address_components: {
+    long_name: string;
+    short_name: string;
+  }[];
+  formatted_address: string;
+  geometry: {
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+  place_id: string;
+  plus_code: {
+    compound_code: string;
+    global_code: string;
+  };
+  reference: string;
+  types: string[];
+}
+
 class GoongGeocoder {
   apiKey = "SD0vJABEWMql2sKaK6S4rUJyuDDJUGUwuNK4RelX";
   hostName = `https://rsapi.goong.io`;
 
   hashedData = {};
+
+  async geocode(address: string = ""): Promise<GooongGeocodePlace[]> {
+    const uri = `${this.hostName}/geocode`;
+    const params = {
+      api_key: this.apiKey,
+      address,
+    };
+    const hashedString = JSON.stringify({ uri, params });
+    if (this.hashedData[hashedString]) return this.hashedData[hashedString];
+    else
+      return axios
+        .get(uri, {
+          params,
+        })
+        .then((res) => {
+          this.hashedData[hashedString] = res.data.results;
+          console.log(res.data);
+          return res.data.results;
+        })
+        .catch((err) => null);
+  }
 
   async getPlaces(fullAddress: string = ""): Promise<GoongAutocompletePlace[]> {
     const uri = `${this.hostName}/Place/AutoComplete`;

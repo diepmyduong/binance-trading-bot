@@ -1,5 +1,12 @@
-export function AddressPipe(item: any) {
-  return `${item.address || ""}${item.ward ? `, ${item.ward}` : ""}${
-    item.district ? `, ${item.district}` : ""
-  }${item.province ? `, ${item.province}` : ""}`.trim();
+export function AddressPipe(item: any, prefix: string = "") {
+  let getPropName = (prop: string) =>
+    prefix ? `${prefix}${prop[0].toUpperCase() + prop.slice(1)}` : prop;
+  return [
+    item[getPropName("address")],
+    item[getPropName("ward")],
+    item[getPropName("district")],
+    item[getPropName("province")],
+  ]
+    .filter(Boolean)
+    .join(", ");
 }

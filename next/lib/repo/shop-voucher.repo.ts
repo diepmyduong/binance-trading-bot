@@ -6,12 +6,12 @@ export interface ShopVoucher extends BaseModel {
   code: string;
   description: string;
   isActive: boolean;
-  type: string;
+  type: "DISCOUNT_BILL" | "DISCOUNT_ITEM" | "OFFER_ITEM" | "SHIP_FEE";
   issueNumber: number;
   issueByDate: boolean;
   useLimit: number;
   useLimitByDate: boolean;
-  discountUnit: string;
+  discountUnit: "VND" | "PERCENT";
   discountValue: number;
   maxDiscount: number;
   offerItems: OfferItem[];
@@ -26,15 +26,15 @@ export interface ShopVoucher extends BaseModel {
   isPrivate: boolean;
   image: string;
 }
-interface OfferItem {
+export interface OfferItem {
   productId: string;
-  qty: string;
+  qty: number;
   note: string;
   product: Product;
 }
-interface DiscountItem {
+export interface DiscountItem {
   productId: string;
-  discountUnit: string;
+  discountUnit: "VND" | "PERCENT";
   discountValue: number;
   maxDiscount: number;
   product: Product;
@@ -75,7 +75,9 @@ export class ShopVoucherRepository extends CrudRepository<ShopVoucher> {
       product {
         id: String
         code: String
+        name: String
         image: String
+        basePrice: String
       }: Product
     }: [OfferItem]
     discountItems {
@@ -86,7 +88,9 @@ export class ShopVoucherRepository extends CrudRepository<ShopVoucher> {
       product {
         id: String
         code: String
+        name: String
         image: String
+        basePrice: String
       }: Product
     }: [DiscountItem]
     applyItemIds: [ID]
@@ -107,4 +111,9 @@ export const SHOP_VOUCHER_TYPES: Option[] = [
   { value: "DISCOUNT_ITEM", label: "Giảm giá sản phẩm", color: "orange" },
   { value: "OFFER_ITEM", label: "Tặng sản phẩm", color: "info" },
   { value: "SHIP_FEE", label: "Giảm phí giao hàng", color: "success" },
+];
+
+export const DISCOUNT_BILL_UNITS = [
+  { value: "VND", label: "Giảm giá cố định" },
+  { value: "PERCENT", label: "Giảm theo phần trăm đơn" },
 ];

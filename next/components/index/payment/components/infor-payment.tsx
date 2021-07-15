@@ -21,7 +21,6 @@ export function InforPayment() {
   const [openDialog, setOpenDialog] = useState(false);
   const { orderInput, setOrderInput, draftOrder } = useCartContext();
   const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
-  const [addressTemp, setAddressTemp] = useState("");
   const [openAddress, setOpenAddress] = useState(false);
   const [placeDetail, setPlaceDetail] = useState<GoongPlaceDetail>(null);
   const [addressInput, setAddressInput] = useState("");

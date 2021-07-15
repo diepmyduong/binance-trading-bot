@@ -1,9 +1,12 @@
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 import { NumberPipe } from "../../../../lib/pipes/number";
 import { Card } from "../../../shared/utilities/card/card";
 import { Button } from "../../../shared/utilities/form/button";
 import { Label } from "../../../shared/utilities/form/label";
+import { NotFound } from "../../../shared/utilities/not-found";
 import { Spinner } from "../../../shared/utilities/spinner";
+import { useDashboardContext } from "../provider/dashboard-privder";
 import { CardCustom } from "./card-custom";
 
 const Chart = dynamic<any>(() => import("./chart").then((mod) => mod.Chart), {
@@ -12,12 +15,119 @@ const Chart = dynamic<any>(() => import("./chart").then((mod) => mod.Chart), {
 export function Dashboard() {
   return (
     <div className="w-full text-gray-800">
-      <ActivedEmail />
+      {/* <ActivedEmail /> */}
       <BusinessStepByStep />
       <ChartBusiness />
+      <ReportProductOrder />
     </div>
   );
 }
+
+function ReportProductOrder(props) {
+  const {
+    loadReportProduct,
+    top10Products,
+    getDate,
+    loadReportShopOrder,
+    shopOrderReport,
+  } = useDashboardContext();
+  const [filterReportProduct, setFilterReportProduct] = useState("Tháng này");
+  useEffect(() => {
+    let date = getDate(filterReportProduct);
+    loadReportProduct(date.fromDate, date.toDate);
+  }, [filterReportProduct]);
+  useEffect(() => {
+    let date = getDate("Tháng này");
+    loadReportShopOrder(date.fromDate, date.toDate);
+  }, []);
+  return (
+    <div className="mt-4 grid grid-cols-5">
+      <div className="flex flex-col col-span-2 space-y-4">
+        <Card className="min-w-sm">
+          <div className="text-sm">Tổng đơn hàng</div>
+          <div className="font-bold text-2xl">{shopOrderReport?.completed}</div>
+        </Card>
+        <Card className="min-w-sm">
+          <div className="text-sm">Doanh thu bán hàng</div>
+          <div className="font-bold text-2xl">{NumberPipe(shopOrderReport?.revenue)}đ</div>
+        </Card>
+        <Card className="min-w-sm">
+          <div className="text-sm">Trung bình mỗi đơn</div>
+          <div className="font-bold text-2xl">
+            {NumberPipe(shopOrderReport?.revenue / shopOrderReport?.completed)}đ
+          </div>
+        </Card>
+        <Card className="min-w-sm">
+          <div className="text-sm">Tổng giảm giá</div>
+          <div className="font-bold text-2xl">{NumberPipe(78000)}đ</div>
+        </Card>
+        <Card className="min-w-sm">
+          <div className="text-sm">Doanh số ship</div>
+          <div className="font-bold text-2xl">{NumberPipe(365000)}đ</div>
+          <div className="text-sm font-bold text-primary">
+            Lợi nhuận ship {" " + NumberPipe(365000)}đ
+          </div>
+        </Card>
+      </div>
+      <div className="h-full w-full  pl-4 col-span-3 overflow-auto">
+        <CardCustom className=" w-full ">
+          <CardCustom.Header
+            title="Sản phẩm bán chạy"
+            filter={[
+              {
+                value: "Tháng này",
+                label: "Tháng này",
+              },
+              {
+                value: "Tháng trước",
+                label: "Tháng trước",
+              },
+              {
+                value: "3 tháng gần nhất",
+                label: "3 tháng gần nhất",
+              },
+            ]}
+            onChange={(data) => setFilterReportProduct(data)}
+          />
+          <CardCustom.Body
+            style={{
+              padding: 0,
+            }}
+            className=""
+          >
+            <div className="grid grid-cols-2 bg-gradient sticky top-0 shadow-md p-4 text-white">
+              <div className="">Tên sản phẩm</div>
+              <div className="">Số lượng</div>
+            </div>
+            <div
+              className=" overflow-auto"
+              style={{
+                height: "372px",
+              }}
+            >
+              {!top10Products ? (
+                <Spinner />
+              ) : top10Products.length == 0 ? (
+                <NotFound text="Không có sản phẩm nào" />
+              ) : (
+                top10Products.map((item, ind) => {
+                  let backgroundGray = ind % 2 == 1 && " bg-gray-200 ";
+                  return (
+                    <div key={ind} className={`grid grid-cols-2 p-4 ${backgroundGray}`}>
+                      <div className="">{item.productName}</div>
+                      <div className="">{item.qty}</div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </CardCustom.Body>
+        </CardCustom>
+      </div>
+    </div>
+  );
+}
+
 const ChartBusiness = () => {
   return (
     <div className="mt-4">
@@ -28,85 +138,19 @@ const ChartBusiness = () => {
         <CardCustom.Header
           title="Doanh thu"
           filter={[
-            { value: "3 tháng gần nhất", label: "3 tháng gần nhất" },
             { value: "Tháng này", label: "Tháng này" },
             { value: "Tháng trước", label: "Tháng trước" },
+            { value: "3 tháng gần nhất", label: "3 tháng gần nhất" },
           ]}
+          onChange={(data) => console.log("filter", data)}
         />
         <CardCustom.Body>
           <Chart />
         </CardCustom.Body>
       </CardCustom>
-      <div className="mt-4 grid grid-cols-5">
-        <div className="flex flex-col col-span-2 space-y-4">
-          <Card className="min-w-sm">
-            <div className="text-sm">Tổng đơn hàng</div>
-            <div className="font-bold text-2xl">8</div>
-          </Card>
-          <Card className="min-w-sm">
-            <div className="text-sm">Doanh thu bán hàng</div>
-            <div className="font-bold text-2xl">{NumberPipe(948000)}đ</div>
-          </Card>
-          <Card className="min-w-sm">
-            <div className="text-sm">Trung bình mỗi đơn</div>
-            <div className="font-bold text-2xl">{NumberPipe(65000)}đ</div>
-          </Card>
-          <Card className="min-w-sm">
-            <div className="text-sm">Tổng giảm giá</div>
-            <div className="font-bold text-2xl">{NumberPipe(78000)}đ</div>
-          </Card>
-          <Card className="min-w-sm">
-            <div className="text-sm">Doanh số ship</div>
-            <div className="font-bold text-2xl">{NumberPipe(365000)}đ</div>
-            <div className="text-sm font-bold text-primary">
-              Lợi nhuận ship {" " + NumberPipe(365000)}đ
-            </div>
-          </Card>
-        </div>
-        <div className="h-full w-full  pl-4 col-span-3 overflow-auto">
-          <CardCustom className=" w-full ">
-            <CardCustom.Header
-              title="Sản phẩm bán chạy"
-              filter={[
-                { value: "3 tháng gần nhất", label: "3 tháng gần nhất" },
-                { value: "Tháng này", label: "Tháng này" },
-                { value: "Tháng trước", label: "Tháng trước" },
-              ]}
-            />
-            <CardCustom.Body style={{ padding: 0 }} className="">
-              <div className="grid grid-cols-2 bg-gradient sticky top-0 shadow-md p-4 text-white">
-                <div className="">Tên sản phẩm</div>
-                <div className="">Số lượng</div>
-              </div>
-              <div className=" overflow-auto" style={{ height: "372px" }}>
-                {DataProduct.map((item, ind) => {
-                  let backgroundGray = ind % 2 == 1 && " bg-gray-200 ";
-                  return (
-                    <div className={`grid grid-cols-2 p-4 ${backgroundGray}`}>
-                      <div className="">{item.name}</div>
-                      <div className="">{item.amount}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardCustom.Body>
-          </CardCustom>
-        </div>
-      </div>
     </div>
   );
 };
-const DataProduct = [
-  { name: "Sản phẩm 1", amount: 234 },
-  { name: "Sản phẩm 2", amount: 123 },
-  { name: "Sản phẩm 3", amount: 3442 },
-  { name: "Sản phẩm 4", amount: 642 },
-  { name: "Sản phẩm 5", amount: 622 },
-  { name: "Sản phẩm 6", amount: 412 },
-  { name: "Sản phẩm 7", amount: 543 },
-  { name: "Sản phẩm 8", amount: 436 },
-];
-
 const BusinessStepByStep = () => {
   const step = [
     "Xem nhà hàng số của bạn",
@@ -114,6 +158,14 @@ const BusinessStepByStep = () => {
     "Đặt thử nghiệm đơn hàng",
     "Xử lý đơn hàng & đặt ship",
   ];
+  const {
+    loadReportShopCustomer,
+    shopCustomerReport,
+    shopOrderReportToday,
+  } = useDashboardContext();
+  useEffect(() => {
+    loadReportShopCustomer();
+  }, []);
   return (
     <div className="mt-4">
       <div className="py-4">
@@ -140,24 +192,24 @@ const BusinessStepByStep = () => {
       </CardCustom>
       <div className="mt-4 flex">
         <CardCustom className="min-w-max">
-          <CardCustom.Header title="Tổng số thiết bị bahana hoạt động"></CardCustom.Header>
+          <CardCustom.Header title="Tổng số nhân viên đang hoạt động"></CardCustom.Header>
           <CardCustom.Body>
             <div className="flex items-end">
-              <div className="text-6xl">2</div>
-              <div className="ml-2 text-sm pb-1">thiết bị</div>
+              <div className="text-6xl">{shopCustomerReport}</div>
+              <div className="ml-2 text-sm pb-1">nhân viên</div>
             </div>
           </CardCustom.Body>
         </CardCustom>
         <CardCustom className="ml-4 w-full">
-          <CardCustom.Header title="nhahang.so"></CardCustom.Header>
+          <CardCustom.Header title="Tổng số đơn hàng trong hôm nay"></CardCustom.Header>
           <CardCustom.Body>
             <div className="grid grid-cols-2 divide-x">
               <div className="flex items-end pr-4">
-                <div className="text-6xl">0/10</div>
-                <div className="ml-2 text-sm pb-1">đơn hàng mỗi ngày</div>
+                <div className="text-6xl">{shopOrderReportToday.completed}</div>
+                <div className="ml-2 text-sm pb-1">đơn hàng hoàn tất hôm nay</div>
               </div>
               <div className="flex items-end pl-4">
-                <div className="text-6xl">6</div>
+                <div className="text-6xl">{shopOrderReportToday.pending}</div>
                 <div className="ml-2 text-sm pb-1">đơn hàng chưa hoàn tất</div>
               </div>
             </div>

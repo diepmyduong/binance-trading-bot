@@ -117,6 +117,11 @@ export function OrderDetailPage({ id, ...props }: PropsType) {
               })}
             </div>
             <div className="px-4 py-6 border-b border-gray-300">
+              {order.note && (
+                <div className="">
+                  Ghi chú đơn hàng: <span className="">{order.note}</span>
+                </div>
+              )}
               <div className="flex justify-between items-center">
                 <div className="">
                   Tạm tính: <span className="font-bold">{order.itemCount} món</span>
@@ -130,8 +135,10 @@ export function OrderDetailPage({ id, ...props }: PropsType) {
                 <div className="">{NumberPipe(order.shipfee, true)}</div>
               </div>
               <div className="flex justify-between items-center">
-                <div className="">Giảm giá:</div>
-                <div className="text-accent">{NumberPipe(0, true)}</div>
+                <div className="">
+                  Khuyến mãi: <span className="font-bold">{order.discountDetail}</span>
+                </div>
+                <div className="text-accent">{NumberPipe(order.discount, true)}</div>
               </div>
             </div>
             <div className="px-4 py-6 flex items-center justify-between">

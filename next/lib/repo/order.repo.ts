@@ -119,6 +119,8 @@ export interface Order extends BaseModel {
   driverLicense: string;
   shopBranch: ShopBranch;
   buyerFullAddress: string;
+  discount: number;
+  discountDetail: string;
 }
 export interface OrderItem extends BaseModel {
   orderId: string;
@@ -284,6 +286,8 @@ export class OrderRepository extends CrudRepository<Order> {
     isUrbanDelivery: Boolean
     latitude: Float
     longitude: Float
+    discount: Float
+    discountDetail: String
     items {
       id: String
       createdAt: DateTime

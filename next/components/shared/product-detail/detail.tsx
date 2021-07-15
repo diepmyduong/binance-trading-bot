@@ -14,6 +14,7 @@ import { useProductDetailContext } from "./provider/product-detail-provider";
 import { FaPen } from "react-icons/fa";
 import { Toppings } from "./components/toppings";
 import { Spinner } from "../utilities/spinner";
+import { Price } from "../homepage-layout/price";
 
 interface PropsType extends DialogPropsType {}
 export function ProductDetail({ ...props }: PropsType) {
@@ -87,7 +88,7 @@ export function ProductDetail({ ...props }: PropsType) {
 
             <div ref={ref} className="bg-white mb-22">
               <h2 className="header-name px-4 pt-4 text-xl">{product.name}</h2>
-              <div className="px-4 text-gray-700 py-1 flex items-center space-x-1">
+              {/* <div className="px-4 text-gray-700 py-1 flex items-center space-x-1">
                 <div className="font-bold text-danger">{NumberPipe(product.basePrice)}đ</div>
                 <div className="text-xs line-through px-1">{NumberPipe(product.downPrice)}đ</div>
                 {product.saleRate && (
@@ -95,7 +96,13 @@ export function ProductDetail({ ...props }: PropsType) {
                     {product.saleRate || 0}%
                   </div>
                 )}
-              </div>
+              </div> */}
+              <Price
+                price={product.basePrice}
+                saleRate={product.saleRate}
+                downPrice={product.downPrice}
+                textDanger
+              />
               <p className="px-4 text-sm text-gray-500">{product.subtitle}</p>
               <Note onChange={(data) => setNote(data)} />
               <Toppings />

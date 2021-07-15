@@ -91,7 +91,7 @@ export function PaymentPage() {
                           .join(", ")}
                       </div>
                     )}
-                    {cartProduct.note && <div>Ghi chú:{cartProduct.note}</div>}
+                    {cartProduct.note && <div>Ghi chú: {cartProduct.note}</div>}
                   </div>
                   <div className="font-bold">{NumberPipe(cartProduct.amount, true)}</div>
                 </div>

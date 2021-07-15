@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Order, OrderService, ORDER_STATUS } from "../../../../lib/repo/order.repo";
 import cloneDeep from "lodash/cloneDeep";
 import { useAlert } from "../../../../lib/providers/alert-provider";
-import useInterval from "../../../../lib/hooks/useInterval";
+import { useToast } from "../../../../lib/providers/toast-provider";
 
 export const OrderDetailContext = createContext<
   Partial<{
@@ -10,6 +10,7 @@ export const OrderDetailContext = createContext<
     status: Option;
     loading: boolean;
     setLoading: Function;
+    isInterval: boolean;
     cancelOrder: (id: string, note: string) => any;
   }>
 >({});
@@ -21,7 +22,10 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
   const alert = useAlert();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<Option>(null);
+  const [isInterval, setIsInterval] = useState(false);
+  const toast = useToast();
   useEffect(() => {
+    setIsInterval(true);
     loadOrder(id);
   }, [id]);
   useEffect(() => {
@@ -31,13 +35,18 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
       let interval = setInterval(() => {
         OrderService.getOne({ id })
           .then((res) => {
-            setOrder(cloneDeep(res));
             if (
               res.status !== "PENDING" &&
               res.status !== "CONFIRMED" &&
               res.status !== "DELIVERING"
             ) {
+              setIsInterval(false);
               clearInterval(interval);
+            } else {
+              if (res.status !== order.status) {
+                toast.info(res.statusText);
+                setOrder(cloneDeep(res));
+              }
             }
           })
           .catch((err) => {
@@ -74,7 +83,9 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
       });
   };
   return (
-    <OrderDetailContext.Provider value={{ order, status, loading, setLoading, cancelOrder }}>
+    <OrderDetailContext.Provider
+      value={{ order, status, loading, setLoading, cancelOrder, isInterval }}
+    >
       {props.children}
     </OrderDetailContext.Provider>
   );

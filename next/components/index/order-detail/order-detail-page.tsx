@@ -13,46 +13,9 @@ import { Form } from "../../shared/utilities/form/form";
 import { Field } from "../../shared/utilities/form/field";
 import { Textarea } from "../../shared/utilities/form/textarea";
 import cloneDeep from "lodash/cloneDeep";
-interface PropsType extends ReactProps {
-  id: string;
-}
-export function OrderDetailPage({ id, ...props }: PropsType) {
-  const [order, setOrder] = useState<Order>(null);
-  const alert = useAlert();
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<Option>(null);
-  useEffect(() => {
-    loadOrder(id);
-  }, [id]);
-  useEffect(() => {
-    if (order) {
-      let sta = ORDER_STATUS.find((x) => x.value === order.status);
-      if (sta) setStatus(cloneDeep(sta));
-    }
-  }, [order]);
-  function cancelOrder(id: string, note: string) {
-    OrderService.cancelOrder(id, note)
-      .then((res) => {
-        setOrder(cloneDeep(res));
-        console.log(res);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        alert.error("Hủy đơn hàng thất bại", err.message);
-        setLoading(false);
-      });
-  }
-  const loadOrder = (id: string) => {
-    OrderService.getOne({ id })
-      .then((res) => {
-        setOrder(cloneDeep(res));
-      })
-      .catch((err) => {
-        console.error(err);
-        alert.error("Xem chi tiết đơn hàng thất bại", err.message);
-      });
-  };
+import { useOrderDetailContext } from "./providers/order-detail-provider";
+export function OrderDetailPage(props) {
+  const { order, status, cancelOrder, setLoading, loading } = useOrderDetailContext();
   const [showCancel, setShowCancel] = useState(false);
   return (
     <>

@@ -39,7 +39,6 @@ export function ProductsGroup(props: Propstype) {
                 </p>
                 <Price
                   price={item.basePrice}
-                  saleRate={item.saleRate}
                   downPrice={item.downPrice}
                   textDanger
                   className="group-hover:text-danger-dark"

@@ -1,17 +1,14 @@
-import { TabGroup } from "../../shared/utilities/tab/tab-group";
 import { Billed } from "./component/billed";
 import { useOrderContext } from "./providers/order-provider";
 import { Spinner } from "../../shared/utilities/spinner";
-import { ORDER_STATUS, Order } from "../../../lib/repo/order.repo";
-import { SwitchTabs } from "../../shared/utilities/tab/switch-tabs";
-import { useEffect, useState } from "react";
-import cloneDeep from "lodash/cloneDeep";
 
 export function OrderPage() {
   const { orders, statusOrder } = useOrderContext();
   return (
     <div className="w-full relative">
-      <h3 className="text-lg font-semibold text-primary p-4 bg-white">Danh sách đơn hàng</h3>
+      <h3 className="text-lg font-semibold text-primary p-4 pb-2 border-b bg-white">
+        Danh sách đơn hàng
+      </h3>
       {orders ? (
         <>
           {orders.length > 0 ? (

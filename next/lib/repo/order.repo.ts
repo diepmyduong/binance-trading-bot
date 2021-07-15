@@ -119,6 +119,9 @@ export interface Order extends BaseModel {
   driverLicense: string;
   shopBranch: ShopBranch;
   buyerFullAddress: string;
+  discount: number;
+  discountDetail: string;
+  ahamoveTrackingLink: string;
 }
 export interface OrderItem extends BaseModel {
   orderId: string;
@@ -215,7 +218,10 @@ export class OrderRepository extends CrudRepository<Order> {
     paymentMethodText: String
     shipMethodText: String
     statusText: String
-    buyerFullAddress: String;
+    buyerFullAddress: String
+    discount: Float
+    discountDetail: String
+    ahamoveTrackingLink: String
     fromMember {
       id: String
       name: String
@@ -269,7 +275,7 @@ export class OrderRepository extends CrudRepository<Order> {
     status: String
     buyerId: ID
     buyerName: String
-    buyerFullAddress: String;
+    buyerFullAddress: String
     buyerPhone: String
     buyerAddress: String
     buyerProvince: String
@@ -284,6 +290,9 @@ export class OrderRepository extends CrudRepository<Order> {
     isUrbanDelivery: Boolean
     latitude: Float
     longitude: Float
+    discount: Float
+    discountDetail: String
+    ahamoveTrackingLink: String
     items {
       id: String
       createdAt: DateTime

@@ -13,46 +13,9 @@ import { Form } from "../../shared/utilities/form/form";
 import { Field } from "../../shared/utilities/form/field";
 import { Textarea } from "../../shared/utilities/form/textarea";
 import cloneDeep from "lodash/cloneDeep";
-interface PropsType extends ReactProps {
-  id: string;
-}
-export function OrderDetailPage({ id, ...props }: PropsType) {
-  const [order, setOrder] = useState<Order>(null);
-  const alert = useAlert();
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<Option>(null);
-  useEffect(() => {
-    loadOrder(id);
-  }, [id]);
-  useEffect(() => {
-    if (order) {
-      let sta = ORDER_STATUS.find((x) => x.value === order.status);
-      if (sta) setStatus(cloneDeep(sta));
-    }
-  }, [order]);
-  function cancelOrder(id: string, note: string) {
-    OrderService.cancelOrder(id, note)
-      .then((res) => {
-        setOrder(cloneDeep(res));
-        console.log(res);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        alert.error("Hủy đơn hàng thất bại", err.message);
-        setLoading(false);
-      });
-  }
-  const loadOrder = (id: string) => {
-    OrderService.getOne({ id })
-      .then((res) => {
-        setOrder(cloneDeep(res));
-      })
-      .catch((err) => {
-        console.error(err);
-        alert.error("Xem chi tiết đơn hàng thất bại", err.message);
-      });
-  };
+import { useOrderDetailContext } from "./providers/order-detail-provider";
+export function OrderDetailPage(props) {
+  const { order, status, cancelOrder, setLoading, loading } = useOrderDetailContext();
   const [showCancel, setShowCancel] = useState(false);
   return (
     <>
@@ -117,6 +80,11 @@ export function OrderDetailPage({ id, ...props }: PropsType) {
               })}
             </div>
             <div className="px-4 py-6 border-b border-gray-300">
+              {order.note && (
+                <div className="">
+                  Ghi chú đơn hàng: <span className="">{order.note}</span>
+                </div>
+              )}
               <div className="flex justify-between items-center">
                 <div className="">
                   Tạm tính: <span className="font-bold">{order.itemCount} món</span>
@@ -130,8 +98,10 @@ export function OrderDetailPage({ id, ...props }: PropsType) {
                 <div className="">{NumberPipe(order.shipfee, true)}</div>
               </div>
               <div className="flex justify-between items-center">
-                <div className="">Giảm giá:</div>
-                <div className="text-accent">{NumberPipe(0, true)}</div>
+                <div className="">
+                  Khuyến mãi: <span className="font-bold">{order.discountDetail}</span>
+                </div>
+                <div className="text-accent">{NumberPipe(order.discount, true)}</div>
               </div>
             </div>
             <div className="px-4 py-6 flex items-center justify-between">

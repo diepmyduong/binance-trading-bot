@@ -21,6 +21,9 @@ export function Price(props: Propstype) {
         </div>
       )) ||
         ""}
+      {props.saleRate > 0 && (
+        <div className="bg-red-500 text-white text-xs rounded-sm px-2 py-1">{props.saleRate}%</div>
+      )}
     </div>
   );
 }

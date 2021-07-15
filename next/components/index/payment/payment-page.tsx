@@ -118,7 +118,7 @@ export function PaymentPage() {
           </div>
           <div className="flex justify-between items-center">
             <div className="">Giảm giá:</div>
-            <div className="text-accent">{NumberPipe(0)}đ</div>
+            <div className="text-accent">{NumberPipe(order?.order?.discount)}đ</div>
           </div>
         </div>
         <div className="px-2 py-4 flex w-full md:overflow-hidden overflow-auto z-0">
@@ -179,11 +179,15 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
       toast.error("Chưa nhập tên người nhận");
       return false;
     }
+    if (!orderInput.pickupMethod) {
+      toast.error("Chưa chọn phương thức nhận");
+      return false;
+    }
     if (!orderInput.buyerPhone) {
       toast.error("Chưa nhập số điện thoại");
       return false;
     }
-    if (!orderInput.buyerFullAddress) {
+    if (orderInput.pickupMethod == "DELIVERY" && !orderInput.buyerFullAddress) {
       toast.error("Chưa nhập địa chỉ giao hàng");
       return false;
     }
@@ -224,9 +228,12 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
           primary
           className="w-full bg-gradient h-12"
           onClick={async () => {
-            console.log(draftOrder);
             if (validData()) {
-              await generateOrder();
+              if (draftOrder.invalid) {
+                toast.error(draftOrder.invalidReason);
+              } else {
+                await generateOrder();
+              }
             }
           }}
         />

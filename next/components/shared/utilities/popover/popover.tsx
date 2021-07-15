@@ -11,6 +11,7 @@ export interface PopoverProps extends ReactProps {
   arrow?: boolean;
   maxWidth?: string | number;
   animation?: "shift-away-subtle" | "fade";
+  onShown?: (val: boolean) => any;
 }
 
 export function Popover({
@@ -44,6 +45,7 @@ export function Popover({
       maxWidth={maxWidth}
       trigger={getTrigger()}
       hideOnClick={hideOnClickOutside || "toggle"}
+      onShown={() => (props.onShown ? props.onShown(true) : false)}
     ></Tippy>
   );
 }

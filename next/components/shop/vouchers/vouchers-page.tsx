@@ -1,27 +1,14 @@
 import format from "date-fns/format";
-import {
-  RiCalendarEventLine,
-  RiCheckLine,
-  RiCloseLine,
-  RiHome3Line,
-  RiPhoneLine,
-} from "react-icons/ri";
-import { ShopBranchService } from "../../../lib/repo/shop-branch.repo";
+import { RiCalendarEventLine, RiCheckLine, RiCloseLine } from "react-icons/ri";
 import {
   ShopVoucher,
   ShopVoucherService,
   SHOP_VOUCHER_TYPES,
 } from "../../../lib/repo/shop-voucher.repo";
-import { Staff, STAFF_SCOPES } from "../../../lib/repo/staff.repo";
+import { Staff } from "../../../lib/repo/staff.repo";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
-import { Checkbox } from "../../shared/utilities/form/checkbox";
-import { DatePicker } from "../../shared/utilities/form/date";
-import { Field } from "../../shared/utilities/form/field";
-import { ImageInput } from "../../shared/utilities/form/image-input";
-import { Input } from "../../shared/utilities/form/input";
-import { Select } from "../../shared/utilities/form/select";
-import { Switch } from "../../shared/utilities/form/switch";
 import { DataTable } from "../../shared/utilities/table/data-table";
+import { VoucherForm } from "./components/voucher-form";
 
 export function VouchersPage(props: ReactProps) {
   return (
@@ -131,61 +118,9 @@ export function VouchersPage(props: ReactProps) {
             )}
           />
         </DataTable.Table>
-        <DataTable.Form
-          extraDialogClass="bg-transparent"
-          extraHeaderClass="bg-gray-100 text-xl py-3 justify-center rounded-t-xl border-gray-300 pl-16"
-          extraBodyClass="px-6 bg-gray-100 rounded-b-xl"
-          saveButtonGroupProps={{
-            className: "justify-center",
-            submitProps: { className: "bg-gradient h-14 w-64" },
-            cancelText: "",
-          }}
-          grid
-        >
-          <DataTable.Consumer>
-            {({ formItem }) => (
-              <>
-                <Field
-                  name="code"
-                  label="Mã khuyến mãi"
-                  cols={6}
-                  required
-                  readonly={!!formItem?.id}
-                >
-                  <Input />
-                </Field>
-                <Field
-                  name="type"
-                  label="Loại khuyến mãi"
-                  cols={6}
-                  required
-                  readonly={!!formItem?.id}
-                >
-                  <Select options={SHOP_VOUCHER_TYPES} />
-                </Field>
-                <Field name="description" label="Mô tả" cols={12} required>
-                  <Input />
-                </Field>
-                {formItem?.id && (
-                  <>
-                    <Field name="startDate" label="Ngày bắt đầu" cols={6}>
-                      <DatePicker />
-                    </Field>
-                    <Field name="endDate" label="Ngày kết thúc" cols={6}>
-                      <DatePicker />
-                    </Field>
-                    <Field name="isPrivate" label="" cols={6}>
-                      <Checkbox placeholder="Mã riêng tư" />
-                    </Field>
-                    <Field name="isActive" label="" cols={6}>
-                      <Switch placeholder="Kích hoạt" />
-                    </Field>
-                  </>
-                )}
-              </>
-            )}
-          </DataTable.Consumer>
-        </DataTable.Form>
+        <DataTable.Consumer>
+          {({ formItem }: { formItem: ShopVoucher }) => <VoucherForm voucher={formItem} />}
+        </DataTable.Consumer>
         <DataTable.Pagination />
       </DataTable>
     </>

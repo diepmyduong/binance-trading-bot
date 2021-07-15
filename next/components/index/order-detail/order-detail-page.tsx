@@ -110,7 +110,7 @@ export function OrderDetailPage(props) {
             </div>
             <div className="px-4 py-6 flex items-center justify-between">
               <div className="">Tổng cộng:</div>
-              <div className="font-bold">{NumberPipe(order.amount, true)}</div>
+              <div className="font-bold text-primary">{NumberPipe(order.amount, true)}</div>
             </div>
             <div className="p-2 sticky bottom-0 w-full bg-white">
               {

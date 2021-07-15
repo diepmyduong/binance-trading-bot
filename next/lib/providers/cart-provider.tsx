@@ -218,9 +218,9 @@ export function CartProvider(props) {
       .then((res: any) => {
         setDraftOrder(cloneDeep(res));
         console.log(res);
-        // if (res.invalid) {
-        //   toast.error(res.invalidReason);
-        // }
+        if (res.invalid) {
+          toast.error(res.invalidReason);
+        }
       })
       .catch((err) => {});
   };

@@ -55,11 +55,39 @@ export function Billed({ order, status }: PropsType) {
               href={`tel:${"0374196903"}`}
             />
           ),
+          CONFIRMED: (
+            <Button
+              text="Gọi nhà hàng"
+              className=" whitespace-nowrap w-full"
+              textPrimary
+              hoverSuccess
+              href={`tel:${"0374196903"}`}
+            />
+          ),
           CANCELED: (
+            <Button text="Đặt lại" textPrimary hoverSuccess className=" whitespace-nowrap w-full" />
+          ),
+          RETURNED: (
+            <Button text="Đặt lại" textPrimary hoverSuccess className=" whitespace-nowrap w-full" />
+          ),
+          FAILURE: (
             <Button text="Đặt lại" textPrimary hoverSuccess className=" whitespace-nowrap w-full" />
           ),
           COMPLETED: (
             <Button text="Đặt lại" textPrimary hoverSuccess className=" whitespace-nowrap w-full" />
+          ),
+          DELIVERING: (
+            <>
+              {order.shipMethod === "AHAMOVE" && (
+                <Button
+                  text="Xem trên Ahamove"
+                  textPrimary
+                  hoverSuccess
+                  className=" whitespace-nowrap w-full"
+                  href={order.ahamoveTrackingLink}
+                />
+              )}
+            </>
           ),
         }[order.status]
       }

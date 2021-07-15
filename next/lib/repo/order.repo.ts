@@ -121,6 +121,7 @@ export interface Order extends BaseModel {
   buyerFullAddress: string;
   discount: number;
   discountDetail: string;
+  ahamoveTrackingLink: string;
 }
 export interface OrderItem extends BaseModel {
   orderId: string;

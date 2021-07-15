@@ -1,18 +1,12 @@
 import { useState, useEffect } from "react";
-import { BiRadio } from "react-icons/bi";
 import { CgRadioChecked } from "react-icons/cg";
-import { FaCircle } from "react-icons/fa";
-import { HiArrowRight, HiChevronRight } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
-import { useAlert } from "../../../lib/providers/alert-provider";
 import { Button } from "../../shared/utilities/form/button";
-import { Order, OrderService, ORDER_STATUS } from "../../../lib/repo/order.repo";
 import { Spinner } from "../../shared/utilities/spinner";
 import formatDate from "date-fns/format";
 import { Form } from "../../shared/utilities/form/form";
 import { Field } from "../../shared/utilities/form/field";
 import { Textarea } from "../../shared/utilities/form/textarea";
-import cloneDeep from "lodash/cloneDeep";
 import { useOrderDetailContext } from "./providers/order-detail-provider";
 export function OrderDetailPage(props) {
   const { order, status, cancelOrder, setLoading, loading } = useOrderDetailContext();
@@ -40,12 +34,32 @@ export function OrderDetailPage(props) {
                 Lý do hủy: {order.cancelReason}
               </div>
             )}
+            <div className="flex items-center my-2">
+              <i className="text-danger text-xl ">
+                <CgRadioChecked />
+              </i>
+              <div className="text-xs py-6 flex flex-col space-y-1 ml-2">
+                <p className="text-gray-500">
+                  {order.pickupMethod === "DELIVERY" ? "Gửi từ" : "Lấy tại"}
+                </p>
+
+                <p className="">
+                  <span className="font-bold pr-1">
+                    {order.seller.shopName}-{order.shopBranch.name}
+                  </span>
+                  ({order.shopBranch.phone})
+                </p>
+                <p className="">{order.shopBranch.address}</p>
+              </div>
+            </div>
             <div className="flex items-center">
               <i className="text-primary text-xl ">
                 <CgRadioChecked />
               </i>
               <div className="text-xs py-6 flex flex-col space-y-1 ml-2">
-                <p className="text-gray-500">Gửi đến</p>
+                <p className="text-gray-500">
+                  {order.pickupMethod === "DELIVERY" ? "Gửi đến" : "Người lấy"}
+                </p>
                 <p className="">
                   <span className="font-bold">{order.buyerName}</span> ({order.buyerPhone})
                 </p>
@@ -103,8 +117,8 @@ export function OrderDetailPage(props) {
                 </div>
                 <div className="text-danger">
                   {order.discount > 0
-                    ? NumberPipe(-order?.order?.discount, true)
-                    : NumberPipe(order?.order?.discount, true)}
+                    ? NumberPipe(-order.discount, true)
+                    : NumberPipe(order.discount, true)}
                 </div>
               </div>
             </div>

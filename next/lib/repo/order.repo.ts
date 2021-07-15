@@ -400,6 +400,12 @@ export class OrderRepository extends CrudRepository<Order> {
     driverName: String
     driverPhone: String
     driverLicense: String
+    shopBranch{
+      name:String
+      code:String
+      address:String
+      phone:String
+    }:ShopBranch
   `);
 
   async generateDraftOrder(data: OrderInput): Promise<any> {

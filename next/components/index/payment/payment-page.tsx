@@ -121,7 +121,11 @@ export function PaymentPage() {
           </div>
           <div className="flex justify-between items-center">
             <div className="">Giảm giá:</div>
-            <div className="text-danger">-{NumberPipe(order?.order?.discount)}đ</div>
+            <div className="text-danger">
+              {order.discount > 0
+                ? NumberPipe(-order?.order?.discount, true)
+                : NumberPipe(order?.order?.discount, true)}
+            </div>
           </div>
         </div>
         <div className="px-2 py-4 flex w-full md:overflow-hidden overflow-auto z-0">

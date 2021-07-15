@@ -101,7 +101,11 @@ export function OrderDetailPage(props) {
                 <div className="">
                   Khuyến mãi: <span className="font-bold">{order.discountDetail}</span>
                 </div>
-                <div className="text-accent">{NumberPipe(order.discount, true)}</div>
+                <div className="text-danger">
+                  {order.discount > 0
+                    ? NumberPipe(-order?.order?.discount, true)
+                    : NumberPipe(order?.order?.discount, true)}
+                </div>
               </div>
             </div>
             <div className="px-4 py-6 flex items-center justify-between">
@@ -202,18 +206,3 @@ export function OrderDetailPage(props) {
     </>
   );
 }
-
-const data = [
-  {
-    title: "Rau má đậu xanh",
-    count: 12,
-    note: "Không đá ít đường",
-    price: 119000,
-  },
-  {
-    title: "Cơm đùi gà quay",
-    count: 2,
-    note: "Không cơm ít gà",
-    price: 119000,
-  },
-];

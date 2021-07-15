@@ -27,7 +27,7 @@ export function Rating(props: Propstype) {
       </div>
       {props.soldQty > 0 && (
         <div className="flex items-center text-sm">
-          <i className="text-lg ml-3">
+          <i className="text-lg ml-3 pr-1">
             <HiShoppingCart />
           </i>
           <p className="text-gray-400">

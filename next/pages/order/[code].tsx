@@ -4,13 +4,14 @@ import { OrderDetailPage } from "../../components/index/order-detail/order-detai
 import { DefaultLayout } from "../../layouts/default-layout/default-layout";
 import { OrderModel } from "../../../dist/graphql/modules/order/order.model";
 import { Redirect } from "../../lib/helpers/redirect";
+import { OrderDetailProvider } from "../../components/index/order-detail/providers/order-detail-provider";
 
 export default function Page(props) {
   return (
-    <>
+    <OrderDetailProvider id={props.id}>
       <NextSeo title="Chi tiết đơn hàng" />
-      <OrderDetailPage id={props.id} />
-    </>
+      <OrderDetailPage />
+    </OrderDetailProvider>
   );
 }
 

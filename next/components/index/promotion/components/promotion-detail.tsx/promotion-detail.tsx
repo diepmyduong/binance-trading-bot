@@ -46,7 +46,7 @@ export function PromotionDetail({ promotion, ...props }: Propstype) {
     <div className={`text-sm bg-primary-light ${isMobile ? "pb-12" : ""}`}>
       {promotion && <Promotion promotion={promotion} />}
       <h3 className="text-2xl">{promotion.code}</h3>
-      {des.map((item, index) => (
+      {des?.map((item, index) => (
         <div key={index} className={`${item.content ? "" : "hidden"}`}>
           <p className="pt-4">{item.label}</p>
           <p>{item.content}</p>

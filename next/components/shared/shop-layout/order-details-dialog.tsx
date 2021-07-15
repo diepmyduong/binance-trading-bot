@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { RiCalendarTodoLine, RiHome6Line, RiStickyNoteLine, RiUser5Line } from "react-icons/ri";
-import { useAlert } from "../../../../lib/providers/alert-provider";
-import { Order, OrderService, ORDER_STATUS } from "../../../../lib/repo/order.repo";
-import { Dialog, DialogPropsType } from "../../../shared/utilities/dialog/dialog";
-import { Spinner } from "../../../shared/utilities/spinner";
+import { useAlert } from "../../../lib/providers/alert-provider";
+import { Order, OrderService, ORDER_STATUS } from "../../../lib/repo/order.repo";
+import { Dialog, DialogPropsType } from "../utilities/dialog/dialog";
+import { Spinner } from "../utilities/spinner";
 import format from "date-fns/format";
-import { getAddressText } from "../../../../lib/helpers/get-address-text";
-import { Img } from "../../../shared/utilities/img";
-import { NumberPipe } from "../../../../lib/pipes/number";
-import { Button } from "../../../shared/utilities/form/button";
-import { OrderLog, OrderLogService } from "../../../../lib/repo/order-log.repo";
-import { DeliveryLog, DeliveryLogService } from "../../../../lib/repo/delivery-log.repo";
+import { getAddressText } from "../../../lib/helpers/get-address-text";
+import { Img } from "../utilities/img";
+import { NumberPipe } from "../../../lib/pipes/number";
+import { Button } from "../utilities/form/button";
+import { OrderLog, OrderLogService } from "../../../lib/repo/order-log.repo";
+import { DeliveryLog, DeliveryLogService } from "../../../lib/repo/delivery-log.repo";
 
 interface PropsType extends DialogPropsType {
   orderId: string;
@@ -327,7 +327,7 @@ function DeliveryHistoryTabs({ order }: { order: Order }) {
                 <td className="p-2 text-center whitespace-nowrap">
                   {format(new Date(deliveryLog.createdAt), "dd-MM-yyyy HH:mm")}
                 </td>
-                <td className="p-2 text-left">{deliveryLog.note}</td>
+                <td className="p-2 text-left">{deliveryLog.statusName}</td>
               </tr>
             ))
           )}

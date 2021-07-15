@@ -26,7 +26,7 @@ export function IncreaseButton({ onDecrease, onIncrease, onChange, className }: 
       >
         <VscDiffRemoved />
       </i>
-      <p className={`text-lg px-3 text-gray-700`}>{amount}</p>
+      <p className={`text-xl font-semibold px-3 text-gray-700`}>{amount}</p>
       <i
         className={`text-40 sm:text-48 text-primary cursor-pointer font-semibold`}
         onClick={() => handleClick(1)}

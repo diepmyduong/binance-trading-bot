@@ -9,7 +9,7 @@ interface Propstype extends ReactProps {
 
 export function Price(props: Propstype) {
   return (
-    <div className={`${props.className || ""} transition-all duration-200 flex`}>
+    <div className={`${props.className || ""} transition-all duration-200 flex items-center`}>
       <p className={`${(props.textDanger && "text-danger") || "text-gray-800"} font-bold text-sm`}>
         {NumberPipe(props.price, true)}
       </p>
@@ -21,6 +21,9 @@ export function Price(props: Propstype) {
         </div>
       )) ||
         ""}
+      {props.saleRate > 0 && (
+        <div className="bg-red-500 text-white text-xs rounded-sm px-2 py-1">{props.saleRate}%</div>
+      )}
     </div>
   );
 }

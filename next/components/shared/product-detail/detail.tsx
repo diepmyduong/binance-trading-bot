@@ -14,6 +14,7 @@ import { useProductDetailContext } from "./provider/product-detail-provider";
 import { FaPen } from "react-icons/fa";
 import { Toppings } from "./components/toppings";
 import { Spinner } from "../utilities/spinner";
+import { Price } from "../homepage-layout/price";
 
 interface PropsType extends DialogPropsType {}
 export function ProductDetail({ ...props }: PropsType) {
@@ -37,7 +38,7 @@ export function ProductDetail({ ...props }: PropsType) {
       onClose={props.onClose}
       mobileSizeMode
       slideFromBottom="all"
-      extraFooterClass="border-t border-gray-300  xs:pb-10 items-center"
+      extraFooterClass="border-t border-gray-300 items-center"
     >
       {!product ? (
         <Spinner />
@@ -46,7 +47,7 @@ export function ProductDetail({ ...props }: PropsType) {
           <div
             ref={ref}
             className="v-scrollbar"
-            style={{ height: "calc(96vh - 95px)" }}
+            style={{ height: "calc(96vh - 120px)" }}
             onScroll={(e) => checkScrollTop(e.currentTarget.scrollTop)}
           >
             <div
@@ -72,7 +73,7 @@ export function ProductDetail({ ...props }: PropsType) {
               </div>
             </div>
             <div className="relative w-full top-0 ">
-              <Img src={product.image} ratio169 />
+              <Img src={product.image} ratio169 compress={512} />
               <div className="absolute bottom-0 left-0 w-full h-12 p-3 text-xs text-white flex items-end bg-opacity-20 bg-gradient-to-t from-primary">
                 <div className="flex items-center">
                   <i className="text-yellow-500 px-1">
@@ -80,14 +81,21 @@ export function ProductDetail({ ...props }: PropsType) {
                   </i>
                   <div className="font-semibold">{product.rating}</div>
                   <div className="px-1">-</div>
-                  <div className="">{`Đã bán ${product.soldQty || 0}`}</div>
+                  <p className="">
+                    (
+                    {(product.soldQty > 1000 && "999+") ||
+                      (product.soldQty > 100 && "99+") ||
+                      (product.soldQty > 10 && "9+") ||
+                      product.soldQty}
+                    )
+                  </p>
                 </div>
               </div>
             </div>
 
             <div ref={ref} className="bg-white mb-22">
               <h2 className="header-name px-4 pt-4 text-xl">{product.name}</h2>
-              <div className="px-4 text-gray-700 py-1 flex items-center space-x-1">
+              {/* <div className="px-4 text-gray-700 py-1 flex items-center space-x-1">
                 <div className="font-bold text-danger">{NumberPipe(product.basePrice)}đ</div>
                 <div className="text-xs line-through px-1">{NumberPipe(product.downPrice)}đ</div>
                 {product.saleRate && (
@@ -95,7 +103,14 @@ export function ProductDetail({ ...props }: PropsType) {
                     {product.saleRate || 0}%
                   </div>
                 )}
-              </div>
+              </div> */}
+              <Price
+                price={product.basePrice}
+                saleRate={product.saleRate}
+                downPrice={product.downPrice}
+                textDanger
+                className="pl-4"
+              />
               <p className="px-4 text-sm text-gray-500">{product.subtitle}</p>
               <Note onChange={(data) => setNote(data)} />
               <Toppings />

@@ -183,7 +183,7 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
       toast.error("Chưa nhập số điện thoại");
       return false;
     }
-    if (!orderInput.buyerFullAddress) {
+    if (orderInput.pickupMethod == "DELIVERY" && !orderInput.buyerFullAddress) {
       toast.error("Chưa nhập địa chỉ giao hàng");
       return false;
     }

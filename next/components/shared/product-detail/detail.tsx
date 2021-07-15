@@ -102,6 +102,7 @@ export function ProductDetail({ ...props }: PropsType) {
                 saleRate={product.saleRate}
                 downPrice={product.downPrice}
                 textDanger
+                className="pl-4"
               />
               <p className="px-4 text-sm text-gray-500">{product.subtitle}</p>
               <Note onChange={(data) => setNote(data)} />

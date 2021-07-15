@@ -48,7 +48,7 @@ export function CartDialog(props: Propstype) {
       mobileSizeMode
       bodyClass="relative bg-white rounded"
       slideFromBottom="all"
-      extraFooterClass="border-t border-gray-300"
+      extraFooterClass="border-t border-gray-300 z-40"
     >
       <Dialog.Body>
         <div
@@ -89,7 +89,7 @@ export function CartDialog(props: Propstype) {
         <Button
           primary
           text={`Đặt hàng ${NumberPipe(totalMoney, true)}`}
-          className="w-full bg-gradient uppercase h-12"
+          className="w-full bg-gradient uppercase h-12 z-40"
           onClick={() => {
             if (customer) {
               router.push("/payment");

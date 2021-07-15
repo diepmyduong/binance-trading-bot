@@ -19,12 +19,18 @@ export function IncreaseButton({ onDecrease, onIncrease, onChange, className }: 
   }, [amount]);
 
   return (
-    <div className={`flex items-center justify-center  text-primary ${className}`}>
-      <i className={`text-2xl text-gray-500 cursor-pointer`} onClick={() => handleClick(-1)}>
+    <div className={`flex items-center justify-center  text-primary font-semibold ${className}`}>
+      <i
+        className={`text-40 sm:text-48 text-gray-700 cursor-pointer font-semibold`}
+        onClick={() => handleClick(-1)}
+      >
         <VscDiffRemoved />
       </i>
-      <p className={`text-lg px-3 text-gray-600`}>{amount}</p>
-      <i className={`text-2xl text-primary cursor-pointer`} onClick={() => handleClick(1)}>
+      <p className={`text-lg px-3 text-gray-700`}>{amount}</p>
+      <i
+        className={`text-40 sm:text-48 text-primary cursor-pointer font-semibold`}
+        onClick={() => handleClick(1)}
+      >
         <VscDiffAdded />
       </i>
     </div>

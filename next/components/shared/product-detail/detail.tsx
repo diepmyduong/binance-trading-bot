@@ -37,7 +37,7 @@ export function ProductDetail({ ...props }: PropsType) {
       onClose={props.onClose}
       mobileSizeMode
       slideFromBottom="all"
-      extraFooterClass="border-t border-gray-300"
+      extraFooterClass="border-t border-gray-300  xs:pb-10 items-center"
     >
       {!product ? (
         <Spinner />
@@ -104,12 +104,12 @@ export function ProductDetail({ ...props }: PropsType) {
         </>
       )}
       <Dialog.Footer>
-        {/* <div className="fixed shadow-2xl bg-white -bottom-0 max-w-lg w-full px-4 py-4 flex items-center space-x-7"> */}
-        <IncreaseButton onChange={onChangeQuantity} />
+        {/* <div className="sticky shadow-2xl bg-white bottom-0 max-w-lg w-full px-4 py-4 flex items-center space-x-7"> */}
+        <IncreaseButton onChange={onChangeQuantity} className="flex-1 justify-between" />
         <Button
           primary
           text={`Thêm ${NumberPipe(totalMoney)} đ`}
-          className="w-full bg-gradient h-12 ml-2"
+          className="w-3/4 sm:w-2/3 bg-gradient h-12 ml-2 whitespace-nowrap"
           large
           onClick={() => {
             addProductToCart(product, qty, note);
@@ -156,6 +156,7 @@ const Note = ({ onChange, ...props }: NoteProps) => {
         isOpen={openDialog}
         initialData={noteText}
         onClose={() => setOpenDialog(false)}
+        title="Lời nhắn của khách hàng"
         onSubmit={(data) => {
           console.log("data", data);
           setNoteText(data);
@@ -164,11 +165,11 @@ const Note = ({ onChange, ...props }: NoteProps) => {
         }}
         className=""
       >
-        <Field label="Lời nhắn của khách hàng" name="note">
+        <Field name="note">
           <Textarea placeholder="Nhập Lời nhắn của khách hàng" />
         </Field>
         <Form.Footer>
-          <SaveButtonGroup />
+          <Form.ButtonGroup />
         </Form.Footer>
       </Form>
     </div>

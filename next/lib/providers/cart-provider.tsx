@@ -66,6 +66,7 @@ export function CartProvider(props) {
     longitude: 106.725484,
     paymentMethod: "COD",
     note: "",
+    promotionCode: "",
   });
   const resetOrderInput = () => {
     setOrderInput({
@@ -216,9 +217,11 @@ export function CartProvider(props) {
     OrderService.generateDraftOrder({ ...orderInput, items: items })
       .then((res: any) => {
         setDraftOrder(cloneDeep(res));
-        if (res.invalid) {
-          // toast.error(res.invalidReason);
-        }
+        console.log(res);
+
+        // if (res.invalid) {
+        //   // toast.error(res.invalidReason);
+        // }
       })
       .catch((err) => {});
   };
@@ -232,7 +235,7 @@ export function CartProvider(props) {
           localStorage.removeItem("cartProducts");
           setCartProducts([]);
           resetOrderInput();
-          router.push("/order/" + res.code);
+          router.replace("/order/" + res.code);
         })
         .catch((err) => toast.error("Đặt hàng thất bại"));
     }

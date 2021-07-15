@@ -16,7 +16,7 @@ export function PromotionProvider(props) {
   async function loadPromotions() {
     setShopVouchers(null);
     let res = await ShopVoucherService.getAll({
-      query: { order: { createdAt: -1 } },
+      query: { order: { createdAt: -1 }, filter: { isPrivate: false, isActive: true } },
       fragment: ShopVoucherService.fullFragment,
     });
     let cus = await CustomerVoucherService.getAll({

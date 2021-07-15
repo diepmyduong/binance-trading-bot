@@ -60,6 +60,7 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
       .catch((err) => {
         console.error(err);
         alert.error("Hủy đơn hàng thất bại", err.message);
+        loadOrder(id);
         setLoading(false);
       });
   }

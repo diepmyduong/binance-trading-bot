@@ -75,7 +75,6 @@ export default {
               revenue: {
                 $sum: { $cond: [{ $eq: ["$status", OrderStatus.COMPLETED] }, "$amount", 0] },
               },
-              createdAt: { $first: "$createdAt" },
             },
           },
         ]).then((res) =>

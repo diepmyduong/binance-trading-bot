@@ -29,6 +29,13 @@ class AddressService extends CrudService<typeof AddressModel> {
     doc[name] = address.ward;
     return this;
   }
+  async setAddress(doc: any) {
+    return await Promise.all([
+      this.setProvinceName(doc),
+      this.setDistrictName(doc),
+      this.setWardName(doc),
+    ]);
+  }
 
   async syncAddressWithVietnamPost() {
     const wards = await VietnamPostHelper.getWards();

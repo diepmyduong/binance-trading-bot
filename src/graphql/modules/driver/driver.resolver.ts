@@ -2,7 +2,9 @@ import { set } from "lodash";
 import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
+import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
+import { OrderLoader } from "../order/order.model";
 import { DriverModel } from "./driver.model";
 import { driverService } from "./driver.service";
 
@@ -44,7 +46,9 @@ const Mutation = {
   },
 };
 
-const Driver = {};
+const Driver = {
+  orders: GraphQLHelper.loadManyById(OrderLoader, "orderIds"),
+};
 
 export default {
   Query,

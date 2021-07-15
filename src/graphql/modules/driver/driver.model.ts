@@ -3,12 +3,21 @@ import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 const Schema = mongoose.Schema;
 
+export enum DriverStatus {
+  ONLINE = "ONLINE", // Đang trực tuyến
+  OFFLINE = "OFFLINE", // Đang ngoại tuyến
+  ACCEPTED = "ACCEPTED", // Đang nhận đơn
+  DELIVERING = "DELIVERING", // Đang giao hàng
+}
+
 export type IDriver = BaseDocument & {
   memberId?: string; // Chủ shop
   name?: string; // Tên tài xế
   phone?: string; // Số điện thoại
   avatar?: string; // Hình đại diện
   licensePlates?: string; // Biển số xe
+  status?: DriverStatus; // Trạng thái
+  orderIds?: string[]; // Đơn hàng đang nhận, gần nhất
 };
 
 const driverSchema = new Schema(
@@ -18,6 +27,8 @@ const driverSchema = new Schema(
     phone: { type: String, required: true },
     avatar: { type: String },
     licensePlates: { type: String, required: true },
+    status: { type: String, enum: Object.values(DriverStatus), default: DriverStatus.ONLINE },
+    orderIds: { type: [{ type: Schema.Types.ObjectId, ref: "Order" }], default: [] },
   },
   { timestamps: true }
 );

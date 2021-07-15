@@ -22,31 +22,32 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<Option>(null);
   useEffect(() => {
-    let interval = setInterval(() => {
-      OrderService.getOne({ id })
-        .then((res) => {
-          setOrder(cloneDeep(res));
-          if (
-            res.status !== "PENDING" &&
-            res.status !== "CONFIRMED" &&
-            res.status !== "DELIVERING"
-          ) {
-            clearInterval(interval);
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          alert.error("Xem chi tiết đơn hàng thất bại", err.message);
-        });
-    }, 10000);
-    return () => {
-      clearInterval(interval);
-    };
+    loadOrder(id);
   }, [id]);
   useEffect(() => {
     if (order) {
       let sta = ORDER_STATUS.find((x) => x.value === order.status);
       if (sta) setStatus(cloneDeep(sta));
+      let interval = setInterval(() => {
+        OrderService.getOne({ id })
+          .then((res) => {
+            setOrder(cloneDeep(res));
+            if (
+              res.status !== "PENDING" &&
+              res.status !== "CONFIRMED" &&
+              res.status !== "DELIVERING"
+            ) {
+              clearInterval(interval);
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            alert.error("Xem chi tiết đơn hàng thất bại", err.message);
+          });
+      }, 10000);
+      return () => {
+        clearInterval(interval);
+      };
     }
   }, [order]);
   function cancelOrder(id: string, note: string) {
@@ -62,16 +63,16 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
         setLoading(false);
       });
   }
-  // const loadOrder = (id: string) => {
-  //   OrderService.getOne({ id })
-  //     .then((res) => {
-  //       setOrder(cloneDeep(res));
-  //     })
-  //     .catch((err) => {
-  //       console.error(err);
-  //       alert.error("Xem chi tiết đơn hàng thất bại", err.message);
-  //     });
-  // };
+  const loadOrder = (id: string) => {
+    OrderService.getOne({ id })
+      .then((res) => {
+        setOrder(cloneDeep(res));
+      })
+      .catch((err) => {
+        console.error(err);
+        alert.error("Xem chi tiết đơn hàng thất bại", err.message);
+      });
+  };
   return (
     <OrderDetailContext.Provider value={{ order, status, loading, setLoading, cancelOrder }}>
       {props.children}

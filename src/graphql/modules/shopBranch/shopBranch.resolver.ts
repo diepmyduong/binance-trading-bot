@@ -3,6 +3,7 @@ import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { Context } from "../../context";
+import { addressService } from "../address/address.service";
 import { counterService } from "../counter/counter.service";
 import { OperatingTimeStatus } from "./operatingTime.graphql";
 import { ShopBranchModel } from "./shopBranch.model";
@@ -36,22 +37,30 @@ const Mutation = {
       data.code = await counterService.trigger("shopBranch").then((res) => "CN" + res);
     }
 
-    return await shopBranchService.create({
-      shipPreparationTime: "30 phút",
-      shipDefaultDistance: 2,
-      shipDefaultFee: 15000,
-      shipNextFee: 5000,
-      shipOneKmFee: 0,
-      shipUseOneKmFee: true,
-      shipNote: "",
-      ...data,
-    });
+    return await shopBranchService
+      .create({
+        shipPreparationTime: "30 phút",
+        shipDefaultDistance: 2,
+        shipDefaultFee: 15000,
+        shipNextFee: 5000,
+        shipOneKmFee: 0,
+        shipUseOneKmFee: true,
+        shipNote: "",
+        ...data,
+      })
+      .then(async (res) => {
+        await addressService.setAddress(res);
+        return await res.save();
+      });
   },
   updateShopBranch: async (root: any, args: any, context: Context) => {
     context.auth([ROLES.MEMBER]);
     const { id, data } = args;
     await protectItem(id, context);
-    return await shopBranchService.updateOne(id, data);
+    return await shopBranchService.updateOne(id, data).then(async (res) => {
+      await addressService.setAddress(res);
+      return await res.save();
+    });
   },
   deleteOneShopBranch: async (root: any, args: any, context: Context) => {
     context.auth([ROLES.MEMBER]);

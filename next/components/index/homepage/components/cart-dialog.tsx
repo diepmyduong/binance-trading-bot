@@ -48,7 +48,8 @@ export function CartDialog(props: Propstype) {
       mobileSizeMode
       bodyClass="relative bg-white rounded"
       slideFromBottom="all"
-      extraFooterClass="border-t border-gray-300"
+      extraFooterClass="border-t border-gray-300 z-40"
+      extraHeaderClass="text-lg"
     >
       <Dialog.Body>
         <div
@@ -89,7 +90,7 @@ export function CartDialog(props: Propstype) {
         <Button
           primary
           text={`Đặt hàng ${NumberPipe(totalMoney, true)}`}
-          className="w-full bg-gradient uppercase h-12"
+          className="w-full bg-gradient uppercase h-12 z-40"
           onClick={() => {
             if (customer) {
               router.push("/payment");
@@ -141,24 +142,23 @@ export function SaleUpProduct(props: SaleUpProductProps) {
         navigation
       >
         {props.saleUpProduct.map((item: Product, index: number) => (
-          <SwiperSlide key={index} className="w-auto sm:w-3/4">
+          <SwiperSlide key={index} className="w-3/4">
             <div
-              className={`py-2 shadow-md rounded-sm hover:bg-primary-light cursor-pointer border-b transition-all duration-300  ${
+              className={`w-full py-2 shadow-md rounded-sm hover:bg-primary-light cursor-pointer border-b transition-all duration-300  ${
                 item.allowSale ? "" : "hidden"
               }`}
               onClick={() => {
                 handleClick(item.code);
               }}
             >
-              <div className={`flex items-center px-4 `}>
+              <div className={`flex items-center px-4 flex-1 `}>
                 <div className="flex-1 flex flex-col h-20 sm:h-24">
-                  <p className="font-semibold items-start">{item.name}</p>
-                  <p className="text-gray-500 text-sm">{item.subtitle}</p>
+                  <p className="font-semibold items-start text-ellipsis w-full">{item.name}</p>
+                  <p className="text-gray-500 text-sm text-ellipsis">{item.subtitle}</p>
                   <Rating rating={item.rating || 4.8} textSm soldQty={item.soldQty} />
                   <p className="text-gray-400 text-sm">{item.des}</p>
                   <Price
                     price={item.basePrice}
-                    saleRate={item.saleRate}
                     downPrice={item.downPrice}
                     textDanger
                     className="justify-items-end"
@@ -167,7 +167,7 @@ export function SaleUpProduct(props: SaleUpProductProps) {
                 <ImgProduct
                   native
                   src={item.image || ""}
-                  className="w-20 sm:w-24 rounded-sm h-20 sm:h-24"
+                  className="w-16 sm:w-24 rounded-sm h-16 sm:h-24"
                   saleRate={item.saleRate}
                 />
               </div>

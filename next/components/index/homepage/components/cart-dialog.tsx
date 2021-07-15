@@ -158,7 +158,6 @@ export function SaleUpProduct(props: SaleUpProductProps) {
                   <p className="text-gray-400 text-sm">{item.des}</p>
                   <Price
                     price={item.basePrice}
-                    saleRate={item.saleRate}
                     downPrice={item.downPrice}
                     textDanger
                     className="justify-items-end"

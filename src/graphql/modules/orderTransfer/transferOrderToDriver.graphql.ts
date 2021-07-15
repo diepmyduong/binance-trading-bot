@@ -4,7 +4,7 @@ import { onDelivering } from "../../../events/onDelivering.event";
 import { onMemberDelivering } from "../../../events/onMemberDelivering.event";
 import { Ahamove } from "../../../helpers/ahamove/ahamove";
 import { Context } from "../../context";
-import { DriverModel } from "../driver/driver.model";
+import { DriverModel, DriverStatus } from "../driver/driver.model";
 import { OrderModel, OrderStatus, ShipMethod } from "../order/order.model";
 import { DeliveryInfo } from "../order/types/deliveryInfo.type";
 import { ShopBranchModel } from "../shopBranch/shopBranch.model";
@@ -55,6 +55,12 @@ export default {
         order = await order.save();
         onMemberDelivering.next(order);
         onDelivering.next(order);
+        await driver
+          .updateOne({
+            $set: { status: DriverStatus.ACCEPTED },
+            $addToSet: { orderIds: order._id },
+          })
+          .exec();
         return order;
       },
     },

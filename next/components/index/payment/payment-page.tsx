@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
-
 import { Swiper, SwiperSlide } from "swiper/react";
 import { HiChevronUp, HiDocumentAdd } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
@@ -17,8 +16,10 @@ import { useToast } from "../../../lib/providers/toast-provider";
 import BranchsDialog from "../homepage/components/branchs-dialog";
 import { ShopVoucher, ShopVoucherService } from "../../../lib/repo/shop-voucher.repo";
 import cloneDeep from "lodash/cloneDeep";
+import SwiperCore, { Navigation } from "swiper/core";
+import { PromotionDetailDialog } from "../promotion/components/promotion-detail.tsx/promotion-detail-dialog";
 // SwiperCore.use([Pagination]);
-
+SwiperCore.use([Navigation]);
 export function PaymentPage() {
   const {
     cartProducts,
@@ -31,6 +32,7 @@ export function PaymentPage() {
   } = useCartContext();
   const { branchSelecting, shopBranchs, setBranchSelecting } = useShopContext();
   const [voucherApplied, setVoucherApplied] = useState<ShopVoucher>(null);
+  const [voucherSelected, setVoucherSelected] = useState<ShopVoucher>(null);
   const [openDialogSelectBranch, setopenDialogSelectBranch] = useState(false);
   const toast = useToast();
   const [vouchers, setVouchers] = useState<ShopVoucher[]>();
@@ -50,6 +52,7 @@ export function PaymentPage() {
     setVoucherApplied(null);
     ShopVoucherService.getAll({
       query: { order: { createdAt: -1 }, filter: { isPrivate: false, isActive: true } },
+      fragment: ShopVoucherService.fullFragment,
     })
       .then((res) => setVouchers(cloneDeep(res.data)))
       .catch((err) => setVouchers(null));
@@ -118,22 +121,26 @@ export function PaymentPage() {
           </div>
           <div className="flex justify-between items-center">
             <div className="">Giảm giá:</div>
-            <div className="text-accent">{NumberPipe(order?.order?.discount)}đ</div>
+            <div className="text-danger">-{NumberPipe(order?.order?.discount)}đ</div>
           </div>
         </div>
         <div className="px-2 py-4 flex w-full md:overflow-hidden overflow-auto z-0">
           {vouchers && (
             <Swiper
-              spaceBetween={20}
-              freeMode
+              spaceBetween={10}
+              freeMode={true}
+              grabCursor
               slidesPerView={"auto"}
-              className="main-container overflow-visible"
+              className="w-auto"
+              navigation
+              // className="main-container overflow-visible"
             >
               {vouchers.map((item: ShopVoucher, index) => {
                 return (
-                  <SwiperSlide className="max-w-max cursor-pointer" key={index}>
+                  <SwiperSlide key={index} className="w-2/3">
                     <TicketVoucher
                       voucher={item}
+                      showDetail={(val) => setVoucherSelected(val)}
                       onClick={(val) => {
                         setVoucherApplied(val);
                         setOrderInput({ ...orderInput, promotionCode: val.code });
@@ -148,6 +155,11 @@ export function PaymentPage() {
         <div className="h-24"></div>
         <ButtonPayment voucherApplied={voucherApplied} setVoucherApplied={setVoucherApplied} />
       </div>
+      <PromotionDetailDialog
+        promotion={voucherSelected}
+        isOpen={voucherSelected ? true : false}
+        onClose={() => setVoucherSelected(null)}
+      />
       {shopBranchs && (
         <BranchsDialog
           shopBranchs={shopBranchs}

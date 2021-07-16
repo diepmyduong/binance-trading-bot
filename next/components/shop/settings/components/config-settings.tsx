@@ -51,7 +51,6 @@ export function ConfigSettings() {
       setShopTags(cloneDeep(shopConfig.tags));
       setShopBanners(cloneDeep(shopConfig.banners));
       setShopProductGroups(cloneDeep(shopConfig.productGroups));
-      console.log(shopConfig.productGroups);
     }
   }, [shopConfig]);
 
@@ -124,6 +123,9 @@ export function ConfigSettings() {
         </Field>
         <Field label="Số lượng người đã đánh giá" name="ratingQty">
           <Input className="h-12" number suffix="người đã đánh giá" />
+        </Field>
+        <Field label="Tiêu đề upsale" name="upsaleTitle">
+          <Input className="h-12" />
         </Field>
         <Label text="Tag đánh giá" />
         <div className="flex gap-3 flex-wrap mt-1 mb-4">

@@ -68,7 +68,7 @@ export function ProductForm({ product, category, ...props }: PropsType) {
         extraHeaderClass="bg-gray-100 text-xl py-3 justify-center rounded-t-xl border-gray-300 pl-16"
         extraBodyClass="px-6 bg-gray-100 rounded-b-xl"
         title={`${product ? "Chỉnh sửa" : "Thêm"} món`}
-        width="650px"
+        width={product ? "1080px" : "650px"}
         initialData={product ? product : {}}
         isOpen={props.isOpen}
         onClose={props.onClose}
@@ -105,172 +105,177 @@ export function ProductForm({ product, category, ...props }: PropsType) {
           } catch (err) {}
         }}
       >
-        {/* <div
-        className="col-span-12 grid grid-cols-12 gap-x-5 v-scrollbar border-b border-gray-300 -mx-6 -mt-4 mb-2 p-4 bg-true"
-        style={{ maxHeight: "calc(90vh - 250px)" }}
-      > */}
-        <div className="text-gray-400 font-semibold text-lg col-span-12 mb-4">Thông tin món</div>
-        {product && (
-          <div className="col-span-12 mb-3">
-            <Label text="Hình sản phẩm" />
-            <div className="flex">
-              <div className="border border-gray-300 rounded-lg w-24 h-24 flex-center bg-white overflow-hidden">
-                {image ? (
-                  <Img className="w-full" compress={300} src={image} showImageOnClick />
-                ) : (
-                  <i className="text-4xl text-gray-500">
-                    <RiImageAddFill />
-                  </i>
-                )}
-              </div>
-              <div className="ml-4 p-4 flex-1 flex-center flex-col rounded border border-gray-300 border-dashed bg-white">
-                <span className="text-sm">
-                  Ảnh PNG, JPEG, JPG không vượt quá 10Mb. Tỉ lệ khuyến nghị 1:1.
-                </span>
-                <Button
-                  className="px-3 h-9 text-sm hover:underline"
-                  textPrimary
-                  text="Tải ảnh lên"
-                  isLoading={uploadingAvatar}
-                  onClick={() => {
-                    avatarUploaderRef.current().onClick();
-                  }}
-                />
-                <AvatarUploader
-                  onRef={(ref) => {
-                    avatarUploaderRef.current = ref;
-                  }}
-                  onUploadingChange={setUploadingAvatar}
-                  onImageUploaded={onImageChange}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-        <Field name="name" label="Tên sản phẩm" cols={12} required>
-          <Input className="h-12 mt-2" />
-        </Field>
-        <Field name="basePrice" label="Giá bán" cols={product ? 4 : 12} required>
-          <Input className="h-12 mt-2" number currency />
-        </Field>
-        {product && (
-          <>
-            <Field name="downPrice" label="Giá bị giảm" cols={4}>
-              <Input className="h-12 mt-2" number currency />
-            </Field>
-            <Field
-              name="saleRate"
-              label="Phần trăm giảm"
-              cols={4}
-              constraints={{ min: 0, max: 100 }}
-            >
-              <Input className="h-12 mt-2" number currency="%" />
-            </Field>
-            <Field name="subtitle" label="Mô tả ngắn" cols={12}>
-              <Input className="h-12 mt-2" />
-            </Field>
-            <Field label="Danh mục" cols={12}>
-              <Input className="h-12 mt-2" readonly value={category?.name} />
-            </Field>
-            <FormConsumer>
-              {({ data }) => (
-                <Field name="rating" label="Đánh giá" constraints={{ min: 0, max: 5 }} cols={8}>
-                  <Input
-                    className="h-12 mt-2"
-                    number
-                    decimal
-                    suffix={
-                      <div className="flex mr-2">
-                        {[1, 2, 3, 4, 5].map((star) => {
-                          let width = "0";
-                          const rest = data.rating - star + 1;
-                          if (rest >= 1) {
-                            width = "100%";
-                          } else if (rest > 0) {
-                            let percent = rest * 100 + 2;
-                            width = (percent > 100 ? 100 : percent) + "%";
-                          }
-                          return (
-                            <div className="mr-2 relative" key={star}>
-                              <i className="text-xl text-gray-400">
-                                <RiStarFill />
-                              </i>
-                              <i
-                                className="absolute top-0 left-0 h-full text-xl text-yellow-400 overflow-hidden"
-                                style={{ width }}
-                              >
-                                <RiStarFill />
-                              </i>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    }
-                  />
-                </Field>
-              )}
-            </FormConsumer>
-            <Field name="soldQty" label="Đã bán" cols={4}>
-              <Input className="h-12 mt-2" number />
-            </Field>
-            <Field name="upsaleProductIds" label="Món mua kèm" cols={12}>
-              <Select
-                autocompletePromise={({ id, search }) =>
-                  ProductService.getAllAutocompletePromise(
-                    { id, search },
-                    {
-                      fragment: "id name image basePrice",
-                      parseOption: (data) => ({
-                        value: data.id,
-                        label: data.name,
-                        image: data.image,
-                        basePrice: data.basePrice,
-                      }),
-                      query: {
-                        filter: { _id: { $ne: product.id } },
-                      },
-                    }
-                  )
-                }
-                placeholder="Nhập hoặc tìm kiếm món mua kèm"
-                multi
-                hasImage
-              />
-            </Field>
-            <div className="col-span-12 mb-6">
-              <Label text="Nhãn sản phẩm (Tối đa 3 nhãn)" />
-              <div className="flex flex-wrap gap-3 mt-2">
-                {labels?.map((label, index) => (
-                  <div
-                    className="inline-flex items-center text-gray-100 hover:text-white rounded-full font-semibold px-4 py-2 whitespace-nowrap cursor-pointer animate-emerge"
-                    style={{ backgroundColor: label.color }}
-                    onClick={() => setOpenLabel(label)}
-                  >
-                    <span className="mr-1">{label.name}</span>
-                    <i
-                      className="text-gray-100 hover:bg-white hover:text-danger rounded-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        labels.splice(index, 1);
-                        setLabels([...labels]);
-                      }}
-                    >
-                      <RiCloseLine />
+        <div
+          className={`${
+            product ? "col-span-6" : "col-span-12"
+          } grid grid-cols-12 gap-x-5 auto-rows-min`}
+        >
+          <div className="text-gray-400 font-semibold text-lg col-span-12 mb-4">Thông tin món</div>
+          {product && (
+            <div className="col-span-12 mb-3">
+              <Label text="Hình sản phẩm" />
+              <div className="flex">
+                <div className="border border-gray-300 rounded-lg w-24 h-24 flex-center bg-white overflow-hidden">
+                  {image ? (
+                    <Img className="w-full" compress={300} src={image} showImageOnClick />
+                  ) : (
+                    <i className="text-4xl text-gray-500">
+                      <RiImageAddFill />
                     </i>
-                  </div>
-                ))}
-                {labels?.length < 3 && (
+                  )}
+                </div>
+                <div className="ml-4 p-4 flex-1 flex-center flex-col rounded border border-gray-300 border-dashed bg-white">
+                  <span className="text-sm">
+                    Ảnh PNG, JPEG, JPG không vượt quá 10Mb. Tỉ lệ khuyến nghị 1:1.
+                  </span>
                   <Button
-                    className="rounded-full inline-flex bg-white animate-emerge"
-                    icon={<RiAddCircleLine />}
-                    outline
-                    text="Thêm nhãn"
-                    onClick={() => setOpenLabel(null)}
+                    className="px-3 h-9 text-sm hover:underline"
+                    textPrimary
+                    text="Tải ảnh lên"
+                    isLoading={uploadingAvatar}
+                    onClick={() => {
+                      avatarUploaderRef.current().onClick();
+                    }}
                   />
-                )}
+                  <AvatarUploader
+                    onRef={(ref) => {
+                      avatarUploaderRef.current = ref;
+                    }}
+                    onUploadingChange={setUploadingAvatar}
+                    onImageUploaded={onImageChange}
+                  />
+                </div>
               </div>
             </div>
-
+          )}
+          <Field name="name" label="Tên sản phẩm" cols={12} required>
+            <Input className="h-12 mt-2" />
+          </Field>
+          <Field name="basePrice" label="Giá bán" cols={product ? 4 : 12} required>
+            <Input className="h-12 mt-2" number currency />
+          </Field>
+          {product && (
+            <>
+              <Field name="downPrice" label="Giá bị giảm" cols={4}>
+                <Input className="h-12 mt-2" number currency />
+              </Field>
+              <Field
+                name="saleRate"
+                label="Phần trăm giảm"
+                cols={4}
+                constraints={{ min: 0, max: 100 }}
+              >
+                <Input className="h-12 mt-2" number suffix="%" />
+              </Field>
+              <Field name="subtitle" label="Mô tả ngắn" cols={12}>
+                <Input className="h-12 mt-2" />
+              </Field>
+              <Field label="Danh mục" cols={12}>
+                <Input className="h-12 mt-2" readonly value={category?.name} />
+              </Field>
+              <FormConsumer>
+                {({ data }) => (
+                  <Field name="rating" label="Đánh giá" constraints={{ min: 0, max: 5 }} cols={8}>
+                    <Input
+                      className="h-12 mt-2"
+                      number
+                      decimal
+                      suffix={
+                        <div className="flex mr-2">
+                          {[1, 2, 3, 4, 5].map((star) => {
+                            let width = "0";
+                            const rest = data.rating - star + 1;
+                            if (rest >= 1) {
+                              width = "100%";
+                            } else if (rest > 0) {
+                              let percent = rest * 100 + 2;
+                              width = (percent > 100 ? 100 : percent) + "%";
+                            }
+                            return (
+                              <div className="mr-2 relative" key={star}>
+                                <i className="text-xl text-gray-400">
+                                  <RiStarFill />
+                                </i>
+                                <i
+                                  className="absolute top-0 left-0 h-full text-xl text-yellow-400 overflow-hidden"
+                                  style={{ width }}
+                                >
+                                  <RiStarFill />
+                                </i>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      }
+                    />
+                  </Field>
+                )}
+              </FormConsumer>
+              <Field name="soldQty" label="Đã bán" cols={4}>
+                <Input className="h-12 mt-2" number />
+              </Field>
+              <Field name="upsaleProductIds" label="Món mua kèm" cols={12}>
+                <Select
+                  autocompletePromise={({ id, search }) =>
+                    ProductService.getAllAutocompletePromise(
+                      { id, search },
+                      {
+                        fragment: "id name image basePrice",
+                        parseOption: (data) => ({
+                          value: data.id,
+                          label: data.name,
+                          image: data.image,
+                          basePrice: data.basePrice,
+                        }),
+                        query: {
+                          filter: { _id: { $ne: product.id } },
+                        },
+                      }
+                    )
+                  }
+                  placeholder="Nhập hoặc tìm kiếm món mua kèm"
+                  multi
+                  hasImage
+                />
+              </Field>
+              <div className="col-span-12 mb-6">
+                <Label text="Nhãn sản phẩm (Tối đa 3 nhãn)" />
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {labels?.map((label, index) => (
+                    <div
+                      className="inline-flex items-center text-gray-100 hover:text-white rounded-full font-semibold px-4 py-2 whitespace-nowrap cursor-pointer animate-emerge"
+                      style={{ backgroundColor: label.color }}
+                      onClick={() => setOpenLabel(label)}
+                    >
+                      <span className="mr-1">{label.name}</span>
+                      <i
+                        className="text-gray-100 hover:bg-white hover:text-danger rounded-full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          labels.splice(index, 1);
+                          setLabels([...labels]);
+                        }}
+                      >
+                        <RiCloseLine />
+                      </i>
+                    </div>
+                  ))}
+                  {labels?.length < 3 && (
+                    <Button
+                      className="rounded-full inline-flex bg-white animate-emerge"
+                      icon={<RiAddCircleLine />}
+                      outline
+                      text="Thêm nhãn"
+                      onClick={() => setOpenLabel(null)}
+                    />
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+        {product && (
+          <div className={`col-span-6 grid grid-cols-12 gap-x-5 auto-rows-min`}>
             <div className="text-gray-400 font-semibold text-lg col-span-12 mb-4">
               Thông tin tuỳ chọn
             </div>
@@ -346,9 +351,8 @@ export function ProductForm({ product, category, ...props }: PropsType) {
                 />
               </Popover>
             </div>
-          </>
+          </div>
         )}
-        {/* </div> */}
         <Form.Footer>
           <Form.ButtonGroup
             className="justify-center"

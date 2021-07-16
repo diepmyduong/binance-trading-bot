@@ -7,6 +7,8 @@ import {
 } from "../../../lib/repo/shop-voucher.repo";
 import { Staff } from "../../../lib/repo/staff.repo";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
+import { Field } from "../../shared/utilities/form/field";
+import { Select } from "../../shared/utilities/form/select";
 import { DataTable } from "../../shared/utilities/table/data-table";
 import { VoucherForm } from "./components/voucher-form";
 
@@ -35,7 +37,35 @@ export function VouchersPage(props: ReactProps) {
 
         <DataTable.Toolbar>
           <DataTable.Search className="h-12" />
-          <DataTable.Filter></DataTable.Filter>
+          <DataTable.Filter>
+            <Field name="type" noError>
+              <Select
+                className="h-12"
+                autosize
+                clearable
+                placeholder="Tất cả loại"
+                options={SHOP_VOUCHER_TYPES}
+              />
+            </Field>
+            <Field name="isActive" noError>
+              <Select
+                className="h-12"
+                autosize
+                clearable
+                placeholder="Tất cả loại khuyến mãi"
+                options={[
+                  {
+                    value: true,
+                    label: "Kích hoạt",
+                  },
+                  {
+                    value: false,
+                    label: "Không kích hoạt",
+                  },
+                ]}
+              />
+            </Field>
+          </DataTable.Filter>
         </DataTable.Toolbar>
 
         <DataTable.Table className="mt-4 bg-white">

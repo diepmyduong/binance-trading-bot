@@ -20,6 +20,7 @@ export interface ShopConfig extends BaseModel {
   banners: ShopBanner[];
   productGroups: ShopProductGroup[];
   tags: ShopTag[];
+  upsaleTitle: string;
 }
 
 export interface ShopTag {
@@ -73,6 +74,7 @@ export class ShopConfigRepository extends CrudRepository<ShopConfig> {
     rating: Float
     ratingQty: Int
     soldQty: Int
+    upsaleTitle: String
     banners {
       image: String
       title: String

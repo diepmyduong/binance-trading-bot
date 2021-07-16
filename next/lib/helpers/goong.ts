@@ -54,6 +54,7 @@ export interface GooongGeocodePlace {
 
 class GoongGeocoder {
   apiKey = "SD0vJABEWMql2sKaK6S4rUJyuDDJUGUwuNK4RelX";
+  mapKey = "HbBUo65oqVDPKoGF3oQJda0Ixb7MvmEYfvVjZM3F";
   hostName = `https://rsapi.goong.io`;
 
   hashedData = {};

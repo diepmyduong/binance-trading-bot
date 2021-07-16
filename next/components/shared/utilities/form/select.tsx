@@ -72,10 +72,9 @@ export function Select({
     if (props.autosize && options?.length && !menuWidth && !isCalculatingWidth) {
       setTimeout(() => {
         setIsCalculatingWidth(true);
-
         (selectRef.current as any)?.select.openMenu();
         setMenuIsOpen(true);
-      }, 1);
+      }, 200);
     }
   }, [props.autosize, options, menuWidth, isCalculatingWidth]);
 
@@ -101,6 +100,7 @@ export function Select({
   // get initial autocomplete data
   useEffect(() => {
     if (value?.length && props.autocompletePromise) {
+      console.log("asdhasdjkaskld", value);
       setLoading(true);
       props
         .autocompletePromise({

@@ -83,8 +83,8 @@ export function DashboardProvider(props) {
         lastDay = new Date(date.getFullYear(), date.getMonth(), 0).toISOString();
         break;
       case "3 tháng gần nhất":
-        firstDay = new Date(date.getFullYear(), date.getMonth() - 3, 1).toISOString();
-        lastDay = new Date(date.getFullYear(), date.getMonth(), 0).toISOString();
+        firstDay = new Date(date.getFullYear(), date.getMonth() - 2, 1).toISOString();
+        lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).toISOString();
         break;
     }
     return { fromDate: firstDay, toDate: lastDay };

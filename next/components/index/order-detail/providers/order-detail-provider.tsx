@@ -49,18 +49,17 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
     let interval = setInterval(() => {
       OrderService.getOne({ id, cache: false })
         .then((res) => {
+          setOrder(cloneDeep(res));
           if (
             res.status !== "PENDING" &&
             res.status !== "CONFIRMED" &&
             res.status !== "DELIVERING"
           ) {
-            setOrder(cloneDeep(res));
             setIsInterval(false);
             clearInterval(interval);
           } else {
-            if (res.status !== status.value) {
+            if (status && res.status !== status.value) {
               toast.info(res.statusText);
-              setOrder(cloneDeep(res));
             }
           }
         })

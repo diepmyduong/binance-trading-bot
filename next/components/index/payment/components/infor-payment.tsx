@@ -248,6 +248,7 @@ const SelectTime = () => {
     if (date1.getDate().toString() == date2.getDate().toString()) return 0;
     return diffDays;
   };
+
   const getDate = (time, date) => {
     let dateTemp = new Date(date);
     return new Date(
@@ -320,8 +321,11 @@ const SelectTime = () => {
           maxDate={endDate}
           defaultValue={selectDate}
           onChange={(date) => {
+            console.log("DATE - ", date);
             setTimes([]);
-            setSelectDate(new Date(date));
+            if (date === null) {
+              setOrderInput({ ...orderInput, pickupTime: null });
+            } else setSelectDate(new Date(date));
           }}
         />
         <Select

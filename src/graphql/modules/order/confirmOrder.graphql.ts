@@ -23,7 +23,7 @@ export default {
         if (order.sellerId.toString() != context.sellerId) throw ErrorHelper.permissionDeny();
         order.status = OrderStatus.CONFIRMED;
         order.confirmTime = new Date();
-        order.note = note || order.note;
+        order.confirmNote = note;
         await order.save();
         await OrderItemModel.updateMany(
           { orderId: order._id },

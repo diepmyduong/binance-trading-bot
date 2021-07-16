@@ -15,7 +15,7 @@ export type IShopConfig = BaseDocument & {
   vnpostCode?: string; // Mã CRM VNPost
   vnpostPhone?: string; // Điện thoại VNPost
   vnpostName?: string; // Tên người dùng VNPost
-  // Shopping config
+  // Shipping config
   shipPreparationTime?: string; // Thời gian chuẩn bị
   shipDefaultDistance?: number; // Khoản cách giao hàng mặc định
   shipDefaultFee?: number; // Phí giao hàng mặc định
@@ -31,6 +31,8 @@ export type IShopConfig = BaseDocument & {
   ratingQty?: number; // Số lượng đánh giá
   soldQty?: number; // Số lượng đã bán
   tags?: ShopTag[]; // Tags đánh giá cho cửa hàng
+  // Upsale
+  upsaleTitle?: string; // Tiêu đề Upsale
 };
 
 const shopConfigSchema = new Schema(
@@ -54,6 +56,7 @@ const shopConfigSchema = new Schema(
     ratingQty: { type: Number, default: 0 },
     soldQty: { type: Number, default: 0 },
     tags: { type: [ShopTagSchema], default: [] },
+    upsaleTitle: { type: String, default: "Ngon hơn khi ăn kèm" },
   },
   { timestamps: true }
 );

@@ -50,6 +50,7 @@ export default {
           status: "ACCEPTED",
           statusText: Ahamove.StatusText.ACCEPTED,
           deliveryTime: branch.shipPreparationTime,
+          partnerFee: order.shipfee,
         } as DeliveryInfo;
         order.shipMethod = ShipMethod.DRIVER;
         order = await order.save();

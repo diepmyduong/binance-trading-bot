@@ -37,11 +37,11 @@ export function OrderStatus({ order, status }: PropsType) {
   }, [status]);
   return (
     <div className="bg-white min-h-screen flex flex-col items-center">
-      <h1 className="text-2xl sm:text-4xl text-center font-bold p-4">{statusLabelCur}</h1>
+      <h1 className="text-2xl sm:text-4xl text-center font-bold p-4 pt-6">{statusLabelCur}</h1>
       {status ? (
         <div className={`w-full mb-3 bg-white text-sm flex flex-col items-center`}>
           {status.value === "PENDING" && (
-            <div className="flex flex-wrap items-center mt-2">
+            <div className="flex flex-wrap-reverse items-center justify-center mt-2 gap-2">
               <Button
                 text="Hủy đơn"
                 outline
@@ -57,7 +57,7 @@ export function OrderStatus({ order, status }: PropsType) {
                 text="Gọi nhà hàng"
                 primary
                 href={`tel:${order.shopBranch.phone}`}
-                className="rounded-full"
+                className="rounded-full bg-gradient"
                 icon={<HiOutlinePhone />}
               />
             </div>
@@ -101,8 +101,9 @@ export function OrderStatus({ order, status }: PropsType) {
           <div className="px-4">
             <ul className="flex font-semibold text-gray-800 justify-between border-t-4 whitespace-pre-wrap border-gray text-center sm:text-base text-sm">
               {order.pickupMethod === "DELIVERY"
-                ? statusDelivery.map((item) => (
+                ? statusDelivery.map((item, index) => (
                     <li
+                      key={index}
                       className={`${
                         status.value === item.value ? "opacity-100" : "opacity-40"
                       } py-3 px-1 sm:px-4`}
@@ -110,8 +111,9 @@ export function OrderStatus({ order, status }: PropsType) {
                       {item.label}
                     </li>
                   ))
-                : statusPickup.map((item) => (
+                : statusPickup.map((item, index) => (
                     <li
+                      key={index}
                       className={`${
                         status.value === item.value ? "opacity-100" : "opacity-40"
                       } py-3 px-1 sm:px-4`}

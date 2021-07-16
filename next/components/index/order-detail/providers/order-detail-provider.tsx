@@ -3,6 +3,7 @@ import { Order, OrderService, ORDER_STATUS } from "../../../../lib/repo/order.re
 import cloneDeep from "lodash/cloneDeep";
 import { useAlert } from "../../../../lib/providers/alert-provider";
 import { useToast } from "../../../../lib/providers/toast-provider";
+import { useRouter } from "next/router";
 
 export const OrderDetailContext = createContext<
   Partial<{
@@ -24,39 +25,46 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
   const [status, setStatus] = useState<Option>(null);
   const [isInterval, setIsInterval] = useState(false);
   const toast = useToast();
+  const router = useRouter();
   useEffect(() => {
-    setIsInterval(true);
     loadOrder(id);
-  }, [id]);
-  useEffect(() => {
-    if (order) {
-      let sta = ORDER_STATUS.find((x) => x.value === order.status);
-      if (sta) setStatus(cloneDeep(sta));
-      let interval = setInterval(() => {
-        OrderService.getOne({ id })
-          .then((res) => {
-            if (
-              res.status !== "PENDING" &&
-              res.status !== "CONFIRMED" &&
-              res.status !== "DELIVERING"
-            ) {
-              setIsInterval(false);
-              clearInterval(interval);
-            } else {
+    let interval = setInterval(() => {
+      OrderService.getOne({ id })
+        .then((res) => {
+          if (
+            res.status !== "PENDING" &&
+            res.status !== "CONFIRMED" &&
+            res.status !== "DELIVERING"
+          ) {
+            setIsInterval(false);
+            clearInterval(interval);
+          } else {
+            if (order) {
               if (res.status !== order.status) {
                 toast.info(res.statusText);
                 setOrder(cloneDeep(res));
               }
             }
-          })
-          .catch((err) => {
-            console.error(err);
-            alert.error("Xem chi tiết đơn hàng thất bại", err.message);
-          });
-      }, 10000);
-      return () => {
-        clearInterval(interval);
-      };
+          }
+        })
+        .catch(async (err) => {
+          console.error(err);
+          let res = await alert.error("Xem chi tiết đơn hàng thất bại", err.message);
+          if (res) {
+            setIsInterval(false);
+            clearInterval(interval);
+            router.replace("/order");
+          }
+        });
+    }, 3000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [id]);
+  useEffect(() => {
+    if (order) {
+      let sta = ORDER_STATUS.find((x) => x.value === order.status);
+      if (sta) setStatus(cloneDeep(sta));
     }
   }, [order]);
   function cancelOrder(id: string, note: string) {
@@ -76,6 +84,9 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
   const loadOrder = (id: string) => {
     OrderService.getOne({ id })
       .then((res) => {
+        if (res.status === "PENDING" || res.status === "CONFIRMED" || res.status === "DELIVERING") {
+          setIsInterval(true);
+        }
         setOrder(cloneDeep(res));
       })
       .catch((err) => {

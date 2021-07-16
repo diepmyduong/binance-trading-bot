@@ -9,18 +9,29 @@ import { Field } from "../../shared/utilities/form/field";
 import { Textarea } from "../../shared/utilities/form/textarea";
 import { useOrderDetailContext } from "./providers/order-detail-provider";
 import { OrderStatus } from "./components/order-status";
+import { useShopContext } from "../../../lib/providers/shop-provider";
+import BreadCrumbs from "../../shared/utilities/breadcrumbs/breadcrumbs";
 export function OrderDetailPage(props) {
   const { order, status, cancelOrder, setLoading, loading, isInterval } = useOrderDetailContext();
   const [showCancel, setShowCancel] = useState(false);
+  const { shopCode } = useShopContext();
   return (
-    <>
+    <div className="bg-white">
+      <BreadCrumbs
+        breadcrumbs={[
+          { label: "Trang chủ", href: `/?code=${shopCode}` },
+          { label: "Lịch sử đơn hàng", href: `/order` },
+          { label: "Chi tiết đơn hàng" },
+        ]}
+        className="p-4"
+      />
       {isInterval ? (
         <>{status && order && <OrderStatus status={status} order={order} />}</>
       ) : (
         <>
           {order ? (
             <div className="text-gray-800 text-sm sm:text-lg">
-              <div className="w-full bg-white px-4">
+              <div className="w-full px-4">
                 <div className="grid grid-cols-2 w-full pt-4">
                   <div className="flex flex-col space-y-1">
                     <p className="sm:text-base text-gray-500">Mã đơn hàng</p>
@@ -182,6 +193,6 @@ export function OrderDetailPage(props) {
           )}
         </>
       )}
-    </>
+    </div>
   );
 }

@@ -1,18 +1,25 @@
 import { Billed } from "./component/billed";
 import { useOrderContext } from "./providers/order-provider";
 import { Spinner } from "../../shared/utilities/spinner";
+import BreadCrumbs from "../../shared/utilities/breadcrumbs/breadcrumbs";
+import { useShopContext } from "../../../lib/providers/shop-provider";
 
 export function OrderPage() {
   const { orders, statusOrder } = useOrderContext();
+  const { shopCode } = useShopContext();
   return (
-    <div className="w-full relative">
-      <h3 className="text-lg font-semibold text-primary p-4 pb-2 border-b bg-white">
-        Danh sách đơn hàng
-      </h3>
+    <div className="w-full bg-white relative">
+      <BreadCrumbs
+        breadcrumbs={[
+          { label: "Trang chủ", href: `/?code=${shopCode}` },
+          { label: "Lịch sử đơn hàng" },
+        ]}
+        className="py-4 pl-4"
+      />
       {orders ? (
         <>
           {orders.length > 0 ? (
-            <>
+            <div className="bg-gray-light border-t-2">
               {orders.map((order, index) => (
                 <Billed
                   order={order}
@@ -20,7 +27,7 @@ export function OrderPage() {
                   status={statusOrder.find((stus) => stus.value === order.status)}
                 />
               ))}
-            </>
+            </div>
           ) : (
             <div className="px-4 text-center mt-20">Chưa có đơn hàng thuộc trạng thái này</div>
           )}

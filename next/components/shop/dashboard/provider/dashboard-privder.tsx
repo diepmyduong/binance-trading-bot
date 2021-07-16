@@ -38,7 +38,13 @@ export function DashboardProvider(props) {
   const toast = useToast();
   const { branchSelecting } = useShopContext();
   const [shopCustomerReport, setShopCustomerReport] = useState<number>(0);
-  const [dataChart, setDataChart] = useState<any>();
+  const [dataChart, setDataChart] = useState<{
+    datasets: {
+      label: string;
+      data: number[];
+    }[];
+    labels: string[];
+  }>();
   const [shopOrderReportToday, setShopOrderReportToday] = useState<shopOrderType>({
     pending: 0,
     confirmed: 0,
@@ -94,7 +100,9 @@ export function DashboardProvider(props) {
     ReportService.reportShopOrder(today, today).then((res) => setShopOrderReportToday(res));
   }, []);
   const loadReportChart = (fromDate: string, toDate: string) => {
-    return ReportService.reportShopOrderKline(fromDate, toDate).then((res) => setDataChart(res));
+    return ReportService.reportShopOrderKline(fromDate, toDate).then((res) =>
+      setDataChart({ ...res })
+    );
   };
   const loadReportShopCustomer = () => {
     return ReportService.reportShopCustomer().then((res) => setShopCustomerReport(res.total));

@@ -8,14 +8,24 @@ import { AddressGroup } from "../../shared/utilities/form/address-group";
 import { CustomerConsumer, CustomerProvider } from "./provider/customer-prodiver";
 import { Spinner } from "../../shared/utilities/spinner";
 import { useToast } from "../../../lib/providers/toast-provider";
+import BreadCrumbs from "../../shared/utilities/breadcrumbs/breadcrumbs";
+import { useShopContext } from "../../../lib/providers/shop-provider";
 
 export function CustomerPage() {
   const toast = useToast();
+  const { shopCode } = useShopContext();
   return (
     <CustomerProvider>
       <CustomerConsumer>
         {({ customer, customerUpdateMe }) => (
           <div className="bg-white shadow relative rounded-md w-full">
+            <BreadCrumbs
+              breadcrumbs={[
+                { label: "Trang chủ", href: `/?code=${shopCode}` },
+                { label: "Thông tin tài khoản" },
+              ]}
+              className="pt-4 px-4"
+            />
             <div className="w-full flex flex-col items-center justify-center py-14">
               {/* <div className="absolute -top-10 w-full flex justify-center">
                   <Img src={""} avatar className="w-20 h-20" />

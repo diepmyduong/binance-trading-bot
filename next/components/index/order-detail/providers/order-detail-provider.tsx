@@ -17,6 +17,7 @@ export const OrderDetailContext = createContext<
     tags: ShopTag[];
     cancelOrder: (id: string, note: string) => any;
     addTags: (tag: ShopTag) => any;
+    createCommentCustomner: (inputData: { message: string; rating: string }) => any;
   }>
 >({});
 interface PropsType extends ReactProps {
@@ -37,12 +38,19 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
     if (tI !== -1) {
       newTags.splice(tI, 1);
     } else {
-      newTags.push(tag);
+      newTags.push({ name: tag.name, icon: tag.icon, qty: tag.qty });
     }
     setTags(cloneDeep(newTags));
   }
-  function createCommentCustomner(data: { message: string; rating: number }) {
-    // ShopCommentService.create(data:{....d});
+  function createCommentCustomner(inputData: { message: string; rating: string }) {
+    const { message, rating } = inputData;
+    ShopCommentService.createOrUpdate({
+      data: { ownerName: order.buyerName, message, rating, tags },
+    }).then((res) => {
+      console.log(res);
+      setLoading(false);
+      toast.success("Bình luận thành công");
+    });
   }
   useEffect(() => {
     loadOrder(id);
@@ -51,9 +59,10 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
         .then((res) => {
           setOrder(cloneDeep(res));
           if (
-            res.status !== "PENDING" &&
-            res.status !== "CONFIRMED" &&
-            res.status !== "DELIVERING"
+            (res.status !== "PENDING" &&
+              res.status !== "CONFIRMED" &&
+              res.status !== "DELIVERING") ||
+            res.pickupMethod === "STORE"
           ) {
             setIsInterval(false);
             clearInterval(interval);
@@ -101,7 +110,10 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
   const loadOrder = (id: string) => {
     OrderService.getOne({ id })
       .then((res) => {
-        if (res.status === "PENDING" || res.status === "CONFIRMED" || res.status === "DELIVERING") {
+        if (
+          res.pickupMethod === "DELIVERY" &&
+          (res.status === "PENDING" || res.status === "CONFIRMED" || res.status === "DELIVERING")
+        ) {
           setIsInterval(true);
         }
         setOrder(cloneDeep(res));
@@ -113,7 +125,17 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
   };
   return (
     <OrderDetailContext.Provider
-      value={{ order, status, loading, setLoading, cancelOrder, isInterval, tags, addTags }}
+      value={{
+        order,
+        status,
+        loading,
+        setLoading,
+        cancelOrder,
+        isInterval,
+        tags,
+        addTags,
+        createCommentCustomner,
+      }}
     >
       {props.children}
     </OrderDetailContext.Provider>

@@ -24,8 +24,10 @@ export function OrderDetailPage(props) {
     isInterval,
     tags,
     addTags,
+    createCommentCustomner,
   } = useOrderDetailContext();
   const [showComment, setShowComment] = useState(false);
+  const [showCancel, setShowCancel] = useState(false);
   const { shopCode, shop } = useShopContext();
   const toast = useToast();
   return (
@@ -178,28 +180,57 @@ export function OrderDetailPage(props) {
                       }}
                     />
                   )}
-                  <Button
-                    text="Đặt lại"
-                    outline
-                    asyncLoading={loading}
-                    large
-                    className="w-full my-2"
-                  />
+                  {order.status !== "PENDING" ? (
+                    <Button
+                      text="Đặt lại"
+                      outline
+                      asyncLoading={loading}
+                      large
+                      className="w-full my-2"
+                    />
+                  ) : (
+                    <Button
+                      large
+                      className="w-full my-2"
+                      text="Hủy đơn"
+                      outline
+                      primary
+                      asyncLoading={loading}
+                      onClick={() => {
+                        setLoading(true);
+                        setShowCancel(true);
+                      }}
+                    />
+                  )}
+                  <Form
+                    title="Lý do hủy"
+                    dialog
+                    isOpen={showCancel}
+                    onClose={() => setShowCancel(false)}
+                    onSubmit={(data) => {
+                      cancelOrder(order.id, data.note);
+                      setShowCancel(false);
+                    }}
+                  >
+                    <Field name="note">
+                      <Textarea />
+                    </Field>
+                    <div className="flex justify-end">
+                      <Button submit text="Xác nhận" large primary />
+                    </div>
+                  </Form>
                   <Form
                     title="Bình luận đơn hàng này"
                     dialog
                     isOpen={showComment}
                     onClose={() => setShowComment(false)}
                     onSubmit={(data) => {
-                      // if(tags.length<0){
-                      //   toast
-                      // }
-                      console.log(data);
+                      createCommentCustomner({ rating: data.rating, message: data.message });
                       setShowComment(false);
                     }}
                   >
                     <div className="flex flex-wrap gap-2 my-2">
-                      {shop.config.tags.map((tag, index) => (
+                      {shop?.config.tags.map((tag, index) => (
                         <div
                           key={index}
                           className={`px-2 py-1 border rounded-full cursor-pointer hover:border-accent duration-200 transition-all ${

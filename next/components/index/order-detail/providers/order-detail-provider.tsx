@@ -54,14 +54,13 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
             res.status !== "CONFIRMED" &&
             res.status !== "DELIVERING"
           ) {
+            setOrder(cloneDeep(res));
             setIsInterval(false);
             clearInterval(interval);
           } else {
-            if (order) {
-              if (res.status !== order.status) {
-                toast.info(res.statusText);
-                setOrder(cloneDeep(res));
-              }
+            if (res.status !== status.value) {
+              toast.info(res.statusText);
+              setOrder(cloneDeep(res));
             }
           }
         })

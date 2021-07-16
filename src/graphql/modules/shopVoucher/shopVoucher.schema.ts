@@ -67,6 +67,8 @@ const schema = gql`
     isPrivate: Boolean
     "Hình ảnh"
     image: String
+    "Nội dung html"
+    content: String
   }
 
   type ShopVoucher {
@@ -120,6 +122,8 @@ const schema = gql`
     isPrivate: Boolean
     "Hình ảnh"
     image: String
+    "Nội dung html"
+    content: String
   }
 
   type ShopVoucherPageData {

@@ -27,6 +27,8 @@ const schema = gql`
     ratingQty: Int
     "Số lượng đã bán"
     soldQty: Int
+    "Tiêu đề Upsale"
+    upsaleTitle: String
   }
 
   type ShopConfig {
@@ -62,6 +64,8 @@ const schema = gql`
     ratingQty: Int
     "Số lượng đã bán"
     soldQty: Int
+    "Tiêu đề Upsale"
+    upsaleTitle: String
   }
 `;
 

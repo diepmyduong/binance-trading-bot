@@ -41,10 +41,10 @@ export class ReportRepository extends CrudRepository<any> {
         query: this
           .gql`query {  reportShopOrderKline(filter:{fromDate:"${fromDate}", toDate: "${toDate}"})
            { 
-             label datasets{label data}
+             labels datasets{label data}
             }}`,
       })
-      .then((res) => res.data["reportShopOrder"]);
+      .then((res) => res.data["reportShopOrderKline"]);
   }
 
   async reportShopCustomer() {

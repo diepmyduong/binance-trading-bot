@@ -1,18 +1,12 @@
 import { useState, useEffect } from "react";
-import { BiRadio } from "react-icons/bi";
 import { CgRadioChecked } from "react-icons/cg";
-import { FaCircle } from "react-icons/fa";
-import { HiArrowRight, HiChevronRight } from "react-icons/hi";
 import { NumberPipe } from "../../../lib/pipes/number";
-import { useAlert } from "../../../lib/providers/alert-provider";
 import { Button } from "../../shared/utilities/form/button";
-import { Order, OrderService, ORDER_STATUS } from "../../../lib/repo/order.repo";
 import { Spinner } from "../../shared/utilities/spinner";
 import formatDate from "date-fns/format";
 import { Form } from "../../shared/utilities/form/form";
 import { Field } from "../../shared/utilities/form/field";
 import { Textarea } from "../../shared/utilities/form/textarea";
-import cloneDeep from "lodash/cloneDeep";
 import { useOrderDetailContext } from "./providers/order-detail-provider";
 export function OrderDetailPage(props) {
   const { order, status, cancelOrder, setLoading, loading } = useOrderDetailContext();
@@ -20,18 +14,18 @@ export function OrderDetailPage(props) {
   return (
     <>
       {order ? (
-        <div className="text-gray-800">
-          <div className="w-full text-sm bg-white px-4">
+        <div className="text-gray-800 text-sm sm:text-lg">
+          <div className="w-full bg-white px-4">
             <div className="grid grid-cols-2 w-full pt-4">
               <div className="flex flex-col space-y-1">
-                <p className="text-xs text-gray-500">Mã đơn hàng</p>
-                <p className="uppercase font-bold">{order.code}</p>
-                <p className="text-xs text-gray-500">
+                <p className="sm:text-base text-gray-500">Mã đơn hàng</p>
+                <p className="uppercase font-bold ">{order.code}</p>
+                <p className="sm:text-base text-gray-500">
                   Ngày: {formatDate(new Date(order.createdAt), "dd-MM-yyyy HH:mm")}
                 </p>
               </div>
               <div className="flex flex-col space-y-1 pl-2 border-l">
-                <p className="text-xs text-gray-500">Tình trạng</p>
+                <p className="sm:text-base text-gray-500">Tình trạng</p>
                 {status && <p className={`text-${status.color}`}>{status.label}</p>}
               </div>
             </div>
@@ -40,12 +34,35 @@ export function OrderDetailPage(props) {
                 Lý do hủy: {order.cancelReason}
               </div>
             )}
+            <div className="flex items-center my-2">
+              <i className="text-danger text-xl ">
+                <CgRadioChecked />
+              </i>
+              <div className="sm:text-base py-2 sm:py-6 flex flex-col space-y-1 ml-2">
+                <p className="text-gray-500">
+                  {order.pickupMethod === "DELIVERY" ? "Gửi từ" : "Lấy tại"}
+                </p>
+
+                <p className="">
+                  <span className="font-bold pr-1">
+                    {order.seller.shopName}-{order.shopBranch.name}
+                  </span>
+                  ({order.shopBranch.phone})
+                </p>
+                <p className="">{order.shopBranch.address}</p>
+                {order.pickupMethod !== "DELIVERY" && (
+                  <p>Lấy vào lúc: {formatDate(new Date(order.pickupTime), "dd-MM-yyyy HH:mm")}</p>
+                )}
+              </div>
+            </div>
             <div className="flex items-center">
               <i className="text-primary text-xl ">
                 <CgRadioChecked />
               </i>
-              <div className="text-xs py-6 flex flex-col space-y-1 ml-2">
-                <p className="text-gray-500">Gửi đến</p>
+              <div className="sm:text-base py-2 sm:py-6 flex flex-col space-y-1 ml-2">
+                <p className="text-gray-500">
+                  {order.pickupMethod === "DELIVERY" ? "Gửi đến" : "Người lấy"}
+                </p>
                 <p className="">
                   <span className="font-bold">{order.buyerName}</span> ({order.buyerPhone})
                 </p>
@@ -101,12 +118,16 @@ export function OrderDetailPage(props) {
                 <div className="">
                   Khuyến mãi: <span className="font-bold">{order.discountDetail}</span>
                 </div>
-                <div className="text-accent">{NumberPipe(order.discount, true)}</div>
+                <div className="text-danger">
+                  {order.discount > 0
+                    ? NumberPipe(-order.discount, true)
+                    : NumberPipe(order.discount, true)}
+                </div>
               </div>
             </div>
             <div className="px-4 py-6 flex items-center justify-between">
               <div className="">Tổng cộng:</div>
-              <div className="font-bold">{NumberPipe(order.amount, true)}</div>
+              <div className="font-bold text-primary">{NumberPipe(order.amount, true)}</div>
             </div>
             <div className="p-2 sticky bottom-0 w-full bg-white">
               {
@@ -202,18 +223,3 @@ export function OrderDetailPage(props) {
     </>
   );
 }
-
-const data = [
-  {
-    title: "Rau má đậu xanh",
-    count: 12,
-    note: "Không đá ít đường",
-    price: 119000,
-  },
-  {
-    title: "Cơm đùi gà quay",
-    count: 2,
-    note: "Không cơm ít gà",
-    price: 119000,
-  },
-];

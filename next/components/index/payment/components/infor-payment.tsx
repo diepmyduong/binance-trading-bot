@@ -247,6 +247,7 @@ const SelectTime = () => {
     if (date1.getDate().toString() == date2.getDate().toString()) return 0;
     return diffDays;
   };
+
   const getDate = (time, date) => {
     let dateTemp = new Date(date);
     return new Date(
@@ -254,8 +255,10 @@ const SelectTime = () => {
     ).toISOString();
   };
   const onChangeTime = (time) => {
-    // let temp = getDate(time);
-    setOrderInput({ ...orderInput, pickupTime: time });
+    let temp = getDate(selectTime, selectDate);
+    console.log(temp);
+
+    setOrderInput({ ...orderInput, pickupTime: temp });
   };
   const generateTime = () => {
     var today = new Date();
@@ -283,7 +286,7 @@ const SelectTime = () => {
         let tempT;
         if (diffDate == 0) {
           tempT = new Date(getDate(temp, new Date()));
-          if (openT <= tempT && closeT >= tempT)
+          if (openT <= tempT && closeT >= tempT && tempT > today)
             timess.push({ value: i + ":" + halfHours[j], label: i + ":" + halfHours[j] });
         } else {
           tempT = new Date(getDate(temp, selectDate));
@@ -304,8 +307,9 @@ const SelectTime = () => {
     generateTime();
   }, [selectDate]);
   useEffect(() => {
-    onChangeTime(new Date(getDate(selectDate, selectTime)));
-  }, [selectTime]);
+    let temp = getDate(selectTime, selectDate);
+    setOrderInput({ ...orderInput, pickupTime: temp });
+  }, [selectTime || selectDate]);
 
   return (
     <>
@@ -314,9 +318,13 @@ const SelectTime = () => {
           placeholder="Chọn ngày"
           minDate={startDate}
           maxDate={endDate}
+          defaultValue={selectDate}
           onChange={(date) => {
+            console.log("DATE - ", date);
             setTimes([]);
-            setSelectDate(new Date(date));
+            if (date === null) {
+              setOrderInput({ ...orderInput, pickupTime: null });
+            } else setSelectDate(new Date(date));
           }}
         />
         <Select

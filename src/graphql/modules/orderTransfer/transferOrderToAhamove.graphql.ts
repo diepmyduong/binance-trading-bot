@@ -87,7 +87,7 @@ async function createAhamoveOrder(
         address: buyerAddress,
         short_address: order.buyerDistrict,
         name: order.buyerName,
-        cod: order.paymentMethod == PaymentMethod.COD ? order.amount : 0,
+        cod: parseInt((order.paymentMethod == PaymentMethod.COD ? order.amount : 0).toString()),
       },
     ],
     payment_method: "CASH",

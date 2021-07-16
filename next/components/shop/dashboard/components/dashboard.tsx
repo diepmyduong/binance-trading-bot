@@ -129,6 +129,7 @@ function ReportProductOrder(props) {
 }
 
 const ChartBusiness = () => {
+  const [selectedTime, setSelectedTime] = useState("Tháng này");
   return (
     <div className="mt-4">
       <div className="py-4">
@@ -140,12 +141,11 @@ const ChartBusiness = () => {
           filter={[
             { value: "Tháng này", label: "Tháng này" },
             { value: "Tháng trước", label: "Tháng trước" },
-            { value: "3 tháng gần nhất", label: "3 tháng gần nhất" },
           ]}
-          onChange={(data) => console.log("filter", data)}
+          onChange={(data) => setSelectedTime(data)}
         />
         <CardCustom.Body>
-          <Chart />
+          <Chart selectedTime={selectedTime} />
         </CardCustom.Body>
       </CardCustom>
     </div>
@@ -168,7 +168,7 @@ const BusinessStepByStep = () => {
   }, []);
   return (
     <div className="mt-4">
-      <div className="py-4">
+      {/* <div className="py-4">
         <h1 className="text-primary text-lg">Từng bước kinh doanh online</h1>
       </div>
       <CardCustom>
@@ -189,7 +189,7 @@ const BusinessStepByStep = () => {
             );
           })}
         </CardCustom.Body>
-      </CardCustom>
+      </CardCustom> */}
       <div className="mt-4 flex">
         <CardCustom className="min-w-max">
           <CardCustom.Header title="Tổng số nhân viên đang hoạt động"></CardCustom.Header>

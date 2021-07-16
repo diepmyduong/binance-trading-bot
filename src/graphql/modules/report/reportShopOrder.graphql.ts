@@ -30,6 +30,8 @@ export default {
       total: Int
       pendingRevenue: Float
       revenue: Float
+      partnerShipfee: Float
+      shipfee: Float
     }
     type KlineData {
       labels: [String]
@@ -75,6 +77,23 @@ export default {
               revenue: {
                 $sum: { $cond: [{ $eq: ["$status", OrderStatus.COMPLETED] }, "$amount", 0] },
               },
+              partnerShipfee: {
+                $sum: {
+                  $cond: [
+                    {
+                      $in: [
+                        "$status",
+                        [OrderStatus.FAILURE, OrderStatus.COMPLETED, OrderStatus.DELIVERING],
+                      ],
+                    },
+                    "$deliveryInfo.partnerFee",
+                    0,
+                  ],
+                },
+              },
+              shipfee: {
+                $sum: { $cond: [{ $eq: ["$status", OrderStatus.COMPLETED] }, "$shipfee", 0] },
+              },
             },
           },
         ]).then((res) =>
@@ -88,6 +107,8 @@ export default {
             total: 0,
             pendingRevenue: 0,
             revenue: 0,
+            partnerShipfee: 0,
+            shipfee: 0,
           })
         );
       },

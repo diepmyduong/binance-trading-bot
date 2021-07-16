@@ -138,7 +138,10 @@ const ChartBusiness = () => {
       <CardCustom>
         <CardCustom.Header
           title="Doanh thu"
-          filter={[{ value: "Tháng này", label: "Tháng này" }]}
+          filter={[
+            { value: "Tháng này", label: "Tháng này" },
+            { value: "Tháng trước", label: "Tháng trước" },
+          ]}
           onChange={(data) => setSelectedTime(data)}
         />
         <CardCustom.Body>

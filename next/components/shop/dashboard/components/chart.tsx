@@ -43,7 +43,7 @@ export function Chart(props) {
         ...lineChartData,
         datasets: [
           {
-            data: dataChart.datasets[1].data,
+            data: [...dataChart.datasets[1].data],
             borderColor: ["rgba(13, 87, 239)"],
             borderWidth: 2,
             backgroundColor: "rgba(13, 87, 239, 0.0)",
@@ -56,7 +56,7 @@ export function Chart(props) {
         ...barChartData,
         datasets: [
           {
-            data: dataChart.datasets[0].data,
+            data: [...dataChart.datasets[0].data],
             backgroundColor: ["rgba(13, 87, 239, 1)"],
             borderColor: ["rgba(13, 87, 239, 1)"],
             borderWidth: 2,

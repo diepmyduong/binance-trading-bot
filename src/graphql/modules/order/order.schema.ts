@@ -78,6 +78,8 @@ const schema = gql`
     paymentMethod: String
     "Ghi chú đơn hàng"
     note: String
+    "Ghi chú làm món"
+    confirmNote: String
     "Số lượng sản phẩm"
     itemCount: Int
     "Chủ shop bán"

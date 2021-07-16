@@ -4,9 +4,10 @@ import { Spinner } from "../../../shared/utilities/spinner";
 import { Button } from "../../../shared/utilities/form/button";
 import { Form } from "../../../shared/utilities/form/form";
 import { useOrderDetailContext } from "../providers/order-detail-provider";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Field } from "../../../shared/utilities/form/field";
 import { Textarea } from "../../../shared/utilities/form/textarea";
+import { HiOutlinePhone } from "react-icons/hi";
 
 interface PropsType extends ReactProps {
   status?: Option;
@@ -15,47 +16,109 @@ interface PropsType extends ReactProps {
 export function OrderStatus({ order, status }: PropsType) {
   const { cancelOrder, loading, setLoading } = useOrderDetailContext();
   const [showCancel, setShowCancel] = useState(false);
-
+  const statusDelivery = [
+    { value: "PENDING", label: "Đang chờ duyệt" },
+    { value: "CONFIRMED", label: "Đang làm món" },
+    { value: "DELIVERING", label: "Đang giao hàng" },
+    { value: "COMPLETED", label: "Đã đến nơi" },
+  ];
+  const statusPickup = [
+    { value: "PENDING", label: "Đang chờ duyệt" },
+    { value: "COMPLETED", label: "Đã xác nhận" },
+  ];
+  const [statusLabelCur, setStatusLabelCur] = useState("");
+  useEffect(() => {
+    if (status) {
+      let stas = statusDelivery.findIndex((stas) => stas.value === status.value);
+      if (stas !== -1) {
+        setStatusLabelCur(statusDelivery[stas].label);
+      }
+    }
+  }, [status]);
   return (
-    <div className="bg-white min-h-screen">
-      <h1 className="text-xl text-center font-bold p-4">Đang {status?.label}</h1>
+    <div className="bg-white min-h-screen flex flex-col items-center">
+      <h1 className="text-2xl sm:text-4xl text-center font-bold p-4">{statusLabelCur}</h1>
       {status ? (
-        <div className={`w-full mb-3 bg-white text-sm`}>
+        <div className={`w-full mb-3 bg-white text-sm flex flex-col items-center`}>
           {status.value === "PENDING" && (
-            <>
-              <Button text="Gọi nhà hàng" primary className="w-full" href={`tel:${"0374196903"}`} />
+            <div className="flex flex-wrap items-center mt-2">
               <Button
                 text="Hủy đơn"
                 outline
                 primary
                 asyncLoading={loading}
-                className="w-full my-2"
+                className="rounded-full mr-2"
                 onClick={() => {
                   setLoading(true);
                   setShowCancel(true);
                 }}
-              />{" "}
-              <Img src="/assets/img/pending.png" ratio169 />
-            </>
+              />
+              <Button
+                text="Gọi nhà hàng"
+                primary
+                href={`tel:${order.shopBranch.phone}`}
+                className="rounded-full"
+                icon={<HiOutlinePhone />}
+              />
+            </div>
           )}
-          {status.value === "CONFIRMED" && <Img src="/assets/img/confirm.png" />}
-          {status.value === "DELIVERING" && <Img src="/assets/img/delivering.png" />}
+          {status.value === "CONFIRMED" && (
+            <Button
+              text="Gọi nhà hàng"
+              primary
+              className="rounded-full bg-gradient"
+              href={`tel:${order.shopBranch.phone}`}
+            />
+          )}
+          {status.value === "DELIVERING" && (
+            <div className="flex flex-wrap-reverse items-center justify-center mt-2 gap-2">
+              {order.shipMethod === "AHAMOVE" && (
+                <Button
+                  text="Xem trên Ahamove"
+                  outline
+                  className="rounded-full mr-2 "
+                  href={order.ahamoveTrackingLink}
+                />
+              )}
+              <Button
+                text={"Tài xế: " + order.driverName || "Gọi tài xế"}
+                primary
+                className="rounded-full bg-gradient"
+                iconPosition="end"
+                href={`tel:${order.driverPhone}`}
+                icon={<HiOutlinePhone />}
+              />
+            </div>
+          )}
+          <Img
+            src={
+              (status.value === "PENDING" && "/assets/img/pending.png") ||
+              (status.value === "CONFIRMED" && "/assets/img/confirm.png") ||
+              (status.value === "DELIVERING" && "/assets/img/delivering.png")
+            }
+            className="w-1/2 mt-16 mb-2"
+          />
           <div className="px-4">
-            <ul className="flex sm:gap-5 gap-2 font-semibold justify-between border-t-2 text-center sm:text-base text-xs">
-              <li className={`${status.value === "PENDING" ? "text-gray-800" : "text-gray-500"}`}>
-                Đang chờ duyệt
-              </li>
-              <li className={`${status.value === "CONFIRMED" ? "text-gray-800" : "text-gray-500"}`}>
-                Đang làm món
-              </li>
-              <li
-                className={`${status.value === "DELIVERING" ? "text-gray-800" : "text-gray-500"}`}
-              >
-                Đang giao hàng
-              </li>
-              <li className={`${status.value === "COMPLETED" ? "text-gray-800" : "text-gray-500"}`}>
-                Đã đến nơi
-              </li>
+            <ul className="flex font-semibold text-gray-800 justify-between border-t-4 whitespace-pre-wrap border-gray text-center sm:text-base text-sm">
+              {order.pickupMethod === "DELIVERY"
+                ? statusDelivery.map((item) => (
+                    <li
+                      className={`${
+                        status.value === item.value ? "opacity-100" : "opacity-40"
+                      } py-3 px-1 sm:px-4`}
+                    >
+                      {item.label}
+                    </li>
+                  ))
+                : statusPickup.map((item) => (
+                    <li
+                      className={`${
+                        status.value === item.value ? "opacity-100" : "opacity-40"
+                      } py-3 px-1 sm:px-4`}
+                    >
+                      {item.label}
+                    </li>
+                  ))}
             </ul>
           </div>
         </div>

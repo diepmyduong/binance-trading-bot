@@ -10,6 +10,7 @@ import { ShopInfo } from "./components/shop-info";
 import { useRouter } from "next/router";
 import { ProductDetail } from "../../shared/product-detail/detail";
 import { ProductDetailProvider } from "../../shared/product-detail/provider/product-detail-provider";
+import { HomeProvider, HomeConsumer } from "./providers/homepage-provider";
 
 export function Homepage() {
   const { shop } = useShopContext();
@@ -19,7 +20,7 @@ export function Homepage() {
   const [showDialogCart, setShowDialogCart] = useState(false);
 
   return (
-    <>
+    <HomeProvider>
       <div className={`z-0 relative bg-white min-h-screen text-gray-800`}>
         {!shop ? (
           <Spinner />
@@ -55,7 +56,7 @@ export function Homepage() {
         />
       </ProductDetailProvider>
       <Footer />
-    </>
+    </HomeProvider>
   );
 }
 

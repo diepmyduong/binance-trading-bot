@@ -8,7 +8,7 @@ export function OrderPage() {
   const { orders, statusOrder } = useOrderContext();
   const { shopCode } = useShopContext();
   return (
-    <div className="w-full bg-white relative">
+    <div className="w-full bg-white relative min-h-screen">
       <BreadCrumbs
         breadcrumbs={[
           { label: "Trang chủ", href: `/?code=${shopCode}` },

@@ -4,6 +4,8 @@ import cloneDeep from "lodash/cloneDeep";
 import { useAlert } from "../../../../lib/providers/alert-provider";
 import { useToast } from "../../../../lib/providers/toast-provider";
 import { useRouter } from "next/router";
+import { ShopTag } from "../../../../lib/repo/shop-config.repo";
+import { ShopCommentService } from "../../../../lib/repo/shop-comment.repo";
 
 export const OrderDetailContext = createContext<
   Partial<{
@@ -12,7 +14,9 @@ export const OrderDetailContext = createContext<
     loading: boolean;
     setLoading: Function;
     isInterval: boolean;
+    tags: ShopTag[];
     cancelOrder: (id: string, note: string) => any;
+    addTags: (tag: ShopTag) => any;
   }>
 >({});
 interface PropsType extends ReactProps {
@@ -24,12 +28,26 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<Option>(null);
   const [isInterval, setIsInterval] = useState(false);
+  const [tags, setTags] = useState<ShopTag[]>([]);
   const toast = useToast();
   const router = useRouter();
+  function addTags(tag: ShopTag) {
+    let newTags = tags;
+    let tI = newTags.findIndex((t) => t.name === tag.name);
+    if (tI !== -1) {
+      newTags.splice(tI, 1);
+    } else {
+      newTags.push(tag);
+    }
+    setTags(cloneDeep(newTags));
+  }
+  function createCommentCustomner(data: { message: string; rating: number }) {
+    // ShopCommentService.create(data:{....d});
+  }
   useEffect(() => {
     loadOrder(id);
     let interval = setInterval(() => {
-      OrderService.getOne({ id })
+      OrderService.getOne({ id, cache: false })
         .then((res) => {
           if (
             res.status !== "PENDING" &&
@@ -64,6 +82,7 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
   useEffect(() => {
     if (order) {
       let sta = ORDER_STATUS.find((x) => x.value === order.status);
+      console.log(sta);
       if (sta) setStatus(cloneDeep(sta));
     }
   }, [order]);
@@ -96,7 +115,7 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
   };
   return (
     <OrderDetailContext.Provider
-      value={{ order, status, loading, setLoading, cancelOrder, isInterval }}
+      value={{ order, status, loading, setLoading, cancelOrder, isInterval, tags, addTags }}
     >
       {props.children}
     </OrderDetailContext.Provider>

@@ -11,12 +11,25 @@ import { useOrderDetailContext } from "./providers/order-detail-provider";
 import { OrderStatus } from "./components/order-status";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import BreadCrumbs from "../../shared/utilities/breadcrumbs/breadcrumbs";
+import { Select } from "../../shared/utilities/form/select";
+import { Radio } from "../../shared/utilities/form/radio";
+import { useToast } from "../../../lib/providers/toast-provider";
 export function OrderDetailPage(props) {
-  const { order, status, cancelOrder, setLoading, loading, isInterval } = useOrderDetailContext();
-  const [showCancel, setShowCancel] = useState(false);
-  const { shopCode } = useShopContext();
+  const {
+    order,
+    status,
+    cancelOrder,
+    setLoading,
+    loading,
+    isInterval,
+    tags,
+    addTags,
+  } = useOrderDetailContext();
+  const [showComment, setShowComment] = useState(false);
+  const { shopCode, shop } = useShopContext();
+  const toast = useToast();
   return (
-    <div className="bg-white">
+    <div className="bg-white min-h-screen">
       <BreadCrumbs
         breadcrumbs={[
           { label: "Trang chủ", href: `/?code=${shopCode}` },
@@ -152,15 +165,19 @@ export function OrderDetailPage(props) {
                   <div className="font-bold text-primary">{NumberPipe(order.amount, true)}</div>
                 </div>
                 <div className="p-2 sticky bottom-0 w-full bg-white">
-                  <Button
-                    text="Đến trang lịch sử"
-                    outline
-                    primary
-                    asyncLoading={loading}
-                    large
-                    className="w-full my-2"
-                    href="/order"
-                  />
+                  {order.status === "COMPLETED" && (
+                    <Button
+                      text="Bình luận đơn hàng này"
+                      outline
+                      primary
+                      large
+                      className="w-full my-2"
+                      onClick={() => {
+                        setLoading(true);
+                        setShowComment(true);
+                      }}
+                    />
+                  )}
                   <Button
                     text="Đặt lại"
                     outline
@@ -169,19 +186,46 @@ export function OrderDetailPage(props) {
                     className="w-full my-2"
                   />
                   <Form
-                    title="Lý do hủy"
+                    title="Bình luận đơn hàng này"
                     dialog
-                    isOpen={showCancel}
-                    onClose={() => setShowCancel(false)}
+                    isOpen={showComment}
+                    onClose={() => setShowComment(false)}
                     onSubmit={(data) => {
-                      cancelOrder(order.id, data.note);
-                      setShowCancel(false);
+                      // if(tags.length<0){
+                      //   toast
+                      // }
+                      console.log(data);
+                      setShowComment(false);
                     }}
                   >
-                    <Field name="note">
+                    <div className="flex flex-wrap gap-2 my-2">
+                      {shop.config.tags.map((tag, index) => (
+                        <div
+                          key={index}
+                          className={`px-2 py-1 border rounded-full cursor-pointer hover:border-accent duration-200 transition-all ${
+                            tags.findIndex((t) => t.name === tag.name) !== -1
+                              ? "bg-primary-light border-primary"
+                              : ""
+                          }`}
+                          onClick={() => addTags(tag)}
+                        >
+                          {tag.icon} {tag.name}
+                        </div>
+                      ))}
+                    </div>
+                    <Field name="rating" label="Đánh giá" cols={5} required>
+                      <Select
+                        options={[1, 2, 3, 4, 5].map((star) => ({
+                          value: star,
+                          label: [...Array(star)].map((x) => "⭐").join(""),
+                        }))}
+                        defaultValue={5}
+                      />
+                    </Field>
+                    <Field name="message" label="Nội dung bình luận" cols={12} required>
                       <Textarea />
                     </Field>
-                    <div className="">
+                    <div className="flex justify-end">
                       <Button submit text="Xác nhận" large primary />
                     </div>
                   </Form>

@@ -54,18 +54,18 @@ function ReportProductOrder(props) {
         <Card className="min-w-sm">
           <div className="text-sm">Trung bình mỗi đơn</div>
           <div className="font-bold text-2xl">
-            {NumberPipe(shopOrderReport?.revenue / shopOrderReport?.completed)}đ
+            {NumberPipe(Math.floor(shopOrderReport?.revenue / shopOrderReport?.completed))}đ
           </div>
         </Card>
         <Card className="min-w-sm">
           <div className="text-sm">Tổng giảm giá</div>
-          <div className="font-bold text-2xl">{NumberPipe(78000)}đ</div>
+          <div className="font-bold text-2xl">{NumberPipe(shopOrderReport?.discount)}đ</div>
         </Card>
         <Card className="min-w-sm">
           <div className="text-sm">Doanh số ship</div>
-          <div className="font-bold text-2xl">{NumberPipe(365000)}đ</div>
+          <div className="font-bold text-2xl">{NumberPipe(shopOrderReport?.partnerShipfee)}đ</div>
           <div className="text-sm font-bold text-primary">
-            Lợi nhuận ship {" " + NumberPipe(365000)}đ
+            Lợi nhuận ship {" " + NumberPipe(shopOrderReport?.shipfee)}đ
           </div>
         </Card>
       </div>
@@ -95,7 +95,7 @@ function ReportProductOrder(props) {
             }}
             className=""
           >
-            <div className="grid grid-cols-2 bg-gradient sticky top-0 shadow-md p-4 text-white">
+            <div className="grid grid-cols-2 bg-gradient sticky top-0 border-b-2 border border-gray-200 shadow-lg p-4 text-white">
               <div className="">Tên sản phẩm</div>
               <div className="">Số lượng</div>
             </div>

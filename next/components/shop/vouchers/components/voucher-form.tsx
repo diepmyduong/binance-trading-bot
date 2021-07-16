@@ -1,6 +1,6 @@
 import cloneDeep from "lodash/cloneDeep";
 import { useEffect, useRef, useState } from "react";
-import { RiAddFill, RiArrowRightLine, RiCloseFill } from "react-icons/ri";
+import { RiAddFill, RiArrowRightLine, RiCloseFill, RiImageAddFill } from "react-icons/ri";
 import { NumberPipe } from "../../../../lib/pipes/number";
 import { useToast } from "../../../../lib/providers/toast-provider";
 import { PAYMENT_METHODS } from "../../../../lib/repo/order.repo";
@@ -16,6 +16,7 @@ import { ProductSelectionPopover } from "../../../shared/shop-layout/product-sel
 import { Button } from "../../../shared/utilities/form/button";
 import { Checkbox } from "../../../shared/utilities/form/checkbox";
 import { DatePicker } from "../../../shared/utilities/form/date";
+import { Editor } from "../../../shared/utilities/form/editor";
 import { Field } from "../../../shared/utilities/form/field";
 import { Form, FormConsumer, FormPropsType } from "../../../shared/utilities/form/form";
 import { Input } from "../../../shared/utilities/form/input";
@@ -24,6 +25,7 @@ import { Select } from "../../../shared/utilities/form/select";
 import { Switch } from "../../../shared/utilities/form/switch";
 import { Img } from "../../../shared/utilities/img";
 import { DataTable } from "../../../shared/utilities/table/data-table";
+import { AvatarUploader } from "../../../shared/utilities/uploader/avatar-uploader";
 
 interface PropsType extends FormPropsType {
   voucher: ShopVoucher;
@@ -36,14 +38,19 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
   const [openDiscountItem, setOpenDiscountItem] = useState<DiscountItem>(null);
   const [openOfferItem, setOpenOfferItem] = useState<OfferItem>(null);
   const toast = useToast();
+  const avatarUploaderRef = useRef<any>();
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [image, setImage] = useState("");
 
   useEffect(() => {
     if (voucher?.id) {
       setDiscountItems(cloneDeep(voucher.discountItems));
       setOfferItems(cloneDeep(voucher.offerItems));
+      setImage(voucher.image);
     } else {
       setDiscountItems(null);
       setOfferItems(null);
+      setImage("");
     }
   }, [voucher]);
 
@@ -59,6 +66,10 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
         }),
       }
     );
+
+  const onImageChange = (image: string) => {
+    setImage(image);
+  };
   return (
     <>
       <DataTable.Form
@@ -70,175 +81,244 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
           submitProps: { className: "bg-gradient h-14 w-64" },
           cancelText: "",
         }}
+        width={voucher?.id ? "960px" : "550px"}
         grid
         beforeSubmit={(data) => ({
           ...data,
-          discountItems: discountItems.map((x) => ({
-            productId: x.productId,
-            discountUnit: x.discountUnit,
-            discountValue: x.discountValue,
-            maxDiscount: x.maxDiscount,
-          })),
-          offerItems: offerItems.map((x) => ({
-            productId: x.productId,
-            qty: x.qty,
-            note: x.note,
-          })),
+          discountItems:
+            discountItems?.map((x) => ({
+              productId: x.productId,
+              discountUnit: x.discountUnit,
+              discountValue: x.discountValue,
+              maxDiscount: x.maxDiscount,
+            })) || undefined,
+          offerItems:
+            offerItems?.map((x) => ({
+              productId: x.productId,
+              qty: x.qty,
+              note: x.note,
+            })) || undefined,
+          image: image || undefined,
         })}
       >
-        <Field name="code" label="Mã khuyến mãi" cols={6} required readonly={!!voucher?.id}>
-          <Input />
-        </Field>
-        <Field name="type" label="Loại khuyến mãi" cols={6} required readonly={!!voucher?.id}>
-          <Select options={SHOP_VOUCHER_TYPES} />
-        </Field>
-        <Field name="description" label="Mô tả" cols={12} required>
-          <Input />
-        </Field>
-        {voucher?.id && (
-          <FormConsumer>
-            {({ data }) => (
-              <>
-                <Field name="startDate" label="Ngày bắt đầu" cols={6}>
-                  <DatePicker />
+        <FormConsumer>
+          {({ data }) => (
+            <>
+              <div
+                className={`${
+                  voucher?.id ? "col-span-6" : "col-span-12"
+                } grid grid-cols-12 gap-x-5 auto-rows-min`}
+              >
+                <div className="text-gray-400 font-semibold text-lg col-span-12 mb-4">
+                  Thông tin chung
+                </div>
+                <Field name="code" label="Mã khuyến mãi" cols={6} required readonly={!!voucher?.id}>
+                  <Input />
                 </Field>
-                <Field name="endDate" label="Ngày kết thúc" cols={6}>
-                  <DatePicker />
+                <Field
+                  name="type"
+                  label="Loại khuyến mãi"
+                  cols={6}
+                  required
+                  readonly={!!voucher?.id}
+                >
+                  <Select options={SHOP_VOUCHER_TYPES} />
                 </Field>
-                <Field name="issueNumber" label="Số lượng phát hành" cols={6}>
-                  <Input number />
+                <Field name="description" label="Mô tả" cols={12} required>
+                  <Input />
                 </Field>
-                <Field name="issueByDate" label=" " cols={6}>
-                  <Checkbox placeholder="Phát hành mỗi ngày" />
-                </Field>
-                <Field name="useLimit" label="Số lượng dùng mỗi khách" cols={6}>
-                  <Input number />
-                </Field>
-                <Field name="useLimitByDate" label=" " cols={6}>
-                  <Checkbox placeholder="Số lượng dùng theo ngày" />
-                </Field>
-                <Field name="isPrivate" label="" cols={6}>
-                  <Checkbox placeholder="Mã riêng tư" />
-                </Field>
-                <Field name="isActive" label="" cols={6}>
-                  <Switch placeholder="Kích hoạt" />
-                </Field>
-                <hr className="col-span-12 border-gray-300 mb-4" />
-                <Field name="applyItemIds" label="Các sản phẩm áp dụng" cols={12}>
-                  <Select autocompletePromise={productAutocomplete} multi hasImage />
-                </Field>
-                <Field name="exceptItemIds" label="Các sản phẩm không áp dụng" cols={12}>
-                  <Select autocompletePromise={productAutocomplete} multi hasImage />
-                </Field>
-                <Field name="applyPaymentMethods" label="Phương thức thanh toán áp dụng" cols={12}>
-                  <Select options={PAYMENT_METHODS} multi />
-                </Field>
-                <Field name="minItemQty" label="Tổng số món tối thiểu" cols={6}>
-                  <Input number suffix="món" />
-                </Field>
-                <Field name="minSubtotal" label="Tổng tiền hàng tối thiểu" cols={6}>
-                  <Input number suffix="VND" />
-                </Field>
-                <hr className="col-span-12 border-gray-300 mb-4" />
-                {voucher.type == "DISCOUNT_ITEM" && (
-                  <div className="col-span-12">
-                    <Label text="Các sản phẩm được giảm giá" />
-                    <div className="grid grid-cols-2 gap-y-3"></div>
-                    {discountItems?.map((item, index) => (
-                      <ProductItem
-                        item={item}
-                        hasSalePrice
-                        onClick={() => setOpenDiscountItem(item)}
-                        onRemove={() => {
-                          discountItems.splice(index, 1);
-                          setDiscountItems([...discountItems]);
-                        }}
-                      />
-                    ))}
-                    <Button
-                      className="mb-4 px-0"
-                      textPrimary
-                      icon={<RiAddFill />}
-                      text="Chọn sản phẩm"
-                      innerRef={discountItemsRef}
-                    />
-                    <ProductSelectionPopover
-                      reference={discountItemsRef}
-                      onProductSelect={(item) => {
-                        if (discountItems.find((x) => x.productId == item.id)) {
-                          toast.info("Sản phẩm này đã được chọn");
-                          return;
-                        }
-                        const discountItem: DiscountItem = {
-                          productId: item.id,
-                          product: item,
-                          discountUnit: "VND",
-                          discountValue: 0,
-                          maxDiscount: 0,
-                        };
-                        setDiscountItems([...discountItems, discountItem]);
-                        setOpenDiscountItem(discountItem);
-                      }}
-                    />
-                  </div>
-                )}
-                {voucher.type == "OFFER_ITEM" && (
-                  <div className="col-span-12">
-                    <Label text="Các sản phẩm được tặng" />
-                    <div className="grid grid-cols-2 gap-y-3"></div>
-                    {offerItems?.map((item, index) => (
-                      <ProductItem
-                        item={item}
-                        onClick={() => setOpenOfferItem(item)}
-                        onRemove={() => {
-                          offerItems.splice(index, 1);
-                          setOfferItems([...offerItems]);
-                        }}
-                      />
-                    ))}
-                    <Button
-                      className="mb-4 px-0"
-                      textPrimary
-                      icon={<RiAddFill />}
-                      text="Chọn sản phẩm"
-                      innerRef={offerItemsRef}
-                    />
-                    <ProductSelectionPopover
-                      reference={offerItemsRef}
-                      onProductSelect={(item) => {
-                        if (offerItems.find((x) => x.productId == item.id)) {
-                          toast.info("Sản phẩm này đã được chọn");
-                          return;
-                        }
-                        const offerItem: OfferItem = {
-                          productId: item.id,
-                          product: item,
-                          qty: 1,
-                          note: "",
-                        };
-                        setOfferItems([...offerItems, offerItem]);
-                        setOpenOfferItem(offerItem);
-                      }}
-                    />
-                  </div>
-                )}
-                {(voucher.type == "DISCOUNT_BILL" || voucher.type == "SHIP_FEE") && (
+                {voucher?.id && (
                   <>
-                    <Field name="discountUnit" label="Loại giảm giá" cols={6}>
-                      <Select options={DISCOUNT_BILL_UNITS} defaultValue="VND" />
+                    <div className="col-span-12 mb-3">
+                      <Label text="Hình sản phẩm" />
+                      <div className="flex">
+                        <div className="border border-gray-300 rounded-lg w-24 h-24 flex-center bg-white overflow-hidden">
+                          {image ? (
+                            <Img className="w-full" compress={300} src={image} showImageOnClick />
+                          ) : (
+                            <i className="text-4xl text-gray-500">
+                              <RiImageAddFill />
+                            </i>
+                          )}
+                        </div>
+                        <div className="ml-4 p-4 flex-1 flex-center flex-col rounded border border-gray-300 border-dashed bg-white">
+                          <span className="text-sm">
+                            Ảnh PNG, JPEG, JPG không quá 10Mb. Tỉ lệ 1:1.
+                          </span>
+                          <Button
+                            className="px-3 h-9 text-sm hover:underline"
+                            textPrimary
+                            text="Tải ảnh lên"
+                            isLoading={uploadingAvatar}
+                            onClick={() => {
+                              avatarUploaderRef.current().onClick();
+                            }}
+                          />
+                          <AvatarUploader
+                            onRef={(ref) => {
+                              avatarUploaderRef.current = ref;
+                            }}
+                            onUploadingChange={setUploadingAvatar}
+                            onImageUploaded={onImageChange}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <Field name="startDate" label="Ngày bắt đầu" cols={6}>
+                      <DatePicker />
                     </Field>
-                    <Field name="discountValue" label="Giá trị giảm" cols={6}>
-                      <Input number suffix={data.discountUnit == "VND" ? "VND" : "%"} />
+                    <Field name="endDate" label="Ngày kết thúc" cols={6}>
+                      <DatePicker />
                     </Field>
-                    <Field name="maxDiscount" label="Giảm tối đa" cols={6}>
-                      <Input number suffix="VND" />
+                    <Field name="issueNumber" label="Số lượng phát hành" cols={6}>
+                      <Input number />
+                    </Field>
+                    <Field name="issueByDate" label=" " cols={6}>
+                      <Checkbox placeholder="Phát hành mỗi ngày" />
+                    </Field>
+                    <Field name="useLimit" label="Số lượng dùng mỗi khách" cols={6}>
+                      <Input number />
+                    </Field>
+                    <Field name="useLimitByDate" label=" " cols={6}>
+                      <Checkbox placeholder="Số lượng dùng theo ngày" />
+                    </Field>
+                    <Field name="isPrivate" label="" cols={6}>
+                      <Checkbox placeholder="Mã riêng tư" />
+                    </Field>
+                    <Field name="isActive" label="" cols={6}>
+                      <Switch placeholder="Kích hoạt" />
+                    </Field>
+                    <Field name="content" label="Nội dung voucher" cols={12}>
+                      <Editor maxHeight="300px" />
                     </Field>
                   </>
                 )}
-              </>
-            )}
-          </FormConsumer>
-        )}
+              </div>
+              {voucher?.id && (
+                <div className={`col-span-6 grid grid-cols-12 gap-x-5 auto-rows-min`}>
+                  <div className="text-gray-400 font-semibold text-lg col-span-12 mb-4">
+                    Chi tiết khuyến mãi
+                  </div>
+                  <Field name="applyItemIds" label="Các sản phẩm áp dụng" cols={12}>
+                    <Select autocompletePromise={productAutocomplete} multi hasImage />
+                  </Field>
+                  <Field name="exceptItemIds" label="Các sản phẩm không áp dụng" cols={12}>
+                    <Select autocompletePromise={productAutocomplete} multi hasImage />
+                  </Field>
+                  <Field
+                    name="applyPaymentMethods"
+                    label="Phương thức thanh toán áp dụng"
+                    cols={12}
+                  >
+                    <Select options={PAYMENT_METHODS} multi />
+                  </Field>
+                  <Field name="minItemQty" label="Tổng số món tối thiểu" cols={6}>
+                    <Input number suffix="món" />
+                  </Field>
+                  <Field name="minSubtotal" label="Tổng tiền hàng tối thiểu" cols={6}>
+                    <Input number suffix="VND" />
+                  </Field>
+                  <hr className="col-span-12 border-gray-300 mb-4" />
+                  {voucher.type == "DISCOUNT_ITEM" && (
+                    <div className="col-span-12">
+                      <Label text="Các sản phẩm được giảm giá" />
+                      <div className="grid grid-cols-2 gap-y-3"></div>
+                      {discountItems?.map((item, index) => (
+                        <ProductItem
+                          item={item}
+                          hasSalePrice
+                          onClick={() => setOpenDiscountItem(item)}
+                          onRemove={() => {
+                            discountItems.splice(index, 1);
+                            setDiscountItems([...discountItems]);
+                          }}
+                        />
+                      ))}
+                      <Button
+                        className="mb-4 px-0"
+                        textPrimary
+                        icon={<RiAddFill />}
+                        text="Chọn sản phẩm"
+                        innerRef={discountItemsRef}
+                      />
+                      <ProductSelectionPopover
+                        reference={discountItemsRef}
+                        onProductSelect={(item) => {
+                          if (discountItems.find((x) => x.productId == item.id)) {
+                            toast.info("Sản phẩm này đã được chọn");
+                            return;
+                          }
+                          const discountItem: DiscountItem = {
+                            productId: item.id,
+                            product: item,
+                            discountUnit: "VND",
+                            discountValue: 0,
+                            maxDiscount: 0,
+                          };
+                          setDiscountItems([...discountItems, discountItem]);
+                          setOpenDiscountItem(discountItem);
+                        }}
+                      />
+                    </div>
+                  )}
+                  {voucher.type == "OFFER_ITEM" && (
+                    <div className="col-span-12">
+                      <Label text="Các sản phẩm được tặng" />
+                      <div className="grid grid-cols-2 gap-y-3"></div>
+                      {offerItems?.map((item, index) => (
+                        <ProductItem
+                          item={item}
+                          onClick={() => setOpenOfferItem(item)}
+                          onRemove={() => {
+                            offerItems.splice(index, 1);
+                            setOfferItems([...offerItems]);
+                          }}
+                        />
+                      ))}
+                      <Button
+                        className="mb-4 px-0"
+                        textPrimary
+                        icon={<RiAddFill />}
+                        text="Chọn sản phẩm"
+                        innerRef={offerItemsRef}
+                      />
+                      <ProductSelectionPopover
+                        reference={offerItemsRef}
+                        onProductSelect={(item) => {
+                          if (offerItems.find((x) => x.productId == item.id)) {
+                            toast.info("Sản phẩm này đã được chọn");
+                            return;
+                          }
+                          const offerItem: OfferItem = {
+                            productId: item.id,
+                            product: item,
+                            qty: 1,
+                            note: "",
+                          };
+                          setOfferItems([...offerItems, offerItem]);
+                          setOpenOfferItem(offerItem);
+                        }}
+                      />
+                    </div>
+                  )}
+                  {(voucher.type == "DISCOUNT_BILL" || voucher.type == "SHIP_FEE") && (
+                    <>
+                      <Field name="discountUnit" label="Loại giảm giá" cols={6}>
+                        <Select options={DISCOUNT_BILL_UNITS} defaultValue="VND" />
+                      </Field>
+                      <Field name="discountValue" label="Giá trị giảm" cols={6}>
+                        <Input number suffix={data.discountUnit == "VND" ? "VND" : "%"} />
+                      </Field>
+                      <Field name="maxDiscount" label="Giảm tối đa" cols={6}>
+                        <Input number suffix="VND" />
+                      </Field>
+                    </>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </FormConsumer>
       </DataTable.Form>
       <Form
         width="480px"

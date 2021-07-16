@@ -1,11 +1,8 @@
-import { RiDeleteBin6Line, RiPhoneLine, RiStarFill } from "react-icons/ri";
-import { getAddressText } from "../../../../lib/helpers/get-address-text";
-import { NumberPipe } from "../../../../lib/pipes/number";
-import { Product } from "../../../../lib/repo/product.repo";
+import { RiDeleteBin6Line, RiPhoneLine } from "react-icons/ri";
+import { AddressPipe } from "../../../../lib/pipes/address";
 import { ShopBranch } from "../../../../lib/repo/shop-branch.repo";
 import { Button } from "../../../shared/utilities/form/button";
 import { Switch } from "../../../shared/utilities/form/switch";
-import { Img } from "../../../shared/utilities/img";
 
 interface PropsType extends ReactProps {
   branch: ShopBranch;
@@ -23,7 +20,7 @@ export function BranchItem({ branch, ...props }: PropsType) {
         <div className="text-gray-800 font-semibold text-lg group-hover:text-primary">
           {branch.name}
         </div>
-        <div className="text-gray-600">{getAddressText(branch)}</div>
+        <div className="text-gray-600">{AddressPipe(branch)}</div>
       </div>
       <div className="px-4 text-gray-700" style={{ flexGrow: 0.5 }}>
         <div className="flex">

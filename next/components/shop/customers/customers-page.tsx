@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { RiBillLine, RiHome3Line, RiPhoneLine } from "react-icons/ri";
-import { getAddressText } from "../../../lib/helpers/get-address-text";
+import { RiBillLine, RiHome3Line, RiPhoneLine, RiTicketLine } from "react-icons/ri";
+import { NumberPipe } from "../../../lib/pipes/number";
 import { Customer, CustomerService } from "../../../lib/repo/customer.repo";
 import { Staff } from "../../../lib/repo/staff.repo";
 import { OrdersDialog } from "../../shared/shop-layout/orders-dialog";
@@ -38,41 +38,77 @@ export function CustomersPage(props: ReactProps) {
             label="Khách hàng"
             render={(item: Customer) => (
               <DataTable.CellText
-                avatar={item.avatar}
-                value={`${item.name}`}
-                subText={item.facebookName ? `Tên Facebook: ${item.facebookName}` : ""}
+                // avatar={item.avatar}
+                value={
+                  <div className="flex">
+                    <i className="text-lg mt-1 mr-1">
+                      <RiPhoneLine />
+                    </i>
+                    {item.phone}
+                  </div>
+                }
+                subText={item.name || ""}
               />
             )}
           />
           <DataTable.Column
-            center
-            label="Mã khách hàng"
-            render={(item: Customer) => <DataTable.CellText value={`「${item.code}」`} />}
-          />
-          <DataTable.Column
-            label="Liên hệ"
+            label="Giảm giá"
             render={(item: Customer) => (
               <DataTable.CellText
                 value={
                   <>
-                    {item.phone && (
-                      <div className="flex">
-                        <i className="text-lg mt-1 mr-1">
-                          <RiPhoneLine />
-                        </i>
-                        {item.phone}
-                      </div>
-                    )}
-                    {item.address && (
-                      <div className="flex">
-                        <i className="text-lg mt-1 mr-1">
-                          <RiHome3Line />
-                        </i>
-                        {getAddressText(item)}
-                      </div>
-                    )}
+                    <div className="flex whitespace-nowrap">
+                      <span className="w-28">Thành công:</span>
+                      <span className="text-success font-semibold">
+                        {NumberPipe(item.orderStats?.completed)} đơn
+                      </span>
+                    </div>
+                    <div className="flex whitespace-nowrap">
+                      <span className="w-28">Đã huỷ:</span>
+                      <span className="text-danger font-semibold">
+                        {NumberPipe(item.orderStats?.canceled)} đơn
+                      </span>
+                    </div>
+                    <div className="flex whitespace-nowrap">
+                      <span className="w-28">Tổng cộng:</span>
+                      <span className="font-bold">{NumberPipe(item.orderStats?.total)} đơn</span>
+                    </div>
                   </>
                 }
+              />
+            )}
+          />
+          <DataTable.Column
+            label="Giảm giá"
+            render={(item: Customer) => (
+              <DataTable.CellText
+                value={
+                  <>
+                    <div className="flex">
+                      <i className="text-lg mt-1 mr-1">
+                        <RiTicketLine />
+                      </i>
+                      Số voucher dùng: {item.orderStats?.voucher}
+                    </div>
+                    <div className="flex">
+                      <i className="text-lg mt-1 mr-1">
+                        <RiHome3Line />
+                      </i>
+                      Tổng giảm giá: {NumberPipe(item.orderStats?.discount, true)}
+                    </div>
+                  </>
+                }
+              />
+            )}
+          />
+          <DataTable.Column
+            right
+            label="Tổng doanh số"
+            render={(item: Customer) => (
+              <DataTable.CellNumber
+                currency
+                className="text-primary font-bold text-lg"
+                value={item.orderStats?.revenue}
               />
             )}
           />

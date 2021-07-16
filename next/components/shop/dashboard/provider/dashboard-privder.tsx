@@ -14,6 +14,9 @@ type shopOrderType = {
   total: number;
   pendingRevenue: number;
   revenue: number;
+  partnerShipfee: number;
+  shipfee: number;
+  discount: number;
 };
 
 export const DashboardContext = createContext<
@@ -55,6 +58,9 @@ export function DashboardProvider(props) {
     total: 0,
     pendingRevenue: 0,
     revenue: 0,
+    partnerShipfee: 0,
+    shipfee: 0,
+    discount: 0,
   });
   const [top10Products, setTop10Products] = useState<
     {
@@ -73,6 +79,9 @@ export function DashboardProvider(props) {
     total: 0,
     pendingRevenue: 0,
     revenue: 0,
+    partnerShipfee: 0,
+    shipfee: 0,
+    discount: 0,
   });
 
   const getDate = (data: string) => {

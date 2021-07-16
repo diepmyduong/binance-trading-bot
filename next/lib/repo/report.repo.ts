@@ -29,7 +29,8 @@ export class ReportRepository extends CrudRepository<any> {
         query: this
           .gql`query {  reportShopOrder(filter:{fromDate:"${fromDate}", toDate: "${toDate}"})
            { 
-             pending confirmed delivering completed canceled failure total pendingRevenue revenue
+             pending confirmed delivering completed canceled failure total pendingRevenue revenue 
+             partnerShipfee shipfee discount
             }}`,
       })
       .then((res) => res.data["reportShopOrder"]);

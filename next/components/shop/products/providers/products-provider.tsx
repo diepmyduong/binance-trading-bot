@@ -89,9 +89,9 @@ export function ProductsProvider(props) {
         id: product.id,
         data: { allowSale: !allowSale },
       })
-        .then((res) => toast.success("Mở bán sản phẩm thành công"))
+        .then((res) => toast.success(`${allowSale ? "Ngưng" : "Mở"} bán món thành công`))
         .catch((err) => {
-          toast.error("Mở bán sản phẩm thất bại");
+          toast.error(`${allowSale ? "Ngưng" : "Mở"} bán món thất bại`);
           cat.products[index] = { ...product, allowSale };
           setCategories([...categories]);
         });

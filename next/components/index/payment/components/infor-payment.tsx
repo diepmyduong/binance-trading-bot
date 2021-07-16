@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaAddressCard, FaBlenderPhone, FaEdit, FaUserAlt } from "react-icons/fa";
 import { RiAddFill, RiMapPinLine } from "react-icons/ri";
-import { getAddressText } from "../../../../lib/helpers/get-address-text";
 import {
   GoongAutocompletePlace,
   GoongGeocoderService,
@@ -248,6 +247,7 @@ const SelectTime = () => {
     if (date1.getDate().toString() == date2.getDate().toString()) return 0;
     return diffDays;
   };
+
   const getDate = (time, date) => {
     let dateTemp = new Date(date);
     return new Date(
@@ -286,7 +286,7 @@ const SelectTime = () => {
         let tempT;
         if (diffDate == 0) {
           tempT = new Date(getDate(temp, new Date()));
-          if (openT <= tempT && closeT >= tempT)
+          if (openT <= tempT && closeT >= tempT && tempT > today)
             timess.push({ value: i + ":" + halfHours[j], label: i + ":" + halfHours[j] });
         } else {
           tempT = new Date(getDate(temp, selectDate));
@@ -320,8 +320,11 @@ const SelectTime = () => {
           maxDate={endDate}
           defaultValue={selectDate}
           onChange={(date) => {
+            console.log("DATE - ", date);
             setTimes([]);
-            setSelectDate(new Date(date));
+            if (date === null) {
+              setOrderInput({ ...orderInput, pickupTime: null });
+            } else setSelectDate(new Date(date));
           }}
         />
         <Select

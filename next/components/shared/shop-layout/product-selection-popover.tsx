@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { RiCloseCircleLine, RiSearch2Line } from "react-icons/ri";
-import { forceCheck } from "react-lazyload";
 import { convertViToEn } from "../../../lib/helpers/convert-vi-to-en";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { Product, ProductService } from "../../../lib/repo/product.repo";
@@ -41,15 +40,7 @@ export function ProductSelectionPopover({ onProductSelect, ...props }: PropsType
   }, []);
 
   return (
-    <Popover
-      trigger="click"
-      arrow={true}
-      placement="auto-start"
-      onShown={() => {
-        setTimeout(() => forceCheck(), 100);
-      }}
-      {...props}
-    >
+    <Popover trigger="click" arrow={true} placement="auto-start" {...props}>
       {!products ? (
         <Spinner />
       ) : (

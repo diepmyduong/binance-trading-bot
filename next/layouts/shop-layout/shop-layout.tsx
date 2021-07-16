@@ -1,14 +1,10 @@
-import dynamic from "next/dynamic";
 import { useEffect } from "react";
-import { HiOutlineExclamation } from "react-icons/hi";
-import { Card } from "../../components/shared/utilities/card/card";
-import { NotFound } from "../../components/shared/utilities/not-found";
 import { Spinner } from "../../components/shared/utilities/spinner";
 import { useAuth } from "../../lib/providers/auth-provider";
 import { DefaultHead } from "../default-head";
-import { Header } from "./components/header";
 import Sidebar from "./components/sidebar";
 import { ShopLayoutContext, ShopLayoutProvider } from "./providers/shop-layout-provider";
+import "@goongmaps/goong-js/dist/goong-js.css";
 
 interface PropsType extends ReactProps {}
 export function ShopLayout({ ...props }: PropsType) {

@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HiOutlineRefresh } from "react-icons/hi";
+import { IoReturnUpForwardOutline } from "react-icons/io5";
 import { GoongGeocoderService } from "../../../lib/helpers/goong";
 import { AddressPipe } from "../../../lib/pipes/address";
 import { useAlert } from "../../../lib/providers/alert-provider";
@@ -17,12 +18,29 @@ import { Select } from "../../shared/utilities/form/select";
 import { Switch } from "../../shared/utilities/form/switch";
 import { Spinner } from "../../shared/utilities/spinner";
 import { BranchItem } from "./components/branch-item";
+import { BranchLocationDialog } from "./components/branch-location-dialog";
 import { BranchesContext, BranchesProvider } from "./providers/branches-provider";
 
 export function BranchesPage(props: ReactProps) {
+  const [openLocation, setOpenLocation] = useState<{
+    address: string;
+    location: { latitude: number; longitude: number };
+  }>(null);
   const [openBranch, setOpenBranch] = useState<ShopBranch>(undefined);
+  const [location, setLocation] = useState<{ latitude: number; longitude: number }>();
   const toast = useToast();
   const alert = useAlert();
+
+  useEffect(() => {
+    if (openBranch && openBranch.location) {
+      setLocation({
+        longitude: openBranch.location.coordinates[0],
+        latitude: openBranch.location.coordinates[1],
+      });
+    } else {
+      setLocation(null);
+    }
+  }, [openBranch]);
 
   return (
     <BranchesProvider>
@@ -80,37 +98,26 @@ export function BranchesPage(props: ReactProps) {
               extraDialogClass="bg-transparent"
               extraHeaderClass="bg-gray-100 text-xl py-3 justify-center rounded-t-xl border-gray-300 pl-16"
               extraBodyClass="px-6 bg-gray-100 rounded-b-xl"
-              width="600px"
+              width={openBranch ? "1180px" : "600px"}
               initialData={openBranch}
               title={`${openBranch ? "Chỉnh sửa" : "Thêm"} chi nhánh`}
               isOpen={openBranch !== undefined}
               onClose={() => setOpenBranch(undefined)}
-              onSubmit={async (data, fullData) => {
-                let fullAddress = {
-                  ward: fullData.wardId?.label || openBranch.ward,
-                  province: fullData.provinceId?.label || openBranch.province,
-                  district: fullData.districtId?.label || openBranch.district,
-                  address: data.address || openBranch.address,
-                };
-                let location = {
-                  type: "Point",
-                  coordinates: [106.6968302, 10.7797855],
-                };
-                if ((openBranch && !openBranch.location) || !openBranch) {
-                  let res = await GoongGeocoderService.geocode(AddressPipe(fullAddress));
-                  if (res.length) {
-                    location.coordinates = [
-                      res[0].geometry.location.lng,
-                      res[0].geometry.location.lat,
-                    ];
-                  }
+              onSubmit={async (data) => {
+                if (!location) {
+                  toast.info("Yêu cầu chọn toạ độ chi nhánh");
+                  return;
                 }
                 let newData = {} as Partial<ShopBranch>;
+                let locationData = {
+                  type: "Point",
+                  coordinates: [location.longitude, location.latitude],
+                };
                 if (openBranch) {
                   newData = {
                     id: openBranch.id,
                     ...data,
-                    location: data.location || location,
+                    location: locationData,
                   };
                   console.log(newData);
                 } else {
@@ -134,85 +141,127 @@ export function BranchesPage(props: ReactProps) {
                     phone,
                     coverImage,
                     activated: true,
-                    location,
+                    location: locationData,
                   };
                 }
                 await onCreateOrUpdateBranch(newData);
                 setOpenBranch(undefined);
               }}
             >
-              <Field name="name" label="Tên chi nhánh" cols={12} required>
-                <Input />
-              </Field>
-              <Field name="phone" label="Số điện thoại" cols={12} required>
-                <Input />
-              </Field>
-              <AddressGroup
-                {...openBranch}
-                provinceCols={12}
-                districtCols={12}
-                wardCols={12}
-                addressCols={12}
-                required
-              />
-              <Field name="email" label="Email" cols={12}>
-                <Input type="email" />
-              </Field>
-              <Field
-                name="coverImage"
-                label="Ảnh bìa chi nhánh"
-                description="Tỉ lệ 16:9. Dùng ảnh cửa hàng nếu không có"
-                cols={12}
-              >
-                <ImageInput ratio169 cover largeImage />
-              </Field>
-              {openBranch && (
-                <div className="col-span-12">
-                  <div className="text-gray-400 font-semibold mt-4 mb-4 pl-1 text-lg">
-                    Cấu hình phí giao hàng
-                  </div>
-                  <Field label="Thời gian nhà hàng chuẩn bị" name="shipPreparationTime">
-                    <Input className="h-12" />
-                  </Field>
-                  <div className="flex">
-                    <Form.Consumer>
-                      {({ data }) => (
-                        <Field
-                          label="Phí giao hàng dưới 1km"
-                          name="shipOneKmFee"
-                          className="flex-1"
-                        >
-                          <Input
-                            className="h-12"
-                            number
-                            suffix="VND"
-                            readonly={!data.shipUseOneKmFee}
-                          />
+              <Form.Consumer>
+                {({ data, fullData }) => (
+                  <>
+                    <div
+                      className={`${
+                        openBranch ? "col-span-6" : "col-span-12"
+                      } grid grid-cols-12 gap-x-5 auto-rows-min`}
+                    >
+                      <div className="text-gray-400 font-semibold text-lg col-span-12 mb-4">
+                        Thông tin chi nhánh
+                      </div>
+                      <Field name="name" label="Tên chi nhánh" cols={12} required>
+                        <Input />
+                      </Field>
+                      <Field name="phone" label="Số điện thoại" cols={12} required>
+                        <Input />
+                      </Field>
+                      <AddressGroup
+                        {...openBranch}
+                        provinceCols={12}
+                        districtCols={12}
+                        wardCols={12}
+                        addressCols={12}
+                        required
+                      />
+                      <Field
+                        label="Toạ độ"
+                        cols={12}
+                        onClick={() => {
+                          setOpenLocation({
+                            address: AddressPipe({
+                              address: data.address,
+                              province: fullData.provinceId?.label,
+                              district: fullData.districtId?.label,
+                              ward: fullData.wardId?.label,
+                            }),
+                            location,
+                          });
+                        }}
+                      >
+                        <Input
+                          inputClassName="bg-white"
+                          value={
+                            [location?.latitude, location?.longitude].filter(Boolean).join(", ") ||
+                            "Chưa có toạ độ"
+                          }
+                          readonly
+                        />
+                      </Field>
+                      <Field name="email" label="Email" cols={12}>
+                        <Input type="email" />
+                      </Field>
+                      <Field
+                        name="coverImage"
+                        label="Ảnh bìa chi nhánh"
+                        description="Tỉ lệ 16:9. Dùng ảnh cửa hàng nếu không có"
+                        cols={12}
+                      >
+                        <ImageInput ratio169 cover largeImage />
+                      </Field>
+                    </div>
+                    {openBranch && (
+                      <div className="col-span-6">
+                        <div className="text-gray-400 font-semibold mb-4 pl-1 text-lg">
+                          Cấu hình phí giao hàng
+                        </div>
+                        <Field label="Thời gian nhà hàng chuẩn bị" name="shipPreparationTime">
+                          <Input className="h-12" />
                         </Field>
-                      )}
-                    </Form.Consumer>
+                        <div className="flex">
+                          <Field
+                            label="Phí giao hàng dưới 1km"
+                            name="shipOneKmFee"
+                            className="flex-1"
+                          >
+                            <Input
+                              className="h-12"
+                              number
+                              suffix="VND"
+                              readonly={!data.shipUseOneKmFee}
+                            />
+                          </Field>
 
-                    <Field label=" " name="shipUseOneKmFee" className="pl-5 flex-1">
-                      <Switch placeholder="Tính phí ship dưới 1km" className="h-12 font-semibold" />
-                    </Field>
-                  </div>
-                  <div className="flex">
-                    <Field className="flex-1" label="Phí giao hàng theo" name="shipDefaultDistance">
-                      <Select options={SHOP_KM_OPTIONS} className="h-12 inline-grid" />
-                    </Field>
-                    <span className="pt-10 px-2">-</span>
-                    <Field className="flex-1" label="Đồng giá" name="shipDefaultFee">
-                      <Input className="h-12" number suffix="VND" />
-                    </Field>
-                  </div>
-                  <Field label="Phí giao hàng cho mỗi km tiếp theo" name="shipNextFee">
-                    <Input className="h-12" number suffix="VND" />
-                  </Field>
-                  <Field label="Ghi chú giao hàng" name="shipNote">
-                    <Input className="h-12" />
-                  </Field>
-                </div>
-              )}
+                          <Field label=" " name="shipUseOneKmFee" className="pl-5 flex-1">
+                            <Switch
+                              placeholder="Tính phí ship dưới 1km"
+                              className="h-12 font-semibold"
+                            />
+                          </Field>
+                        </div>
+                        <div className="flex">
+                          <Field
+                            className="flex-1"
+                            label="Phí giao hàng theo"
+                            name="shipDefaultDistance"
+                          >
+                            <Select options={SHOP_KM_OPTIONS} className="h-12 inline-grid" />
+                          </Field>
+                          <span className="pt-10 px-2">-</span>
+                          <Field className="flex-1" label="Đồng giá" name="shipDefaultFee">
+                            <Input className="h-12" number suffix="VND" />
+                          </Field>
+                        </div>
+                        <Field label="Phí giao hàng cho mỗi km tiếp theo" name="shipNextFee">
+                          <Input className="h-12" number suffix="VND" />
+                        </Field>
+                        <Field label="Ghi chú giao hàng" name="shipNote">
+                          <Input className="h-12" />
+                        </Field>
+                      </div>
+                    )}
+                  </>
+                )}
+              </Form.Consumer>
               <Form.Footer>
                 <Form.ButtonGroup
                   className="justify-center"
@@ -224,6 +273,13 @@ export function BranchesPage(props: ReactProps) {
           </>
         )}
       </BranchesContext.Consumer>
+      <BranchLocationDialog
+        isOpen={!!openLocation}
+        onClose={() => setOpenLocation(null)}
+        address={openLocation?.address}
+        location={openLocation?.location}
+        onSelectLocation={setLocation}
+      />
     </BranchesProvider>
   );
 }

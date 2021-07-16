@@ -27,16 +27,18 @@ export const DashboardContext = createContext<
     shopOrderReportToday: shopOrderType;
     loadReportProduct: (fromDate: string, toDate: string) => Promise<any>;
     loadReportShopOrder: (fromDate: string, toDate: string) => Promise<any>;
+    loadReportChart: (fromDate: string, toDate: string) => Promise<any>;
     loadReportShopCustomer: () => Promise<any>;
     getDate: (data: string) => { fromDate: string; toDate: string };
     shopCustomerReport: number;
+    dataChart: any;
   }>
 >({});
 export function DashboardProvider(props) {
   const toast = useToast();
   const { branchSelecting } = useShopContext();
   const [shopCustomerReport, setShopCustomerReport] = useState<number>(0);
-
+  const [dataChart, setDataChart] = useState<any>();
   const [shopOrderReportToday, setShopOrderReportToday] = useState<shopOrderType>({
     pending: 0,
     confirmed: 0,
@@ -81,8 +83,8 @@ export function DashboardProvider(props) {
         lastDay = new Date(date.getFullYear(), date.getMonth(), 0).toISOString();
         break;
       case "3 tháng gần nhất":
-        firstDay = new Date(date.getFullYear(), date.getMonth() - 3, 1).toISOString();
-        lastDay = new Date(date.getFullYear(), date.getMonth(), 0).toISOString();
+        firstDay = new Date(date.getFullYear(), date.getMonth() - 2, 1).toISOString();
+        lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).toISOString();
         break;
     }
     return { fromDate: firstDay, toDate: lastDay };
@@ -91,6 +93,9 @@ export function DashboardProvider(props) {
     let today = new Date().toISOString();
     ReportService.reportShopOrder(today, today).then((res) => setShopOrderReportToday(res));
   }, []);
+  const loadReportChart = (fromDate: string, toDate: string) => {
+    return ReportService.reportShopOrderKline(fromDate, toDate).then((res) => setDataChart(res));
+  };
   const loadReportShopCustomer = () => {
     return ReportService.reportShopCustomer().then((res) => setShopCustomerReport(res.total));
   };
@@ -113,6 +118,8 @@ export function DashboardProvider(props) {
         shopOrderReport,
         loadReportShopCustomer,
         shopOrderReportToday,
+        dataChart,
+        loadReportChart,
       }}
     >
       {props.children}

@@ -13,9 +13,14 @@ export function TicketVoucher({ voucher, onClick, showDetail, ...props }: Propst
   return (
     <div className=" flex items-center h-full">
       <div className="h-full w-2 bg-primary rounded-l-2xl"></div>
-      <div className="w-2/3 flex flex-col justify-center bg-white py-2 px-2 rounded-r-xl h-full">
+      <div className="w-2/3 justify-center bg-white py-2 px-2 rounded-r-xl h-full">
         <div className="text-sm font-bold text-ellipsis w-full">{voucher.description}</div>
-        <Button text="Xem chi tiết" small textPrimary onClick={() => showDetail(voucher)} />
+        <Button
+          text="Xem chi tiết"
+          textPrimary
+          onClick={() => showDetail(voucher)}
+          className="justify-start p-0 text-sm"
+        />
         {/* <Link href="">
           <a href="" className="text-xs font-semibold text-primary pt-1">
             Xem chi tiết

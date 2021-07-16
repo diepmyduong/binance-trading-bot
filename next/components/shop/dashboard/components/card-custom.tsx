@@ -10,6 +10,7 @@ type HeaderProps = ReactProps & {
   subtitle?: string;
   icon?: any;
   filter?: Option[];
+  onChange?: (data: any) => void;
 };
 CardCustom.Header = (props: HeaderProps) => {
   return (
@@ -21,7 +22,11 @@ CardCustom.Header = (props: HeaderProps) => {
         </div>
         {props.filter && (
           <div className="w-full">
-            <Select options={props.filter} />
+            <Select
+              options={props.filter}
+              defaultValue={props.filter[0]}
+              onChange={(data) => props.onChange(data)}
+            />
           </div>
         )}
       </div>

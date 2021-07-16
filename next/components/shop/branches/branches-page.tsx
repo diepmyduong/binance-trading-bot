@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { HiOutlineRefresh } from "react-icons/hi";
-import { convertViToEn } from "../../../lib/helpers/convert-vi-to-en";
-import { getAddressText } from "../../../lib/helpers/get-address-text";
+import { GoongGeocoderService } from "../../../lib/helpers/goong";
+import { AddressPipe } from "../../../lib/pipes/address";
 import { useAlert } from "../../../lib/providers/alert-provider";
 import { useToast } from "../../../lib/providers/toast-provider";
-import { HereMapService } from "../../../lib/repo/map.repo";
 import { ShopBranch } from "../../../lib/repo/shop-branch.repo";
 import { SHOP_KM_OPTIONS } from "../../../lib/repo/shop-config.repo";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
@@ -98,11 +97,12 @@ export function BranchesPage(props: ReactProps) {
                   coordinates: [106.6968302, 10.7797855],
                 };
                 if ((openBranch && !openBranch.location) || !openBranch) {
-                  let res = await HereMapService.getCoordinatesFromAddress(
-                    getAddressText(fullAddress)
-                  );
-                  if (res) {
-                    location.coordinates = [res.position.lng, res.position.lat];
+                  let res = await GoongGeocoderService.geocode(AddressPipe(fullAddress));
+                  if (res.length) {
+                    location.coordinates = [
+                      res[0].geometry.location.lng,
+                      res[0].geometry.location.lat,
+                    ];
                   }
                 }
                 let newData = {} as Partial<ShopBranch>;

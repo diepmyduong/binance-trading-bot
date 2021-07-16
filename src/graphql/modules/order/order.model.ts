@@ -113,6 +113,7 @@ export type IOrder = BaseDocument & {
   isUrbanDelivery?: boolean;
   collaboratorId?: string;
   note?: string;
+  confirmNote?: string; // Ghi chú làm món
   toMemberNote?: string;
   toMemberId?: string; // Cửa hàng được chuyển đơn
   longitude?: string;
@@ -201,12 +202,13 @@ const orderSchema = new Schema(
 
     isUrbanDelivery: { type: Boolean, default: false },
     collaboratorId: { type: Schema.Types.ObjectId, ref: "Collaborator" },
-    note: { type: Schema.Types.String },
-    toMemberNote: { type: Schema.Types.String },
+    note: { type: String },
+    confirmNote: { type: String },
+    toMemberNote: { type: String },
     // chuyển đơn cho member khác xử lý
     toMemberId: { type: Schema.Types.ObjectId, ref: "Member" },
-    longitude: { type: Schema.Types.String, required: true },
-    latitude: { type: Schema.Types.String, required: true },
+    longitude: { type: String, required: true },
+    latitude: { type: String, required: true },
     orderLogIds: {
       type: [{ type: Schema.Types.ObjectId, ref: "OrderLog" }],
       default: [],

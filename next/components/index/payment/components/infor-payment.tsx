@@ -286,7 +286,7 @@ const SelectTime = () => {
         let tempT;
         if (diffDate == 0) {
           tempT = new Date(getDate(temp, new Date()));
-          if (openT <= tempT && closeT >= tempT)
+          if (openT <= tempT && closeT >= tempT && tempT > today)
             timess.push({ value: i + ":" + halfHours[j], label: i + ":" + halfHours[j] });
         } else {
           tempT = new Date(getDate(temp, selectDate));

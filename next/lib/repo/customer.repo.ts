@@ -24,6 +24,14 @@ export interface Customer extends BaseModel {
   pageAccounts: [CustomerPageAccount];
   latitude: number;
   longitude: number;
+  orderStats: {
+    revenue: number;
+    voucher: number;
+    discount: number;
+    total: number;
+    completed: number;
+    canceled: number;
+  };
 }
 interface CustomerPageAccount {
   psid: string;
@@ -63,6 +71,14 @@ export class CustomerRepository extends CrudRepository<Customer> {
     province: String
     district: String
     ward: String
+    orderStats {
+      revenue: Float
+      voucher: Int
+      discount: Float
+      total: Int
+      completed: Int
+      canceled: Int
+    }: CustomerOrderStats
   `);
   fullFragment: string = this.parseFragment(`
     id: String
@@ -97,6 +113,14 @@ export class CustomerRepository extends CrudRepository<Customer> {
     }: [CustomerPageAccount]
     latitude: Float
     longitude: Float
+    orderStats {
+      revenue: Float
+      voucher: Int
+      discount: Float
+      total: Int
+      completed: Int
+      canceled: Int
+    }: CustomerOrderStats
   `);
   async getCustomer() {
     return await this.apollo

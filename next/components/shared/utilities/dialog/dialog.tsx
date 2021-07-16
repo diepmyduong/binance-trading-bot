@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import useDevice from "../../../../lib/hooks/useDevice";
 import useScrollBlock from "../../../../lib/hooks/useScrollBlock";
 import { HiOutlineX } from "react-icons/hi";
+import { forceCheck } from "react-lazyload";
 
 export interface DialogPropsType extends ReactProps {
   wrapperClass?: string;
@@ -62,6 +63,7 @@ export function Dialog({
     let timeout;
     if (props.isOpen) {
       setIsOpen(props.isOpen);
+      setTimeout(() => forceCheck(), 200);
     } else {
       timeout = setTimeout(() => {
         setIsOpen(props.isOpen);

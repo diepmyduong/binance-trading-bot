@@ -53,7 +53,6 @@ export function Img({
         setImage(src);
       }
       setError(false);
-      setTimeout(() => forceCheck(), 100);
     } else {
       onImageError();
     }

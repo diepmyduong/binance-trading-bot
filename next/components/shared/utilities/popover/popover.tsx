@@ -1,6 +1,7 @@
 import { Placement } from "@popperjs/core";
 import Tippy from "@tippyjs/react";
 import { MutableRefObject } from "react";
+import { forceCheck } from "react-lazyload";
 
 export interface PopoverProps extends ReactProps {
   reference: MutableRefObject<HTMLElement>;
@@ -45,7 +46,10 @@ export function Popover({
       maxWidth={maxWidth}
       trigger={getTrigger()}
       hideOnClick={hideOnClickOutside || "toggle"}
-      onShown={() => (props.onShown ? props.onShown(true) : false)}
+      onShown={() => {
+        props.onShown ? props.onShown(true) : false;
+        setTimeout(() => forceCheck(), 100);
+      }}
     ></Tippy>
   );
 }

@@ -41,17 +41,15 @@ export function VouchersPage(props: ReactProps) {
         <DataTable.Table className="mt-4 bg-white">
           <DataTable.Column
             label="Mã khuyến mãi"
+            className="max-w-xs"
             render={(item: ShopVoucher) => (
               <DataTable.CellText
                 image={item.image}
+                className="font-semibold"
                 value={item.code}
-                subText={format(new Date(item.createdAt), "dd-MM-yyyy")}
+                subText={item.description}
               />
             )}
-          />
-          <DataTable.Column
-            label="Mô tả"
-            render={(item: ShopVoucher) => <DataTable.CellText value={item.description} />}
           />
           <DataTable.Column
             center

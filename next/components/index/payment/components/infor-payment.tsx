@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaAddressCard, FaBlenderPhone, FaEdit, FaUserAlt } from "react-icons/fa";
 import { RiAddFill, RiMapPinLine } from "react-icons/ri";
-import { getAddressText } from "../../../../lib/helpers/get-address-text";
 import {
   GoongAutocompletePlace,
   GoongGeocoderService,

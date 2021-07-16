@@ -1,6 +1,6 @@
 import cloneDeep from "lodash/cloneDeep";
 import { useEffect, useRef, useState } from "react";
-import { RiAddFill, RiArrowRightLine, RiCloseFill } from "react-icons/ri";
+import { RiAddFill, RiArrowRightLine, RiCloseFill, RiImageAddFill } from "react-icons/ri";
 import { NumberPipe } from "../../../../lib/pipes/number";
 import { useToast } from "../../../../lib/providers/toast-provider";
 import { PAYMENT_METHODS } from "../../../../lib/repo/order.repo";
@@ -24,6 +24,7 @@ import { Select } from "../../../shared/utilities/form/select";
 import { Switch } from "../../../shared/utilities/form/switch";
 import { Img } from "../../../shared/utilities/img";
 import { DataTable } from "../../../shared/utilities/table/data-table";
+import { AvatarUploader } from "../../../shared/utilities/uploader/avatar-uploader";
 
 interface PropsType extends FormPropsType {
   voucher: ShopVoucher;
@@ -36,14 +37,19 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
   const [openDiscountItem, setOpenDiscountItem] = useState<DiscountItem>(null);
   const [openOfferItem, setOpenOfferItem] = useState<OfferItem>(null);
   const toast = useToast();
+  const avatarUploaderRef = useRef<any>();
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [image, setImage] = useState("");
 
   useEffect(() => {
     if (voucher?.id) {
       setDiscountItems(cloneDeep(voucher.discountItems));
       setOfferItems(cloneDeep(voucher.offerItems));
+      setImage(voucher.image);
     } else {
       setDiscountItems(null);
       setOfferItems(null);
+      setImage("");
     }
   }, [voucher]);
 
@@ -59,6 +65,10 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
         }),
       }
     );
+
+  const onImageChange = (image: string) => {
+    setImage(image);
+  };
   return (
     <>
       <DataTable.Form
@@ -73,17 +83,20 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
         grid
         beforeSubmit={(data) => ({
           ...data,
-          discountItems: discountItems.map((x) => ({
-            productId: x.productId,
-            discountUnit: x.discountUnit,
-            discountValue: x.discountValue,
-            maxDiscount: x.maxDiscount,
-          })),
-          offerItems: offerItems.map((x) => ({
-            productId: x.productId,
-            qty: x.qty,
-            note: x.note,
-          })),
+          discountItems:
+            discountItems?.map((x) => ({
+              productId: x.productId,
+              discountUnit: x.discountUnit,
+              discountValue: x.discountValue,
+              maxDiscount: x.maxDiscount,
+            })) || undefined,
+          offerItems:
+            offerItems?.map((x) => ({
+              productId: x.productId,
+              qty: x.qty,
+              note: x.note,
+            })) || undefined,
+          image: image || undefined,
         })}
       >
         <Field name="code" label="Mã khuyến mãi" cols={6} required readonly={!!voucher?.id}>
@@ -99,6 +112,39 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
           <FormConsumer>
             {({ data }) => (
               <>
+                <div className="col-span-12 mb-3">
+                  <Label text="Hình sản phẩm" />
+                  <div className="flex">
+                    <div className="border border-gray-300 rounded-lg w-24 h-24 flex-center bg-white overflow-hidden">
+                      {image ? (
+                        <Img className="w-full" compress={300} src={image} showImageOnClick />
+                      ) : (
+                        <i className="text-4xl text-gray-500">
+                          <RiImageAddFill />
+                        </i>
+                      )}
+                    </div>
+                    <div className="ml-4 p-4 flex-1 flex-center flex-col rounded border border-gray-300 border-dashed bg-white">
+                      <span className="text-sm">Ảnh PNG, JPEG, JPG không quá 10Mb. Tỉ lệ 1:1.</span>
+                      <Button
+                        className="px-3 h-9 text-sm hover:underline"
+                        textPrimary
+                        text="Tải ảnh lên"
+                        isLoading={uploadingAvatar}
+                        onClick={() => {
+                          avatarUploaderRef.current().onClick();
+                        }}
+                      />
+                      <AvatarUploader
+                        onRef={(ref) => {
+                          avatarUploaderRef.current = ref;
+                        }}
+                        onUploadingChange={setUploadingAvatar}
+                        onImageUploaded={onImageChange}
+                      />
+                    </div>
+                  </div>
+                </div>
                 <Field name="startDate" label="Ngày bắt đầu" cols={6}>
                   <DatePicker />
                 </Field>

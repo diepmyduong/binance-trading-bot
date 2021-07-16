@@ -41,9 +41,9 @@ export function Form({ className = "", style = {}, ...props }: FormPropsType) {
   const getUUID = () => Math.floor(Math.random() * 10) + new Date().getTime().toString(36);
 
   const [id, setId] = useState<string>();
-  const [initialData, setInitialData] = useState<any>();
-  const [data, setData] = useState<any>();
-  const [fullData, setFullData] = useState<any>();
+  let [initialData, setInitialData] = useState<any>();
+  let [data, setData] = useState<any>();
+  let [fullData, setFullData] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [hasChanged, setHasChanged] = useState(false);
   const [errors, setErrors] = useState({});
@@ -64,17 +64,15 @@ export function Form({ className = "", style = {}, ...props }: FormPropsType) {
   }, []);
 
   useEffect(() => {
-    if (props.dialog && props.isOpen) reset();
-  }, [props.isOpen]);
-
-  useEffect(() => {
-    // TODO: FIX PROBLEMS HERE
-    if (!isEqual(props.initialData, initialData) || !props.initialData || !initialData) {
-      setInitialData(cloneDeep(props.initialData) || {});
-      setData(props.initialData ? pick(props.initialData, fieldNames) : {});
-      setFullData(props.initialData ? pick(props.initialData, fieldNames) : {});
-      setHasChanged(false);
-    }
+    setErrors({});
+    initialData = cloneDeep(props.initialData) || {};
+    setInitialData(initialData);
+    let newData = props.initialData ? pick(props.initialData, fieldNames) : {};
+    data = newData;
+    setData(data);
+    fullData = cloneDeep(newData);
+    setFullData(fullData);
+    setHasChanged(false);
   }, [props.initialData, props.isOpen]);
 
   useEffect(() => {

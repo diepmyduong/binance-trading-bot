@@ -5,12 +5,12 @@ import { Order, OrderService, ORDER_STATUS } from "../../../lib/repo/order.repo"
 import { Dialog, DialogPropsType } from "../utilities/dialog/dialog";
 import { Spinner } from "../utilities/spinner";
 import format from "date-fns/format";
-import { getAddressText } from "../../../lib/helpers/get-address-text";
 import { Img } from "../utilities/img";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { Button } from "../utilities/form/button";
 import { OrderLog, OrderLogService } from "../../../lib/repo/order-log.repo";
 import { DeliveryLog, DeliveryLogService } from "../../../lib/repo/delivery-log.repo";
+import { AddressPipe } from "../../../lib/pipes/address";
 
 interface PropsType extends DialogPropsType {
   orderId: string;
@@ -93,7 +93,7 @@ export function OrderDetailsDialog({ orderId, ...props }: PropsType) {
               </i>
               <span>
                 <strong className="font-semibold">Địa chỉ: </strong>
-                {getAddressText(order, "buyer")}
+                {order.buyerFullAddress}
               </span>
             </div>
           )}

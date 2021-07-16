@@ -42,7 +42,6 @@ export function ProductForm({ product, category, ...props }: PropsType) {
   const [image, setImage] = useState("");
   const avatarUploaderRef = useRef<any>();
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const [uploadingMemberAvatar, setUploadingMemberAvatar] = useState(false);
   const [labels, setLabels] = useState<ProductLabel[]>(null);
   const [openLabel, setOpenLabel] = useState<ProductLabel>(undefined);
 
@@ -56,7 +55,7 @@ export function ProductForm({ product, category, ...props }: PropsType) {
     setToppings([...toppings, topping]);
   };
 
-  const onAvatarChange = (image: string) => {
+  const onImageChange = (image: string) => {
     setImage(image);
   };
 
@@ -132,7 +131,7 @@ export function ProductForm({ product, category, ...props }: PropsType) {
                   className="px-3 h-9 text-sm hover:underline"
                   textPrimary
                   text="Tải ảnh lên"
-                  isLoading={uploadingAvatar || uploadingMemberAvatar}
+                  isLoading={uploadingAvatar}
                   onClick={() => {
                     avatarUploaderRef.current().onClick();
                   }}
@@ -142,7 +141,7 @@ export function ProductForm({ product, category, ...props }: PropsType) {
                     avatarUploaderRef.current = ref;
                   }}
                   onUploadingChange={setUploadingAvatar}
-                  onImageUploaded={onAvatarChange}
+                  onImageUploaded={onImageChange}
                 />
               </div>
             </div>

@@ -122,7 +122,7 @@ export function ShopProvider(props) {
     localStorage.removeItem("customer-token");
     setCustomer(null);
     if (router.pathname !== "/") {
-      router.push(`/?=${shopCode}`);
+      router.push(`/${shopCode}`);
     }
   }
   useEffect(() => {

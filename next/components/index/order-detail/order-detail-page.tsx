@@ -34,7 +34,7 @@ export function OrderDetailPage(props) {
     <div className="bg-white min-h-screen">
       <BreadCrumbs
         breadcrumbs={[
-          { label: "Trang chủ", href: `/?code=${shopCode}` },
+          { label: "Trang chủ", href: `/${shopCode}` },
           { label: "Lịch sử đơn hàng", href: `/order` },
           { label: "Chi tiết đơn hàng" },
         ]}

@@ -10,10 +10,7 @@ export function OrderPage() {
   return (
     <div className="w-full bg-white relative min-h-screen">
       <BreadCrumbs
-        breadcrumbs={[
-          { label: "Trang chủ", href: `/?code=${shopCode}` },
-          { label: "Lịch sử đơn hàng" },
-        ]}
+        breadcrumbs={[{ label: "Trang chủ", href: `/${shopCode}` }, { label: "Lịch sử đơn hàng" }]}
         className="py-4 pl-4"
       />
       {orders ? (

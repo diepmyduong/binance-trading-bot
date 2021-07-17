@@ -123,6 +123,7 @@ interface SaleUpProductProps extends ReactProps {
   saleUpProduct: Product[];
 }
 export function SaleUpProduct(props: SaleUpProductProps) {
+  const { shop } = useShopContext();
   const router = useRouter();
   const query = router.query;
   const url = new URL(location.href);
@@ -132,7 +133,9 @@ export function SaleUpProduct(props: SaleUpProductProps) {
   };
   return (
     <div className="relative group mt-10">
-      <h3 className="text-lg font-semibold text-primary pb-2">Ngon hơn khi ăn kèm</h3>
+      <h3 className="text-lg font-semibold text-primary pb-2">
+        {shop?.config.upsaleTitle || "Ngon hơn khi ăn kèm"}
+      </h3>
       <Swiper
         spaceBetween={10}
         freeMode={true}

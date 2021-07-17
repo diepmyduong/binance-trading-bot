@@ -40,11 +40,11 @@ export function OrderDetailPage(props) {
         ]}
         className="p-4"
       />
-      {isInterval ? (
-        <>{status && order && <OrderStatus status={status} order={order} />}</>
-      ) : (
+      {status && order ? (
         <>
-          {order ? (
+          {isInterval ? (
+            <>{<OrderStatus status={status} order={order} />}</>
+          ) : (
             <div className="text-gray-800 text-sm sm:text-lg">
               <div className="w-full px-4">
                 <div className="grid grid-cols-2 w-full pt-4">
@@ -263,10 +263,10 @@ export function OrderDetailPage(props) {
                 </div>
               </div>
             </div>
-          ) : (
-            <Spinner />
           )}
         </>
+      ) : (
+        <Spinner />
       )}
     </div>
   );

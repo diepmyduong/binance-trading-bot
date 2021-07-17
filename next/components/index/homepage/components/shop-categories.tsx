@@ -18,9 +18,9 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
   function isInViewport(element) {
     const rect = element.getBoundingClientRect();
     return (
-      rect.top >= 0 &&
+      rect.top > 100 &&
       rect.left >= 0 &&
-      rect.bottom / 2 <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
       rect.right <= (window.innerWidth || document.documentElement.clientWidth)
     );
   }
@@ -34,8 +34,14 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
           if (position) {
             setTimeout(() => {
               setIsViewing(index);
+              // if (isInViewport(menulist[menulist.length - 1])) {
+              //   setTimeout(() => {
+              //     setIsViewing(menulist.length - 1);
+              //     clearInterval(scrollCheckInterval);
+              //   }, 200);
+              // }
               clearInterval(scrollCheckInterval);
-            }, 300);
+            }, 200);
             break;
           }
         }
@@ -59,10 +65,10 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
         block: "start",
         inline: "start",
       });
-    }, 400);
+    }, 200);
     setTimeout(() => {
       setIsClickView(false);
-    }, 300);
+    }, 500);
   };
   return (
     <div className="bg-white mt-4">

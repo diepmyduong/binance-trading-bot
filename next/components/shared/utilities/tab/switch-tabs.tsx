@@ -8,8 +8,14 @@ interface Propstype extends FormControlProps {
   width?: number;
   value?: any;
   chevron?: boolean;
+  underline?: boolean;
 }
-export function SwitchTabs({ native = false, chevron = false, ...props }: Propstype) {
+export function SwitchTabs({
+  native = false,
+  chevron = false,
+  underline = false,
+  ...props
+}: Propstype) {
   function isInViewport(element) {
     let rectTabContainer = document
       .getElementsByClassName("tab-container")[0]
@@ -32,10 +38,10 @@ export function SwitchTabs({ native = false, chevron = false, ...props }: Propst
     setValue(index);
     setTimeout(() => {
       checkLeftnRight();
-    }, 500);
+    }, 400);
     setTimeout(() => {
       setClickToView(false);
-    }, 300);
+    }, 500);
   }
   const debounceValue = useDebounce(props.value, 200);
   useEffect(() => {
@@ -43,11 +49,13 @@ export function SwitchTabs({ native = false, chevron = false, ...props }: Propst
       setValue(debounceValue);
       let selected = document.getElementsByClassName("tab")[debounceValue];
       if (selected) {
-        selected.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "center",
-        });
+        setTimeout(() => {
+          selected.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center",
+          });
+        }, 50);
       }
       setTimeout(() => {
         checkLeftnRight();
@@ -94,28 +102,32 @@ export function SwitchTabs({ native = false, chevron = false, ...props }: Propst
     if (left) {
       for (let index = value; index >= 0; index--) {
         if (!isInViewport(tabs[index])) {
-          tabs[index].scrollIntoView({
-            behavior: "smooth",
-            block: "nearest",
-            inline: "center",
-          });
+          setTimeout(() => {
+            tabs[index].scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+              inline: "center",
+            });
+          }, 50);
           setTimeout(() => {
             checkLeftnRight();
-          }, 200);
+          }, 500);
           break;
         }
       }
     } else {
       for (let index = value; index < tabs.length; index++) {
         if (!isInViewport(tabs[index])) {
-          tabs[index].scrollIntoView({
-            behavior: "smooth",
-            block: "nearest",
-            inline: "center",
-          });
+          setTimeout(() => {
+            tabs[index].scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+              inline: "center",
+            });
+          }, 50);
           setTimeout(() => {
             checkLeftnRight();
-          }, 200);
+          }, 500);
           break;
         }
       }
@@ -181,7 +193,7 @@ export function SwitchTabs({ native = false, chevron = false, ...props }: Propst
               </a>
             )
         )}
-        {native && (
+        {underline && (
           <div
             className="absolute bottom-0 h-1 bg-primary transition-all ease-in-out duration-300"
             style={{ width: style.width, left: style.left }}

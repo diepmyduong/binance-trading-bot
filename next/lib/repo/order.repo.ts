@@ -11,7 +11,7 @@ export interface OrderInput {
   promotionCode: string;
   buyerName: string;
   buyerPhone: string;
-  pickupMethod: "DELIVERY" | "STORE";
+  pickupMethod: string;
   shopBranchId: string;
   pickupTime: string;
   buyerAddress: string;

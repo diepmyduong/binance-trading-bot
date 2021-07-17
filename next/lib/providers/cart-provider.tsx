@@ -23,6 +23,7 @@ export const CartContext = createContext<
     addProductToCart: (product: Product, qty: number, note: string) => any;
     changeProductQuantity: (productIndex: number, qty: number) => any;
     removeProductFromCart: (productIndex: number) => any;
+    reOrder: (items: CartProduct[], reOderInput: OrderInput) => any;
   }>
 >({});
 export interface CartProduct {
@@ -211,6 +212,53 @@ export function CartProvider(props) {
       setCartProducts([...cartProducts]);
     }
   };
+  const reOrder = (items: CartProduct[], reOderInput: OrderInput) => {
+    let resCartProducts = [...items];
+    setOrderInput(cloneDeep(reOderInput));
+    if (resCartProducts) {
+      //lấy danh sách product mua lại
+      ProductService.getAll({
+        query: {
+          limit: 0,
+          filter: {
+            _id: { __in: resCartProducts.map((x) => x.productId) },
+          },
+        },
+      }).then((res) => {
+        let listCartNew = cartProducts;
+        resCartProducts.forEach((reCartProduct) => {
+          let { __typename, ...product } = res.data.find((x) => x.id == reCartProduct.productId);
+          if (product) {
+            let index = listCartNew.findIndex((x) => x.productId == product.id);
+            console.log(index);
+            if (index !== -1) {
+              listCartNew.splice(index, 1);
+            }
+            let price = product.basePrice;
+            if(product.selectedToppings){
+              price = product.selectedToppings.reduce((total, topping) => total + topping.price, 0);
+            }
+            listCartNew = [
+              {
+                productId: product.id,
+                product: product,
+                qty: reCartProduct.qty,
+                price: price,
+                amount: price * reCartProduct.qty,
+                note: reCartProduct.note,
+              },
+              ...listCartNew,
+            ];
+          }
+        });
+        setCartProducts([...listCartNew]);
+      });
+
+      router.push("/payment");
+    }
+  };
+
+  ///Checkout
   const generateDraftOrder = () => {
     let items = getItemsOrderInput();
     OrderService.generateDraftOrder({ ...orderInput, items: items })
@@ -243,6 +291,7 @@ export function CartProvider(props) {
     <CartContext.Provider
       value={{
         draftOrder: draftOrder,
+        reOrder,
         totalFood,
         totalMoney,
         cartProducts,

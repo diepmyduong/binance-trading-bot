@@ -95,7 +95,6 @@ export function ShopProvider(props) {
       setBranchSelecting(brs.data[active]);
     }
     let res = await ShopService.getShopData();
-    console.log(res);
 
     if (res) {
       setShop(cloneDeep(res));

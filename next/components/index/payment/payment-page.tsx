@@ -87,7 +87,7 @@ export function PaymentPage() {
                   </div>
                   <div className="flex-1 flex flex-col text-gray-700">
                     <div className="font-semibold">{cartProduct.product.name}</div>
-                    {!!cartProduct.product.selectedToppings.length && (
+                    {!!cartProduct.product.selectedToppings?.length && (
                       <div>
                         {cartProduct.product.selectedToppings
                           .map((topping) => topping.optionName)

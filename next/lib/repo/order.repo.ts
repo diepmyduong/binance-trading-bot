@@ -133,6 +133,7 @@ export interface OrderItem extends BaseModel {
   qty: number;
   amount: number;
   product: Product;
+  note: string;
   toppings: OrderItemTopping[];
 }
 export interface OrderItemTopping extends BaseModel {

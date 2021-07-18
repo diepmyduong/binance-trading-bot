@@ -65,9 +65,10 @@ export function CartDialog(props: Propstype) {
                     {cartProduct.product.name}
                   </div>
                   <div className="text-sm text-gray-600">
-                    {cartProduct.product.selectedToppings
-                      .map((topping) => topping.optionName)
-                      .join(", ")}
+                    {cartProduct.product.selectedToppings &&
+                      cartProduct.product.selectedToppings
+                        .map((topping) => topping.optionName)
+                        .join(", ")}
                   </div>
                   <div className="">
                     <span className="font-semibold">{NumberPipe(cartProduct.amount, true)}</span>

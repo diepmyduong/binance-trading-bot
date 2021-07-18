@@ -25,6 +25,7 @@ export function OrderDetailPage(props) {
     tags,
     addTags,
     createCommentCustomner,
+    reOrderClick,
   } = useOrderDetailContext();
   const [showComment, setShowComment] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
@@ -187,6 +188,7 @@ export function OrderDetailPage(props) {
                       asyncLoading={loading}
                       large
                       className="w-full my-2"
+                      onClick={() => reOrderClick()}
                     />
                   ) : (
                     <Button

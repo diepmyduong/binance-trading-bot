@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { HiChevronRight } from "react-icons/hi";
 import { NumberPipe } from "../../../../lib/pipes/number";
-import { Order, OrderInput, OrderService } from "../../../../lib/repo/order.repo";
+import { Order, OrderInput, OrderItem, OrderService } from "../../../../lib/repo/order.repo";
 import { Button } from "../../../shared/utilities/form/button";
 import formatDate from "date-fns/format";
 import { CartProduct } from "../../../../lib/providers/cart-provider";
@@ -10,7 +10,7 @@ import { useToast } from "../../../../lib/providers/toast-provider";
 interface PropsType extends ReactProps {
   status: Option;
   order?: Order;
-  reOrder?: (items: CartProduct[], infoPay: OrderInput) => any;
+  reOrder?: (items: OrderItem[], infoPay: OrderInput) => any;
 }
 export function Billed({ order, status, reOrder }: PropsType) {
   const toast = useToast();
@@ -116,7 +116,8 @@ export function Billed({ order, status, reOrder }: PropsType) {
               textPrimary
               hoverSuccess
               className=" whitespace-nowrap w-full"
-              onClick={() => reOrderClick(order)}
+              asyncLoading
+              onClick={async () => await reOrderClick(order)}
             />
           ),
           RETURNED: (
@@ -125,7 +126,7 @@ export function Billed({ order, status, reOrder }: PropsType) {
               textPrimary
               hoverSuccess
               className=" whitespace-nowrap w-full"
-              onClick={() => reOrderClick(order)}
+              onClick={async () => await reOrderClick(order)}
             />
           ),
           FAILURE: (
@@ -134,7 +135,7 @@ export function Billed({ order, status, reOrder }: PropsType) {
               textPrimary
               hoverSuccess
               className=" whitespace-nowrap w-full"
-              onClick={() => reOrderClick(order)}
+              onClick={async () => await reOrderClick(order)}
             />
           ),
           COMPLETED: (
@@ -143,7 +144,7 @@ export function Billed({ order, status, reOrder }: PropsType) {
               textPrimary
               hoverSuccess
               className=" whitespace-nowrap w-full"
-              onClick={() => reOrderClick(order)}
+              onClick={async () => await reOrderClick(order)}
             />
           ),
           DELIVERING: (

@@ -6,6 +6,7 @@ import { useToast } from "../../../../lib/providers/toast-provider";
 import { useRouter } from "next/router";
 import { ShopTag } from "../../../../lib/repo/shop-config.repo";
 import { ShopCommentService } from "../../../../lib/repo/shop-comment.repo";
+import { useCartContext, CartProduct } from "../../../../lib/providers/cart-provider";
 
 export const OrderDetailContext = createContext<
   Partial<{
@@ -18,12 +19,14 @@ export const OrderDetailContext = createContext<
     cancelOrder: (id: string, note: string) => any;
     addTags: (tag: ShopTag) => any;
     createCommentCustomner: (inputData: { message: string; rating: string }) => any;
+    reOrderClick: () => any;
   }>
 >({});
 interface PropsType extends ReactProps {
   id: string;
 }
 export function OrderDetailProvider({ id, ...props }: PropsType) {
+  const { reOrder } = useCartContext();
   const [order, setOrder] = useState<Order>(null);
   const alert = useAlert();
   const [loading, setLoading] = useState(false);
@@ -123,6 +126,49 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
         alert.error("Xem chi tiết đơn hàng thất bại", err.message);
       });
   };
+  function reOrderClick() {
+    const {
+      promotionCode,
+      buyerName,
+      buyerPhone,
+      pickupMethod,
+      shopBranchId,
+      pickupTime,
+      buyerAddress,
+      buyerProvinceId,
+      buyerDistrictId,
+      buyerWardId,
+      buyerFullAddress,
+      buyerAddressNote,
+      latitude,
+      longitude,
+      paymentMethod,
+      note,
+    } = order;
+
+    // toppingId: string;
+    // toppingName: string;
+    // optionName: string;
+    // price: number;
+    reOrder(order.items, {
+      promotionCode,
+      buyerName,
+      buyerPhone,
+      pickupMethod,
+      shopBranchId,
+      pickupTime,
+      buyerAddress,
+      buyerProvinceId,
+      buyerDistrictId,
+      buyerWardId,
+      buyerFullAddress,
+      buyerAddressNote,
+      latitude,
+      longitude,
+      paymentMethod,
+      note,
+    });
+  }
   return (
     <OrderDetailContext.Provider
       value={{
@@ -135,6 +181,7 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
         tags,
         addTags,
         createCommentCustomner,
+        reOrderClick,
       }}
     >
       {props.children}

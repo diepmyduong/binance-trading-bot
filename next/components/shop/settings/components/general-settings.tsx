@@ -74,12 +74,12 @@ export function GeneralSettings() {
         </div>
       </div>
       <Label text="Link cửa hàng" />
-      <Link href={`${location.origin}/?code=${member.code}`}>
+      <Link href={`${location.origin}/${member.code}`}>
         <a
           target="_blank"
           className="pb-3 pt-1 pl-1 flex items-center font-semibold text-primary hover:text-primary-dark hover:underline"
         >
-          {`${location.origin}/?code=${member.code}`}
+          {`${location.origin}/${member.code}`}
           <i className="ml-2 text-base">
             <RiExternalLinkLine />
           </i>

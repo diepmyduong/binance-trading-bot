@@ -25,6 +25,7 @@ export function OrderDetailPage(props) {
     tags,
     addTags,
     createCommentCustomner,
+    reOrderClick,
   } = useOrderDetailContext();
   const [showComment, setShowComment] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
@@ -34,17 +35,17 @@ export function OrderDetailPage(props) {
     <div className="bg-white min-h-screen">
       <BreadCrumbs
         breadcrumbs={[
-          { label: "Trang chủ", href: `/?code=${shopCode}` },
+          { label: "Trang chủ", href: `/${shopCode}` },
           { label: "Lịch sử đơn hàng", href: `/order` },
           { label: "Chi tiết đơn hàng" },
         ]}
         className="p-4"
       />
-      {isInterval ? (
-        <>{status && order && <OrderStatus status={status} order={order} />}</>
-      ) : (
+      {status && order ? (
         <>
-          {order ? (
+          {isInterval ? (
+            <>{<OrderStatus status={status} order={order} />}</>
+          ) : (
             <div className="text-gray-800 text-sm sm:text-lg">
               <div className="w-full px-4">
                 <div className="grid grid-cols-2 w-full pt-4">
@@ -187,6 +188,7 @@ export function OrderDetailPage(props) {
                       asyncLoading={loading}
                       large
                       className="w-full my-2"
+                      onClick={() => reOrderClick()}
                     />
                   ) : (
                     <Button
@@ -263,10 +265,10 @@ export function OrderDetailPage(props) {
                 </div>
               </div>
             </div>
-          ) : (
-            <Spinner />
           )}
         </>
+      ) : (
+        <Spinner />
       )}
     </div>
   );

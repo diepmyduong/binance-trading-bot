@@ -85,6 +85,7 @@ export class ShopRepository extends CrudRepository<Shop> {
     rating: Float
     ratingQty: Int
     soldQty: Int
+    upsaleTitle: String
     banners {
       image: String
       title: String

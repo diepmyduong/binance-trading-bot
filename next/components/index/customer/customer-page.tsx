@@ -21,7 +21,7 @@ export function CustomerPage() {
           <div className="bg-white shadow relative rounded-md w-full">
             <BreadCrumbs
               breadcrumbs={[
-                { label: "Trang chủ", href: `/?code=${shopCode}` },
+                { label: "Trang chủ", href: `/${shopCode}` },
                 { label: "Thông tin tài khoản" },
               ]}
               className="pt-4 px-4"

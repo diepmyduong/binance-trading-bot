@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Product, ProductService } from "../repo/product.repo";
 import { OrderItemToppingInput, ToppingOption } from "../repo/product-topping.repo";
 import cloneDeep from "lodash/cloneDeep";
-import { Order, OrderInput, OrderItemInput, OrderService } from "../repo/order.repo";
+import { Order, OrderInput, OrderItemInput, OrderService, OrderItem } from "../repo/order.repo";
 import { useShopContext } from "./shop-provider";
 import { useToast } from "./toast-provider";
 import { useRouter } from "next/router";
@@ -23,6 +23,7 @@ export const CartContext = createContext<
     addProductToCart: (product: Product, qty: number, note: string) => any;
     changeProductQuantity: (productIndex: number, qty: number) => any;
     removeProductFromCart: (productIndex: number) => any;
+    reOrder: (items: OrderItem[], reOderInput: OrderInput) => any;
   }>
 >({});
 export interface CartProduct {
@@ -129,7 +130,6 @@ export function CartProvider(props) {
           if (res.data) {
             listCart.forEach((cartProduct) => {
               const product = res.data.find((x) => x.id === cartProduct.productId);
-
               if (product) {
                 let isValid = true;
                 for (let cartProductTopping of cartProduct.product
@@ -211,6 +211,70 @@ export function CartProvider(props) {
       setCartProducts([...cartProducts]);
     }
   };
+  const reOrder = (items: OrderItem[], reOderInput: OrderInput) => {
+    let resCartProducts = [...items];
+    console.log(resCartProducts);
+
+    setOrderInput(cloneDeep(reOderInput));
+    if (resCartProducts) {
+      //lấy danh sách product mua lại
+      ProductService.getAll({
+        query: {
+          limit: 0,
+          filter: {
+            _id: { __in: resCartProducts.map((x) => x.productId) },
+          },
+        },
+      }).then((res) => {
+        let listCartNew = cartProducts;
+        console.log(items);
+
+        resCartProducts.forEach((reCartProduct) => {
+          let { __typename, ...product } = res.data.find((x) => x.id == reCartProduct.productId);
+          if (product) {
+            let index = listCartNew.findIndex((x) => x.productId == product.id);
+            console.log(index);
+            if (index !== -1) {
+              listCartNew.splice(index, 1);
+            }
+            let price = product.basePrice;
+            if (reCartProduct.toppings) {
+              price += reCartProduct.toppings.reduce((total, topping) => total + topping.price, 0);
+              product.selectedToppings = reCartProduct.toppings.map(
+                (item: OrderItemToppingInput) => {
+                  return {
+                    toppingId: item.toppingId,
+                    toppingName: item.toppingName,
+                    optionName: item.optionName,
+                    price: item.price,
+                  };
+                }
+              );
+            }
+            listCartNew = [
+              {
+                productId: product.id,
+                product: product,
+                qty: reCartProduct.qty,
+                price: price,
+                amount: price * reCartProduct.qty,
+                note: reCartProduct.note,
+                topping: reCartProduct.toppings,
+              },
+              ...listCartNew,
+            ];
+          }
+        });
+        console.log(listCartNew);
+
+        setCartProducts([...listCartNew]);
+      });
+
+      router.push("/payment");
+    }
+  };
+
+  ///Checkout
   const generateDraftOrder = () => {
     let items = getItemsOrderInput();
     OrderService.generateDraftOrder({ ...orderInput, items: items })
@@ -243,6 +307,7 @@ export function CartProvider(props) {
     <CartContext.Provider
       value={{
         draftOrder: draftOrder,
+        reOrder,
         totalFood,
         totalMoney,
         cartProducts,

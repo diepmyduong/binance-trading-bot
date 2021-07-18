@@ -55,10 +55,7 @@ const PromotionsPage = (props: Propstype) => {
         {({ shopVouchers, customerVoucher }) => (
           <div className="bg-white min-h-screen">
             <BreadCrumbs
-              breadcrumbs={[
-                { label: "Trang chủ", href: `/?code=${shopCode}` },
-                { label: "Khuyến mãi" },
-              ]}
+              breadcrumbs={[{ label: "Trang chủ", href: `/${shopCode}` }, { label: "Khuyến mãi" }]}
               className="pt-4 px-4"
             />
             <SwitchTabs

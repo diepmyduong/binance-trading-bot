@@ -1,15 +1,61 @@
 import Link from "next/link";
 import { HiChevronRight } from "react-icons/hi";
 import { NumberPipe } from "../../../../lib/pipes/number";
-import { Order } from "../../../../lib/repo/order.repo";
+import { Order, OrderInput, OrderItem, OrderService } from "../../../../lib/repo/order.repo";
 import { Button } from "../../../shared/utilities/form/button";
 import formatDate from "date-fns/format";
+import { CartProduct } from "../../../../lib/providers/cart-provider";
+import { useToast } from "../../../../lib/providers/toast-provider";
 
 interface PropsType extends ReactProps {
   status: Option;
   order?: Order;
+  reOrder?: (items: OrderItem[], infoPay: OrderInput) => any;
 }
-export function Billed({ order, status }: PropsType) {
+export function Billed({ order, status, reOrder }: PropsType) {
+  const toast = useToast();
+  function reOrderClick(order: Order) {
+    OrderService.getOne({ id: order.id })
+      .then((res) => {
+        const {
+          promotionCode,
+          buyerName,
+          buyerPhone,
+          pickupMethod,
+          shopBranchId,
+          pickupTime,
+          buyerAddress,
+          buyerProvinceId,
+          buyerDistrictId,
+          buyerWardId,
+          buyerFullAddress,
+          buyerAddressNote,
+          latitude,
+          longitude,
+          paymentMethod,
+          note,
+        } = res;
+        reOrder(res.items, {
+          promotionCode,
+          buyerName,
+          buyerPhone,
+          pickupMethod,
+          shopBranchId,
+          pickupTime,
+          buyerAddress,
+          buyerProvinceId,
+          buyerDistrictId,
+          buyerWardId,
+          buyerFullAddress,
+          buyerAddressNote,
+          latitude,
+          longitude,
+          paymentMethod,
+          note,
+        });
+      })
+      .catch((err) => toast.error("Đã xảy ra lỗi. Vui lòng chọn đơn hàng khác"));
+  }
   return (
     <div className={`w-full mb-3 bg-white text-sm`}>
       <Link href={`/order/${order.code}`}>
@@ -52,7 +98,7 @@ export function Billed({ order, status }: PropsType) {
               className=" whitespace-nowrap w-full"
               textPrimary
               hoverSuccess
-              href={`tel:${"0374196903"}`}
+              href={`tel:${order.shopBranch.phone}`}
             />
           ),
           CONFIRMED: (
@@ -61,20 +107,45 @@ export function Billed({ order, status }: PropsType) {
               className=" whitespace-nowrap w-full"
               textPrimary
               hoverSuccess
-              href={`tel:${"0374196903"}`}
+              href={`tel:${order.shopBranch.phone}`}
             />
           ),
           CANCELED: (
-            <Button text="Đặt lại" textPrimary hoverSuccess className=" whitespace-nowrap w-full" />
+            <Button
+              text="Đặt lại"
+              textPrimary
+              hoverSuccess
+              className=" whitespace-nowrap w-full"
+              asyncLoading
+              onClick={async () => await reOrderClick(order)}
+            />
           ),
           RETURNED: (
-            <Button text="Đặt lại" textPrimary hoverSuccess className=" whitespace-nowrap w-full" />
+            <Button
+              text="Đặt lại"
+              textPrimary
+              hoverSuccess
+              className=" whitespace-nowrap w-full"
+              onClick={async () => await reOrderClick(order)}
+            />
           ),
           FAILURE: (
-            <Button text="Đặt lại" textPrimary hoverSuccess className=" whitespace-nowrap w-full" />
+            <Button
+              text="Đặt lại"
+              textPrimary
+              hoverSuccess
+              className=" whitespace-nowrap w-full"
+              onClick={async () => await reOrderClick(order)}
+            />
           ),
           COMPLETED: (
-            <Button text="Đặt lại" textPrimary hoverSuccess className=" whitespace-nowrap w-full" />
+            <Button
+              text="Đặt lại"
+              textPrimary
+              hoverSuccess
+              className=" whitespace-nowrap w-full"
+              onClick={async () => await reOrderClick(order)}
+            />
           ),
           DELIVERING: (
             <>

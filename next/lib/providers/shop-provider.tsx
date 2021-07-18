@@ -95,6 +95,7 @@ export function ShopProvider(props) {
       setBranchSelecting(brs.data[active]);
     }
     let res = await ShopService.getShopData();
+
     if (res) {
       setShop(cloneDeep(res));
     } else {
@@ -122,7 +123,7 @@ export function ShopProvider(props) {
     localStorage.removeItem("customer-token");
     setCustomer(null);
     if (router.pathname !== "/") {
-      router.push(`/?=${shopCode}`);
+      router.push(`/${shopCode}`);
     }
   }
   useEffect(() => {

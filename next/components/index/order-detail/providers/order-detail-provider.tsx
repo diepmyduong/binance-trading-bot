@@ -60,7 +60,6 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
           }: [ShopTagInput]
         }
       `,
-      variablesParams: `($data: UpdateMemberInput!)`,
       options: {
         variables: {
           data: { ownerName: order.buyerName, message, rating, tags },

@@ -57,6 +57,13 @@ export function PaymentPage() {
       .then((res) => setVouchers(cloneDeep(res.data)))
       .catch((err) => setVouchers(null));
   }, []);
+  useEffect(() => {
+    if (voucherApplied) {
+      setOrderInput({ ...orderInput, promotionCode: voucherApplied.code });
+    } else {
+      setOrderInput({ ...orderInput, promotionCode: "" });
+    }
+  }, [voucherApplied]);
   return (
     <>
       <div className="text-gray-700 bg-gray-100">
@@ -128,34 +135,31 @@ export function PaymentPage() {
             </div>
           </div>
         </div>
-        <div className="px-2 py-4 flex w-full md:overflow-hidden overflow-auto z-0">
-          {vouchers && (
-            <Swiper
-              spaceBetween={10}
-              freeMode={true}
-              grabCursor
-              slidesPerView={"auto"}
-              className="w-auto"
-              navigation
-              // className="main-container overflow-visible"
-            >
-              {vouchers.map((item: ShopVoucher, index) => {
-                return (
-                  <SwiperSlide key={index} className="w-2/3">
-                    <TicketVoucher
-                      voucher={item}
-                      showDetail={(val) => setVoucherSelected(val)}
-                      onClick={(val) => {
-                        setVoucherApplied(val);
-                        setOrderInput({ ...orderInput, promotionCode: val.code });
-                      }}
-                    />
-                  </SwiperSlide>
-                );
-              })}
-            </Swiper>
-          )}
-        </div>
+        {vouchers && (
+          <Swiper
+            spaceBetween={10}
+            freeMode={true}
+            grabCursor
+            slidesPerView={"auto"}
+            className="w-auto p-4"
+            navigation
+            // className="main-container overflow-visible"
+          >
+            {vouchers.map((item: ShopVoucher, index) => {
+              return (
+                <SwiperSlide key={index} className="w-2/3">
+                  <TicketVoucher
+                    voucher={item}
+                    showDetail={(val) => setVoucherSelected(val)}
+                    onClick={(val) => {
+                      setVoucherApplied(val);
+                    }}
+                  />
+                </SwiperSlide>
+              );
+            })}
+          </Swiper>
+        )}
         <div className="h-24"></div>
         <ButtonPayment voucherApplied={voucherApplied} setVoucherApplied={setVoucherApplied} />
       </div>
@@ -235,7 +239,6 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
               textDanger
               onClick={() => {
                 setVoucherApplied(null);
-                setOrderInput({ ...orderInput, promotionCode: "" });
               }}
             />
           </div>

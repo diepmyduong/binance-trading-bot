@@ -169,7 +169,7 @@ export function OrderDetailPage(props) {
                   <Button
                     text="Bình luận đơn hàng này"
                     primary
-                    className="rounded-full bg-gradient w-full"
+                    className="rounded-sm bg-gradient w-full"
                     onClick={() => {
                       setLoading(true);
                       setShowComment(true);
@@ -183,7 +183,7 @@ export function OrderDetailPage(props) {
                       text="Đặt lại"
                       outline
                       asyncLoading={loading}
-                      className="w-full my-2 rounded-full "
+                      className="w-full my-2 rounded-sm "
                       onClick={() => reOrderClick()}
                     />
                   )}
@@ -217,7 +217,7 @@ export function OrderDetailPage(props) {
                       outline
                       primary
                       asyncLoading={loading}
-                      className="rounded-full w-full"
+                      className="rounded-sm w-full"
                       onClick={() => {
                         setLoading(true);
                         setShowCancel(true);
@@ -227,7 +227,7 @@ export function OrderDetailPage(props) {
                       text="Gọi nhà hàng"
                       primary
                       href={`tel:${order.shopBranch.phone}`}
-                      className="rounded-full bg-gradient w-full"
+                      className="rounded-sm bg-gradient w-full"
                       icon={<HiOutlinePhone />}
                     />
                   </div>
@@ -236,7 +236,7 @@ export function OrderDetailPage(props) {
                   <Button
                     text="Gọi nhà hàng"
                     primary
-                    className="rounded-full bg-gradient w-full"
+                    className="rounded-sm bg-gradient w-full"
                     href={`tel:${order.shopBranch.phone}`}
                   />
                 )}
@@ -246,14 +246,14 @@ export function OrderDetailPage(props) {
                       <Button
                         text="Xem trên Ahamove"
                         outline
-                        className="rounded-full w-full"
+                        className="rounded-sm w-full"
                         href={order.ahamoveTrackingLink}
                       />
                     )}
                     <Button
                       text={"Tài xế: " + order.driverName || "Gọi tài xế"}
                       primary
-                      className="rounded-full bg-gradient w-full"
+                      className="rounded-sm bg-gradient w-full"
                       iconPosition="end"
                       href={`tel:${order.driverPhone}`}
                       icon={<HiOutlinePhone />}

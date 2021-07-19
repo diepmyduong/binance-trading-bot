@@ -14,6 +14,7 @@ export function DefaultHead() {
         href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet"
       />
+      <link rel="stylesheet" href="https://booking-hospital.mcom.app/api/theme-color.css"></link>
     </Head>
   );
 }

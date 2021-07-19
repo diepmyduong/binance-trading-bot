@@ -52,6 +52,7 @@ export class ShopVoucherRepository extends CrudRepository<ShopVoucher> {
     description: String
     isActive: Boolean
     type: String
+    image: String;
   `);
   fullFragment: string = this.parseFragment(`
     id: String

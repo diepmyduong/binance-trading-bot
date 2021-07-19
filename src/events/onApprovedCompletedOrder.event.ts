@@ -23,7 +23,8 @@ import { orderService } from "../graphql/modules/order/order.service";
 import { OrderItemLoader } from "../graphql/modules/orderItem/orderItem.model";
 import { OrderLogModel, OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
-import { StaffModel } from "../graphql/modules/staff/staff.model";
+import { StaffModel, StaffScope } from "../graphql/modules/staff/staff.model";
+import { staffService } from "../graphql/modules/staff/staff.service";
 import { UserModel } from "../graphql/modules/user/user.model";
 import { PubSubHelper } from "../helpers/pubsub.helper";
 import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
@@ -333,7 +334,7 @@ onApprovedCompletedOrder.subscribe(async (order) => {
 
 // Thông báo nhân viên đơn hàng thành công
 onApprovedCompletedOrder.subscribe(async (order) => {
-  const staffs = await StaffModel.find({ memberId: order.sellerId, branchId: order.shopBranchId });
+  const staffs = await staffService.getStaffByBranchAndScope(order.sellerId, order.shopBranchId);
   const notifies = staffs.map(
     (s) =>
       new NotificationModel({

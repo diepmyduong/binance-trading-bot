@@ -15,6 +15,7 @@ import { OrderItemLoader } from "../graphql/modules/orderItem/orderItem.model";
 import { OrderLogModel, OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { StaffModel } from "../graphql/modules/staff/staff.model";
+import { staffService } from "../graphql/modules/staff/staff.service";
 import { UserModel } from "../graphql/modules/user/user.model";
 import { UtilsHelper } from "../helpers";
 import { PubSubHelper } from "../helpers/pubsub.helper";
@@ -126,7 +127,7 @@ onOrderedProduct.subscribe(async (order: IOrder) => {
 // Gửi thông báo tới nhân viên chi nhánh
 onOrderedProduct.subscribe(async (order) => {
   if (order.status != OrderStatus.PENDING) return;
-  const staffs = await StaffModel.find({ memberId: order.sellerId, branchId: order.shopBranchId });
+  const staffs = await staffService.getStaffByBranchAndScope(order.sellerId, order.shopBranchId);
   const notifies = staffs.map(
     (s) =>
       new NotificationModel({

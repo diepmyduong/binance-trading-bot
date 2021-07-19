@@ -192,11 +192,11 @@ const BusinessStepByStep = () => {
       </CardCustom> */}
       <div className="mt-4 flex">
         <CardCustom className="min-w-max">
-          <CardCustom.Header title="Tổng số nhân viên đang hoạt động"></CardCustom.Header>
+          <CardCustom.Header title="Tổng số khách hàng"></CardCustom.Header>
           <CardCustom.Body>
             <div className="flex items-end">
               <div className="text-6xl">{shopCustomerReport}</div>
-              <div className="ml-2 text-sm pb-1">nhân viên</div>
+              <div className="ml-2 text-sm pb-1">Khách hàng</div>
             </div>
           </CardCustom.Body>
         </CardCustom>

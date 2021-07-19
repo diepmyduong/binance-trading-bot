@@ -110,6 +110,7 @@
     "swagger-jsdoc": "^4.0.0",
     "swagger-ui-express": "^4.1.4",
     "swiper": "^6.7.0",
+    "tailwindcss": "^2.1.4",
     "text-mask-addons": "^3.8.0",
     "tippy.js": "^6.3.1",
     "uuid": "^8.1.0",
@@ -117,8 +118,7 @@
     "wink-nlp-utils": "^2.0.6",
     "winston": "^3.3.3",
     "winston-mongodb": "^5.0.1",
-    "written-number": "^0.9.1",
-    "tailwindcss": "^2.1.4"
+    "written-number": "^0.9.1"
   },
   "devDependencies": {
     "@types/agenda": "^3.0.2",

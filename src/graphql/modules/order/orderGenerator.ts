@@ -596,9 +596,9 @@ export class OrderGenerator {
     this.order.commission3 = sumBy(this.orderItems, (i) => i.commission3 * i.qty);
     this.order.sellerBonusPoint = sumBy(this.orderItems, "sellerBonusPoint");
     this.order.buyerBonusPoint = sumBy(this.orderItems, "buyerBonusPoint");
-    this.order.itemHeight = maxBy(this.orderItems, "productHeight").productHeight;
-    this.order.itemLength = maxBy(this.orderItems, "productLength").productLength;
-    this.order.itemWidth = maxBy(this.orderItems, "productWidth").productWidth;
+    this.order.itemHeight = get(maxBy(this.orderItems, "productHeight"), "productHeight", 0);
+    this.order.itemLength = get(maxBy(this.orderItems, "productLength"), "productLength", 0);
+    this.order.itemWidth = get(maxBy(this.orderItems, "productWidth"), "productWidth", 0);
     this.order.itemWeight = sumBy(this.orderItems, (i) => i.productWeight * i.qty);
     this.order.toppingAmount = sumBy(this.orderItems, "toppingAmount");
   }

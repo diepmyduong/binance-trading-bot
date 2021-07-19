@@ -41,6 +41,8 @@ const schema = gql`
     subtitle: String
     intro: String
     image: String
+    "Hình ảnh cover"
+    cover: String
     categoryId: ID
     allowSale: Boolean
     isCrossSale: Boolean
@@ -106,6 +108,8 @@ const schema = gql`
     intro: String
     "Hình ảnh đại diện"
     image: String
+    "Hình ảnh cover"
+    cover: String
     "Hoa hồng VNPOST"
     commission0: Float
     "Hoa hồng điểm bán"

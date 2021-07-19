@@ -22,6 +22,7 @@ export type IProduct = BaseDocument & {
   subtitle?: string; // Mô tả ngắn
   intro?: string; // Giới thiệu sản phẩm
   image?: string; // Hình ảnh đại diện
+  cover?: string; // Hình ảnh cover
   commission0?: number; // Hoa hồng Mobifone
   commission1?: number; // Hoa hồng điểm bán
   commission2?: number; // Hoa hồng giới thiệu
@@ -75,6 +76,7 @@ const productSchema = new Schema(
     subtitle: { type: String },
     intro: { type: String },
     image: { type: String },
+    cover: { type: String },
     commission0: { type: Number, default: 0 }, // Hoa hồng cho Mobifone
     commission1: { type: Number, default: 0 }, // Hoa hồng cho điểm bán
     commission2: { type: Number, default: 0 }, // Hoa hồng cho giới thiệu

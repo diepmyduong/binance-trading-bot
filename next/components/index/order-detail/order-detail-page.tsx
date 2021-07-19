@@ -24,7 +24,7 @@ export function OrderDetailPage(props) {
     isInterval,
     tags,
     addTags,
-    createCommentCustomner,
+    commentOrder,
     reOrderClick,
   } = useOrderDetailContext();
   const [showComment, setShowComment] = useState(false);
@@ -227,7 +227,7 @@ export function OrderDetailPage(props) {
                     isOpen={showComment}
                     onClose={() => setShowComment(false)}
                     onSubmit={(data) => {
-                      createCommentCustomner({ rating: data.rating, message: data.message });
+                      commentOrder({ rating: data.rating, message: data.message });
                       setShowComment(false);
                     }}
                   >

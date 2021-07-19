@@ -18,7 +18,7 @@ export const OrderDetailContext = createContext<
     tags: ShopTag[];
     cancelOrder: (id: string, note: string) => any;
     addTags: (tag: ShopTag) => any;
-    createCommentCustomner: (inputData: { message: string; rating: string }) => any;
+    commentOrder: (inputData: { message: string; rating: string }) => any;
     reOrderClick: () => any;
   }>
 >({});
@@ -45,15 +45,35 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
     }
     setTags(cloneDeep(newTags));
   }
-  function createCommentCustomner(inputData: { message: string; rating: string }) {
+  function commentOrder(inputData: { message: string; rating: string }) {
     const { message, rating } = inputData;
-    ShopCommentService.createOrUpdate({
-      data: { ownerName: order.buyerName, message, rating, tags },
-    }).then((res) => {
-      console.log(res);
-      setLoading(false);
-      toast.success("Bình luận thành công");
+    return ShopCommentService.mutate({
+      mutation: `
+      commentOrder(data: $data) {
+          orderId
+          message
+          rating
+          tags{
+            name
+            icon
+            qty
+          }: [ShopTagInput]
+        }
+      `,
+      variablesParams: `($data: UpdateMemberInput!)`,
+      options: {
+        variables: {
+          data: { ownerName: order.buyerName, message, rating, tags },
+        },
+      },
     });
+    // ShopCommentService.createOrUpdate({
+    //   data: { ownerName: order.buyerName, message, rating, tags },
+    // }).then((res) => {
+    //   console.log(res);
+    //   setLoading(false);
+    //   toast.success("Bình luận thành công");
+    // });
   }
   useEffect(() => {
     loadOrder(id);
@@ -180,7 +200,7 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
         isInterval,
         tags,
         addTags,
-        createCommentCustomner,
+        commentOrder,
         reOrderClick,
       }}
     >

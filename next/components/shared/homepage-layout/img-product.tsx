@@ -13,7 +13,7 @@ export function ImgProduct({ saleRate, small = false, native = false, ...props }
       {saleRate > 0 && (
         <div
           className={`absolute -top-2 -right-2 bg-danger text-white sm:text-lg font-semibold rounded-bl-3xl ${
-            small ? "py-2 px-3" : "py-2 px-3 sm:p-3"
+            small ? "py-1 px-2" : "py-2 px-3 sm:p-3"
           }`}
         >
           -<span className="pl-0.5">{saleRate}</span>%

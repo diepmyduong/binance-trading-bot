@@ -49,6 +49,7 @@ export function PaymentPage() {
   }, [branchSelecting]);
   useEffect(() => {
     setVoucherApplied(null);
+    setOrderInput({ ...orderInput, promotionCode: "" });
     ShopVoucherService.getAll({
       query: { order: { createdAt: -1 }, filter: { isPrivate: false, isActive: true } },
       fragment: ShopVoucherService.fullFragment,

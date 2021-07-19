@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { ProductDetail } from "../../shared/product-detail/detail";
 import { ProductDetailProvider } from "../../shared/product-detail/provider/product-detail-provider";
 import { HomeProvider, HomeConsumer } from "./providers/homepage-provider";
+import { forceCheck } from "react-lazyload";
 
 export function Homepage() {
   const { shop } = useShopContext();
@@ -70,7 +71,10 @@ const FloatingButton = (props: FloatButtonProps) => {
     // <div className="w-full mt-3 sticky bottom-5 sm:bottom-7 left-0 flex flex-col items-center z-100">
     <button
       className={`mt-4 mb-2 sticky md:bottom-6 bottom-7 z-50 justify-between shadow-lg flex btn-primary bg-gradient mx-auto w-11/12 sm:w-5/6 max-w-md h-12 sm:h-14 animate-emerge`}
-      onClick={() => props.onClick()}
+      onClick={() => {
+        props.onClick();
+        setTimeout(() => forceCheck(), 200);
+      }}
     >
       <span>Giỏ hàng</span>
       <span className="text-right whitespace-nowrap pl-4">

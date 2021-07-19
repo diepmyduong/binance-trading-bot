@@ -30,8 +30,8 @@ export function CartDialog(props: Propstype) {
         upSale.forEach((product) => {
           let index = upSalePros.findIndex((p) => p.id === product.id);
           if (index === -1) {
-            ProductService.getOne({ id: product.id }).then((res) => {
-              upSalePros.push(res);
+            ProductService.getOne({ id: product.id, cache: false }).then((res) => {
+              console.log(res.image);
               setSaleUpProducts(cloneDeep(upSalePros));
             });
           }
@@ -118,6 +118,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Navigation } from "swiper/core";
 import { useEffect } from "react";
 import cloneDeep from "lodash/cloneDeep";
+import { forceCheck } from "react-lazyload";
+import { compressImage } from "../../../../lib/helpers/compress-image";
 
 SwiperCore.use([Navigation]);
 interface SaleUpProductProps extends ReactProps {
@@ -169,10 +171,11 @@ export function SaleUpProduct(props: SaleUpProductProps) {
                   />
                 </div>
                 <ImgProduct
-                  native
                   src={item.image || ""}
                   className="w-16 sm:w-24 rounded-sm h-16 sm:h-24"
+                  small
                   saleRate={item.saleRate}
+                  compress={300}
                 />
               </div>
               {item.labels?.map((label, index) => (

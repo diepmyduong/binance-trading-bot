@@ -33,6 +33,9 @@ export type IShopConfig = BaseDocument & {
   tags?: ShopTag[]; // Tags đánh giá cho cửa hàng
   // Upsale
   upsaleTitle?: string; // Tiêu đề Upsale
+  // theme
+  primaryColor?: string; // Màu primary
+  accentColor?: string; // Màu accent
 };
 
 const shopConfigSchema = new Schema(
@@ -57,6 +60,8 @@ const shopConfigSchema = new Schema(
     soldQty: { type: Number, default: 0 },
     tags: { type: [ShopTagSchema], default: [] },
     upsaleTitle: { type: String, default: "Ngon hơn khi ăn kèm" },
+    primaryColor: { type: String },
+    accentColor: { type: String },
   },
   { timestamps: true }
 );

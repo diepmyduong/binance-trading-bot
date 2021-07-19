@@ -26,7 +26,7 @@ export default {
     extend type ShopBranch {
       operatingTimes: [OperatingTime]
     }
-    extend type UpdateShopBranchInput {
+    extend input UpdateShopBranchInput {
       operatingTimes: [OperatingTimeInput]
     }
     type OperatingTime {

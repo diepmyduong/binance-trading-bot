@@ -183,7 +183,6 @@ export function OrderDetailPage(props) {
                       text="Đặt lại"
                       outline
                       asyncLoading={loading}
-                      large
                       className="w-full my-2 rounded-full "
                       onClick={() => reOrderClick()}
                     />

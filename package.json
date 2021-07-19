@@ -117,7 +117,8 @@
     "wink-nlp-utils": "^2.0.6",
     "winston": "^3.3.3",
     "winston-mongodb": "^5.0.1",
-    "written-number": "^0.9.1"
+    "written-number": "^0.9.1",
+    "tailwindcss": "^2.1.4"
   },
   "devDependencies": {
     "@types/agenda": "^3.0.2",
@@ -169,7 +170,6 @@
     "prettier": "^2.0.5",
     "shelljs": "^0.8.3",
     "supertest": "^4.0.2",
-    "tailwindcss": "^2.1.4",
     "ts-jest": "^26.1.0",
     "ts-node": "^8.4.1",
     "typescript": "^3.9.10"

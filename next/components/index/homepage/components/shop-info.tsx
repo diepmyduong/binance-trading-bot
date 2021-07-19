@@ -95,8 +95,8 @@ const ShopBranch = (props: ShopInfoProps) => {
       <div className="flex justify-between items-center">
         <p className="whitespace-nowrap">
           {(!branchSelecting && "Chọn chi nhánh") || branchSelecting.name}
-          {branchSelecting.distance && (
-            <span className="font-semibold"> - {branchSelecting.distance}km</span>
+          {branchSelecting?.distance && (
+            <span className="font-semibold"> - {branchSelecting?.distance}km</span>
           )}
         </p>
         <Button

@@ -54,14 +54,14 @@ module.exports = {
         purple: getSemanticColors(colors.purple),
         pink: getSemanticColors(colors.pink),
       },
-      boxShadow: (theme) => {
-        const colors = {
-          primary, accent, bluegray
-        } = theme('colors')
-        return {
-          ...buildShadowPalette(colors),
-        }
-      },
+      // boxShadow: (theme) => {
+      //   const colors = {
+      //     primary, accent, bluegray
+      //   } = theme('colors')
+      //   return {
+      //     ...buildShadowPalette(colors),
+      //   }
+      // },
       fontSize: {
         8: '8px',
         9: '9px',

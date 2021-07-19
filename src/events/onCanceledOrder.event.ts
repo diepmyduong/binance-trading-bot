@@ -20,6 +20,7 @@ import {
 import { StaffModel } from "../graphql/modules/staff/staff.model";
 import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
 import { PubSubHelper } from "../helpers/pubsub.helper";
+import { staffService } from "../graphql/modules/staff/staff.service";
 
 export const onCanceledOrder = new Subject<IOrder>();
 
@@ -138,7 +139,7 @@ onCanceledOrder.subscribe(async (order) => {
 
 // Thông báo nhân viên cập nhật trang thái giao hàng
 onCanceledOrder.subscribe(async (order) => {
-  const staffs = await StaffModel.find({ memberId: order.sellerId, branchId: order.shopBranchId });
+  const staffs = await staffService.getStaffByBranchAndScope(order.sellerId, order.shopBranchId);
   const notifies = staffs.map(
     (s) =>
       new NotificationModel({

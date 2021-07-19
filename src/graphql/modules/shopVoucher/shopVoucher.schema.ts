@@ -69,6 +69,8 @@ const schema = gql`
     image: String
     "Nội dung html"
     content: String
+    "Đồng giá"
+    samePrice: Float
   }
 
   type ShopVoucher {
@@ -124,6 +126,8 @@ const schema = gql`
     image: String
     "Nội dung html"
     content: String
+    "Đồng giá"
+    samePrice: Float
   }
 
   type ShopVoucherPageData {

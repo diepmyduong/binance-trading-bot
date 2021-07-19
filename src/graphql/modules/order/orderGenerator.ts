@@ -223,6 +223,30 @@ export class OrderGenerator {
           this.order.discountDetail = this.voucher.description;
           break;
         }
+        case ShopVoucherType.SAME_PRICE: {
+          let hasItem = false;
+          let discount = 0;
+          let offerItems = keyBy(this.voucher.offerItems, "productId");
+          let orderItems = groupBy(this.orderItems, "productId");
+          for (const items of Object.values(orderItems)) {
+            const productId = items[0].productId.toString();
+            if (offerItems[productId]) {
+              hasItem = true;
+              const offerItem = offerItems[productId];
+              const totalQty = sumBy(items, "qty");
+              const offerQty = totalQty > offerItem.qty ? offerItem.qty : totalQty;
+              const samePrice =
+                items[0].basePrice > this.voucher.samePrice
+                  ? this.voucher.samePrice
+                  : items[0].basePrice;
+              const discountPrice = items[0].basePrice - samePrice;
+              discount += offerQty * discountPrice;
+            }
+          }
+          if (!hasItem) throw Error();
+          this.order.discount = discount;
+          break;
+        }
         default:
           throw Error();
       }

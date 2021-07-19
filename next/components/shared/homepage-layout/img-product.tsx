@@ -9,15 +9,7 @@ interface Propstype extends ImgProps {
 export function ImgProduct({ saleRate, small = false, native = false, ...props }: Propstype) {
   return (
     <div className="relative overflow-hidden rounded-md">
-      {native ? (
-        <div className="lazyload-wrapper w-16 sm:w-24 rounded-sm h-16 sm:h-24">
-          <div className="lazyload-placeholder">
-            <img {...props} />
-          </div>
-        </div>
-      ) : (
-        <Img {...props} />
-      )}
+      {native ? <img {...props} /> : <Img src={props.src} {...props} />}
       {saleRate > 0 && (
         <div
           className={`absolute  bg-danger text-white font-semibold rounded-bl-3xl ${

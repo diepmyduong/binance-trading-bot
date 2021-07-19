@@ -30,14 +30,16 @@ export function CartDialog(props: Propstype) {
         upSale.forEach((product) => {
           let index = upSalePros.findIndex((p) => p.id === product.id);
           if (index === -1) {
-            ProductService.getOne({ id: product.id, cache: false }).then((res) => {
-              console.log(res.image);
-              setSaleUpProducts(cloneDeep(upSalePros));
+            ProductService.getOne({ id: product.id }).then((res) => {
+              if (res.allowSale) {
+                upSalePros.push(res);
+              }
             });
           }
         });
       }
     });
+    setSaleUpProducts(cloneDeep(upSalePros));
   }, [cartProducts]);
 
   return (
@@ -150,9 +152,7 @@ export function SaleUpProduct(props: SaleUpProductProps) {
         {props.saleUpProduct.map((item: Product, index: number) => (
           <SwiperSlide key={index} className="w-3/4">
             <div
-              className={`w-full py-2 shadow-md rounded-sm hover:bg-primary-light cursor-pointer border-b transition-all duration-300  ${
-                item.allowSale ? "" : "hidden"
-              }`}
+              className={`w-full py-2 shadow-md rounded-sm hover:bg-primary-light cursor-pointer border-b transition-all duration-300 `}
               onClick={() => {
                 handleClick(item.code);
               }}
@@ -171,8 +171,8 @@ export function SaleUpProduct(props: SaleUpProductProps) {
                   />
                 </div>
                 <ImgProduct
-                  src={item.image || ""}
-                  className="w-16 sm:w-24 rounded-sm h-16 sm:h-24"
+                  src={item.image}
+                  className="w-16 sm:w-24 rounded-sm"
                   small
                   saleRate={item.saleRate}
                   compress={300}

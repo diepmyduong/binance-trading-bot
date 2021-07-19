@@ -9,6 +9,7 @@ export enum ShopVoucherType {
   DISCOUNT_ITEM = "DISCOUNT_ITEM", // Giảm giá sản phẩm
   OFFER_ITEM = "OFFER_ITEM", // Tặng sản phẩm
   SHIP_FEE = "SHIP_FEE", // Giảm phí ship
+  SAME_PRICE = "SAME_PRICE", // Đồng giá
 }
 export type IShopVoucher = BaseDocument & {
   memberId?: string; // Mã chủ shop
@@ -35,8 +36,13 @@ export type IShopVoucher = BaseDocument & {
   isPrivate?: boolean; // Mã giảm giá riêng tư
   image?: string; // Hình ảnh
   content?: string; // Nội dung html
+  samePrice?: number; // Đồng giá
 };
 
+const listProductSchema: any = {
+  type: [{ type: Schema.Types.ObjectId, ref: "Product" }],
+  default: [],
+};
 const shopVoucherSchema = new Schema(
   {
     memberId: { type: Schema.Types.ObjectId, ref: "Member", required: true },
@@ -53,8 +59,8 @@ const shopVoucherSchema = new Schema(
     maxDiscount: { type: Number, default: 0, min: 0 },
     offerItems: { type: [OfferItemSchema], default: [] },
     discountItems: { type: [DiscountItemSchema], default: [] },
-    applyItemIds: { type: [{ type: Schema.Types.ObjectId, ref: "Product" }], default: [] },
-    exceptItemIds: { type: [{ type: Schema.Types.ObjectId, ref: "Product" }], default: [] },
+    applyItemIds: listProductSchema,
+    exceptItemIds: listProductSchema,
     minSubtotal: { type: Number, default: 0, min: 0 },
     applyPaymentMethods: { type: [String], default: [] },
     minItemQty: { type: Number, default: 0, min: 0 },
@@ -63,6 +69,7 @@ const shopVoucherSchema = new Schema(
     isPrivate: { type: Boolean, default: false },
     image: { type: String },
     content: { type: String },
+    samePrice: { type: Number },
   },
   { timestamps: true }
 );

@@ -27,6 +27,7 @@ export function OrderPage() {
                   reOrder={(items, infoPay) => reOrder(items, infoPay)}
                 />
               ))}
+              {/* <Pagination /> */}
             </div>
           ) : (
             <div className="px-4 text-center mt-20">Chưa có đơn hàng thuộc trạng thái này</div>

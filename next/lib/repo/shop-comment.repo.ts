@@ -36,6 +36,19 @@ export class ShopCommentRepository extends CrudRepository<ShopComment> {
     rating: Int
     status: String
   `);
+  // async commentOrder(
+  //   orderId: string,
+  //   message: string,
+  //   rating: number,
+  //   tags: { name: string; icon: string; qty: number }[]
+  // ) {
+  //   // console.log(`query { commentOrder(key: "${key}"){ ${this.fullFragment} } }`);
+  //   const result = await this.apollo.mutate({
+  //     mutation: this.gql`mutation { commentOrder(key: "${key}"){ ${this.fullFragment} } }`,
+  //   });
+  //   this.handleError(result);
+  //   return result.data["getOneSettingByKey"] as Setting;
+  // }
 }
 
 export const ShopCommentService = new ShopCommentRepository();

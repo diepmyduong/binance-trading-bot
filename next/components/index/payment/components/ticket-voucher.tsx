@@ -11,15 +11,14 @@ interface Propstype extends ReactProps {
 }
 export function TicketVoucher({ voucher, onClick, showDetail, ...props }: Propstype) {
   return (
-    <div className=" flex items-center h-full">
-      <div className="h-full w-2 bg-primary rounded-l-2xl"></div>
-      <div className="w-2/3 justify-center bg-white py-2 px-2 rounded-r-xl h-full">
-        <div className="text-sm font-bold text-ellipsis w-full">{voucher.description}</div>
+    <div className="flex items-center h-18 border-primary border-l-8 rounded-l-lg w-full">
+      <div className="flex flex-col justify-between h-full bg-white py-2 px-2 rounded-r-xl flex-1 w-3/4">
+        <div className="text-sm font-bold text-ellipsis-2">{voucher.description}</div>
         <Button
           text="Xem chi tiết"
           textPrimary
           onClick={() => showDetail(voucher)}
-          className="justify-start p-0 text-sm"
+          className="justify-start p-0 text-xs h-3"
         />
         {/* <Link href="">
           <a href="" className="text-xs font-semibold text-primary pt-1">
@@ -27,7 +26,7 @@ export function TicketVoucher({ voucher, onClick, showDetail, ...props }: Propst
           </a>
         </Link> */}
       </div>
-      <div className="rounded-r-2xl rounded-l-xl  flex items-center justify-center bg-white h-full px-2 border-l-2 border-dashed">
+      <div className="rounded-r-2xl rounded-l-xl flex items-center justify-center bg-white px-2 border-l-2 border-dashed h-18 ">
         <Button text="Chọn" className="px-0" textPrimary onClick={() => onClick(voucher)} />
       </div>
     </div>

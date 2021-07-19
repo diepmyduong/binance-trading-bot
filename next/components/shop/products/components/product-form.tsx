@@ -72,8 +72,12 @@ export function ProductForm({ product, category, ...props }: PropsType) {
         initialData={product ? product : {}}
         isOpen={props.isOpen}
         onClose={props.onClose}
+        onChange={(val) => {
+          console.log(val);
+        }}
         onSubmit={async (data) => {
           const { name, basePrice } = data;
+          console.log(data);
           try {
             let res = await ProductService.createOrUpdate({
               id: product?.id,

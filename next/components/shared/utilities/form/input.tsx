@@ -158,7 +158,12 @@ export function Input({
           type={showPassword ? "text" : type}
           readOnly={props.readonly}
           placeholder={props.placeholder}
-          onChange={(e) => setValue(e.target.value)}
+          onBlur={(e) => {
+            setValue(e.target.value);
+          }}
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
         />
       ) : (
         <input
@@ -281,6 +286,7 @@ export const parseNumberToText = (
 };
 
 export const parseTextToNumber = (text: string) => {
+  console.log(text, "asdasd");
   if (text) {
     if (typeof text == "number") return text;
 

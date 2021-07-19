@@ -26,7 +26,18 @@ export default {
     extend type ShopBranch {
       operatingTimes: [OperatingTime]
     }
+    extend input UpdateShopBranchInput {
+      operatingTimes: [OperatingTimeInput]
+    }
     type OperatingTime {
+      "Ngày trong tuần"
+      day: Int
+      "Khung thời gian"
+      timeFrames: Mixed
+      "Trạng thái hoạt động ${Object.values(OperatingTimeStatus)}"
+      status: String
+    }
+    input OperatingTimeInput {
       "Ngày trong tuần"
       day: Int
       "Khung thời gian"

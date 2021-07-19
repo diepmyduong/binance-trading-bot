@@ -1,6 +1,12 @@
 import cloneDeep from "lodash/cloneDeep";
 import { useEffect, useRef, useState } from "react";
-import { RiAddFill, RiArrowRightLine, RiCloseFill, RiImageAddFill } from "react-icons/ri";
+import {
+  RiAddFill,
+  RiArrowDownSLine,
+  RiArrowRightLine,
+  RiCloseFill,
+  RiImageAddFill,
+} from "react-icons/ri";
 import { NumberPipe } from "../../../../lib/pipes/number";
 import { useToast } from "../../../../lib/providers/toast-provider";
 import { PAYMENT_METHODS } from "../../../../lib/repo/order.repo";
@@ -13,6 +19,7 @@ import {
   SHOP_VOUCHER_TYPES,
 } from "../../../../lib/repo/shop-voucher.repo";
 import { ProductSelectionPopover } from "../../../shared/shop-layout/product-selection-popover";
+import { Accordion } from "../../../shared/utilities/accordion/accordion";
 import { Button } from "../../../shared/utilities/form/button";
 import { Checkbox } from "../../../shared/utilities/form/checkbox";
 import { DatePicker } from "../../../shared/utilities/form/date";
@@ -41,6 +48,7 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
   const avatarUploaderRef = useRef<any>();
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [image, setImage] = useState("");
+  const [openAppliedCondition, setOpenAppliedCondition] = useState(false);
 
   useEffect(() => {
     if (voucher?.id) {
@@ -81,7 +89,7 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
           submitProps: { className: "bg-gradient h-14 w-64" },
           cancelText: "",
         }}
-        width={voucher?.id ? "960px" : "550px"}
+        width={voucher?.id ? "1080px" : "550px"}
         grid
         beforeSubmit={(data) => ({
           ...data,
@@ -164,33 +172,49 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
                         </div>
                       </div>
                     </div>
-                    <Field name="startDate" label="Ngày bắt đầu" cols={6}>
-                      <DatePicker />
-                    </Field>
-                    <Field name="endDate" label="Ngày kết thúc" cols={6}>
-                      <DatePicker />
-                    </Field>
-                    <Field name="issueNumber" label="Số lượng phát hành" cols={6}>
-                      <Input number />
-                    </Field>
-                    <Field name="issueByDate" label=" " cols={6}>
-                      <Checkbox placeholder="Phát hành mỗi ngày" />
-                    </Field>
-                    <Field name="useLimit" label="Số lượng dùng mỗi khách" cols={6}>
-                      <Input number />
-                    </Field>
-                    <Field name="useLimitByDate" label=" " cols={6}>
-                      <Checkbox placeholder="Số lượng dùng theo ngày" />
-                    </Field>
-                    <Field name="isPrivate" label="" cols={6}>
-                      <Checkbox placeholder="Mã riêng tư" />
-                    </Field>
-                    <Field name="isActive" label="" cols={6}>
-                      <Switch placeholder="Kích hoạt" />
-                    </Field>
                     <Field name="content" label="Nội dung voucher" cols={12}>
                       <Editor maxHeight="300px" />
                     </Field>
+                    <div
+                      className="text-gray-400 font-semibold text-lg col-span-12 mb-4 justify-between flex cursor-pointer hover:text-primary"
+                      onClick={() => {
+                        setOpenAppliedCondition(!openAppliedCondition);
+                      }}
+                    >
+                      <span>Điều kiện áp dụng</span>
+                      <i className={`transform ${openAppliedCondition ? "rotate-180" : ""}`}>
+                        <RiArrowDownSLine />
+                      </i>
+                    </div>
+                    <Accordion
+                      isOpen={openAppliedCondition}
+                      className="col-span-12 grid grid-cols-12 gap-x-5"
+                    >
+                      <Field name="startDate" label="Ngày bắt đầu" cols={6}>
+                        <DatePicker />
+                      </Field>
+                      <Field name="endDate" label="Ngày kết thúc" cols={6}>
+                        <DatePicker />
+                      </Field>
+                      <Field name="issueNumber" label="Số lượng phát hành" cols={6}>
+                        <Input number />
+                      </Field>
+                      <Field name="issueByDate" label=" " cols={6}>
+                        <Checkbox placeholder="Phát hành mỗi ngày" />
+                      </Field>
+                      <Field name="useLimit" label="Số lượng dùng mỗi khách" cols={6}>
+                        <Input number />
+                      </Field>
+                      <Field name="useLimitByDate" label=" " cols={6}>
+                        <Checkbox placeholder="Số lượng dùng theo ngày" />
+                      </Field>
+                      <Field name="isPrivate" label="" cols={6}>
+                        <Checkbox placeholder="Mã riêng tư" />
+                      </Field>
+                      <Field name="isActive" label="" cols={6}>
+                        <Switch placeholder="Kích hoạt" />
+                      </Field>
+                    </Accordion>
                   </>
                 )}
               </div>

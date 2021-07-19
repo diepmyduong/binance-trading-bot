@@ -36,14 +36,13 @@ export function PaymentPage() {
   const [openDialogSelectBranch, setopenDialogSelectBranch] = useState(false);
   const toast = useToast();
   const [vouchers, setVouchers] = useState<ShopVoucher[]>();
+
   useEffect(() => {
     generateDraftOrder();
   }, [orderInput]);
   useEffect(() => {
-    if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting?.id });
-  }, [branchSelecting]);
-  useEffect(() => {
-    if (!branchSelecting) {
+    if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
+    else {
       toast.error("Chưa chọn quán chi nhánh");
       setopenDialogSelectBranch(true);
     }
@@ -57,13 +56,7 @@ export function PaymentPage() {
       .then((res) => setVouchers(cloneDeep(res.data)))
       .catch((err) => setVouchers(null));
   }, []);
-  useEffect(() => {
-    if (voucherApplied) {
-      setOrderInput({ ...orderInput, promotionCode: voucherApplied.code });
-    } else {
-      setOrderInput({ ...orderInput, promotionCode: "" });
-    }
-  }, [voucherApplied]);
+
   return (
     <>
       <div className="text-gray-700 bg-gray-100">
@@ -219,6 +212,13 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
     }
     return true;
   }
+  useEffect(() => {
+    if (voucherApplied) {
+      setOrderInput({ ...orderInput, promotionCode: voucherApplied.code });
+    } else {
+      setOrderInput({ ...orderInput, promotionCode: "" });
+    }
+  }, [voucherApplied]);
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
       <div className="grid grid-cols-2 px-4 border-t border-b border-gray-100 items-center justify-between">

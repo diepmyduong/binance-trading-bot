@@ -79,6 +79,7 @@
     "md5": "^2.3.0",
     "metatags-generator": "^1.1.8",
     "minify-graphql-loader": "^1.0.0",
+    "moleculer": "^0.14.15",
     "moment-timezone": "^0.5.31",
     "mongoose": "^5.9.2",
     "mongoose-unique-validator": "^2.0.3",

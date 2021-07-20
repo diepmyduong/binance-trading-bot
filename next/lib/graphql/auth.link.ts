@@ -20,7 +20,10 @@ export function ClearCustomerToken() {
 export function GetCustomerToken() {
   return localStorage.getItem("customer-token") || "";
 }
-
+export function SetCustomerToken(token: string) {
+  console.log("customer token", token);
+  localStorage.setItem("customer-token", token);
+}
 export function SetAuthTokenMember(token: string) {
   console.log("member token", token);
   localStorage.setItem("member-token", token);

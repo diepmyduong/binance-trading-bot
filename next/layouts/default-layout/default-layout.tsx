@@ -19,7 +19,7 @@ export function DefaultLayout({ code, shop, ...props }: PropsType) {
       <ShopProvider>
         <CartProvider>
           <ShopConsumer>
-            {({ shop }) => (
+            {({ shop, customer }) => (
               <div className="flex flex-col min-h-screen relative bg-gray-800">
                 <>
                   <DefaultHead />
@@ -30,7 +30,7 @@ export function DefaultLayout({ code, shop, ...props }: PropsType) {
                         shop && " pt-14 "
                       } pt-14 min-h-screen`}
                     >
-                      {props.children}
+                      {customer === undefined ? <Spinner /> : props.children}
                     </div>
                   </div>
                   {/* <Footer /> */}

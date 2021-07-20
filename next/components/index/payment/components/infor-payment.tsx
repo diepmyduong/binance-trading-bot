@@ -251,8 +251,13 @@ const SelectTime = () => {
   const getDate = (time, date) => {
     let dateTemp = new Date(date);
     return new Date(
-      `${dateTemp.getMonth() + 1}-${dateTemp.getDate()}-${dateTemp.getFullYear()} ${time}`
+      `${dateTemp.getMonth() + 1}/${dateTemp.getDate()}/${dateTemp.getFullYear()} ${time}`
     ).toISOString();
+    // return new Date(
+    //   dateTemp.getFullYear(),
+    //   dateTemp.getMonth() + 1,
+    //   dateTemp.getDate()
+    // ).toISOString();
   };
   const onChangeTime = (time) => {
     let temp = getDate(selectTime, selectDate);
@@ -278,8 +283,12 @@ const SelectTime = () => {
     var min = today.getMinutes();
     var halfHours = ["00", "30"];
     var timess = [];
-    let openT = new Date(getDate(openTime, selectDate));
-    let closeT = new Date(getDate(closeTime, selectDate));
+    let openT, closeT;
+    if (openTime && closeTime) {
+      openT = new Date(getDate(openTime, selectDate));
+      closeT = new Date(getDate(closeTime, selectDate));
+    }
+
     for (var i = time; i < 24; i++) {
       for (var j = 0; j < 2; j++) {
         let temp = i + ":" + halfHours[j];

@@ -12,7 +12,7 @@ export function CommentsDialog(props: Propstype) {
   const [comments, setComments] = useState<ShopComment[]>();
   useEffect(() => {
     ShopCommentService.getAll({
-      query: { filter: { status: "PUBLIC" }, order: { createAt: -1 } },
+      query: { filter: { status: "PUBLIC" }, order: { createdAt: -1 } },
     }).then((res) => setComments(cloneDeep(res.data)));
   }, []);
   const { isMobile } = useDevice();

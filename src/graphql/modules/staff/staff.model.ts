@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 
 export enum StaffScope {
   REPORT = "REPORT", // Xem thống kê
+  MANAGER = "MANAGER", // Quản lý
 }
 
 export type IStaff = BaseDocument & {

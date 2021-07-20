@@ -62,6 +62,6 @@ export default {
   },
   nextDev: (process.env.NEXT_DEV || "FALSE").toUpperCase() == "TRUE",
   ahamove: {
-    apiKey: process.env.AHAMOVE_API_KEY,
+    apiKey: process.env.AHAMOVE_API_KEY || "4cd543d3e4e4fbe97db216828c18644f77558275",
   },
 };

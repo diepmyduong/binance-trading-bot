@@ -31,6 +31,15 @@ export default {
         );
         await orderGenerator.generate();
         const order = await orderGenerator.toOrder();
+        await customer
+          .updateOne({
+            name: order.buyerName,
+            latitude: order.latitude,
+            longitude: order.longitude,
+            fullAddress: order.buyerFullAddress,
+            addressNote: order.buyerAddressNote,
+          })
+          .exec();
         return order;
       },
     },

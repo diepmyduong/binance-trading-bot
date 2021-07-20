@@ -13,7 +13,7 @@ import { InforPayment } from "./components/infor-payment";
 import { TicketVoucher } from "./components/ticket-voucher";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import { useToast } from "../../../lib/providers/toast-provider";
-import BranchsDialog from "../homepage/components/branchs-dialog";
+import { BranchsDialog } from "../homepage/components/branchs-dialog";
 import { ShopVoucher, ShopVoucherService } from "../../../lib/repo/shop-voucher.repo";
 import cloneDeep from "lodash/cloneDeep";
 import SwiperCore, { Navigation } from "swiper/core";
@@ -42,13 +42,10 @@ export function PaymentPage() {
   }, [orderInput]);
   useEffect(() => {
     if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
-    else {
-      toast.error("Chưa chọn quán chi nhánh");
-      setopenDialogSelectBranch(true);
-    }
   }, [branchSelecting]);
   useEffect(() => {
     setVoucherApplied(null);
+    setOrderInput({ ...orderInput, promotionCode: "" });
     ShopVoucherService.getAll({
       query: { order: { createdAt: -1 }, filter: { isPrivate: false, isActive: true } },
       fragment: ShopVoucherService.fullFragment,

@@ -31,6 +31,8 @@ export type ICustomer = BaseDocument & {
   gender?: Gender; // Giới tính
   birthday?: Date; // Ngày sinh
   address?: string; // Địa chỉ
+  fullAddress?: string; // Full địa chỉ
+  addressNote?: string; // Ghi chú địa chỉ
   province?: string; // Tỉnh / thành
   district?: string; // Quận / huyện
   ward?: string; // Phường / xã
@@ -57,6 +59,8 @@ const customerSchema = new Schema(
     gender: { type: String, enum: Object.values(Gender), default: Gender.OTHER },
     birthday: { type: Date },
     address: { type: String },
+    fullAddress: { type: String },
+    addressNote: { type: String },
     province: { type: String },
     district: { type: String },
     ward: { type: String },

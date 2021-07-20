@@ -14,7 +14,7 @@ import { Input } from "../../../shared/utilities/form/input";
 import { Select } from "../../../shared/utilities/form/select";
 import { NotFound } from "../../../shared/utilities/not-found";
 import { Spinner } from "../../../shared/utilities/spinner";
-import BranchsDialog from "../../homepage/components/branchs-dialog";
+import { BranchsDialog } from "../../homepage/components/branchs-dialog";
 import { SelectTime } from "./select-time";
 
 export function InforPayment() {

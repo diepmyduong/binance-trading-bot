@@ -13,7 +13,7 @@ import { InforPayment } from "./components/infor-payment";
 import { TicketVoucher } from "./components/ticket-voucher";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import { useToast } from "../../../lib/providers/toast-provider";
-import BranchsDialog from "../homepage/components/branchs-dialog";
+import {BranchsDialog} from "../homepage/components/branchs-dialog";
 import { ShopVoucher, ShopVoucherService } from "../../../lib/repo/shop-voucher.repo";
 import cloneDeep from "lodash/cloneDeep";
 import SwiperCore, { Navigation } from "swiper/core";

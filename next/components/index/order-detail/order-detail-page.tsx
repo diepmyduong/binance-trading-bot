@@ -82,7 +82,10 @@ export function OrderDetailPage(props) {
                     </span>
                     ({order.shopBranch.phone})
                   </p>
-                  <p className="">{order.shopBranch.address}</p>
+                  <p className="">
+                    {order.shopBranch.address}, {order.shopBranch.ward}, {order.shopBranch.district}
+                    , {order.shopBranch.province}
+                  </p>
                   {order.pickupMethod !== "DELIVERY" && (
                     <p>Lấy vào lúc: {formatDate(new Date(order.pickupTime), "dd-MM-yyyy HH:mm")}</p>
                   )}

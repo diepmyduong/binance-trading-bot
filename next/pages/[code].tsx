@@ -6,6 +6,7 @@ import { MemberModel } from "../../dist/graphql/modules/member/member.model";
 import { useEffect } from "react";
 import { Redirect } from "../lib/helpers/redirect";
 import { HomeProvider } from "../components/index/homepage/providers/homepage-provider";
+import { ClearCustomerToken, ClearAnonymousToken } from "../lib/graphql/auth.link";
 
 export default function Page(props) {
   useEffect(() => {

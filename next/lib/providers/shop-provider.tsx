@@ -1,18 +1,24 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Shop, ShopService } from "../repo/shop.repo";
 import { useRouter } from "next/router";
-import { SetAnonymousToken } from "../graphql/auth.link";
+import {
+  SetAnonymousToken,
+  SetCustomerToken,
+  ClearAnonymousToken,
+  ClearCustomerToken,
+} from "../graphql/auth.link";
 import cloneDeep from "lodash/cloneDeep";
 import { Category, CategoryService } from "../repo/category.repo";
 import { ShopBranchService, ShopBranch } from "../repo/shop-branch.repo";
 import { UserService } from "../repo/user.repo";
 import sortBy, { orderBy } from "lodash";
+import { Customer } from "../repo/customer.repo";
 
 export const ShopContext = createContext<
   Partial<{
     shop: Shop;
     setShop: Function;
-    customer: any;
+    customer: Customer;
     locationCustomer: any;
     productIdSelected: any;
     setProductIdSelected: any;
@@ -36,14 +42,13 @@ export function ShopProvider(props) {
   const [shop, setShop] = useState<Shop>();
   const [productIdSelected, setProductIdSelected] = useState<any>(null);
   const [categoriesShop, setcategoriesShop] = useState<Category[]>(null);
-  const [customer, setCustomer] = useState<any>();
+  const [customer, setCustomer] = useState<Customer>();
   const [shopBranchs, setShopBranch] = useState<ShopBranch[]>([]);
   const [locationCustomer, setLocationCustomer] = useState<any>();
   async function getShop() {
     setLoading(true);
     let haveShop = "";
     if (shopCode && shop) {
-      haveShop = shopCode;
       sessionStorage.setItem("shopCode", shopCode);
       sessionStorage.setItem("shop", JSON.stringify(shop));
     } else {
@@ -55,10 +60,24 @@ export function ShopProvider(props) {
       }
     }
     let brsnav = null;
-
     if (haveShop) {
+      ClearAnonymousToken();
+      ClearCustomerToken();
       let token = await ShopService.loginAnonymous(haveShop);
       SetAnonymousToken(token);
+      let phoneUser = localStorage.getItem("phoneUser");
+      if (phoneUser) {
+        let dataCus = await UserService.loginCustomerByPhone(phoneUser);
+        if (dataCus) {
+          SetCustomerToken(dataCus.token);
+          setCustomer(cloneDeep(dataCus.customer));
+          localStorage.setItem("phoneUser", dataCus.customer.phone);
+        } else {
+          setCustomer(null);
+        }
+      } else {
+        setCustomer(null);
+      }
       let cats = await CategoryService.getAll({
         query: {
           limit: 0,
@@ -101,21 +120,21 @@ export function ShopProvider(props) {
     } else {
       setShop(null);
     }
-    let phoneUser = localStorage.getItem("phoneUser");
-    if (phoneUser) {
-      setCustomer(phoneUser);
-    } else {
-      setCustomer(null);
-    }
+
     setLoading(false);
   }
-  function customerLogin(phone: string) {
+  async function customerLogin(phone: string) {
     if (phone) {
-      UserService.loginCustomerByPhone(phone).then((res: { loginCustomerByPhone: any }) => {
-        localStorage.setItem("customer-token", res.loginCustomerByPhone.token);
-      });
-      localStorage.setItem("phoneUser", phone);
-      setCustomer(phone);
+      let dataCus = await UserService.loginCustomerByPhone(phone);
+      if (dataCus) {
+        SetCustomerToken(dataCus.token);
+        setCustomer(cloneDeep(dataCus.customer));
+        localStorage.setItem("phoneUser", dataCus.customer.phone);
+      } else {
+        setCustomer(null);
+      }
+    } else {
+      setCustomer(null);
     }
   }
   function customerLogout() {
@@ -158,7 +177,7 @@ export const useShopContext = () => useContext(ShopContext);
 export const ShopConsumer = ({
   children,
 }: {
-  children: (props: Partial<{ shop: Shop }>) => any;
+  children: (props: Partial<{ shop: Shop; customer: Customer }>) => any;
 }) => {
   return <ShopContext.Consumer>{children}</ShopContext.Consumer>;
 };

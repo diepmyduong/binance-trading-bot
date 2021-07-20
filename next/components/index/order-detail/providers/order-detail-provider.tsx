@@ -18,7 +18,7 @@ export const OrderDetailContext = createContext<
     tags: ShopTag[];
     cancelOrder: (id: string, note: string) => any;
     addTags: (tag: ShopTag) => any;
-    commentOrder: (inputData: { message: string; rating: string }) => any;
+    commentOrder: (inputData: { message: string; rating: number }) => any;
     reOrderClick: () => any;
   }>
 >({});
@@ -45,7 +45,7 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
     }
     setTags(cloneDeep(newTags));
   }
-  function commentOrder(inputData: { message: string; rating: string }) {
+  function commentOrder(inputData: { message: string; rating: number }) {
     const { message, rating } = inputData;
     ShopCommentService.mutate({
       mutation: `

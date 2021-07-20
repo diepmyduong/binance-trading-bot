@@ -1,4 +1,5 @@
 import { BaseModel, CrudRepository } from "./crud.repo";
+import { Customer, CustomerService } from "./customer.repo";
 
 export interface User extends BaseModel {
   uid: string;
@@ -80,12 +81,20 @@ export class UserRepository extends CrudRepository<User> {
   }
 
   // for firebase
-  async loginCustomerByPhone(phone): Promise<{}> {
+  async loginCustomerByPhone(phone): Promise<{ customer: Customer; token: string }> {
     return await this.apollo
       .mutate({
-        mutation: this.gql`mutation {  loginCustomerByPhone(phone: "${phone}") {token}}`,
+        mutation: this.gql`mutation {  loginCustomerByPhone(phone: "${phone}") {
+          token
+          customer{
+            ${CustomerService.shortFragment}
+          }
+        }}`,
       })
-      .then((res) => res.data);
+      .then((res) => ({
+        customer: res.data["loginCustomerByPhone"]["customer"] as Customer,
+        token: res.data["loginCustomerByPhone"]["token"] as string,
+      }));
   }
 
   async updateUserPassword(id: string, password: string) {

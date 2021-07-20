@@ -289,7 +289,7 @@ export function OrderDetailPage(props) {
                   isOpen={showComment}
                   onClose={() => setShowComment(false)}
                   onSubmit={(data) => {
-                    commentOrder({ rating: `${rating}`, message: data.message });
+                    commentOrder({ rating, message: data.message });
                     setShowComment(false);
                   }}
                 >

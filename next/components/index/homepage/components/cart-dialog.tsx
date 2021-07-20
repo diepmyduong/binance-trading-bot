@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { Price } from "../../../shared/homepage-layout/price";
 import { Quantity } from "../../../shared/homepage-layout/quantity";
 import useDevice from "../../../../lib/hooks/useDevice";
-import { Product, ProductService } from "../../../../lib/repo/product.repo";
+import { Product } from "../../../../lib/repo/product.repo";
 import { ImgProduct } from "../../../shared/homepage-layout/img-product";
 import { Rating } from "../../../shared/homepage-layout/rating";
 
@@ -18,27 +18,8 @@ export function CartDialog(props: Propstype) {
   const router = useRouter();
   const { customer, customerLogin } = useShopContext();
   const [showLogin, setShowLogin] = useState(false);
-  const { cartProducts, totalMoney, changeProductQuantity } = useCartContext();
+  const { cartProducts, totalMoney, changeProductQuantity, saleUpProducts } = useCartContext();
   const { isMobile } = useDevice();
-  const [saleUpProducts, setSaleUpProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    let upSalePros = saleUpProducts;
-    cartProducts.forEach((cart) => {
-      let upSale = cart.product.upsaleProducts;
-      if (upSale && upSale.length > 0) {
-        upSale.forEach((product) => {
-          let index = upSalePros.findIndex((p) => p.id === product.id);
-          if (index === -1) {
-            ProductService.getOne({ id: product.id }).then((res) => {
-              upSalePros.push(res);
-              setSaleUpProducts(cloneDeep(upSalePros));
-            });
-          }
-        });
-      }
-    });
-  }, [cartProducts]);
 
   return (
     <Dialog
@@ -118,6 +99,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Navigation } from "swiper/core";
 import { useEffect } from "react";
 import cloneDeep from "lodash/cloneDeep";
+import { Img } from "../../../shared/utilities/img";
+import { Spinner } from "../../../shared/utilities/spinner";
 
 SwiperCore.use([Navigation]);
 interface SaleUpProductProps extends ReactProps {
@@ -132,6 +115,9 @@ export function SaleUpProduct(props: SaleUpProductProps) {
     url.searchParams.set("productId", code);
     router.push(url.toString(), null, { shallow: true });
   };
+  useEffect(() => {
+    console.log(props.saleUpProduct);
+  }, [props.saleUpProduct]);
   return (
     <div className="relative group mt-10">
       <h3 className="text-lg font-semibold text-primary pb-2">
@@ -148,9 +134,7 @@ export function SaleUpProduct(props: SaleUpProductProps) {
         {props.saleUpProduct.map((item: Product, index: number) => (
           <SwiperSlide key={index} className="w-3/4">
             <div
-              className={`w-full py-2 shadow-md rounded-sm hover:bg-primary-light cursor-pointer border-b transition-all duration-300  ${
-                item.allowSale ? "" : "hidden"
-              }`}
+              className={`w-full py-2 shadow-md rounded-sm hover:bg-primary-light cursor-pointer border-b transition-all duration-300 `}
               onClick={() => {
                 handleClick(item.code);
               }}
@@ -168,12 +152,25 @@ export function SaleUpProduct(props: SaleUpProductProps) {
                     className="justify-items-end"
                   />
                 </div>
-                <ImgProduct
-                  native
-                  src={item.image || ""}
-                  className="w-16 sm:w-24 rounded-sm h-16 sm:h-24"
-                  saleRate={item.saleRate}
-                />
+
+                <div className="relative overflow-hidden rounded-md">
+                  <div className="flex">
+                    <img
+                      className="w-16 h-16 sm:w-24 sm:h-24 rounded-sm object-contain"
+                      src={item.image || "/assets/default/default.png"}
+                      alt=""
+                    />
+                  </div>
+
+                  {item.saleRate > 0 && (
+                    <div
+                      className={`absolute  bg-danger text-white font-semibold rounded-bl-3xl py-1 px-2 text-sm -top-1 -right-1
+                    `}
+                    >
+                      -<span className="pl-0.5">{item.saleRate}</span>%
+                    </div>
+                  )}
+                </div>
               </div>
               {item.labels?.map((label, index) => (
                 <div

@@ -1,9 +1,5 @@
-import Link from "next/link";
 import { Button } from "../../../shared/utilities/form/button";
 import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
-import formatDate from "date-fns/format";
-import { PromotionDetailDialog } from "../../promotion/components/promotion-detail.tsx/promotion-detail-dialog";
-import { useState } from "react";
 interface Propstype extends ReactProps {
   voucher: ShopVoucher;
   onClick: (e: ShopVoucher) => void;

@@ -15,7 +15,7 @@ import { Category } from "../../../../lib/repo/category.repo";
 import { ProductLabelService, PRODUCT_LABEL_COLORS } from "../../../../lib/repo/product-label.repo";
 import { ProductTopping } from "../../../../lib/repo/product-topping.repo";
 import { Product, ProductLabel, ProductService } from "../../../../lib/repo/product.repo";
-import { DialogPropsType } from "../../../shared/utilities/dialog/dialog";
+import { Dialog, DialogPropsType } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
 import { Field } from "../../../shared/utilities/form/field";
 import { Form, FormConsumer } from "../../../shared/utilities/form/form";
@@ -44,6 +44,7 @@ export function ProductForm({ product, category, ...props }: PropsType) {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [labels, setLabels] = useState<ProductLabel[]>(null);
   const [openLabel, setOpenLabel] = useState<ProductLabel>(undefined);
+  const [openToppingSelection, setOpenToppingSelection] = useState(false);
 
   useEffect(() => {
     setToppings(cloneDeep(product?.toppings || []));
@@ -344,16 +345,16 @@ export function ProductForm({ product, category, ...props }: PropsType) {
                 textPrimary
                 icon={<RiAddFill />}
                 text="Chọn mẫu topping"
-                innerRef={ref}
+                onClick={() => setOpenToppingSelection(true)}
               />
-              <Popover reference={ref} trigger="click" arrow={true} placement="auto-start">
+              <Dialog isOpen={openToppingSelection} onClose={() => setOpenToppingSelection(false)}>
                 <ToppingSelection
                   onToppingSelect={(topping) => {
                     onToppingSelect(topping);
-                    (ref.current as any)?._tippy.hide();
+                    setOpenToppingSelection(false);
                   }}
                 />
-              </Popover>
+              </Dialog>
             </div>
           </div>
         )}

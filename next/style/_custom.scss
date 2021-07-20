@@ -5,3 +5,13 @@
     background-image: none !important;
   }
 }
+
+//custom style datetimepicker trang thanh toán
+.Modal-Portal {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.datepicker-modal {
+  right: initial !important;
+}

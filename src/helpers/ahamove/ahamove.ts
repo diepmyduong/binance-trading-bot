@@ -15,8 +15,6 @@ import {
 
 const host = "https://api.ahamove.com";
 const hostDev = "https://apistg.ahamove.com";
-const apiKey = configs.ahamove.apiKey;
-const apiKeyDev = "4cd543d3e4e4fbe97db216828c18644f77558275";
 
 const statusText = {
   IDLE: "Đã tạo đơn",
@@ -30,14 +28,12 @@ const statusText = {
 
 export class Ahamove {
   public static StatusText = statusText;
-  constructor(public config: AhamoveConfig) {
-    this.config = { devMode: true, apiKey: apiKeyDev, ...config };
-  }
+  constructor(public config: AhamoveConfig) {}
   get host() {
-    return this.config.devMode ? hostDev : host;
+    return configs.debug ? hostDev : host;
   }
   get apiKey() {
-    return this.config.devMode ? apiKeyDev : apiKey;
+    return configs.ahamove.apiKey;
   }
   async regisUserAccount(props: RegisUserAccountProps) {
     return await axios

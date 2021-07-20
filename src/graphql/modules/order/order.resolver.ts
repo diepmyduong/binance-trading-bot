@@ -1,4 +1,4 @@
-import { isNull, set } from "lodash";
+import { set } from "lodash";
 
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
@@ -18,7 +18,7 @@ import { MemberLoader, MemberModel } from "../member/member.model";
 import { OrderItemLoader } from "../orderItem/orderItem.model";
 import { ShopBranchLoader } from "../shopBranch/shopBranch.model";
 import { ShopVoucherLoader } from "../shopVoucher/shopVoucher.model";
-import { StaffModel } from "../staff/staff.model";
+import { StaffLoader, StaffScope } from "../staff/staff.model";
 import { getShipMethods, IOrder, OrderStatus, PaymentMethod, ShipMethod } from "./order.model";
 import { orderService } from "./order.service";
 
@@ -29,8 +29,10 @@ const Query = {
     if (context.sellerId) {
       set(args, "q.filter.sellerId", context.sellerId);
       if (context.isStaff()) {
-        const staff = await StaffModel.findById(context.id);
-        set(args, "q.filter.shopBranchId", staff.branchId);
+        const staff = await StaffLoader.load(context.id);
+        if (!staff.scopes.includes(StaffScope.MANAGER)) {
+          set(args, "q.filter.shopBranchId", staff.branchId);
+        }
       }
     }
     if (context.isCustomer()) {

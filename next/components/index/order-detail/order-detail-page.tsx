@@ -15,6 +15,7 @@ import { Select } from "../../shared/utilities/form/select";
 import { Radio } from "../../shared/utilities/form/radio";
 import { useToast } from "../../../lib/providers/toast-provider";
 import { HiOutlinePhone } from "react-icons/hi";
+import { RatingOrder } from "./components/rating-order";
 export function OrderDetailPage(props) {
   const {
     order,
@@ -31,6 +32,7 @@ export function OrderDetailPage(props) {
   const [showComment, setShowComment] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
   const { shopCode, shop } = useShopContext();
+  const [rating, setRating] = useState(5);
   const toast = useToast();
   return (
     <div className="bg-white min-h-screen">
@@ -282,11 +284,12 @@ export function OrderDetailPage(props) {
                 </Form>
                 <Form
                   title="Bình luận đơn hàng này"
+                  slideFromBottom="none"
                   dialog
                   isOpen={showComment}
                   onClose={() => setShowComment(false)}
                   onSubmit={(data) => {
-                    commentOrder({ rating: data.rating, message: data.message });
+                    commentOrder({ rating: `${rating}`, message: data.message });
                     setShowComment(false);
                   }}
                 >
@@ -305,15 +308,13 @@ export function OrderDetailPage(props) {
                       </div>
                     ))}
                   </div>
-                  <Field name="rating" label="Đánh giá" cols={5} required>
-                    <Select
-                      options={[1, 2, 3, 4, 5].map((star) => ({
-                        value: star,
-                        label: [...Array(star)].map((x) => "⭐").join(""),
-                      }))}
-                      defaultValue={5}
-                    />
-                  </Field>
+                  <RatingOrder
+                    className="p-2 my-2 border rounded-full"
+                    voted={rating}
+                    onChange={(val) => {
+                      setRating(val);
+                    }}
+                  />
                   <Field name="message" label="Nội dung bình luận" cols={12} required>
                     <Textarea />
                   </Field>

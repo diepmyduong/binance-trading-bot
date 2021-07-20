@@ -9,7 +9,7 @@ SwiperCore.use([Pagination, Autoplay]);
 interface Propstype extends ReactProps {
   banner: ShopBanner[];
 }
-const BannerPromtion = (props: Propstype) => {
+export function BannerPromtion(props: Propstype) {
   useEffect(() => {
     console.log(props.banner);
   }, []);
@@ -85,6 +85,4 @@ const BannerPromtion = (props: Propstype) => {
       </Swiper>
     </div>
   );
-};
-
-export default BannerPromtion;
+}

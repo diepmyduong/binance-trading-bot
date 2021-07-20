@@ -15,12 +15,13 @@ import { Input } from "../../../shared/utilities/form/input";
 import { Select } from "../../../shared/utilities/form/select";
 import { NotFound } from "../../../shared/utilities/not-found";
 import { Spinner } from "../../../shared/utilities/spinner";
-import BranchsDialog from "../../homepage/components/branchs-dialog";
+import { BranchsDialog } from "../../homepage/components/branchs-dialog";
+import { usePaymentContext } from "../providers/payment-provider";
 
 export function InforPayment() {
   const [openDialog, setOpenDialog] = useState(false);
-  const { orderInput, setOrderInput, draftOrder } = useCartContext();
-  const { shopBranchs, setBranchSelecting, branchSelecting } = useShopContext();
+  const { orderInput, setOrderInput } = usePaymentContext();
+  const { shopBranchs, setBranchSelecting } = useShopContext();
   const [openAddress, setOpenAddress] = useState(false);
   const [placeDetail, setPlaceDetail] = useState<GoongPlaceDetail>(null);
   const [addressInput, setAddressInput] = useState("");
@@ -235,7 +236,7 @@ export function InforPayment() {
 
 const SelectTime = () => {
   const { branchSelecting } = useShopContext();
-  const { orderInput, setOrderInput } = useCartContext();
+  const { orderInput, setOrderInput } = usePaymentContext();
   const [times, setTimes] = useState<{ label: string; value: string }[]>([]);
   const [selectDate, setSelectDate] = useState(new Date());
   const [selectTime, setSelectTime] = useState("");
@@ -340,7 +341,7 @@ const SelectTime = () => {
 };
 
 const TabCustom = () => {
-  const { orderInput, setOrderInput } = useCartContext();
+  const { orderInput, setOrderInput } = usePaymentContext();
   const options: Option[] = [
     { label: "Giao hàng", value: "DELIVERY" },
     { label: "Lấy tại quán", value: "STORE" },

@@ -1,7 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Shop, ShopService } from "../repo/shop.repo";
 import { useRouter } from "next/router";
-import { SetAnonymousToken, ClearCustomerToken, SetCustomerToken } from "../graphql/auth.link";
+import {
+  SetAnonymousToken,
+  SetCustomerToken,
+  ClearAnonymousToken,
+  ClearCustomerToken,
+} from "../graphql/auth.link";
 import cloneDeep from "lodash/cloneDeep";
 import { Category, CategoryService } from "../repo/category.repo";
 import { ShopBranchService, ShopBranch } from "../repo/shop-branch.repo";
@@ -44,7 +49,6 @@ export function ShopProvider(props) {
     setLoading(true);
     let haveShop = "";
     if (shopCode && shop) {
-      haveShop = shopCode;
       sessionStorage.setItem("shopCode", shopCode);
       sessionStorage.setItem("shop", JSON.stringify(shop));
     } else {
@@ -57,6 +61,8 @@ export function ShopProvider(props) {
     }
     let brsnav = null;
     if (haveShop) {
+      ClearAnonymousToken();
+      ClearCustomerToken();
       let token = await ShopService.loginAnonymous(haveShop);
       SetAnonymousToken(token);
       let phoneUser = localStorage.getItem("phoneUser");

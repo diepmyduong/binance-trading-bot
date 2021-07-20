@@ -100,9 +100,6 @@ export function CartProvider(props) {
     return itemProduct;
   };
   useEffect(() => {
-    if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
-  }, []);
-  useEffect(() => {
     if (locationCustomer)
       setOrderInput({
         ...orderInput,

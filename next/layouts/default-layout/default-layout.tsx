@@ -6,6 +6,7 @@ import { Header, HeaderPropsType } from "./components/header";
 import { DefaulLayoutProvider } from "./provider/default-layout-provider";
 import { ShopProvider, ShopConsumer } from "../../lib/providers/shop-provider";
 import { CartProvider } from "../../lib/providers/cart-provider";
+import { useRouter } from "next/router";
 
 interface PropsType extends ReactProps, HeaderPropsType {
   code?: string;
@@ -13,7 +14,10 @@ interface PropsType extends ReactProps, HeaderPropsType {
 }
 export function DefaultLayout({ code, shop, ...props }: PropsType) {
   const { user, redirectToWebappLogin } = useAuth();
-
+  const router = useRouter();
+  useEffect(() => {
+    console.log(router);
+  }, []);
   return (
     <DefaulLayoutProvider>
       <ShopProvider>
@@ -30,7 +34,11 @@ export function DefaultLayout({ code, shop, ...props }: PropsType) {
                         shop && " pt-14 "
                       } pt-14 min-h-screen`}
                     >
-                      {props.children}
+                      {router.pathname !== "/[code]" && customer === undefined ? (
+                        <Spinner />
+                      ) : (
+                        props.children
+                      )}
                     </div>
                   </div>
                   {/* <Footer /> */}

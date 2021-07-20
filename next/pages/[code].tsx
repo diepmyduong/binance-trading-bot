@@ -10,8 +10,6 @@ import { ClearCustomerToken, ClearAnonymousToken } from "../lib/graphql/auth.lin
 
 export default function Page(props) {
   useEffect(() => {
-    ClearAnonymousToken();
-    ClearCustomerToken();
     sessionStorage.setItem("shop", JSON.stringify(props.shop));
     sessionStorage.setItem("shopCode", props.code);
   }, []);

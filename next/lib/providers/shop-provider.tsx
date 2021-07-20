@@ -41,7 +41,6 @@ export function ShopProvider(props) {
   const [shopBranchs, setShopBranch] = useState<ShopBranch[]>([]);
   const [locationCustomer, setLocationCustomer] = useState<any>();
   async function getShop() {
-    ClearCustomerToken();
     setLoading(true);
     let haveShop = "";
     if (shopCode && shop) {
@@ -60,6 +59,19 @@ export function ShopProvider(props) {
     if (haveShop) {
       let token = await ShopService.loginAnonymous(haveShop);
       SetAnonymousToken(token);
+      let phoneUser = localStorage.getItem("phoneUser");
+      if (phoneUser) {
+        let dataCus = await UserService.loginCustomerByPhone(phoneUser);
+        if (dataCus) {
+          SetCustomerToken(dataCus.token);
+          setCustomer(cloneDeep(dataCus.customer));
+          localStorage.setItem("phoneUser", dataCus.customer.phone);
+        } else {
+          setCustomer(null);
+        }
+      } else {
+        setCustomer(null);
+      }
       let cats = await CategoryService.getAll({
         query: {
           limit: 0,
@@ -102,19 +114,7 @@ export function ShopProvider(props) {
     } else {
       setShop(null);
     }
-    let phoneUser = localStorage.getItem("phoneUser");
-    if (phoneUser) {
-      let dataCus = await UserService.loginCustomerByPhone(phoneUser);
-      if (dataCus) {
-        SetCustomerToken(dataCus.token);
-        setCustomer(cloneDeep(dataCus.customer));
-        localStorage.setItem("phoneUser", dataCus.customer.phone);
-      } else {
-        setCustomer(null);
-      }
-    } else {
-      setCustomer(null);
-    }
+
     setLoading(false);
   }
   async function customerLogin(phone: string) {

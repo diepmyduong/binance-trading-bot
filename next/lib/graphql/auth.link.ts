@@ -47,7 +47,9 @@ export function SetIP(ip: string) {
 export function GetAnonymousToken() {
   return sessionStorage.getItem("anonymous-token") || "";
 }
-
+export function ClearAnonymousToken() {
+  localStorage.removeItem("anonymous-token");
+}
 export function SetAnonymousToken(token: string) {
   console.log("set token", token);
   sessionStorage.setItem("anonymous-token", token);

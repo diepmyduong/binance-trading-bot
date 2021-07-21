@@ -10,13 +10,13 @@ import { useCartContext } from "../../../../lib/providers/cart-provider";
 import { useShopContext } from "../../../../lib/providers/shop-provider";
 import { Dialog } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
-import { DatePicker } from "../../../shared/utilities/form/date";
 import { Input } from "../../../shared/utilities/form/input";
 import { Select } from "../../../shared/utilities/form/select";
 import { NotFound } from "../../../shared/utilities/not-found";
 import { Spinner } from "../../../shared/utilities/spinner";
 import { BranchsDialog } from "../../homepage/components/branchs-dialog";
 import { usePaymentContext } from "../providers/payment-provider";
+import { SelectTime } from "./select-time";
 
 export function InforPayment() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -235,112 +235,6 @@ export function InforPayment() {
     </div>
   );
 }
-
-const SelectTime = () => {
-  const { branchSelecting } = useShopContext();
-  const { orderInput, setOrderInput } = usePaymentContext();
-  const [times, setTimes] = useState<{ label: string; value: string }[]>([]);
-  const [selectDate, setSelectDate] = useState(new Date());
-  const [selectTime, setSelectTime] = useState("");
-  const startDate = new Date();
-  const endDate = new Date(startDate.getTime() + 2 * 24 * 60 * 60 * 1000);
-  const getDiffDate = (date1: Date, date2: Date) => {
-    const diffTime = Math.abs(date2.getTime() - date1.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    if (date1.getDate().toString() == date2.getDate().toString()) return 0;
-    return diffDays;
-  };
-
-  const getDate = (time, date) => {
-    let dateTemp = new Date(date);
-    return new Date(
-      `${dateTemp.getMonth() + 1}-${dateTemp.getDate()}-${dateTemp.getFullYear()} ${time}`
-    ).toISOString();
-  };
-  const onChangeTime = (time) => {
-    let temp = getDate(selectTime, selectDate);
-    console.log(temp);
-
-    setOrderInput({ ...orderInput, pickupTime: temp });
-  };
-  const generateTime = () => {
-    var today = new Date();
-    var current_day = today.getDay();
-    let openTimes = branchSelecting.operatingTimes;
-    let closeTime, openTime;
-    let diffDate = getDiffDate(today, selectDate);
-    if (openTimes[0].day == 0) {
-      openTime = openTimes[current_day + diffDate].timeFrames[0][0];
-      closeTime = openTimes[current_day + diffDate].timeFrames[0][1];
-    } else if (openTimes[0].day == 1) {
-      openTime = openTimes[(current_day + 1 + diffDate) % 7].timeFrames[0][0];
-      closeTime = openTimes[(current_day + 1 + diffDate) % 7].timeFrames[0][1];
-    }
-    var time = today.getHours();
-    if (diffDate != 0) time = 0;
-    var min = today.getMinutes();
-    var halfHours = ["00", "30"];
-    var timess = [];
-    let openT = new Date(getDate(openTime, selectDate));
-    let closeT = new Date(getDate(closeTime, selectDate));
-    for (var i = time; i < 24; i++) {
-      for (var j = 0; j < 2; j++) {
-        let temp = i + ":" + halfHours[j];
-        let tempT;
-        if (diffDate == 0) {
-          tempT = new Date(getDate(temp, new Date()));
-          if (openT <= tempT && closeT >= tempT && tempT > today)
-            timess.push({ value: i + ":" + halfHours[j], label: i + ":" + halfHours[j] });
-        } else {
-          tempT = new Date(getDate(temp, selectDate));
-          if (openT <= tempT && closeT >= tempT)
-            timess.push({ value: i + ":" + halfHours[j], label: i + ":" + halfHours[j] });
-        }
-      }
-    }
-    timess.sort((a, b) => {
-      return new Date(a.value) < new Date(b.value) ? -1 : 1;
-    });
-    setTimes(timess);
-  };
-  useEffect(() => {
-    if (times.length > 0) setSelectTime(times[0].value);
-  }, [times]);
-  useEffect(() => {
-    generateTime();
-  }, [selectDate]);
-  useEffect(() => {
-    let temp = getDate(selectTime, selectDate);
-    setOrderInput({ ...orderInput, pickupTime: temp });
-  }, [selectTime || selectDate]);
-
-  return (
-    <>
-      <div className="flex ">
-        <DatePicker
-          placeholder="Chọn ngày"
-          minDate={startDate}
-          maxDate={endDate}
-          defaultValue={selectDate}
-          onChange={(date) => {
-            console.log("DATE - ", date);
-            setTimes([]);
-            if (date === null) {
-              setOrderInput({ ...orderInput, pickupTime: null });
-            } else setSelectDate(new Date(date));
-          }}
-        />
-        <Select
-          onChange={(data) => setSelectTime(data)}
-          options={times}
-          className="w-32 ml-2"
-          searchable={false}
-          native
-        />
-      </div>
-    </>
-  );
-};
 
 const TabCustom = () => {
   const { orderInput, setOrderInput } = usePaymentContext();

@@ -30,7 +30,9 @@
     "analyze": "cross-env ANALYZE=true next build ./next",
     "analyze:server": "cross-env BUNDLE_ANALYZE=server next build ./next",
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build ./next",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "service:dev": "moleculer-runner --repl --hot dist/services/**/*.service.js",
+    "service:start": "moleculer-runner --instances=max src/services"
   },
   "dependencies": {
     "@apollo/client": "^3.3.19",
@@ -79,6 +81,8 @@
     "md5": "^2.3.0",
     "metatags-generator": "^1.1.8",
     "minify-graphql-loader": "^1.0.0",
+    "moleculer": "^0.14.15",
+    "moleculer-repl": "^0.6.6",
     "moment-timezone": "^0.5.31",
     "mongoose": "^5.9.2",
     "mongoose-unique-validator": "^2.0.3",
@@ -98,6 +102,7 @@
     "react-email-editor": "^1.2.0",
     "react-icons": "^4.2.0",
     "react-lazyload": "^3.2.0",
+    "react-mobile-datepicker": "^4.0.2",
     "react-player": "^2.9.0",
     "react-select": "^4.3.1",
     "react-text-mask": "^5.4.3",

@@ -35,7 +35,7 @@ export function BranchItem({ branch, ...props }: PropsType) {
         data-tooltip="Mở chi nhánh"
         data-placement="top-center"
       >
-        <Switch className="px-4" value={branch.activated || false} onChange={props.onToggleClick} />
+        <Switch className="px-4" value={!!branch.isOpen} onChange={props.onToggleClick} />
       </div>
       <Button
         icon={<RiDeleteBin6Line />}

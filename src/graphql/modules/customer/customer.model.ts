@@ -42,8 +42,12 @@ export type ICustomer = BaseDocument & {
   cumulativePoint?: number; // Điểm tích lũy
   commission: number; // Hoa hồng cộng tác viên
   pageAccounts?: CustomerPageAccount[]; // Danh sách account facebook của người dùng
-  latitude: number;
-  longitude: number;
+  latitude?: number;
+  longitude?: number;
+  otp?: string; // Mã otp 6 số
+  otpExpired?: Date; // Thời hạn OTP
+  otpRetry?: number; // Số lần gửi lại OTP
+  otpRetryExpired?: Date; // Thời gian thử lại
 };
 
 const customerSchema = new Schema(
@@ -73,6 +77,10 @@ const customerSchema = new Schema(
 
     latitude: { type: Number },
     longitude: { type: Number },
+    otp: { type: String },
+    otpExpired: { type: Date },
+    otpRetry: { type: Number, default: 0 },
+    otpRetryExpired: { type: Date },
   },
   { timestamps: true }
 );

@@ -91,6 +91,7 @@ export interface Order extends BaseModel {
   paymentMethodText: string;
   shipMethodText: string;
   statusText: string;
+  commented: boolean;
   collaboratorId: string;
   isUrbanDelivery: boolean;
   toMemberId: string;
@@ -227,6 +228,7 @@ export class OrderRepository extends CrudRepository<Order> {
     discount: Float
     discountDetail: String
     ahamoveTrackingLink: String
+    commented:Boolean
     logs {
       id:String 
       statusText: String
@@ -279,6 +281,7 @@ export class OrderRepository extends CrudRepository<Order> {
     note: String
     cancelReason: String
     itemCount: Int
+    commented:Boolean
     sellerId: ID
     sellerCode: String
     sellerName: String

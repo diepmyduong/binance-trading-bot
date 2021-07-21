@@ -274,7 +274,7 @@ export function OrderDetailPage(props) {
                 <div className="font-bold text-primary">{NumberPipe(order.amount, true)}</div>
               </div>
               <div className="p-2 sticky bottom-0 w-full bg-white">
-                {order.status === "COMPLETED" && (
+                {order.status === "COMPLETED" && !order.commented && (
                   <Button
                     text="Bình luận đơn hàng này"
                     primary
@@ -287,7 +287,7 @@ export function OrderDetailPage(props) {
                 )}
                 {order.status !== "PENDING" &&
                   order.status !== "DELIVERING" &&
-                  order.status !== "COMFIRMED" && (
+                  order.status !== "CONFIRMED" && (
                     <Button
                       text="Đặt lại"
                       outline

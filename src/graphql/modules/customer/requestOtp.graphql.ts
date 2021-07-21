@@ -52,6 +52,7 @@ export default {
           },
         });
         await LocalBroker.call("ESMS.send", { phone: customer.phone, content });
+        await customer.save();
         return "Tin nhắn đã được gửi đi.";
       },
     },

@@ -150,9 +150,6 @@ export function PaymentProvider(props) {
     });
   }, [branchSelecting || customer || locationCustomer]);
   useEffect(() => {
-    if (cartProducts && cartProducts.length == 0) {
-      router.replace(`/${shopCode}`);
-    }
     ShopVoucherService.getAll({
       query: { order: { createdAt: -1 }, filter: { isPrivate: false, isActive: true } },
       fragment: ShopVoucherService.fullFragment,

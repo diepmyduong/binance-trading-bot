@@ -96,10 +96,9 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
         .then((res) => {
           setOrder(cloneDeep(res));
           if (
-            (res.status !== "PENDING" &&
-              res.status !== "CONFIRMED" &&
-              res.status !== "DELIVERING") ||
-            res.pickupMethod === "STORE"
+            res.status !== "PENDING" &&
+            res.status !== "CONFIRMED" &&
+            res.status !== "DELIVERING"
           ) {
             setIsInterval(false);
             clearInterval(interval);

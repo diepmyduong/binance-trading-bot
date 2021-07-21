@@ -36,7 +36,7 @@ const ShopColorLoader = new DataLoader<string, { primaryColor: string; accentCol
       },
       { $unwind: "$config" },
     ]).then((list) => {
-      const keyById = keyBy(list, "_id");
+      const keyById = keyBy(list, "code");
       return ids.map((code) =>
         get(keyById, code + ".config", { primaryColor: "#0D57EF", accentColor: "#38D0FF" })
       );

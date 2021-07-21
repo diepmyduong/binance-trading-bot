@@ -2,6 +2,14 @@ import { ErrorHelper } from "../../../base/error";
 import { AddressModel } from "./address.model";
 
 export class AddressHelper {
+  static async setAddress(doc: any) {
+    await Promise.all([
+      this.setProvinceName(doc),
+      this.setDistrictName(doc),
+      this.setWardName(doc),
+    ]);
+    return this;
+  }
   static async setProvinceName(doc: any) {
     if (!doc.provinceId) return this;
     const address = await AddressModel.findOne({ provinceId: doc.provinceId });

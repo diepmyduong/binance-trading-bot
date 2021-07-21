@@ -36,6 +36,9 @@ export type IShopConfig = BaseDocument & {
   // theme
   primaryColor?: string; // Màu primary
   accentColor?: string; // Màu accent
+  // sms
+  smsOrder?: boolean; // Bật tin nhắn đơn hàng
+  smsOtp?: boolean; // Bạt tin nhắn OTP
 };
 
 const shopConfigSchema = new Schema(
@@ -62,6 +65,8 @@ const shopConfigSchema = new Schema(
     upsaleTitle: { type: String, default: "Ngon hơn khi ăn kèm" },
     primaryColor: { type: String },
     accentColor: { type: String },
+    smsOrder: { type: Boolean, default: false },
+    smsOtp: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

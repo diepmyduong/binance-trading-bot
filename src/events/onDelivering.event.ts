@@ -11,6 +11,7 @@ import {
 
 import { IOrder, OrderStatus } from "../graphql/modules/order/order.model";
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
+import { ShopConfigModel } from "../graphql/modules/shopConfig/shopConfig.model";
 import { StaffModel } from "../graphql/modules/staff/staff.model";
 import { staffService } from "../graphql/modules/staff/staff.service";
 import {
@@ -120,12 +121,14 @@ onDelivering.subscribe(async (order) => {
 
 // Thông báo SMS tới khách hàng
 onDelivering.subscribe(async (order) => {
-  const [seller, buyer, smsTemplate, webappDomain] = await Promise.all([
+  const [seller, buyer, smsTemplate, webappDomain, shopConfig] = await Promise.all([
     MemberLoader.load(order.sellerId),
     CustomerLoader.load(order.buyerId),
     SettingHelper.load(SettingKey.SMS_DELIVERING),
     SettingHelper.load(SettingKey.WEBAPP_DOMAIN),
+    ShopConfigModel.findOne({ memberId: order.sellerId }),
   ]);
+  if (!shopConfig.smsOrder) return;
   const customerToken = TokenHelper.getCustomerToken(buyer);
   const orderLink = `${webappDomain}/order/${order.code}?x-token=${customerToken}`;
   const encoded = await LocalBroker.call<string, any>("shortLink.encode", { url: orderLink });

@@ -23,6 +23,7 @@ import { orderService } from "../graphql/modules/order/order.service";
 import { OrderItemLoader } from "../graphql/modules/orderItem/orderItem.model";
 import { OrderLogModel, OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
+import { ShopConfigModel } from "../graphql/modules/shopConfig/shopConfig.model";
 import { StaffModel, StaffScope } from "../graphql/modules/staff/staff.model";
 import { staffService } from "../graphql/modules/staff/staff.service";
 import { UserModel } from "../graphql/modules/user/user.model";
@@ -374,12 +375,14 @@ onApprovedCompletedOrder.subscribe(async (order) => {
 
 // Thông báo SMS tới khách hàng
 onApprovedCompletedOrder.subscribe(async (order) => {
-  const [seller, buyer, smsTemplate, webappDomain] = await Promise.all([
+  const [seller, buyer, smsTemplate, webappDomain, shopConfig] = await Promise.all([
     MemberLoader.load(order.sellerId),
     CustomerLoader.load(order.buyerId),
     SettingHelper.load(SettingKey.SMS_ORDER_COMPLETED),
     SettingHelper.load(SettingKey.WEBAPP_DOMAIN),
+    ShopConfigModel.findOne({ memberId: order.sellerId }),
   ]);
+  if (!shopConfig.smsOrder) return;
   const customerToken = TokenHelper.getCustomerToken(buyer);
   const orderLink = `${webappDomain}/order/${order.code}?x-token=${customerToken}`;
   const encoded = await LocalBroker.call<string, any>("shortLink.encode", { url: orderLink });

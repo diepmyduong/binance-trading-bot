@@ -12,7 +12,6 @@ import { BannerPromtion } from "./banner-promtion";
 import { BranchsDialog } from "./branchs-dialog";
 import { CommentsDialog } from "./comments-dialog";
 import { EmotionsEvaluate } from "./emotions-evaluate";
-import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
 import { useHomeContext } from "../providers/homepage-provider";
 
 interface Propstype extends ReactProps {}
@@ -40,7 +39,7 @@ const MoreInfomation = (props) => {
     <>
       <div className={`pt-20`}>
         <div className="flex items-center justify-between border-b px-4 ">
-          <p className="flex items-center flex-1 text-ellipsis font-semibold ">
+          <p className="flex items-center flex-1 text-ellipsis font-semibold text-primary">
             <i className="text-primary p-0.5 border rounded-full text-10 border-primary mr-1">
               {<FaPercent />}
             </i>

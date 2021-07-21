@@ -112,6 +112,7 @@
     "rsa-pem-from-mod-exp": "^0.8.4",
     "rxjs": "^6.6.0",
     "sass": "^1.32.2",
+    "short-hash": "^1.0.0",
     "swagger-jsdoc": "^4.0.0",
     "swagger-ui-express": "^4.1.4",
     "swiper": "^6.7.0",

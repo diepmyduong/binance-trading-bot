@@ -18,173 +18,162 @@ import { ShopVoucher, ShopVoucherService } from "../../../lib/repo/shop-voucher.
 import cloneDeep from "lodash/cloneDeep";
 import SwiperCore, { Navigation } from "swiper/core";
 import { PromotionDetailDialog } from "../promotion/components/promotion-detail.tsx/promotion-detail-dialog";
+import { usePaymentContext } from "./providers/payment-provider";
+import { SuccessDialog } from "./components/success-dialog";
+import { Spinner } from "../../shared/utilities/spinner";
 // SwiperCore.use([Pagination]);
 SwiperCore.use([Navigation]);
 export function PaymentPage() {
-  const {
-    cartProducts,
-    totalFood,
-    totalMoney,
-    generateDraftOrder,
-    setOrderInput,
-    orderInput,
-    draftOrder: order,
-  } = useCartContext();
+  const { cartProducts, totalFood, totalMoney } = useCartContext();
   const { branchSelecting, shopBranchs, setBranchSelecting } = useShopContext();
-  const [voucherApplied, setVoucherApplied] = useState<ShopVoucher>(null);
+  const { vouchers, orderInput, setOrderInput, draftOrder: order, orderCode } = usePaymentContext();
   const [voucherSelected, setVoucherSelected] = useState<ShopVoucher>(null);
   const [openDialogSelectBranch, setopenDialogSelectBranch] = useState(false);
-  const toast = useToast();
-  const [vouchers, setVouchers] = useState<ShopVoucher[]>();
-
-  useEffect(() => {
-    generateDraftOrder();
-  }, [orderInput]);
-  useEffect(() => {
-    if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
-  }, [branchSelecting]);
-  useEffect(() => {
-    setVoucherApplied(null);
-    setOrderInput({ ...orderInput, promotionCode: "" });
-    ShopVoucherService.getAll({
-      query: { order: { createdAt: -1 }, filter: { isPrivate: false, isActive: true } },
-      fragment: ShopVoucherService.fullFragment,
-    })
-      .then((res) => setVouchers(cloneDeep(res.data)))
-      .catch((err) => setVouchers(null));
-  }, []);
 
   return (
     <>
-      <div className="text-gray-700 bg-gray-100">
-        <InforPayment />
-        <div className="mt-1 bg-white">
-          <div className="flex items-center justify-between">
-            <div className="font-semibold px-4 py-2">
-              {branchSelecting ? branchSelecting.name : "Chưa chọn chi nhánh"}
-            </div>
-            <Button
-              textPrimary
-              text="Đổi chi nhánh"
-              small
-              onClick={() => setopenDialogSelectBranch(true)}
-            />
-          </div>
-          <div className="">
-            {cartProducts.map((cartProduct, index) => {
-              const last = cartProducts.length - 1 == index;
-              return (
-                <div
-                  className={`flex px-4 items-start border-gray-300 py-3 ${!last && "border-b"}`}
-                  key={index}
-                >
-                  <div className="font-bold text-primary flex items-center">
-                    <div className="min-w-4 text-center">{cartProduct.qty}</div>
-                    <div className="px-1">X</div>
-                  </div>
-                  <div className="flex-1 flex flex-col text-gray-700">
-                    <div className="font-semibold">{cartProduct.product.name}</div>
-                    {!!cartProduct.product.selectedToppings?.length && (
-                      <div>
-                        {cartProduct.product.selectedToppings
-                          .map((topping) => topping.optionName)
-                          .join(", ")}
-                      </div>
-                    )}
-                    {cartProduct.note && <div>Ghi chú: {cartProduct.note}</div>}
-                  </div>
-                  <div className="font-bold">{NumberPipe(cartProduct.amount, true)}</div>
+      {orderInput && branchSelecting ? (
+        <>
+          <div className="text-gray-700 bg-gray-100">
+            <InforPayment />
+            <div className="mt-1 bg-white">
+              <div className="flex items-center justify-between">
+                <div className="font-semibold px-4 py-2">
+                  {branchSelecting ? branchSelecting.name : "Chưa chọn chi nhánh"}
                 </div>
-              );
-            })}
-          </div>
-        </div>
-        <InputNote />
-        <div className="px-4 py-4 mt-1 bg-white ">
-          <div className="flex justify-between items-center">
-            <div className="">
-              Tạm tính: <span className="font-bold">{totalFood} món</span>
+                <Button
+                  textPrimary
+                  text="Đổi chi nhánh"
+                  small
+                  onClick={() => setopenDialogSelectBranch(true)}
+                />
+              </div>
+              <div className="">
+                {cartProducts.map((cartProduct, index) => {
+                  const last = cartProducts.length - 1 == index;
+                  return (
+                    <div
+                      className={`flex px-4 items-start border-gray-300 py-3 ${
+                        !last && "border-b"
+                      }`}
+                      key={index}
+                    >
+                      <div className="font-bold text-primary flex items-center">
+                        <div className="min-w-4 text-center">{cartProduct.qty}</div>
+                        <div className="px-1">X</div>
+                      </div>
+                      <div className="flex-1 flex flex-col text-gray-700">
+                        <div className="font-semibold">{cartProduct.product.name}</div>
+                        {!!cartProduct.product.selectedToppings?.length && (
+                          <div>
+                            {cartProduct.product.selectedToppings
+                              .map((topping) => topping.optionName)
+                              .join(", ")}
+                          </div>
+                        )}
+                        {cartProduct.note && <div>Ghi chú: {cartProduct.note}</div>}
+                      </div>
+                      <div className="font-bold">{NumberPipe(cartProduct.amount, true)}</div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <div className="">{NumberPipe(totalMoney)}đ</div>
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="">
-              Phí áp dụng:{" "}
-              <span className="font-bold">
-                {order.order?.shipDistance ? `${order?.order?.shipDistance} km` : ""}
-              </span>
+            <InputNote />
+            <div className="px-4 py-4 mt-1 bg-white ">
+              <div className="flex justify-between items-center">
+                <div className="">
+                  Tạm tính: <span className="font-bold">{totalFood} món</span>
+                </div>
+                <div className="">{NumberPipe(totalMoney)}đ</div>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="">
+                  Phí áp dụng:{" "}
+                  <span className="font-bold">
+                    {order.order?.shipDistance ? `${order?.order?.shipDistance} km` : ""}
+                  </span>
+                </div>
+                <div className="">{NumberPipe(order?.order?.shipfee)}đ</div>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="">Giảm giá:</div>
+                <div className="text-danger">
+                  {order.order?.discount > 0
+                    ? NumberPipe(-order?.order?.discount, true)
+                    : NumberPipe(0, true)}
+                </div>
+              </div>
             </div>
-            <div className="">{NumberPipe(order?.order?.shipfee)}đ</div>
+            {vouchers && vouchers.length > 0 ? (
+              <Swiper
+                spaceBetween={10}
+                freeMode={true}
+                grabCursor
+                slidesPerView={"auto"}
+                className="w-auto p-4"
+                navigation
+                // className="main-container overflow-visible"
+              >
+                {vouchers.map((item: ShopVoucher, index) => {
+                  return (
+                    <SwiperSlide key={index} className="w-2/3">
+                      <TicketVoucher
+                        voucher={item}
+                        showDetail={(val) => setVoucherSelected(val)}
+                        onClick={(val) => {
+                          setOrderInput({ ...orderInput, promotionCode: val.code });
+                        }}
+                      />
+                    </SwiperSlide>
+                  );
+                })}
+              </Swiper>
+            ) : (
+              ""
+            )}
+            <div className="h-24"></div>
+            <ButtonPayment />
           </div>
-          <div className="flex justify-between items-center">
-            <div className="">Giảm giá:</div>
-            <div className="text-danger">
-              {order.order?.discount > 0
-                ? NumberPipe(-order?.order?.discount, true)
-                : NumberPipe(order?.order?.discount, true)}
-            </div>
-          </div>
-        </div>
-        {vouchers && (
-          <Swiper
-            spaceBetween={10}
-            freeMode={true}
-            grabCursor
-            slidesPerView={"auto"}
-            className="w-auto p-4"
-            navigation
-            // className="main-container overflow-visible"
-          >
-            {vouchers.map((item: ShopVoucher, index) => {
-              return (
-                <SwiperSlide key={index} className="w-2/3">
-                  <TicketVoucher
-                    voucher={item}
-                    showDetail={(val) => setVoucherSelected(val)}
-                    onClick={(val) => {
-                      setVoucherApplied(val);
-                    }}
-                  />
-                </SwiperSlide>
-              );
-            })}
-          </Swiper>
-        )}
-        <div className="h-24"></div>
-        <ButtonPayment voucherApplied={voucherApplied} setVoucherApplied={setVoucherApplied} />
-      </div>
-      <PromotionDetailDialog
-        promotion={voucherSelected}
-        isOpen={voucherSelected ? true : false}
-        onClose={() => setVoucherSelected(null)}
-      />
-      {shopBranchs && (
-        <BranchsDialog
-          shopBranchs={shopBranchs}
-          onClose={() => setopenDialogSelectBranch(false)}
-          isOpen={openDialogSelectBranch}
-          onSelect={(branch) => {
-            setBranchSelecting(branch);
-          }}
-        />
+          <PromotionDetailDialog
+            promotion={voucherSelected}
+            isOpen={voucherSelected ? true : false}
+            onClose={() => setVoucherSelected(null)}
+          />
+          {/* <SuccessDialog/> */}
+          {shopBranchs && (
+            <BranchsDialog
+              shopBranchs={shopBranchs}
+              onClose={() => setopenDialogSelectBranch(false)}
+              isOpen={openDialogSelectBranch}
+              onSelect={(branch) => {
+                setBranchSelecting(branch);
+              }}
+            />
+          )}
+        </>
+      ) : (
+        <Spinner />
       )}
+      <SuccessDialog isOpen={orderCode ? true : false} code={orderCode} />
     </>
   );
 }
-interface ButtonPaymentProps extends ReactProps {
-  voucherApplied: ShopVoucher;
-  setVoucherApplied: Function;
-}
-const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPaymentProps) => {
+interface ButtonPaymentProps extends ReactProps {}
+const ButtonPayment = (props: ButtonPaymentProps) => {
   const {
     generateOrder,
     orderInput,
     draftOrder: order,
     setOrderInput,
     draftOrder,
-  } = useCartContext();
+  } = usePaymentContext();
   const toast = useToast();
   function validData() {
+    if (!orderInput.shopBranchId) {
+      toast.error("Chưa chọn chi nhánh");
+      return false;
+    }
     if (!orderInput.buyerName) {
       toast.error("Chưa nhập tên người nhận");
       return false;
@@ -209,13 +198,6 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
     }
     return true;
   }
-  useEffect(() => {
-    if (voucherApplied) {
-      setOrderInput({ ...orderInput, promotionCode: voucherApplied.code });
-    } else {
-      setOrderInput({ ...orderInput, promotionCode: "" });
-    }
-  }, [voucherApplied]);
   return (
     <div className="fixed text-sm max-w-lg w-full z-50 shadow-2xl bottom-0  bg-white mt-2 border-b border-l border-r border-gray-300">
       <div className="grid grid-cols-2 px-4 border-t border-b border-gray-100 items-center justify-between">
@@ -225,17 +207,16 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
             <HiChevronUp />
           </i>
         </div>
-
-        {voucherApplied !== null ? (
+        {orderInput.promotionCode ? (
           <div className="flex items-center justify-between px-2">
             <p className="text-primary text-sm font-semibold text-center py-1">
-              {voucherApplied.code}
+              {orderInput.promotionCode}
             </p>
             <Button
               text="Xóa"
               textDanger
               onClick={() => {
-                setVoucherApplied(null);
+                setOrderInput({ ...orderInput, promotionCode: "" });
               }}
             />
           </div>
@@ -252,7 +233,7 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
           onClick={async () => {
             if (validData()) {
               if (draftOrder.invalid) {
-                toast.error(draftOrder.invalidReason);
+                toast.error(draftOrder.invalidReason || "Đã xảy ra lỗi");
               } else {
                 await generateOrder();
               }
@@ -266,7 +247,7 @@ const ButtonPayment = ({ voucherApplied, setVoucherApplied, ...props }: ButtonPa
 
 const InputNote = () => {
   const [openDialog, setOpenDialog] = useState(false);
-  const { orderInput, setOrderInput } = useCartContext();
+  const { orderInput, setOrderInput } = usePaymentContext();
   return (
     <>
       <div className="mt-1">
@@ -307,7 +288,7 @@ const InputNote = () => {
           <Textarea placeholder="Nhập ghi chú" />
         </Field>
         <Form.Footer>
-          <SaveButtonGroup />
+          <SaveButtonGroup onCancel={() => setOpenDialog(false)} />
         </Form.Footer>
       </Form>
     </>

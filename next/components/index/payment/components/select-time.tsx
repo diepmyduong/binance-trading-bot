@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { useCartContext } from "../../../../lib/providers/cart-provider";
 import { useShopContext } from "../../../../lib/providers/shop-provider";
 import DatePicker from "react-mobile-datepicker";
 import { Button } from "../../../shared/utilities/form/button";
 import { FaAngleDown } from "react-icons/fa";
+import { usePaymentContext } from '../providers/payment-provider';
 
 export function SelectTime() {
   const { branchSelecting } = useShopContext();
-  const { orderInput, setOrderInput } = useCartContext();
+  const { orderInput, setOrderInput } = usePaymentContext();
   const startDate = new Date(new Date().getTime() - 1 * 24 * 60 * 60 * 1000);
   const endDate = new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000);
   const [times, setTimes] = useState<{ label: string; value: string }[]>([]);

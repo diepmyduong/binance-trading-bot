@@ -75,21 +75,22 @@ export function ProductDetail({ ...props }: PropsType) {
             <div className="relative w-full top-0 ">
               <Img src={product.image} ratio169 compress={512} />
               <div className="absolute bottom-0 left-0 w-full h-12 p-3 text-xs text-white flex items-end bg-opacity-20 bg-gradient-to-t from-primary">
-                {product.rating && (
+                {product.rating > 0 && (
                   <div className="flex items-center">
                     <i className="text-yellow-500 px-1">
                       <HiStar />
                     </i>
                     <div className="font-semibold">{product.rating}</div>
-                    <div className="px-1">-</div>
-                    <p className="">
-                      (
-                      {(product.soldQty > 1000 && "999+") ||
-                        (product.soldQty > 100 && "99+") ||
-                        (product.soldQty > 10 && "9+") ||
-                        product.soldQty}
-                      )
-                    </p>
+                    {product.soldQty > 0 && (
+                      <p className="">
+                        <span className="px-1">-</span>(
+                        {(product.soldQty > 1000 && "999+") ||
+                          (product.soldQty > 100 && "99+") ||
+                          (product.soldQty > 10 && "9+") ||
+                          product.soldQty}
+                        )
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

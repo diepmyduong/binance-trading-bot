@@ -9,17 +9,17 @@ import { useRouter } from "next/router";
 
 export const CartContext = createContext<
   Partial<{
-    draftOrder?: any;
-    orderInput?: OrderInput;
-    setOrderInput?: (val: OrderInput) => any;
-    inforBuyers: any;
-    setInforBuyers: any;
+    // draftOrder?: any;
+    reOrderInput?: OrderInput;
+    // setOrderInput?: (val: OrderInput) => any;
+    // inforBuyers: any;
+    // setInforBuyers: any;
     totalFood: number;
     totalMoney: number;
     cartProducts: CartProduct[];
-    resetOrderInput: Function;
-    generateOrder: () => any;
-    generateDraftOrder: Function;
+    // resetOrderInput: Function;
+    // generateOrder: () => any;
+    // generateDraftOrder: Function;
     addProductToCart: (product: Product, qty: number, note: string) => any;
     changeProductQuantity: (productIndex: number, qty: number) => any;
     removeProductFromCart: (productIndex: number) => any;
@@ -41,77 +41,10 @@ export function CartProvider(props) {
   const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
   const [totalFood, setTotalFood] = useState(0);
   const [totalMoney, setTotalMoney] = useState(0);
-  const [draftOrder, setDraftOrder] = useState<{
-    invalid: boolean;
-    invalidReason: string;
-    order: Order;
-  }>({
-    invalid: true,
-    invalidReason: "",
-    order: null,
-  });
-
-  const { branchSelecting, customer, locationCustomer } = useShopContext();
-  const [orderInput, setOrderInput] = useState<OrderInput>({
-    buyerName: "",
-    buyerPhone: "",
-    pickupMethod: "DELIVERY",
-    shopBranchId: branchSelecting?.id,
-    pickupTime: null,
-    buyerAddress: "",
-    buyerProvinceId: "70",
-    buyerDistrictId: "",
-    buyerWardId: "",
-    buyerFullAddress: "",
-    buyerAddressNote: "",
-    latitude: 10.72883,
-    longitude: 106.725484,
-    paymentMethod: "COD",
-    note: "",
-    promotionCode: "",
-  });
-  const resetOrderInput = () => {
-    setOrderInput({
-      ...orderInput,
-      pickupMethod: "DELIVERY",
-      pickupTime: null,
-      buyerAddress: "",
-      buyerProvinceId: "70",
-      buyerDistrictId: "",
-      buyerWardId: "",
-      note: "",
-      paymentMethod: "COD",
-    });
-  };
+  const [reOrderInput, setReOrderInput] = useState<OrderInput>();
   const router = useRouter();
   const toast = useToast();
-  const getItemsOrderInput = () => {
-    let itemProduct: OrderItemInput[] = [];
-    console.log("cartProducts", cartProducts);
-    cartProducts.forEach((cartProduct) => {
-      let OrderItem: OrderItemInput = {
-        productId: cartProduct.productId,
-        quantity: cartProduct.qty,
-        note: cartProduct.note,
-        toppings: cartProduct.product.selectedToppings,
-      };
-      itemProduct.push(OrderItem);
-    });
-    return itemProduct;
-  };
-  useEffect(() => {
-    if (locationCustomer)
-      setOrderInput({
-        ...orderInput,
-        longitude: locationCustomer.longitude,
-        latitude: locationCustomer.latitude,
-      });
-  }, [locationCustomer]);
-  useEffect(() => {
-    if (customer) {
-      setOrderInput({ ...orderInput, buyerPhone: customer.phone });
-    }
-  }, [customer]);
+
   useEffect(() => {
     let listCart = JSON.parse(localStorage.getItem("cartProducts"));
     if (listCart) {
@@ -211,11 +144,10 @@ export function CartProvider(props) {
   };
   const reOrder = (items: OrderItem[], reOderInput: OrderInput) => {
     let resCartProducts = [...items];
-    console.log(resCartProducts);
-
-    setOrderInput(cloneDeep(reOderInput));
+    console.log(reOderInput);
+    setReOrderInput(cloneDeep(reOderInput));
     if (resCartProducts) {
-      //lấy danh sách product mua lại
+      // lấy danh sách product mua lại
       ProductService.getAll({
         query: {
           limit: 0,
@@ -297,48 +229,14 @@ export function CartProvider(props) {
     }).then((res) => setSaleUpProducts(cloneDeep(res.data)));
   }, [cartProducts]);
 
-  ///Checkout
-  const generateDraftOrder = () => {
-    let items = getItemsOrderInput();
-    OrderService.generateDraftOrder({ ...orderInput, items: items })
-      .then((res: any) => {
-        setDraftOrder(cloneDeep(res));
-        console.log(res);
-        if (res.invalid && items.length > 0) {
-          toast.error(res.invalidReason);
-        }
-      })
-      .catch((err) => {});
-  };
-
-  const generateOrder = () => {
-    if (!draftOrder.invalid) {
-      let items = getItemsOrderInput();
-      return OrderService.generateOrder({ ...orderInput, items: items })
-        .then((res) => {
-          toast.success("Đặt hàng thành công");
-          localStorage.removeItem("cartProducts");
-          setCartProducts([]);
-          resetOrderInput();
-          router.replace("/order/" + res.code);
-        })
-        .catch((err) => toast.error("Đặt hàng thất bại"));
-    }
-  };
-
   return (
     <CartContext.Provider
       value={{
-        draftOrder: draftOrder,
         reOrder,
+        reOrderInput,
         totalFood,
         totalMoney,
         cartProducts,
-        orderInput,
-        resetOrderInput,
-        setOrderInput,
-        generateOrder,
-        generateDraftOrder,
         addProductToCart,
         removeProductFromCart,
         changeProductQuantity,

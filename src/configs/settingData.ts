@@ -9,6 +9,7 @@ export enum SettingGroupSlug {
   CAU_HINH_THONG_BAO_TONG_CUC = "CAU_HINH_THONG_BAO_TONG_CUC",
   CAU_HINH_DASHBOARD = "CAU_HINH_DASHBOARD",
   CAU_HINH_TRUYEN_THONG = "CAU_HINH_TRUYEN_THONG",
+  CAU_HINH_TIN_NHAN = "CAU_HINH_TIN_NHAN",
 }
 export enum SettingKey {
   // CAU_HINH_CHUNG
@@ -144,6 +145,10 @@ export enum SettingKey {
   MEMBER_TYPE_AGENCY = "MEMBER_TYPE_AGENCY",
   // CAU_HINH_TRUYEN_THONG
   MEDIA_FACEBOOK_TOKEN = "MEDIA_FACEBOOK_TOKEN",
+
+  // CAU_HINH_TIN_NHAN
+  SMS_DELIVERING = "SMS_DELIVERING",
+  SMS_ORDER_COMPLETED = "SMS_ORDER_COMPLETED",
 }
 
 export const SETTING_DATA = [
@@ -1273,6 +1278,32 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
         name: "TOKEN Truy xuất thông tin tương tác của link",
         key: SettingKey.MEDIA_FACEBOOK_TOKEN,
         value: "",
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+    ],
+  },
+  {
+    slug: SettingGroupSlug.CAU_HINH_TIN_NHAN,
+    name: "Cấu hình Tin Nhắn",
+    desc: "Mẫu tin nhắn SMS tự động",
+    readOnly: true,
+    settings: [
+      {
+        type: SettingType.richText,
+        name: "Tin xác nhận đang giao hàng",
+        key: SettingKey.SMS_DELIVERING,
+        value: `{{SHOP_NAME}} - Đơn hàng của bạn đang trên đường giao tới. Bạn để ý điện thoại nhé. Xem thông tin đơn hàng tại đây: {{ORDER_LINK}}`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.richText,
+        name: "Tin cám ơn mời đánh giá",
+        key: SettingKey.SMS_ORDER_COMPLETED,
+        value: `{{SHOP_NAME}} - Cám ơn bạn đã sử dụng dịch vụ của chúng tôi. Mời bạn bấm: {{ORDER_LINK}} để đánh giá dịch vụ và tham gia các chương trình ưu đãi mới nhất.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,

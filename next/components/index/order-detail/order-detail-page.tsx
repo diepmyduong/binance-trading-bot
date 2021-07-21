@@ -14,8 +14,117 @@ import BreadCrumbs from "../../shared/utilities/breadcrumbs/breadcrumbs";
 import { Select } from "../../shared/utilities/form/select";
 import { Radio } from "../../shared/utilities/form/radio";
 import { useToast } from "../../../lib/providers/toast-provider";
-import { HiOutlinePhone } from "react-icons/hi";
+import { HiCheckCircle, HiOutlinePhone } from "react-icons/hi";
 import { RatingOrder } from "./components/rating-order";
+import { OrderLog } from "../../../lib/repo/order.repo";
+import { FaCheckCircle, FaDotCircle } from "react-icons/fa";
+
+interface ItemStatusOrderProps {
+  status?: OrderLog;
+  text?: string;
+  actived?: boolean;
+}
+
+function ItemStatusOrder({ status, text, actived, ...props }: ItemStatusOrderProps) {
+  return (
+    <div className="flex flex-col justify-center items-center">
+      {actived ? (
+        <i
+          className={`text-xl ${
+            text == "Đã hủy" || text == "Thất bại" ? "text-gray-400" : "text-danger"
+          }`}
+        >
+          <FaCheckCircle />
+        </i>
+      ) : (
+        <i className="text-xl text-gray-300">
+          <FaDotCircle />
+        </i>
+      )}
+      <div className={`py-1 ${actived && "font-semibold"}`}>{text}</div>
+      {status && (
+        <div className="text-sm text-gray-300">{`${new Date(
+          status.createdAt
+        ).getHours()}:${new Date(status.createdAt).getMinutes()}`}</div>
+      )}
+    </div>
+  );
+}
+
+function StatusOrder(props) {
+  const { order } = useOrderDetailContext();
+  const [pending, setPending] = useState<OrderLog>();
+  const [shipping, setShipping] = useState<OrderLog>();
+  const [finished, setFinished] = useState<OrderLog>();
+  const [failure, setFailure] = useState<OrderLog>();
+  const [canceled, setCanceled] = useState<OrderLog>();
+  useEffect(() => {
+    if (order.logs) {
+      order.logs.forEach((item) => {
+        switch (item.statusText) {
+          case "Chờ duyệt":
+            setPending(item);
+            break;
+          case "Đang giao":
+            setShipping(item);
+            break;
+          case "Hoàn thành":
+            setFinished(item);
+            break;
+          case "Đã huỷ":
+            setCanceled(item);
+            break;
+          case "Thất bại":
+            setFailure(item);
+            break;
+        }
+      });
+    }
+  }, [order.logs]);
+  console.log("canceled", canceled);
+  return (
+    <div className="flex flex-col">
+      <div className="w-full flex justify-center items-end text-base">
+        <div className="text-gray-500">Mã đơn hàng:</div>
+        <div className="ml-1 font-bold">{order.code}</div>
+      </div>
+      <div className="w-full mx-auto flex items-start justify-between text-base mt-4">
+        <ItemStatusOrder
+          status={pending}
+          actived={order.status == "PENDING" || order.status == "CONFIRMED"}
+          text="Đã đặt"
+        />
+        <div className="border-b-2 border-gray-400 flex-1 pt-2"></div>
+        {!canceled ? (
+          <>
+            <ItemStatusOrder
+              status={shipping}
+              actived={order.status == "DELIVERING"}
+              text="Đang giao"
+            />
+            <div className="border-b-2 border-gray-400 flex-1 pt-2"></div>
+            {order.status != "FAILURE" ? (
+              <ItemStatusOrder
+                status={finished}
+                actived={order.status == "COMPLETED"}
+                text="Hoàn thành"
+              />
+            ) : (
+              <ItemStatusOrder
+                status={failure}
+                actived={order.status == "FAILURE"}
+                text="Thất bại"
+              />
+            )}
+          </>
+        ) : (
+          <ItemStatusOrder status={canceled} actived={order.status == "CANCELED"} text="Đã hủy" />
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function OrderDetailPage(props) {
   const {
     order,
@@ -51,24 +160,13 @@ export function OrderDetailPage(props) {
           ) : ( */}
           <div className="text-gray-800 text-sm sm:text-lg">
             <div className="w-full px-4">
-              <div className="grid grid-cols-2 w-full pt-4">
-                <div className="flex flex-col space-y-1">
-                  <p className="sm:text-base text-gray-500">Mã đơn hàng</p>
-                  <p className="uppercase font-bold ">{order.code}</p>
-                  <p className="sm:text-base text-gray-500">
-                    Ngày: {formatDate(new Date(order.createdAt), "dd-MM-yyyy HH:mm")}
-                  </p>
-                </div>
-                <div className="flex flex-col space-y-1 pl-2 border-l">
-                  <p className="sm:text-base text-gray-500">Tình trạng</p>
-                  {status && <p className={`text-${status.color}`}>{status.label}</p>}
-                </div>
-              </div>
+              <StatusOrder></StatusOrder>
               {order.cancelReason && (
                 <div className="p-4 text-gray-500 bg-gray-50 my-2">
                   Lý do hủy: {order.cancelReason}
                 </div>
               )}
+
               <div className="flex items-center my-2">
                 <i className="text-danger text-xl ">
                   <CgRadioChecked />
@@ -92,6 +190,12 @@ export function OrderDetailPage(props) {
                     <p>Lấy vào lúc: {formatDate(new Date(order.pickupTime), "dd-MM-yyyy HH:mm")}</p>
                   )}
                 </div>
+              </div>
+              <div className="w-full px-6 flex items-center">
+                <hr className="flex-1 pt-2" />
+                {order.pickupMethod === "DELIVERY" && (
+                  <div className="text-sm pb-2 ml-2 font-semibold">{`${order.shipDistance} km`}</div>
+                )}
               </div>
               <div className="flex items-center">
                 <i className="text-primary text-xl ">
@@ -192,29 +296,7 @@ export function OrderDetailPage(props) {
                       onClick={() => reOrderClick()}
                     />
                   )}
-                {/* {order.status !== "PENDING" ? (
-                  <Button
-                    text="Đặt lại"
-                    outline
-                    asyncLoading={loading}
-                    large
-                    className="w-full my-2"
-                    onClick={() => reOrderClick()}
-                  />
-                ) : (
-                  <Button
-                    large
-                    className="w-full my-2"
-                    text="Hủy đơn"
-                    outline
-                    primary
-                    asyncLoading={loading}
-                    onClick={() => {
-                      setLoading(true);
-                      setShowCancel(true);
-                    }}
-                  />
-                )} */}
+
                 {order.status === "PENDING" && (
                   <div className="flex flex-wrap-reverse items-center justify-center mt-2 gap-2">
                     <Button

@@ -230,12 +230,12 @@ const ButtonPayment = (props: ButtonPaymentProps) => {
           text={order.order ? `Đặt hàng ${NumberPipe(order?.order?.amount)}đ` : "Đặt hàng"}
           primary
           className="w-full bg-gradient h-12"
-          onClick={async () => {
+          onClick={() => {
             if (validData()) {
               if (draftOrder.invalid) {
                 toast.error(draftOrder.invalidReason || "Đã xảy ra lỗi");
               } else {
-                await generateOrder();
+                generateOrder();
               }
             }
           }}

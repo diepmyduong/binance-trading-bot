@@ -122,7 +122,7 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
     return () => {
       clearInterval(interval);
     };
-  }, [id]);
+  }, []);
   useEffect(() => {
     if (order) {
       let sta = ORDER_STATUS.find((x) => x.value === order.status);

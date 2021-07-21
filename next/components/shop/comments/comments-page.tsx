@@ -70,6 +70,13 @@ export function CommentsPage(props: ReactProps) {
           />
           <DataTable.Column
             center
+            label="Điểm"
+            render={(item: ShopComment) => (
+              <DataTable.CellText value={[...Array(item.rating)].map((x) => "⭐").join("")} />
+            )}
+          />
+          <DataTable.Column
+            center
             label="Loại bình luận"
             render={(item: ShopComment) => (
               <DataTable.CellText value={item.customerId ? "Khách hàng" : "Cửa hàng"} />

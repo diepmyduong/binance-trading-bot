@@ -35,46 +35,51 @@ export function ToppingSelection({ onToppingSelect }: PropsType) {
     loadToppings();
   }, []);
 
-  if (!toppings) return <Spinner />;
   return (
     <div
       className="bg-white rounded overflow-hidden"
       style={{ width: "450px", marginLeft: "-9px", marginRight: "-9px" }}
     >
-      <Input
-        className="border-0 no-focus"
-        placeholder="Tìm kiếm topping"
-        prefix={<RiSearch2Line />}
-        clearable
-        value={searchText}
-        onChange={setSearchText}
-      />
-      <div className="p-4 border-t border-gray-200 v-scrollbar" style={{ height: "450px" }}>
-        {!filteredToppings?.length && (
-          <NotFound icon={<RiCloseCircleLine />} text="Không có mẫu topping nào" />
-        )}
-        {filteredToppings?.map((topping) => (
-          <div
-            className={`border border-gray-300 hover:border-primary hover:bg-primary-light transition-colors duration-150 shadow-sm rounded mb-2 p-3 cursor-pointer`}
-            key={topping.id}
-            onClick={() => onToppingSelect(topping)}
-          >
-            <div className="font-semibold text-gray-800 flex">
-              {topping.name}
-              {topping.required && (
-                <i className="text-danger text-xs ml-1 mt-0.5">
-                  <FaAsterisk />
-                </i>
-              )}
-            </div>
-            <div className="text-gray-600">
-              {topping.options
-                .map((option) => `${option.name} ${NumberPipe(option.price, true)}`)
-                .join(", ")}
-            </div>
+      {!toppings ? (
+        <Spinner />
+      ) : (
+        <>
+          <Input
+            className="border-0 no-focus"
+            placeholder="Tìm kiếm topping"
+            prefix={<RiSearch2Line />}
+            clearable
+            value={searchText}
+            onChange={setSearchText}
+          />
+          <div className="p-4 border-t border-gray-200 v-scrollbar" style={{ height: "450px" }}>
+            {!filteredToppings?.length && (
+              <NotFound icon={<RiCloseCircleLine />} text="Không có mẫu topping nào" />
+            )}
+            {filteredToppings?.map((topping) => (
+              <div
+                className={`border border-gray-300 hover:border-primary hover:bg-primary-light transition-colors duration-150 shadow-sm rounded mb-2 p-3 cursor-pointer`}
+                key={topping.id}
+                onClick={() => onToppingSelect(topping)}
+              >
+                <div className="font-semibold text-gray-800 flex">
+                  {topping.name}
+                  {topping.required && (
+                    <i className="text-danger text-xs ml-1 mt-0.5">
+                      <FaAsterisk />
+                    </i>
+                  )}
+                </div>
+                <div className="text-gray-600">
+                  {topping.options
+                    .map((option) => `${option.name} ${NumberPipe(option.price, true)}`)
+                    .join(", ")}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   );
 }

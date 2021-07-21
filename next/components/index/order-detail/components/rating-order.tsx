@@ -26,7 +26,7 @@ export function RatingOrder(props: Propstype) {
       {fiveStar.map((item) => {
         return (
           <i
-            className={`text-24 sm:text-40 cursor-pointer duration-300 transition-all ${
+            className={`text-24 sm:text-4xl cursor-pointer duration-300 transition-all ${
               item.checked ? "text-yellow-400" : "text-gray-400"
             }`}
             onClick={() => props.onChange(item.id + 1)}

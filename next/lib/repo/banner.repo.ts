@@ -1,6 +1,6 @@
 import { BaseModel, CrudRepository } from "./crud.repo";
-import { Product } from "./product.repo";
-import { ShopVoucher } from "./shop-voucher.repo";
+import { Product, ProductService } from "./product.repo";
+import { ShopVoucher, ShopVoucherService } from "./shop-voucher.repo";
 
 export interface ShopBanner extends BaseModel {
   image: string;
@@ -18,22 +18,29 @@ export class ShopBannerRepository extends CrudRepository<ShopBanner> {
   apiName: string = "Shop";
   displayName: string = "shop";
   shortFragment: string = this.parseFragment(`
-  id: String
-  name: String
   image: String
+  title: String
+  subtitle: String
+  actionType: String
+  link: String
   productId: ID
-  isPublish: Boolean
-  priority: Int
-  product: Product`);
+  voucherId: ID
+  isPublic: Boolean
+  `);
   fullFragment: string = this.parseFragment(`
-  id: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  name: String
   image: String
+  title: String
+  subtitle: String
+  actionType: String
+  link: String
   productId: ID
-  isPublish: Boolean
-  priority: Int
-  product: Product`);
+  voucherId: ID
+  isPublic: Boolean
+  product{
+    ${ProductService.shortFragment}
+  }
+  voucher{
+    ${ShopVoucherService.shortFragment}
+  }`);
 }
 export const ShopBannerService = new ShopBannerRepository();

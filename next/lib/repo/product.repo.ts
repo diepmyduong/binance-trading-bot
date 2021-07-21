@@ -18,6 +18,7 @@ export interface Product extends BaseModel {
   downPrice: number;
   subtitle?: string;
   image: string;
+  cover: string;
   categoryId: string;
   priority: number;
   allowSale: boolean;
@@ -92,6 +93,7 @@ export class ProductRepository extends CrudRepository<Product> {
     rating: number
     soldQty: number
     labelIds: string[]
+    cover: String
     toppings {
       id: String
       createdAt: DateTime

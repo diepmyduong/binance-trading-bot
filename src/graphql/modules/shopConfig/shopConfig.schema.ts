@@ -29,6 +29,10 @@ const schema = gql`
     soldQty: Int
     "Tiêu đề Upsale"
     upsaleTitle: String
+    "Màu primary"
+    primaryColor: String
+    "Màu accent"
+    accentColor: String
     "Bật tin nhắn đơn hàng"
     smsOrder: Boolean
     "Bạt tin nhắn OTP"
@@ -70,6 +74,10 @@ const schema = gql`
     soldQty: Int
     "Tiêu đề Upsale"
     upsaleTitle: String
+    "Màu primary"
+    primaryColor: String
+    "Màu accent"
+    accentColor: String
     "Bật tin nhắn đơn hàng"
     smsOrder: Boolean
     "Bạt tin nhắn OTP"

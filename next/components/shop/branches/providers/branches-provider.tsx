@@ -58,16 +58,16 @@ export function BranchesProvider(props) {
   const onToggleBranch = async (branch: ShopBranch) => {
     try {
       let index = branches.findIndex((x) => x.id == branch.id);
-      branches[index].activated = !branches[index].activated;
+      branches[index].isOpen = !branches[index].isOpen;
       setBranches([...branches]);
       await ShopBranchService.update({
         id: branch.id,
-        data: { activated: branches[index].activated },
+        data: { isOpen: branches[index].isOpen },
       })
-        .then((res) => toast.success("Mở bán sản phẩm thành công"))
+        .then((res) => toast.success("Mở chi nhánh thành công"))
         .catch((err) => {
-          toast.error("Mở bán sản phẩm thất bại");
-          branches[index].activated = !branches[index].activated;
+          toast.error("Mở chi nhánh thất bại");
+          branches[index].isOpen = !branches[index].isOpen;
           setBranches([...branches]);
         });
     } catch (err) {}

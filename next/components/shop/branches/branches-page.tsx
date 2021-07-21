@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import { HiOutlineRefresh } from "react-icons/hi";
 import { IoReturnUpForwardOutline } from "react-icons/io5";
+import { RiAddFill, RiCloseFill } from "react-icons/ri";
 import { GoongGeocoderService } from "../../../lib/helpers/goong";
 import { AddressPipe } from "../../../lib/pipes/address";
 import { useAlert } from "../../../lib/providers/alert-provider";
 import { useToast } from "../../../lib/providers/toast-provider";
-import { ShopBranch } from "../../../lib/repo/shop-branch.repo";
+import {
+  OperatingTime,
+  OPERATING_TIME_STATUS,
+  ShopBranch,
+} from "../../../lib/repo/shop-branch.repo";
 import { SHOP_KM_OPTIONS } from "../../../lib/repo/shop-config.repo";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
 import { AddressGroup } from "../../shared/utilities/form/address-group";
 import { Button } from "../../shared/utilities/form/button";
+import { DatePicker } from "../../shared/utilities/form/date";
 import { Field } from "../../shared/utilities/form/field";
 import { Form } from "../../shared/utilities/form/form";
 import { ImageInput } from "../../shared/utilities/form/image-input";
@@ -28,6 +34,7 @@ export function BranchesPage(props: ReactProps) {
   }>(null);
   const [openBranch, setOpenBranch] = useState<ShopBranch>(undefined);
   const [location, setLocation] = useState<{ latitude: number; longitude: number }>();
+  const [operatingTimes, setOperatingTimes] = useState<OperatingTime[]>();
   const toast = useToast();
   const alert = useAlert();
 
@@ -37,10 +44,19 @@ export function BranchesPage(props: ReactProps) {
         longitude: openBranch.location.coordinates[0],
         latitude: openBranch.location.coordinates[1],
       });
+      setOperatingTimes(openBranch.operatingTimes);
     } else {
       setLocation(null);
     }
   }, [openBranch]);
+
+  const convertTimeToDate = (time: string) => {
+    const splits = time.split(":");
+    const date = new Date();
+    date.setHours(Number(splits[0]));
+    date.setMinutes(Number(splits[1]));
+    return date;
+  };
 
   return (
     <BranchesProvider>
@@ -118,6 +134,11 @@ export function BranchesPage(props: ReactProps) {
                     id: openBranch.id,
                     ...data,
                     location: locationData,
+                    operatingTimes: operatingTimes.map((x) => ({
+                      day: x.day,
+                      status: x.status,
+                      timeFrames: x.timeFrames,
+                    })),
                   };
                   console.log(newData);
                 } else {
@@ -140,7 +161,7 @@ export function BranchesPage(props: ReactProps) {
                     email,
                     phone,
                     coverImage,
-                    activated: true,
+                    isOpen: true,
                     location: locationData,
                   };
                 }
@@ -257,6 +278,108 @@ export function BranchesPage(props: ReactProps) {
                         <Field label="Ghi chú giao hàng" name="shipNote">
                           <Input className="h-12" />
                         </Field>
+                        <div className="text-gray-400 font-semibold mb-4 pl-1 text-lg">
+                          Thời gian hoạt động
+                        </div>
+                        {operatingTimes.map((operatingTime, index) => (
+                          <div key={index} className="mb-3 flex">
+                            <div className="px-2 w-20 pt-2 font-semibold text-gray-600">
+                              {DATE_NAME[operatingTime.day]}
+                            </div>
+                            <div className="flex-1">
+                              <Select
+                                className="w-36"
+                                options={OPERATING_TIME_STATUS}
+                                value={operatingTime.status}
+                                onChange={(val) => {
+                                  operatingTimes[index].status = val;
+                                  setOperatingTimes([...operatingTimes]);
+                                }}
+                              />
+                              {operatingTime.status == "TIME_FRAME" && (
+                                <>
+                                  {operatingTime.timeFrames.map((timeFrame, timeIndex) => (
+                                    <div className="flex items-center mt-2 gap-x-2">
+                                      <div className="w-36">
+                                        <DatePicker
+                                          timeOnly
+                                          timeIntervals={30}
+                                          clearable={false}
+                                          value={convertTimeToDate(timeFrame[0])}
+                                          onChange={(date) => {
+                                            const time =
+                                              (date as Date)
+                                                .getHours()
+                                                .toString()
+                                                .padStart(2, "0") +
+                                              ":" +
+                                              (date as Date)
+                                                .getMinutes()
+                                                .toString()
+                                                .padStart(2, "0");
+                                            operatingTime.timeFrames[timeIndex] = [
+                                              time,
+                                              timeFrame[1],
+                                            ];
+                                            setOperatingTimes([...operatingTimes]);
+                                          }}
+                                        />
+                                      </div>
+                                      <span>-</span>
+                                      <div className="w-36">
+                                        <DatePicker
+                                          timeOnly
+                                          timeIntervals={30}
+                                          clearable={false}
+                                          value={convertTimeToDate(timeFrame[1])}
+                                          onChange={(date) => {
+                                            const time =
+                                              (date as Date)
+                                                .getHours()
+                                                .toString()
+                                                .padStart(2, "0") +
+                                              ":" +
+                                              (date as Date)
+                                                .getMinutes()
+                                                .toString()
+                                                .padStart(2, "0");
+                                            operatingTime.timeFrames[timeIndex] = [
+                                              timeFrame[0],
+                                              time,
+                                            ];
+                                            setOperatingTimes([...operatingTimes]);
+                                          }}
+                                        />
+                                      </div>
+                                      <Button
+                                        className={`px-2 ${
+                                          timeIndex == 0 ? "opacity-0 pointer-events-none" : ""
+                                        }`}
+                                        hoverDanger
+                                        icon={<RiCloseFill />}
+                                        onClick={() => {
+                                          if (timeIndex == 0) return;
+                                          operatingTime.timeFrames.splice(timeIndex, 1);
+                                          setOperatingTimes([...operatingTimes]);
+                                        }}
+                                      />
+                                    </div>
+                                  ))}
+                                  <Button
+                                    className="my-2 px-0"
+                                    textPrimary
+                                    icon={<RiAddFill />}
+                                    text="Thêm khung giờ"
+                                    onClick={() => {
+                                      operatingTime.timeFrames.push(["07:00", "21:00"]);
+                                      setOperatingTimes([...operatingTimes]);
+                                    }}
+                                  />
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </>
@@ -283,3 +406,13 @@ export function BranchesPage(props: ReactProps) {
     </BranchesProvider>
   );
 }
+
+const DATE_NAME = {
+  1: "Thứ 2",
+  2: "Thứ 3",
+  3: "Thứ 4",
+  4: "Thứ 5",
+  5: "Thứ 6",
+  6: "Thứ 7",
+  7: "C.Nhật",
+};

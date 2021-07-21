@@ -142,7 +142,11 @@ export interface OrderItemTopping extends BaseModel {
   optionName: string;
   price: number;
 }
-interface OrderLog {}
+export interface OrderLog {
+  id: string;
+  createdAt: string;
+  statusText: string;
+}
 interface DeliveryInfo {
   senderFullname: string;
   senderTel: string;
@@ -223,6 +227,11 @@ export class OrderRepository extends CrudRepository<Order> {
     discount: Float
     discountDetail: String
     ahamoveTrackingLink: String
+    logs {
+      id:String 
+      statusText: String
+      createdAt: DateTime
+    }
     fromMember {
       id: String
       name: String
@@ -294,6 +303,11 @@ export class OrderRepository extends CrudRepository<Order> {
     discount: Float
     discountDetail: String
     ahamoveTrackingLink: String
+    logs {
+      id:String 
+      statusText: String
+      createdAt: DateTime
+    }
     items {
       id: String
       createdAt: DateTime

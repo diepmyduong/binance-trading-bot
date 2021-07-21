@@ -37,7 +37,7 @@ export function PaymentProvider(props) {
 
   const [vouchers, setVouchers] = useState<ShopVoucher[]>();
   const { branchSelecting, customer, locationCustomer, shopCode } = useShopContext();
-  const { cartProducts, reOrderInput } = useCartContext();
+  const { cartProducts, reOrderInput, clearCartProduct } = useCartContext();
   const [orderInput, setOrderInput] = useState<OrderInput>();
   const [orderCode, setOrderCode] = useState("");
   const resetOrderInput = () => {
@@ -88,6 +88,7 @@ export function PaymentProvider(props) {
         .then((res) => {
           localStorage.removeItem("cartProducts");
           setOrderInput(null);
+          clearCartProduct();
           setOrderCode(res.code);
         })
         .catch((err) => toast.error("Đặt hàng thất bại"));
@@ -136,7 +137,7 @@ export function PaymentProvider(props) {
       buyerProvinceId: "70",
       buyerDistrictId: "",
       buyerWardId: "",
-      buyerFullAddress: customer.fullAddress,
+      buyerFullAddress: customer.fullAddress || "",
       buyerAddressNote: "",
       latitude: lt,
       longitude: lg,

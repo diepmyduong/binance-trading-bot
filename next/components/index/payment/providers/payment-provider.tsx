@@ -12,6 +12,7 @@ import { useToast } from "../../../../lib/providers/toast-provider";
 import { useCartContext } from "../../../../lib/providers/cart-provider";
 import { OrderService } from "../../../../lib/repo/order.repo";
 import { ShopVoucher, ShopVoucherService } from "../../../../lib/repo/shop-voucher.repo";
+import { UserService } from "../../../../lib/repo/user.repo";
 
 export const PaymentContext = createContext<
   Partial<{
@@ -74,17 +75,18 @@ export function PaymentProvider(props) {
   // useEffect(() => {
   //   if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
   // }, [branchSelecting]);
-  // useEffect(() => {
-  //   if (locationCustomer)
-  //     setOrderInput({
-  //       ...orderInput,
-  //       longitude: locationCustomer.longitude,
-  //       latitude: locationCustomer.latitude,
-  //     });
-  // }, [locationCustomer]);
+  useEffect(() => {
+    if (locationCustomer) console.log(locationCustomer);
+
+    //  setOrderInput({
+    //   ...orderInput,
+    //   longitude: locationCustomer.longitude,
+    //   latitude: locationCustomer.latitude,
+    // });
+  }, [locationCustomer]);
   // useEffect(() => {
   //   if (customer) {
-  //     setOrderInput({ ...orderInput, buyerPhone: customer });
+  //     setOrderInput({ ...orderInput, buyerPhone: customer.phone });
   //   }
   // }, [customer]);
 
@@ -116,8 +118,15 @@ export function PaymentProvider(props) {
         .catch((err) => toast.error("Đặt hàng thất bại"));
     }
   };
+  // useEffect(() => {
+  //   if (orderCode) {
+  //     UserService.userGetMe().then((res) => console.log(res));
+  //   }
+  // }, [orderCode]);
   useEffect(() => {
-    generateDraftOrder();
+    if (orderInput) {
+      generateDraftOrder();
+    }
   }, [orderInput]);
 
   useEffect(() => {
@@ -128,15 +137,15 @@ export function PaymentProvider(props) {
     if (branchSelecting) {
       branid = branchSelecting.id;
     }
-    let lg = 0;
-    let lt = 0;
+    let lg = 10.3279394;
+    let lt = 106.2186029;
     if (locationCustomer) {
       lg = locationCustomer.longitude;
       lt = locationCustomer.latitude;
     }
     setOrderInput({
       buyerName: "",
-      buyerPhone: customer,
+      buyerPhone: customer.phone,
       pickupMethod: "DELIVERY",
       shopBranchId: branid,
       pickupTime: null,
@@ -144,7 +153,7 @@ export function PaymentProvider(props) {
       buyerProvinceId: "70",
       buyerDistrictId: "",
       buyerWardId: "",
-      buyerFullAddress: "",
+      buyerFullAddress: customer.fullAddress,
       buyerAddressNote: "",
       latitude: lg,
       longitude: lt,

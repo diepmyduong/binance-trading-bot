@@ -32,6 +32,7 @@ export const ShopContext = createContext<
     setBranchSelecting: Function;
     loginCustomerByPhone: Function;
     loading: boolean;
+    setCustomer: Function;
   }>
 >({});
 export function ShopProvider(props) {
@@ -69,6 +70,7 @@ export function ShopProvider(props) {
       if (phoneUser) {
         let dataCus = await UserService.loginCustomerByPhone(phoneUser);
         if (dataCus) {
+          console.log(dataCus.customer);
           SetCustomerToken(dataCus.token);
           setCustomer(cloneDeep(dataCus.customer));
           localStorage.setItem("phoneUser", dataCus.customer.phone);
@@ -166,6 +168,7 @@ export function ShopProvider(props) {
         shopBranchs,
         setBranchSelecting,
         loading,
+        setCustomer,
       }}
     >
       {props.children}

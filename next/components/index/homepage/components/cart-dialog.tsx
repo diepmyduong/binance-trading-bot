@@ -16,7 +16,7 @@ import { Rating } from "../../../shared/homepage-layout/rating";
 interface Propstype extends DialogPropsType {}
 export function CartDialog(props: Propstype) {
   const router = useRouter();
-  const { customer, customerLogin } = useShopContext();
+  const { customer, customerLogin, shopCode } = useShopContext();
   const [showLogin, setShowLogin] = useState(false);
   const { cartProducts, totalMoney, changeProductQuantity, saleUpProducts } = useCartContext();
   const { isMobile } = useDevice();
@@ -75,7 +75,7 @@ export function CartDialog(props: Propstype) {
           className="w-full bg-gradient uppercase h-12 z-40"
           onClick={() => {
             if (customer) {
-              router.push("/payment");
+              router.push(`${shopCode}/payment`, null, { shallow: true });
             } else {
               setShowLogin(true);
             }
@@ -88,7 +88,7 @@ export function CartDialog(props: Propstype) {
         onConfirm={(val) => {
           if (val) {
             customerLogin(val);
-            router.push("/payment", null, { shallow: true });
+            router.push(`${shopCode}/payment`, null, { shallow: true });
           }
         }}
       />
@@ -98,9 +98,7 @@ export function CartDialog(props: Propstype) {
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Navigation } from "swiper/core";
 import { useEffect } from "react";
-import cloneDeep from "lodash/cloneDeep";
-import { Img } from "../../../shared/utilities/img";
-import { Spinner } from "../../../shared/utilities/spinner";
+import Link from "next/link";
 
 SwiperCore.use([Navigation]);
 interface SaleUpProductProps extends ReactProps {
@@ -108,13 +106,6 @@ interface SaleUpProductProps extends ReactProps {
 }
 export function SaleUpProduct(props: SaleUpProductProps) {
   const { shop } = useShopContext();
-  const router = useRouter();
-  const query = router.query;
-  const url = new URL(location.href);
-  const handleClick = (code) => {
-    url.searchParams.set("productId", code);
-    router.push(url.toString(), null, { shallow: true });
-  };
   useEffect(() => {
     console.log(props.saleUpProduct);
   }, [props.saleUpProduct]);
@@ -133,55 +124,60 @@ export function SaleUpProduct(props: SaleUpProductProps) {
       >
         {props.saleUpProduct.map((item: Product, index: number) => (
           <SwiperSlide key={index} className="w-3/4">
-            <div
-              className={`w-full py-2 shadow-md rounded-sm hover:bg-primary-light cursor-pointer border-b transition-all duration-300 `}
-              onClick={() => {
-                handleClick(item.code);
-              }}
+            <Link
+              key={index}
+              href={{ pathname: location.pathname, query: { productId: item.code } }}
+              shallow
             >
-              <div className={`flex items-center px-4 flex-1 `}>
-                <div className="flex-1 flex flex-col h-20 sm:h-24">
-                  <p className="font-semibold items-start text-ellipsis w-full">{item.name}</p>
-                  <p className="text-gray-500 text-sm text-ellipsis">{item.subtitle}</p>
-                  <Rating rating={item.rating || 4.8} textSm soldQty={item.soldQty} />
-                  <p className="text-gray-400 text-sm">{item.des}</p>
-                  <Price
-                    price={item.basePrice}
-                    downPrice={item.downPrice}
-                    textDanger
-                    className="justify-items-end"
-                  />
-                </div>
-
-                <div className="relative overflow-hidden rounded-md">
-                  <div className="flex">
-                    <img
-                      className="w-16 h-16 sm:w-24 sm:h-24 rounded-sm object-contain"
-                      src={item.image || "/assets/default/default.png"}
-                      alt=""
-                    />
-                  </div>
-
-                  {item.saleRate > 0 && (
-                    <div
-                      className={`absolute  bg-danger text-white font-semibold rounded-bl-3xl py-1 px-2 text-sm -top-1 -right-1
-                    `}
-                    >
-                      -<span className="pl-0.5">{item.saleRate}</span>%
-                    </div>
-                  )}
-                </div>
-              </div>
-              {item.labels?.map((label, index) => (
+              <a>
                 <div
-                  className="ml-2 inline-flex items-center text-white rounded-full font-semibold text-xs px-2 py-1 cursor-pointer whitespace-nowrap"
-                  style={{ backgroundColor: label.color }}
-                  key={index}
+                  className={`w-full py-2 shadow-md rounded-sm hover:bg-primary-light cursor-pointer border-b transition-all duration-300 `}
                 >
-                  <span>{label.name}</span>
+                  <div className={`flex items-center px-4 flex-1 `}>
+                    <div className="flex-1 flex flex-col h-20 sm:h-24">
+                      <p className="font-semibold items-start text-ellipsis w-full">{item.name}</p>
+                      <p className="text-gray-500 text-sm text-ellipsis">{item.subtitle}</p>
+                      <Rating rating={item.rating || 4.8} textSm soldQty={item.soldQty} />
+                      <p className="text-gray-400 text-sm">{item.des}</p>
+                      <Price
+                        price={item.basePrice}
+                        downPrice={item.downPrice}
+                        textDanger
+                        className="justify-items-end"
+                      />
+                    </div>
+
+                    <div className="relative overflow-hidden rounded-md">
+                      <div className="flex">
+                        <img
+                          className="w-16 h-16 sm:w-24 sm:h-24 rounded-sm object-contain"
+                          src={item.image || "/assets/default/default.png"}
+                          alt=""
+                        />
+                      </div>
+
+                      {item.saleRate > 0 && (
+                        <div
+                          className={`absolute  bg-danger text-white font-semibold rounded-bl-3xl py-1 px-2 text-sm -top-1 -right-1
+                    `}
+                        >
+                          -<span className="pl-0.5">{item.saleRate}</span>%
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {item.labels?.map((label, index) => (
+                    <div
+                      className="ml-2 inline-flex items-center text-white rounded-full font-semibold text-xs px-2 py-1 cursor-pointer whitespace-nowrap"
+                      style={{ backgroundColor: label.color }}
+                      key={index}
+                    >
+                      <span>{label.name}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </a>
+            </Link>
           </SwiperSlide>
         ))}
       </Swiper>

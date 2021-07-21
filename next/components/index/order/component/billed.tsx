@@ -6,6 +6,7 @@ import { Button } from "../../../shared/utilities/form/button";
 import formatDate from "date-fns/format";
 import { CartProduct } from "../../../../lib/providers/cart-provider";
 import { useToast } from "../../../../lib/providers/toast-provider";
+import { useShopContext } from "../../../../lib/providers/shop-provider";
 
 interface PropsType extends ReactProps {
   status: Option;
@@ -13,6 +14,7 @@ interface PropsType extends ReactProps {
   reOrder?: (items: OrderItem[], infoPay: OrderInput) => any;
 }
 export function Billed({ order, status, reOrder }: PropsType) {
+  const { shopCode } = useShopContext();
   const toast = useToast();
   function reOrderClick(order: Order) {
     OrderService.getOne({ id: order.id })
@@ -58,7 +60,7 @@ export function Billed({ order, status, reOrder }: PropsType) {
   }
   return (
     <div className={`w-full mb-3 bg-white text-sm`}>
-      <Link href={`/order/${order.code}`}>
+      <Link href={`/${shopCode}/order/${order.code}`}>
         <div className="flex items-center  px-2 justify-between cursor-pointer transition-all duration-200 hover:bg-primary-light border-b-2">
           <div className="p-2 flex flex-col w-full">
             <div className="flex items-center justify-start">

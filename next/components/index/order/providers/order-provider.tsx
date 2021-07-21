@@ -10,7 +10,7 @@ export function OrderProvider(props) {
   async function loadOrders() {
     setOrders(null);
     let res = await OrderService.getAll({
-      query: { order: { createdAt: -1 } },
+      query: { order: { createdAt: -1, cache: false } },
     });
     if (res) {
       setOrders(cloneDeep(res.data));

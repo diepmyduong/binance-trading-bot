@@ -148,7 +148,7 @@ export function OrderDetailPage(props) {
       <BreadCrumbs
         breadcrumbs={[
           { label: "Trang chủ", href: `/${shopCode}` },
-          { label: "Lịch sử đơn hàng", href: `/order` },
+          { label: "Lịch sử đơn hàng", href: `/${shopCode}/order` },
           { label: "Chi tiết đơn hàng" },
         ]}
         className="p-4"
@@ -274,7 +274,7 @@ export function OrderDetailPage(props) {
                 <div className="font-bold text-primary">{NumberPipe(order.amount, true)}</div>
               </div>
               <div className="p-2 sticky bottom-0 w-full bg-white">
-                {order.status === "COMPLETED" && (
+                {order.status === "COMPLETED" && !order.commented && (
                   <Button
                     text="Bình luận đơn hàng này"
                     primary
@@ -287,7 +287,7 @@ export function OrderDetailPage(props) {
                 )}
                 {order.status !== "PENDING" &&
                   order.status !== "DELIVERING" &&
-                  order.status !== "COMFIRMED" && (
+                  order.status !== "CONFIRMED" && (
                     <Button
                       text="Đặt lại"
                       outline
@@ -391,7 +391,7 @@ export function OrderDetailPage(props) {
                     ))}
                   </div>
                   <RatingOrder
-                    className="p-2 my-2 border rounded-full"
+                    className="p-2 my-2 "
                     voted={rating}
                     onChange={(val) => {
                       setRating(val);

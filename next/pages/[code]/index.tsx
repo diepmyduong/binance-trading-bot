@@ -1,12 +1,12 @@
 import { GetServerSidePropsContext } from "next";
 import { NextSeo } from "next-seo";
-import { Homepage } from "../components/index/homepage/homepage";
-import { DefaultLayout } from "../layouts/default-layout/default-layout";
-import { MemberModel } from "../../dist/graphql/modules/member/member.model";
+import { Homepage } from "../../components/index/homepage/homepage";
+import { DefaultLayout } from "../../layouts/default-layout/default-layout";
+import { MemberModel } from "./../../../dist/graphql/modules/member/member.model";
 import { useEffect } from "react";
-import { Redirect } from "../lib/helpers/redirect";
-import { HomeProvider } from "../components/index/homepage/providers/homepage-provider";
-import { ClearCustomerToken, ClearAnonymousToken } from "../lib/graphql/auth.link";
+import { Redirect } from "../../lib/helpers/redirect";
+import { HomeProvider } from "../../components/index/homepage/providers/homepage-provider";
+import { ClearCustomerToken, ClearAnonymousToken } from "../../lib/graphql/auth.link";
 
 export default function Page(props) {
   useEffect(() => {
@@ -30,7 +30,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   console.log(productId);
   const shop = await MemberModel.findOne({ code }, "shopName shopLogo");
   if (!shop) {
-    Redirect(context.res, "/not-found-shop");
+    Redirect(context.res, `${code}/not-found-shop`);
   }
   return {
     props: JSON.parse(

@@ -43,6 +43,7 @@ export function CartProvider(props) {
   const [totalFood, setTotalFood] = useState(0);
   const [totalMoney, setTotalMoney] = useState(0);
   const [reOrderInput, setReOrderInput] = useState<OrderInput>();
+  const { shopCode } = useShopContext();
   const router = useRouter();
   const toast = useToast();
 
@@ -200,7 +201,7 @@ export function CartProvider(props) {
         setCartProducts([...listCartNew]);
       });
 
-      router.push("/payment");
+      router.push(`/${shopCode}/payment`);
     }
   };
   function clearCartProduct() {

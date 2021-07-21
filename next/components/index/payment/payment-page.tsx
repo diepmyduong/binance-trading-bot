@@ -101,11 +101,11 @@ export function PaymentPage() {
                 <div className="text-danger">
                   {order.order?.discount > 0
                     ? NumberPipe(-order?.order?.discount, true)
-                    : NumberPipe(order?.order?.discount, true)}
+                    : NumberPipe(0, true)}
                 </div>
               </div>
             </div>
-            {vouchers && (
+            {vouchers && vouchers.length > 0 ? (
               <Swiper
                 spaceBetween={10}
                 freeMode={true}
@@ -129,6 +129,8 @@ export function PaymentPage() {
                   );
                 })}
               </Swiper>
+            ) : (
+              ""
             )}
             <div className="h-24"></div>
             <ButtonPayment />

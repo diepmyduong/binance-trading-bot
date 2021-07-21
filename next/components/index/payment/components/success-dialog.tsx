@@ -11,7 +11,7 @@ interface Propstype extends DialogPropsType {
 
 export function SuccessDialog({ code, ...props }: Propstype) {
   const { shopCode } = useShopContext();
-  const [sec, setSec] = useState(4);
+  const [sec, setSec] = useState(5);
   const router = useRouter();
   useEffect(() => {
     if (code !== "") {
@@ -19,8 +19,10 @@ export function SuccessDialog({ code, ...props }: Propstype) {
       let interval = setInterval(() => {
         secTime--;
         setSec(secTime);
-        if (secTime === 0) {
+        if (secTime === 1) {
           router.replace(`/${shopCode}/order/${code}`);
+        }
+        if (secTime === 0) {
           clearInterval(interval);
         }
       }, 1000);

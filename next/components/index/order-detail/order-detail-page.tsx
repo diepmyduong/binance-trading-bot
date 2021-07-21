@@ -391,7 +391,7 @@ export function OrderDetailPage(props) {
                     ))}
                   </div>
                   <RatingOrder
-                    className="p-2 my-2 border rounded-full"
+                    className="p-2 my-2 "
                     voted={rating}
                     onChange={(val) => {
                       setRating(val);

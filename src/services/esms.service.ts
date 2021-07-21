@@ -12,6 +12,8 @@ export default {
     apiKey: process.env.ESMS_APIKEY,
     secret: process.env.ESMS_SECRET,
     resType: "JSON",
+    brandName: process.env.ESMS_BRANDNAME,
+    smsType: 2,
   },
   actions: {
     send: {
@@ -29,8 +31,8 @@ export default {
         const payload = {
           Phone: phone,
           Content: content,
-          Brandname: brandName,
-          SmsType: smsType || 2,
+          Brandname: brandName || this.settings.brandName,
+          SmsType: smsType || this.settings.smsType,
           CallBackUrl: callbackUrl,
           ApiKey: apiKey,
           SecretKey: secret,

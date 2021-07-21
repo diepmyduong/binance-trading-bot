@@ -7,6 +7,7 @@ export interface Customer extends BaseModel {
   code: string;
   name: string;
   facebookName: string;
+  fullAddress: string;
   uid: string;
   phone: string;
   avatar: string;
@@ -71,6 +72,7 @@ export class CustomerRepository extends CrudRepository<Customer> {
     province: String
     district: String
     ward: String
+    fullAddress: String
     orderStats {
       revenue: Float
       voucher: Int
@@ -102,10 +104,11 @@ export class CustomerRepository extends CrudRepository<Customer> {
     wardId: String
     cumulativePoint: Float
     commission: Float
+    fullAddress: String
     pageAccounts {
-      psid: string;
-      pageId: string;
-      memberId: string;
+      psid: fullAddress: String
+      pageId: fullAddress: String
+      memberId: fullAddress: String
       member {
         id: String
         name: String

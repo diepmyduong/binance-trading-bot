@@ -30,7 +30,7 @@ const Mutation = {
     data.memberId = context.id;
     data.operatingTimes = times(7, (i) => ({
       day: i + 1,
-      timeFrames: [["07:00", "21:00"]],
+      timeFrames: [["07:00", "22:00"]],
       status: OperatingTimeStatus.OPEN,
     }));
     if (!data.code) {

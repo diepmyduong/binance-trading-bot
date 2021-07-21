@@ -29,6 +29,10 @@ const schema = gql`
     soldQty: Int
     "Tiêu đề Upsale"
     upsaleTitle: String
+    "Bật tin nhắn đơn hàng"
+    smsOrder: Boolean
+    "Bạt tin nhắn OTP"
+    smsOtp: Boolean
   }
 
   type ShopConfig {
@@ -66,6 +70,10 @@ const schema = gql`
     soldQty: Int
     "Tiêu đề Upsale"
     upsaleTitle: String
+    "Bật tin nhắn đơn hàng"
+    smsOrder: Boolean
+    "Bạt tin nhắn OTP"
+    smsOtp: Boolean
   }
 `;
 

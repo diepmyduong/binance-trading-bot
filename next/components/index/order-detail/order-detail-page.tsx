@@ -160,7 +160,7 @@ export function OrderDetailPage(props) {
           ) : ( */}
           <div className="text-gray-800 text-sm sm:text-lg">
             <div className="w-full px-4">
-              <StatusOrder></StatusOrder>
+              {order.pickupMethod == "DELIVERY" && <StatusOrder />}
               {order.cancelReason && (
                 <div className="p-4 text-gray-500 bg-gray-50 my-2">
                   Lý do hủy: {order.cancelReason}

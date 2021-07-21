@@ -90,6 +90,15 @@ export function ConfigSettings() {
             <Select hasColor clearable placeholder="Mặc định" options={PRODUCT_LABEL_COLORS} />
           </Field>
         </div>
+        <Label text="Tin nhắn SMS"/>
+        <div className="flex gap-x-5 w-full">
+          <Field className="flex-1" name="smsOrder">
+            <Switch placeholder="Gửi SMS đơn hàng"/>
+          </Field>
+          <Field className="flex-1" name="smsOtp">
+            <Switch placeholder="Gửi SMS OTP"/>
+          </Field>
+        </div>
         <div className="text-gray-400 font-semibold mt-1 mb-4 pl-1 text-lg">Đánh giá của quán</div>
         <FormConsumer>
           {({ data }) => (

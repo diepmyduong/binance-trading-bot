@@ -23,6 +23,8 @@ export interface ShopConfig extends BaseModel {
   upsaleTitle: string;
   primaryColor: string;
   accentColor: string;
+  smsOrder: boolean;
+  smsOtp: boolean;
 }
 
 export interface ShopTag {
@@ -79,6 +81,8 @@ export class ShopConfigRepository extends CrudRepository<ShopConfig> {
     upsaleTitle: String
     primaryColor: string
     accentColor: string
+    smsOrder: Boolean
+    smsOtp: Boolean
     banners {
       image: String
       title: String

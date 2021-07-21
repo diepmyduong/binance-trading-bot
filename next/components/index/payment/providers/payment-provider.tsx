@@ -136,7 +136,7 @@ export function PaymentProvider(props) {
       buyerProvinceId: "70",
       buyerDistrictId: "",
       buyerWardId: "",
-      buyerFullAddress: customer.fullAddress,
+      buyerFullAddress: customer.fullAddress || "",
       buyerAddressNote: "",
       latitude: lt,
       longitude: lg,

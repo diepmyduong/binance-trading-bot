@@ -105,7 +105,7 @@ export function InforPayment() {
                     value={
                       placeDetail
                         ? `${placeDetail?.name}, ${placeDetail?.formatted_address}`
-                        : orderInput.buyerFullAddress
+                        : orderInput.buyerFullAddress || ""
                     }
                     type="text"
                     placeholder="Nhập địa chỉ giao đến"

@@ -148,7 +148,7 @@ export function OrderDetailPage(props) {
       <BreadCrumbs
         breadcrumbs={[
           { label: "Trang chủ", href: `/${shopCode}` },
-          { label: "Lịch sử đơn hàng", href: `/order` },
+          { label: "Lịch sử đơn hàng", href: `/${shopCode}/order` },
           { label: "Chi tiết đơn hàng" },
         ]}
         className="p-4"
@@ -391,7 +391,7 @@ export function OrderDetailPage(props) {
                     ))}
                   </div>
                   <RatingOrder
-                    className="p-2 my-2 border rounded-full"
+                    className="p-2 my-2 "
                     voted={rating}
                     onChange={(val) => {
                       setRating(val);

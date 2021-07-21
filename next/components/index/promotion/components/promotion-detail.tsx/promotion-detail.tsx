@@ -65,6 +65,10 @@ export function PromotionDetail({ promotion, ...props }: Propstype) {
         onClick={() => setShowMore(!showMore)}
       /> */}
       <p className="pt-4">{promotion.description}</p>
+      <div
+        className="ql-editor ql-snow mb-10 mt-5 px-5 text-sm"
+        dangerouslySetInnerHTML={{ __html: promotion.content }}
+      ></div>
     </div>
   );
 }

@@ -5,7 +5,9 @@ import { ShopBanner } from "../../../../lib/repo/banner.repo";
 import { useRouter } from "next/router";
 import { Img } from "../../../shared/utilities/img";
 import { PromotionDetailDialog } from "../../promotion/components/promotion-detail.tsx/promotion-detail-dialog";
-import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
+import { ShopVoucher, ShopVoucherService } from "../../../../lib/repo/shop-voucher.repo";
+import cloneDeep from "lodash/cloneDeep";
+import Link from "next/link";
 // install Swiper modules
 SwiperCore.use([Pagination, Autoplay]);
 interface Propstype extends ReactProps {
@@ -16,29 +18,11 @@ export function BannerPromtion(props: Propstype) {
     console.log(props.banner);
   }, []);
   const router = useRouter();
-  const query = router.query;
   const [voucher, setVoucher] = useState<ShopVoucher>();
-  const url = new URL(location.href);
   const handleClick = (banner: ShopBanner) => {
-    switch (banner.actionType) {
-      case "PRODUCT":
-        {
-          url.searchParams.set("productId", banner.product.code);
-          router.push(url.toString(), null, { shallow: true });
-        }
-        break;
-      case "WEBSITE":
-        {
-          router.push(banner.link);
-        }
-        break;
-      case "VOUCHER":
-        {
-          router.push("/promotion");
-        }
-        break;
-      default:
-        break;
+    console.log(banner);
+    if (banner.voucherId) {
+      ShopVoucherService.getOne({ id: banner.voucherId }).then((res) => setVoucher(cloneDeep(res)));
     }
   };
   return (
@@ -53,18 +37,41 @@ export function BannerPromtion(props: Propstype) {
         pagination={{ clickable: true }}
       >
         {props.banner.map((item: ShopBanner, index) => (
-          <SwiperSlide
-            key={index}
-            onClick={() => handleClick(item)}
-            className={`cursor-pointer ${item.isPublic ? "" : "hidden"}`}
-          >
-            <div>
-              <Img key={index} src={item.image || "/assets/default/default.png"} ratio169 />
-            </div>
+          <SwiperSlide key={index} className={`cursor-pointer ${item.isPublic ? "" : "hidden"}`}>
+            {
+              {
+                PRODUCT: (
+                  <Link
+                    href={{ pathname: location.pathname, query: { productId: item.product?.code } }}
+                    shallow
+                  >
+                    <a>
+                      <Img key={index} src={item.image || "/assets/default/default.png"} ratio169 />
+                    </a>
+                  </Link>
+                ),
+                WEBSITE: (
+                  <Link href={item.link}>
+                    <a>
+                      <Img key={index} src={item.image || "/assets/default/default.png"} ratio169 />
+                    </a>
+                  </Link>
+                ),
+                VOUCHER: (
+                  <div onClick={() => handleClick(item)}>
+                    <Img key={index} src={item.image || "/assets/default/default.png"} ratio169 />
+                  </div>
+                ),
+              }[item.actionType]
+            }
           </SwiperSlide>
         ))}
       </Swiper>
-      {/* <PromotionDetailDialog promotion={voucher} /> */}
+      <PromotionDetailDialog
+        isOpen={voucher ? true : false}
+        promotion={voucher}
+        onClose={() => setVoucher(null)}
+      />
     </div>
   );
 }

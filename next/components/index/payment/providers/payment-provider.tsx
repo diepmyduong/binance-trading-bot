@@ -7,6 +7,8 @@ import { useToast } from "../../../../lib/providers/toast-provider";
 import { useCartContext } from "../../../../lib/providers/cart-provider";
 import { OrderService } from "../../../../lib/repo/order.repo";
 import { ShopVoucher, ShopVoucherService } from "../../../../lib/repo/shop-voucher.repo";
+import { UserService } from "../../../../lib/repo/user.repo";
+import { CustomerService } from "../../../../lib/repo/customer.repo";
 
 export const PaymentContext = createContext<
   Partial<{
@@ -84,7 +86,6 @@ export function PaymentProvider(props) {
       let items = getItemsOrderInput();
       return OrderService.generateOrder({ ...orderInput, items: items })
         .then((res) => {
-          toast.success("Đặt hàng thành công");
           localStorage.removeItem("cartProducts");
           resetOrderInput();
           setOrderInput(null);
@@ -100,11 +101,15 @@ export function PaymentProvider(props) {
   // }, [orderCode]);
   useEffect(() => {
     if (reOrderInput) {
+      console.log(reOrderInput);
+
       setOrderInput(cloneDeep(reOrderInput));
     }
   }, [reOrderInput]);
   useEffect(() => {
     if (orderInput && branchSelecting) {
+      console.log(orderInput);
+
       generateDraftOrder();
     }
   }, [orderInput]);

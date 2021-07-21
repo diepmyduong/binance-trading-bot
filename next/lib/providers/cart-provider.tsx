@@ -144,7 +144,7 @@ export function CartProvider(props) {
   };
   const reOrder = (items: OrderItem[], reOderInput: OrderInput) => {
     let resCartProducts = [...items];
-    console.log(resCartProducts);
+    console.log(reOderInput);
     setReOrderInput(cloneDeep(reOderInput));
     if (resCartProducts) {
       // lấy danh sách product mua lại

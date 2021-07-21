@@ -14,17 +14,21 @@ export function SuccessDialog({ code, ...props }: Propstype) {
   const [sec, setSec] = useState(3);
   const router = useRouter();
   useEffect(() => {
-    let interval = setInterval(() => {
-      if (sec === 0) {
-        router.replace(`/order/${code}`);
+    if (code !== "") {
+      let secTime = sec;
+      let interval = setInterval(() => {
+        secTime--;
+        setSec(secTime);
+        if (secTime === 0) {
+          router.replace(`/order/${code}`);
+          clearInterval(interval);
+        }
+      }, 1000);
+      return () => {
         clearInterval(interval);
-      }
-      setSec(sec - 1);
-    });
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+      };
+    }
+  }, [code]);
   return (
     <Dialog {...props} onClose={() => {}} mobileSizeMode={false} slideFromBottom="none">
       <Dialog.Body>
@@ -32,27 +36,15 @@ export function SuccessDialog({ code, ...props }: Propstype) {
           <h3 className="text-lg sm:text-32 font-bold text-primary text-center p-2">
             Đặt hàng thành công
           </h3>
-          <p className="text-sm sm:text-lg">Chúng tôi sẽ chuyển bạn đến trang đơn hàng trong</p>
+
           {sec !== 0 ? (
             <Img src="https://nhahang.so/assets/img/count-down.gif" className="w-3/4" />
           ) : (
             <Spinner />
           )}
         </div>
+        <p className="text-sm sm:text-lg font-semibold my-2">Đang chuyển hướng...</p>
       </Dialog.Body>
-      <Dialog.Footer>
-        <Button
-          text="Về trang chủ"
-          className="w-auto sm:w-2/5 sm:text-base text-sm"
-          href={`/${shopCode}`}
-        />
-        <Button
-          text="Đến ngay"
-          primary
-          className="bg-gradient w-auto sm:w-3/5 sm:text-base text-sm"
-          href={`/order/${code}`}
-        />
-      </Dialog.Footer>
     </Dialog>
   );
 }

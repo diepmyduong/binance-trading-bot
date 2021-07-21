@@ -103,7 +103,9 @@ export function InforPayment() {
                   <Input
                     readonly
                     value={
-                      placeDetail ? `${placeDetail?.name}, ${placeDetail?.formatted_address}` : ""
+                      placeDetail
+                        ? `${placeDetail?.name}, ${placeDetail?.formatted_address}`
+                        : orderInput.buyerFullAddress
                     }
                     type="text"
                     placeholder="Nhập địa chỉ giao đến"

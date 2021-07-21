@@ -168,6 +168,10 @@ const ButtonPayment = (props: ButtonPaymentProps) => {
   } = usePaymentContext();
   const toast = useToast();
   function validData() {
+    if (!orderInput.shopBranchId) {
+      toast.error("Chưa chọn chi nhánh");
+      return false;
+    }
     if (!orderInput.buyerName) {
       toast.error("Chưa nhập tên người nhận");
       return false;
@@ -227,7 +231,7 @@ const ButtonPayment = (props: ButtonPaymentProps) => {
           onClick={async () => {
             if (validData()) {
               if (draftOrder.invalid) {
-                toast.error(draftOrder.invalidReason);
+                toast.error(draftOrder.invalidReason || "Đã xảy ra lỗi");
               } else {
                 await generateOrder();
               }

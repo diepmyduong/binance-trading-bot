@@ -150,6 +150,7 @@ export enum SettingKey {
   // CAU_HINH_TIN_NHAN
   SMS_DELIVERING = "SMS_DELIVERING",
   SMS_ORDER_COMPLETED = "SMS_ORDER_COMPLETED",
+  SMS_OTP = "SMS_OTP",
 
   // CAU_HINH_DANG_KY_SHOP
   EMAIL_REGIS_APPROVE = "EMAIL_REGIS_APPROVE",
@@ -1311,6 +1312,15 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
         name: "Tin cám ơn mời đánh giá",
         key: SettingKey.SMS_ORDER_COMPLETED,
         value: `{{SHOP_NAME}} - Cám ơn bạn đã sử dụng dịch vụ của chúng tôi. Mời bạn bấm: {{ORDER_LINK}} để đánh giá dịch vụ và tham gia các chương trình ưu đãi mới nhất.`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.richText,
+        name: "Tin OTP đăng nhập",
+        key: SettingKey.SMS_OTP,
+        value: `{{SHOP_NAME}} - Mã OTP xác thực của bạn là: {{OTP}}`,
         isActive: true,
         isPrivate: true,
         readOnly: false,

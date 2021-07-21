@@ -21,6 +21,8 @@ import { PromotionDetailDialog } from "../promotion/components/promotion-detail.
 import { usePaymentContext } from "./providers/payment-provider";
 import { SuccessDialog } from "./components/success-dialog";
 import { Spinner } from "../../shared/utilities/spinner";
+import { PromotionList } from "./components/promotion-list";
+import { PromotionProvider } from "../promotion/provider/promotion-provider";
 // SwiperCore.use([Pagination]);
 SwiperCore.use([Navigation]);
 export function PaymentPage() {
@@ -169,6 +171,7 @@ const ButtonPayment = (props: ButtonPaymentProps) => {
     draftOrder,
   } = usePaymentContext();
   const toast = useToast();
+  const [isOpenListPromotion, setIsOpenListPromotion] = useState(false);
   function validData() {
     if (!orderInput.shopBranchId) {
       toast.error("Chưa chọn chi nhánh");
@@ -221,7 +224,13 @@ const ButtonPayment = (props: ButtonPaymentProps) => {
             />
           </div>
         ) : (
-          <Button text="Mã khuyến mãi" textPrimary className="px-0" small />
+          <Button
+            text="Mã khuyến mãi"
+            onClick={() => setIsOpenListPromotion(true)}
+            textPrimary
+            className="px-0"
+            small
+          />
         )}
       </div>
       <div className="w-full py-2 px-4">
@@ -241,6 +250,9 @@ const ButtonPayment = (props: ButtonPaymentProps) => {
           }}
         />
       </div>
+      <PromotionProvider>
+        <PromotionList isOpen={isOpenListPromotion} onClose={() => setIsOpenListPromotion(false)} />
+      </PromotionProvider>
     </div>
   );
 };

@@ -53,7 +53,7 @@ export type ICustomer = BaseDocument & {
 const customerSchema = new Schema(
   {
     memberId: { type: Schema.Types.ObjectId, ref: "Member", required: true },
-    code: { type: String, required: true },
+    code: { type: String },
     name: { type: String, required: true },
     facebookName: { type: String },
     uid: { type: String },

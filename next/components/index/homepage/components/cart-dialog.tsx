@@ -98,9 +98,6 @@ export function CartDialog(props: Propstype) {
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Navigation } from "swiper/core";
 import { useEffect } from "react";
-import cloneDeep from "lodash/cloneDeep";
-import { Img } from "../../../shared/utilities/img";
-import { Spinner } from "../../../shared/utilities/spinner";
 import Link from "next/link";
 
 SwiperCore.use([Navigation]);
@@ -127,8 +124,12 @@ export function SaleUpProduct(props: SaleUpProductProps) {
       >
         {props.saleUpProduct.map((item: Product, index: number) => (
           <SwiperSlide key={index} className="w-3/4">
-            <Link href={{ pathname: location.pathname, query: { productId: item.code } }} shallow>
-              <a key={index}>
+            <Link
+              key={index}
+              href={{ pathname: location.pathname, query: { productId: item.code } }}
+              shallow
+            >
+              <a>
                 <div
                   className={`w-full py-2 shadow-md rounded-sm hover:bg-primary-light cursor-pointer border-b transition-all duration-300 `}
                 >

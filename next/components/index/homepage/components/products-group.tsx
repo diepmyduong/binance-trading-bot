@@ -16,8 +16,12 @@ export function ProductsGroup(props: Propstype) {
           <h3 className="font-semibold pb-2 px-4 text-lg text-primary">{item.name}</h3>
           <div className="grid grid-cols-2 gap-4 px-4">
             {item.products?.map((item: Product, index) => (
-              <Link href={{ pathname: location.pathname, query: { productId: item.code } }} shallow>
-                <a key={index}>
+              <Link
+                key={index}
+                href={{ pathname: location.pathname, query: { productId: item.code } }}
+                shallow
+              >
+                <a>
                   <div
                     className={`col-span-1 transition-all duration-300 cursor-pointer group  ${
                       item.allowSale ? "" : "hidden"

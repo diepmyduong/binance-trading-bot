@@ -119,8 +119,12 @@ export function ShopCategory(props: ShopCategoryPropsType) {
       {props.list.length > 0 && (
         <>
           {props.list.map((item: Product, index: number) => (
-            <Link href={{ pathname: location.pathname, query: { productId: item.code } }} shallow>
-              <a key={index}>
+            <Link
+              key={index}
+              href={{ pathname: location.pathname, query: { productId: item.code } }}
+              shallow
+            >
+              <a>
                 <div
                   className={`py-2  hover:bg-primary-light cursor-pointer border-b transition-all duration-300  ${
                     item.allowSale ? "" : "hidden"

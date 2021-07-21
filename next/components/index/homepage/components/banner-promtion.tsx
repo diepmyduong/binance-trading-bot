@@ -5,7 +5,8 @@ import { ShopBanner } from "../../../../lib/repo/banner.repo";
 import { useRouter } from "next/router";
 import { Img } from "../../../shared/utilities/img";
 import { PromotionDetailDialog } from "../../promotion/components/promotion-detail.tsx/promotion-detail-dialog";
-import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
+import { ShopVoucher, ShopVoucherService } from "../../../../lib/repo/shop-voucher.repo";
+import cloneDeep from "lodash/cloneDeep";
 // install Swiper modules
 SwiperCore.use([Pagination, Autoplay]);
 interface Propstype extends ReactProps {
@@ -34,7 +35,11 @@ export function BannerPromtion(props: Propstype) {
         break;
       case "VOUCHER":
         {
-          router.push("/promotion");
+          if (banner.voucherId) {
+            ShopVoucherService.getOne({ id: banner.voucherId }).then((res) =>
+              setVoucher(cloneDeep(res))
+            );
+          }
         }
         break;
       default:
@@ -64,7 +69,11 @@ export function BannerPromtion(props: Propstype) {
           </SwiperSlide>
         ))}
       </Swiper>
-      {/* <PromotionDetailDialog promotion={voucher} /> */}
+      <PromotionDetailDialog
+        isOpen={voucher ? true : false}
+        promotion={voucher}
+        onClose={() => setVoucher(null)}
+      />
     </div>
   );
 }

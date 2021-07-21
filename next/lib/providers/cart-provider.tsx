@@ -201,7 +201,7 @@ export function CartProvider(props) {
         setCartProducts([...listCartNew]);
       });
 
-      router.push(`${shopCode}/payment`, null, { shallow: false });
+      router.push(`/${shopCode}/payment`);
     }
   };
   function clearCartProduct() {

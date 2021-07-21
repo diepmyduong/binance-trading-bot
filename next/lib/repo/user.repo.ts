@@ -87,7 +87,7 @@ export class UserRepository extends CrudRepository<User> {
         mutation: this.gql`mutation {  loginCustomerByPhone(phone: "${phone}") {
           token
           customer{
-            ${CustomerService.shortFragment}
+            ${CustomerService.fullFragment}
           }
         }}`,
       })

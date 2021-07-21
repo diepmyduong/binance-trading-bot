@@ -3,6 +3,7 @@ import { ROLES } from "../../../constants/role.const";
 import { Context } from "../../context";
 import { CustomerModel } from "../customer/customer.model";
 import { OrderModel, OrderStatus } from "../order/order.model";
+import { OrderCommentedLoader } from "./getOrderCommented.graphql";
 import { ShopCommentModel } from "./shopComment.model";
 
 export default {
@@ -37,6 +38,7 @@ export default {
           rating: rating,
           tags: tags,
         });
+        OrderCommentedLoader.clear([newComment.orderId, newComment.customerId].join("."));
         return "Đã gửi đánh giá";
       },
     },

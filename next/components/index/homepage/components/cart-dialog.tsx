@@ -16,7 +16,7 @@ import { Rating } from "../../../shared/homepage-layout/rating";
 interface Propstype extends DialogPropsType {}
 export function CartDialog(props: Propstype) {
   const router = useRouter();
-  const { customer, customerLogin } = useShopContext();
+  const { customer, customerLogin, shopCode } = useShopContext();
   const [showLogin, setShowLogin] = useState(false);
   const { cartProducts, totalMoney, changeProductQuantity, saleUpProducts } = useCartContext();
   const { isMobile } = useDevice();
@@ -75,7 +75,7 @@ export function CartDialog(props: Propstype) {
           className="w-full bg-gradient uppercase h-12 z-40"
           onClick={() => {
             if (customer) {
-              router.push("/payment");
+              router.push(`${shopCode}/payment`, null, { shallow: true });
             } else {
               setShowLogin(true);
             }
@@ -88,7 +88,7 @@ export function CartDialog(props: Propstype) {
         onConfirm={(val) => {
           if (val) {
             customerLogin(val);
-            router.push("/payment", null, { shallow: true });
+            router.push(`${shopCode}/payment`, null, { shallow: true });
           }
         }}
       />

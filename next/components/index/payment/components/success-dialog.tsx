@@ -20,7 +20,7 @@ export function SuccessDialog({ code, ...props }: Propstype) {
         secTime--;
         setSec(secTime);
         if (secTime === 0) {
-          router.replace(`/order/${code}`);
+          router.replace(`/${shopCode}/order/${code}`);
           clearInterval(interval);
         }
       }, 1000);

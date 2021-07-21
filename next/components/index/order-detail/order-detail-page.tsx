@@ -148,7 +148,7 @@ export function OrderDetailPage(props) {
       <BreadCrumbs
         breadcrumbs={[
           { label: "Trang chủ", href: `/${shopCode}` },
-          { label: "Lịch sử đơn hàng", href: `/order` },
+          { label: "Lịch sử đơn hàng", href: `/${shopCode}/order` },
           { label: "Chi tiết đơn hàng" },
         ]}
         className="p-4"

@@ -27,7 +27,7 @@ export function Header({ code, ...props }: HeaderPropsType) {
     {
       label: "Thông tin tài khoản",
       icon: <FaUserAlt />,
-      href: "/customer",
+      href: `/${shopCode}/customer`,
     },
     // {
     //   label: "Quản lý tài khoản",
@@ -37,12 +37,12 @@ export function Header({ code, ...props }: HeaderPropsType) {
     {
       label: "Lịch sử đặt hàng",
       icon: <FaHistory />,
-      href: "/order",
+      href: `/${shopCode}/order`,
     },
     {
       label: "Khuyến mãi",
       icon: <FaPercent />,
-      href: "/promotion",
+      href: `/${shopCode}/promotion`,
     },
     {
       label: "Đăng xuất",

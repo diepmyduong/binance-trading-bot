@@ -14,6 +14,7 @@ export const CartContext = createContext<
     // setOrderInput?: (val: OrderInput) => any;
     // inforBuyers: any;
     // setInforBuyers: any;
+    clearCartProduct: () => void;
     totalFood: number;
     totalMoney: number;
     cartProducts: CartProduct[];
@@ -196,14 +197,15 @@ export function CartProvider(props) {
           }
         });
         console.log(listCartNew);
-
         setCartProducts([...listCartNew]);
       });
 
       router.push("/payment");
     }
   };
-
+  function clearCartProduct() {
+    setCartProducts([]);
+  }
   const [saleUpProducts, setSaleUpProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -232,6 +234,7 @@ export function CartProvider(props) {
   return (
     <CartContext.Provider
       value={{
+        clearCartProduct,
         reOrder,
         reOrderInput,
         totalFood,

@@ -41,4 +41,21 @@ export default {
     },
   },
   methods: {},
+  events: {
+    "email.send": {
+      async handler(ctx: any) {
+        const { from, to, subject, html, text, host, port, username, password } = ctx.params;
+        const emailTransport = await nodemailer.createTransport({
+          host: host || this.settings.host,
+          port: port || this.settings.port,
+          secure: parseInt(port || this.settings.port) === 465 ? true : false, // true for 465, false for other ports
+          auth: {
+            user: username || this.settings.username, // generated ethereal user
+            pass: password || this.settings.password, // generated ethereal password
+          },
+        });
+        return await emailTransport.sendMail({ from, to, subject, html, text });
+      },
+    },
+  },
 } as ServiceSchema;

@@ -19,6 +19,7 @@ import { Dialog, DialogPropsType } from "../../../shared/utilities/dialog/dialog
 import { Button } from "../../../shared/utilities/form/button";
 import { Field } from "../../../shared/utilities/form/field";
 import { Form, FormConsumer } from "../../../shared/utilities/form/form";
+import { ImageInput } from "../../../shared/utilities/form/image-input";
 import { Input } from "../../../shared/utilities/form/input";
 import { Label } from "../../../shared/utilities/form/label";
 import { Select } from "../../../shared/utilities/form/select";
@@ -276,6 +277,14 @@ export function ProductForm({ product, category, ...props }: PropsType) {
                   )}
                 </div>
               </div>
+              <Field
+                name="cover"
+                label="Ảnh chi tiết món"
+                description="Tỉ lệ 4:3. Dùng ảnh sản phẩm nếu không có."
+                cols={12}
+              >
+                <ImageInput percent={75} cover largeImage />
+              </Field>
             </>
           )}
         </div>

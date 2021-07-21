@@ -87,7 +87,6 @@ export function PaymentProvider(props) {
       return OrderService.generateOrder({ ...orderInput, items: items })
         .then((res) => {
           localStorage.removeItem("cartProducts");
-          resetOrderInput();
           setOrderInput(null);
           setOrderCode(res.code);
         })
@@ -107,9 +106,8 @@ export function PaymentProvider(props) {
     }
   }, [reOrderInput]);
   useEffect(() => {
-    if (orderInput && branchSelecting) {
+    if (orderInput && orderInput.shopBranchId) {
       console.log(orderInput);
-
       generateDraftOrder();
     }
   }, [orderInput]);
@@ -118,9 +116,6 @@ export function PaymentProvider(props) {
     if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
   }, [branchSelecting]);
   useEffect(() => {
-    if (cartProducts && cartProducts.length == 0) {
-      router.replace(`/${shopCode}`);
-    }
     let branid = "";
     if (branchSelecting) {
       branid = branchSelecting.id;
@@ -132,7 +127,7 @@ export function PaymentProvider(props) {
       lt = locationCustomer.latitude;
     }
     setOrderInput({
-      buyerName: "",
+      buyerName: customer.name || "",
       buyerPhone: customer.phone,
       pickupMethod: "DELIVERY",
       shopBranchId: branid,
@@ -149,6 +144,11 @@ export function PaymentProvider(props) {
       note: "",
       promotionCode: "",
     });
+  }, [branchSelecting || customer || locationCustomer]);
+  useEffect(() => {
+    if (cartProducts && cartProducts.length == 0) {
+      router.replace(`/${shopCode}`);
+    }
     ShopVoucherService.getAll({
       query: { order: { createdAt: -1 }, filter: { isPrivate: false, isActive: true } },
       fragment: ShopVoucherService.fullFragment,

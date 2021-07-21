@@ -10,6 +10,7 @@ export enum SettingGroupSlug {
   CAU_HINH_DASHBOARD = "CAU_HINH_DASHBOARD",
   CAU_HINH_TRUYEN_THONG = "CAU_HINH_TRUYEN_THONG",
   CAU_HINH_TIN_NHAN = "CAU_HINH_TIN_NHAN",
+  CAU_HINH_DANG_KY_SHOP = "CAU_HINH_DANG_KY_SHOP",
 }
 export enum SettingKey {
   // CAU_HINH_CHUNG
@@ -149,6 +150,12 @@ export enum SettingKey {
   // CAU_HINH_TIN_NHAN
   SMS_DELIVERING = "SMS_DELIVERING",
   SMS_ORDER_COMPLETED = "SMS_ORDER_COMPLETED",
+
+  // CAU_HINH_DANG_KY_SHOP
+  EMAIL_REGIS_APPROVE = "EMAIL_REGIS_APPROVE",
+  EMAIL_REGIS_REJECT = "EMAIL_REGIS_REJECT",
+  EMAIL_REGIS_APPROVE_TITLE = "EMAIL_REGIS_APPROVE_TITLE",
+  EMAIL_REGIS_REJECT_TITLE = "EMAIL_REGIS_REJECT_TITLE",
 }
 
 export const SETTING_DATA = [
@@ -1304,6 +1311,55 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
         name: "Tin cám ơn mời đánh giá",
         key: SettingKey.SMS_ORDER_COMPLETED,
         value: `{{SHOP_NAME}} - Cám ơn bạn đã sử dụng dịch vụ của chúng tôi. Mời bạn bấm: {{ORDER_LINK}} để đánh giá dịch vụ và tham gia các chương trình ưu đãi mới nhất.`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+    ],
+  },
+  {
+    slug: SettingGroupSlug.CAU_HINH_DANG_KY_SHOP,
+    name: "Cấu hình Đăng ký chủ shop",
+    desc: "Thiết lập nội dung đăng ký≈",
+    readOnly: true,
+    settings: [
+      {
+        type: SettingType.string,
+        name: "Tiêu đề Email thông báo được duyệt",
+        key: SettingKey.EMAIL_REGIS_APPROVE_TITLE,
+        value: `Tài khoản cửa hàng {{SHOP_NAME}} đã được kích hoạt.`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.richText,
+        name: "Nội dung Email thông báo được duyệt",
+        key: SettingKey.EMAIL_REGIS_APPROVE,
+        value: `Tài khoản đăng nhập: {{USERNAME}}
+Mật khẩu: {{PASSWORD}}
+Trang quản lý: {{DASHBOARD_LINK}}
+Tên cửa hàng: {{SHOP_NAME}}`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.string,
+        name: "Tiêu đề Email thông báo bị từ chối",
+        key: SettingKey.EMAIL_REGIS_REJECT_TITLE,
+        value: `Đăng ký tài khoản cửa hàng {{SHOP_NAME}} bị từ chối.`,
+        isActive: true,
+        isPrivate: true,
+        readOnly: false,
+      },
+      {
+        type: SettingType.richText,
+        name: "Nội dung Email thông báo bị từ chối",
+        key: SettingKey.EMAIL_REGIS_REJECT,
+        value: `Tài khoản: {{USERNAME}}
+Cửa hàng: {{SHOP_NAME}}
+BỊ TỪ CHỐI.`,
         isActive: true,
         isPrivate: true,
         readOnly: false,

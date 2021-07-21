@@ -4,6 +4,8 @@ import SwiperCore, { Pagination, Autoplay } from "swiper/core";
 import { ShopBanner } from "../../../../lib/repo/banner.repo";
 import { useRouter } from "next/router";
 import { Img } from "../../../shared/utilities/img";
+import { PromotionDetailDialog } from "../../promotion/components/promotion-detail.tsx/promotion-detail-dialog";
+import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
 // install Swiper modules
 SwiperCore.use([Pagination, Autoplay]);
 interface Propstype extends ReactProps {
@@ -13,30 +15,9 @@ export function BannerPromtion(props: Propstype) {
   useEffect(() => {
     console.log(props.banner);
   }, []);
-  const promotions = [
-    {
-      img:
-        "https://file.hstatic.net/200000043306/file/banner_web_mobile_83c075fe49b44d8a8267ccd829a8748d.png",
-      name: "",
-      code: "",
-    },
-    {
-      img:
-        "https://file.hstatic.net/200000043306/file/banner_web_mobile_83c075fe49b44d8a8267ccd829a8748d.png",
-
-      name: "",
-      code: "",
-    },
-    {
-      img:
-        "https://file.hstatic.net/200000043306/file/banner_web_mobile_83c075fe49b44d8a8267ccd829a8748d.png",
-
-      name: "",
-      code: "",
-    },
-  ];
   const router = useRouter();
   const query = router.query;
+  const [voucher, setVoucher] = useState<ShopVoucher>();
   const url = new URL(location.href);
   const handleClick = (banner: ShopBanner) => {
     switch (banner.actionType) {
@@ -83,6 +64,7 @@ export function BannerPromtion(props: Propstype) {
           </SwiperSlide>
         ))}
       </Swiper>
+      {/* <PromotionDetailDialog promotion={voucher} /> */}
     </div>
   );
 }

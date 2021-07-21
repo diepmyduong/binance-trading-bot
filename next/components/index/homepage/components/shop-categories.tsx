@@ -150,7 +150,7 @@ export function ShopCategory(props: ShopCategoryPropsType) {
                 <ImgProduct
                   src={item.image}
                   className="w-20 sm:w-24 rounded-sm"
-                  compress={300}
+                  compress={100}
                   small
                   saleRate={item.saleRate}
                 />

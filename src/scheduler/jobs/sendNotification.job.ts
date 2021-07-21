@@ -147,7 +147,17 @@ function sendNotificationToDevices(
     for (const n of notifications as INotification[]) {
       const fcmData = new NotificationHelper(n).getFCMData();
       for (const d of devices) {
-        task.push(firebaseHelper.messaging.send({ ...fcmData, token: d.deviceToken } as any));
+        task.push(
+          firebaseHelper.messaging
+            .send({ ...fcmData, token: d.deviceToken } as any)
+            .catch((err) => {
+              if (err.message == "Requested entity was not found.") {
+                DeviceInfoModel.remove({ _id: d._id }).exec();
+              } else {
+                throw err;
+              }
+            })
+        );
       }
     }
   }

@@ -8,6 +8,7 @@ import {
 
 import { IOrder, OrderStatus } from "../graphql/modules/order/order.model";
 import { StaffModel } from "../graphql/modules/staff/staff.model";
+import { staffService } from "../graphql/modules/staff/staff.service";
 import {
   UtilsHelper,
   VNPostCancelStatus,
@@ -76,7 +77,7 @@ onDelivering.subscribe(async (order) => {
 
 // Thông báo nhân viên cập nhật trang thái giao hàng
 onDelivering.subscribe(async (order) => {
-  const staffs = await StaffModel.find({ memberId: order.sellerId, branchId: order.shopBranchId });
+  const staffs = await staffService.getStaffByBranchAndScope(order.sellerId, order.shopBranchId);
   const notifies = staffs.map(
     (s) =>
       new NotificationModel({

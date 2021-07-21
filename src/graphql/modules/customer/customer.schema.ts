@@ -51,6 +51,10 @@ const schema = gql`
     birthday: DateTime
     "Địa chỉ"
     address: String
+    "Full địa chỉ"
+    fullAddress: String
+    "Ghi chú địa chỉ"
+    addressNote: String
     "Tỉnh / thành"
     province: String
     "Quận / huyện"

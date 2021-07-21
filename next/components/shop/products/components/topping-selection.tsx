@@ -37,7 +37,10 @@ export function ToppingSelection({ onToppingSelect }: PropsType) {
 
   if (!toppings) return <Spinner />;
   return (
-    <div style={{ width: "450px", marginLeft: "-9px", marginRight: "-9px" }}>
+    <div
+      className="bg-white rounded overflow-hidden"
+      style={{ width: "450px", marginLeft: "-9px", marginRight: "-9px" }}
+    >
       <Input
         className="border-0 no-focus"
         placeholder="Tìm kiếm topping"

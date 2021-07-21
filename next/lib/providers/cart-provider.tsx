@@ -24,6 +24,7 @@ export const CartContext = createContext<
     changeProductQuantity: (productIndex: number, qty: number) => any;
     removeProductFromCart: (productIndex: number) => any;
     reOrder: (items: OrderItem[], reOderInput: OrderInput) => any;
+    saleUpProducts: Product[];
   }>
 >({});
 export interface CartProduct {
@@ -99,9 +100,6 @@ export function CartProvider(props) {
     return itemProduct;
   };
   useEffect(() => {
-    if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
-  }, []);
-  useEffect(() => {
     if (locationCustomer)
       setOrderInput({
         ...orderInput,
@@ -111,7 +109,7 @@ export function CartProvider(props) {
   }, [locationCustomer]);
   useEffect(() => {
     if (customer) {
-      setOrderInput({ ...orderInput, buyerPhone: customer });
+      setOrderInput({ ...orderInput, buyerPhone: customer.phone });
     }
   }, [customer]);
   useEffect(() => {
@@ -274,6 +272,31 @@ export function CartProvider(props) {
     }
   };
 
+  const [saleUpProducts, setSaleUpProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    let upSalePros = saleUpProducts;
+    cartProducts.forEach((cart) => {
+      let upsale = cart.product.upsaleProducts;
+      if (upsale && upsale.length > 0) {
+        cart.product.upsaleProducts.forEach((product) => {
+          let index = upSalePros.findIndex((p) => p.id === product.id);
+          if (index === -1) {
+            upSalePros.push(product);
+          }
+        });
+      }
+    });
+    ProductService.getAll({
+      query: {
+        limit: 0,
+        filter: {
+          _id: { __in: upSalePros.map((x) => x.id) },
+        },
+      },
+    }).then((res) => setSaleUpProducts(cloneDeep(res.data)));
+  }, [cartProducts]);
+
   ///Checkout
   const generateDraftOrder = () => {
     let items = getItemsOrderInput();
@@ -319,6 +342,7 @@ export function CartProvider(props) {
         addProductToCart,
         removeProductFromCart,
         changeProductQuantity,
+        saleUpProducts,
       }}
     >
       {props.children}

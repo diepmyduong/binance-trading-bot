@@ -10,6 +10,7 @@ import { orderService } from "../graphql/modules/order/order.service";
 import { OrderLogModel } from "../graphql/modules/orderLog/orderLog.model";
 import { OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 import { StaffModel } from "../graphql/modules/staff/staff.model";
+import { staffService } from "../graphql/modules/staff/staff.service";
 import { PubSubHelper } from "../helpers/pubsub.helper";
 import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
 
@@ -53,7 +54,7 @@ onApprovedFailureOrder.subscribe(async (order) => {
 
 // Thông báo nhân viên đơn hàng thành công
 onApprovedFailureOrder.subscribe(async (order) => {
-  const staffs = await StaffModel.find({ memberId: order.sellerId, branchId: order.shopBranchId });
+  const staffs = await staffService.getStaffByBranchAndScope(order.sellerId, order.shopBranchId);
   const notifies = staffs.map(
     (s) =>
       new NotificationModel({

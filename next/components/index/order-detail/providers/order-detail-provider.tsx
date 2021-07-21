@@ -18,7 +18,7 @@ export const OrderDetailContext = createContext<
     tags: ShopTag[];
     cancelOrder: (id: string, note: string) => any;
     addTags: (tag: ShopTag) => any;
-    commentOrder: (inputData: { message: string; rating: string }) => any;
+    commentOrder: (inputData: { message: string; rating: number }) => any;
     reOrderClick: () => any;
   }>
 >({});
@@ -45,27 +45,39 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
     }
     setTags(cloneDeep(newTags));
   }
-  function commentOrder(inputData: { message: string; rating: string }) {
+  function commentOrder(inputData: { message: string; rating: number }) {
     const { message, rating } = inputData;
-    return ShopCommentService.mutate({
+    ShopCommentService.mutate({
       mutation: `
-      commentOrder(data: $data) {
-          orderId
-          message
-          rating
-          tags{
-            name
-            icon
-            qty
-          }: [ShopTagInput]
-        }
-      `,
+      commentOrder( orderId:$orderId
+        message:$message
+        rating:$rating
+        tags:$tags
+      )`,
+      variablesParams: `( $orderId:ID!
+        $message:String!
+        $rating:Int!
+        $tags:[ShopTagInput]!)`,
       options: {
         variables: {
-          data: { ownerName: order.buyerName, message, rating, tags },
+          orderId: order.id,
+          message,
+          rating,
+          tags,
         },
       },
-    });
+    }).then((res) => toast.success(res.data.g0));
+    // mutation: `
+    //     memberUpdateMe(data: $data) {
+    //       ${MemberService.fullFragment}
+    //     }
+    //   `,
+    //   variablesParams: `($data: UpdateMemberInput!)`,
+    //   options: {
+    //     variables: {
+    //       data,
+    //     },
+    //   },
     // ShopCommentService.createOrUpdate({
     //   data: { ownerName: order.buyerName, message, rating, tags },
     // }).then((res) => {

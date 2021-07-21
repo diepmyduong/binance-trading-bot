@@ -8,7 +8,7 @@ interface Propstype extends DialogPropsType {
   onSelect?: (string) => void;
   shopBranchs: ShopBranch[];
 }
-const BranchsDialog = ({ shopBranchs = [], ...props }: Propstype) => {
+export function BranchsDialog({ shopBranchs = [], ...props }: Propstype) {
   const { isMobile } = useDevice();
   const [dayCur, setDayCur] = useState(0);
   useEffect(() => {
@@ -52,6 +52,4 @@ const BranchsDialog = ({ shopBranchs = [], ...props }: Propstype) => {
       </Dialog.Body>
     </Dialog>
   );
-};
-
-export default BranchsDialog;
+}

@@ -249,6 +249,7 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
                       <div className="grid grid-cols-2 gap-y-3"></div>
                       {discountItems?.map((item, index) => (
                         <ProductItem
+                          key={item.productId}
                           item={item}
                           hasSalePrice
                           onClick={() => setOpenDiscountItem(item)}
@@ -292,6 +293,51 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
                       {offerItems?.map((item, index) => (
                         <ProductItem
                           item={item}
+                          onClick={() => setOpenOfferItem(item)}
+                          onRemove={() => {
+                            offerItems.splice(index, 1);
+                            setOfferItems([...offerItems]);
+                          }}
+                        />
+                      ))}
+                      <Button
+                        className="mb-4 px-0"
+                        textPrimary
+                        icon={<RiAddFill />}
+                        text="Chọn sản phẩm"
+                        innerRef={offerItemsRef}
+                      />
+                      <ProductSelectionPopover
+                        reference={offerItemsRef}
+                        onProductSelect={(item) => {
+                          if (offerItems.find((x) => x.productId == item.id)) {
+                            toast.info("Sản phẩm này đã được chọn");
+                            return;
+                          }
+                          const offerItem: OfferItem = {
+                            productId: item.id,
+                            product: item,
+                            qty: 1,
+                            note: "",
+                          };
+                          setOfferItems([...offerItems, offerItem]);
+                          setOpenOfferItem(offerItem);
+                        }}
+                      />
+                    </div>
+                  )}
+                  {voucher.type == "SAME_PRICE" && (
+                    <div className="col-span-12">
+                      <Field name="samePrice" label="Đồng giá">
+                        <Input number suffix="VND" className="w-64" />
+                      </Field>
+                      <Label text="Các sản phẩm đồng giá" />
+                      <div className="grid grid-cols-2 gap-y-3"></div>
+                      {offerItems?.map((item, index) => (
+                        <ProductItem
+                          key={item.productId}
+                          item={item}
+                          samePrice={data.samePrice || 0}
                           onClick={() => setOpenOfferItem(item)}
                           onRemove={() => {
                             offerItems.splice(index, 1);
@@ -404,7 +450,7 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
         width="480px"
         grid
         dialog
-        title="Chỉnh thông tin tặng sản phẩm"
+        title="Chỉnh thông tin sản phẩm"
         isOpen={!!openOfferItem}
         onClose={() => setOpenOfferItem(null)}
         initialData={openOfferItem}
@@ -423,7 +469,7 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
                 <Field label="Sản phẩm" cols={12}>
                   <Input value={openOfferItem.product.name} readonly />
                 </Field>
-                <Field name="qty" label="Số lượng tặng" cols={4}>
+                <Field name="qty" label="Số lượng" cols={4}>
                   <Input number />
                 </Field>
                 <Field name="note" label="Ghi chú" cols={8}>
@@ -444,11 +490,13 @@ export function VoucherForm({ voucher, ...props }: PropsType) {
 function ProductItem({
   item,
   hasSalePrice = false,
+  samePrice,
   onRemove,
   onClick,
 }: {
   hasSalePrice?: boolean;
   item: DiscountItem | OfferItem;
+  samePrice?: number;
   onRemove: () => any;
   onClick: () => any;
 }) {
@@ -484,7 +532,13 @@ function ProductItem({
               )}
             </span>
           ) : (
-            <span className="text-success">Tặng {(item as OfferItem).qty}</span>
+            <>
+              {samePrice !== undefined ? (
+                <span className="text-danger">{NumberPipe(samePrice, true)}</span>
+              ) : (
+                <span className="text-success">Tặng {(item as OfferItem).qty}</span>
+              )}
+            </>
           )}
         </div>
       </div>

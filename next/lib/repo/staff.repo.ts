@@ -53,4 +53,7 @@ export class StaffRepository extends CrudRepository<Staff> {
 
 export const StaffService = new StaffRepository();
 
-export const STAFF_SCOPES: Option[] = [{ value: "REPORT", label: "Xem báo cáo" }];
+export const STAFF_SCOPES: Option[] = [
+  { value: "REPORT", label: "Xem báo cáo" },
+  { value: "MANAGER", label: "Quản lý" },
+];

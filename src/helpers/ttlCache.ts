@@ -21,7 +21,6 @@ export const ttlCache = <K extends string, V = any>({
       if (!entry) {
         return undefined;
       }
-
       if (entry.expiresAt < Date.now()) {
         delete cache[key];
         return undefined;

@@ -9,6 +9,7 @@ import { Img } from "../../../shared/utilities/img";
 import { SwitchTabs } from "../../../shared/utilities/tab/switch-tabs";
 import { ProductsGroup } from "./products-group";
 import { ImgProduct } from "../../../shared/homepage-layout/img-product";
+import Link from "next/link";
 interface ShopCategoriesPropsType extends ReactProps {}
 
 export function ShopCategories(props: ShopCategoriesPropsType) {
@@ -111,13 +112,6 @@ interface ShopCategoryPropsType extends ReactProps {
   title: string;
 }
 export function ShopCategory(props: ShopCategoryPropsType) {
-  const router = useRouter();
-  const query = router.query;
-  const url = new URL(location.href);
-  const handleClick = (code) => {
-    url.searchParams.set("productId", code);
-    router.push(url.toString(), null, { shallow: true });
-  };
   return (
     <div id={props.title} className="relative menu bg-white mb-2">
       <div className=" absolute -top-28 menu-container"></div>
@@ -125,46 +119,49 @@ export function ShopCategory(props: ShopCategoryPropsType) {
       {props.list.length > 0 && (
         <>
           {props.list.map((item: Product, index: number) => (
-            <div
-              key={index}
-              className={`py-2  hover:bg-primary-light cursor-pointer border-b transition-all duration-300  ${
-                item.allowSale ? "" : "hidden"
-              }`}
-              onClick={() => {
-                handleClick(item.code);
-              }}
-            >
-              <div className={`flex items-center px-4 `}>
-                <div className="flex-1 flex flex-col">
-                  <p className="font-semibold items-start">{item.name}</p>
-                  <p className="text-gray-500 text-sm">{item.subtitle}</p>
-                  <Rating rating={item.rating || 4.8} textSm soldQty={item.soldQty} />
-                  <p className="text-gray-400 text-sm">{item.des}</p>
-                  <Price
-                    price={item.basePrice}
-                    downPrice={item.downPrice}
-                    textDanger
-                    className="justify-items-end"
-                  />
-                </div>
-                <ImgProduct
-                  src={item.image}
-                  className="w-20 sm:w-24 rounded-sm"
-                  compress={100}
-                  small
-                  saleRate={item.saleRate}
-                />
-              </div>
-              {item.labels?.map((label, index) => (
+            <Link href={{ pathname: location.pathname, query: { productId: item.code } }} shallow>
+              <a key={index}>
                 <div
-                  className="ml-2 inline-flex items-center text-white rounded-full font-semibold text-xs px-2 py-1 cursor-pointer whitespace-nowrap"
-                  style={{ backgroundColor: label.color }}
-                  key={index}
+                  className={`py-2  hover:bg-primary-light cursor-pointer border-b transition-all duration-300  ${
+                    item.allowSale ? "" : "hidden"
+                  }`}
+                  // onClick={() => {
+                  //   handleClick(item.code);
+                  // }}
                 >
-                  <span>{label.name}</span>
+                  <div className={`flex items-center px-4 `}>
+                    <div className="flex-1 flex flex-col">
+                      <p className="font-semibold items-start">{item.name}</p>
+                      <p className="text-gray-500 text-sm">{item.subtitle}</p>
+                      <Rating rating={item.rating || 4.8} textSm soldQty={item.soldQty} />
+                      <p className="text-gray-400 text-sm">{item.des}</p>
+                      <Price
+                        price={item.basePrice}
+                        downPrice={item.downPrice}
+                        textDanger
+                        className="justify-items-end"
+                      />
+                    </div>
+                    <ImgProduct
+                      src={item.image}
+                      className="w-20 sm:w-24 rounded-sm"
+                      compress={100}
+                      small
+                      saleRate={item.saleRate}
+                    />
+                  </div>
+                  {item.labels?.map((label, index) => (
+                    <div
+                      className="ml-2 inline-flex items-center text-white rounded-full font-semibold text-xs px-2 py-1 cursor-pointer whitespace-nowrap"
+                      style={{ backgroundColor: label.color }}
+                      key={index}
+                    >
+                      <span>{label.name}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </a>
+            </Link>
           ))}
         </>
       )}

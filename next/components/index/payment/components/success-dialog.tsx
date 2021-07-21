@@ -11,7 +11,7 @@ interface Propstype extends DialogPropsType {
 
 export function SuccessDialog({ code, ...props }: Propstype) {
   const { shopCode } = useShopContext();
-  const [sec, setSec] = useState(3);
+  const [sec, setSec] = useState(4);
   const router = useRouter();
   useEffect(() => {
     if (code !== "") {
@@ -42,8 +42,10 @@ export function SuccessDialog({ code, ...props }: Propstype) {
           ) : (
             <Spinner />
           )}
+          <p className="text-sm sm:text-base font-semibold my-2 text-accent-dark">
+            Đang chuyển hướng...
+          </p>
         </div>
-        <p className="text-sm sm:text-lg font-semibold my-2">Đang chuyển hướng...</p>
       </Dialog.Body>
     </Dialog>
   );

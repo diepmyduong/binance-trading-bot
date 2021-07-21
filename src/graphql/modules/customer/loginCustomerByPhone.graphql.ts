@@ -24,10 +24,10 @@ export default {
     Mutation: {
       loginCustomerByPhone: async (root: any, args: any, context: Context) => {
         context.auth([ROLES.ANONYMOUS]);
-        const { phone, name, deviceId, deviceToken } = args;
+        const { phone, deviceId, deviceToken } = args;
         const customer = await CustomerModel.findOneAndUpdate(
           { phone, memberId: context.sellerId },
-          { $set: { name } },
+          { $setOnInsert: { name: "Vãng Lai" } },
           { upsert: true, new: true }
         );
         if (deviceId && deviceToken) {

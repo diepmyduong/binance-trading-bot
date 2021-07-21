@@ -61,7 +61,12 @@ export function CustomerPage() {
                       <Input defaultValue="Lê Huỳnh Thảo Nguyên" className=" border-gray-300" />
                     </Field>
                     <Field label="Số điện thoại" name="phone">
-                      <Input defaultValue="032 77 33 883" className=" border-gray-300" type="tel" />
+                      <Input
+                        defaultValue="032 77 33 883"
+                        className=" border-gray-300"
+                        type="tel"
+                        readonly
+                      />
                     </Field>
                   </div>
                   <AddressGroup

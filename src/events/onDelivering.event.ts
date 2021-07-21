@@ -1,4 +1,7 @@
 import { Subject } from "rxjs";
+import { SettingKey } from "../configs/settingData";
+import { CustomerLoader } from "../graphql/modules/customer/customer.model";
+import { MemberLoader } from "../graphql/modules/member/member.model";
 import {
   InsertNotification,
   NotificationModel,
@@ -7,6 +10,7 @@ import {
 } from "../graphql/modules/notification/notification.model";
 
 import { IOrder, OrderStatus } from "../graphql/modules/order/order.model";
+import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { StaffModel } from "../graphql/modules/staff/staff.model";
 import { staffService } from "../graphql/modules/staff/staff.service";
 import {
@@ -16,7 +20,9 @@ import {
   VNPostSuccessStatus,
 } from "../helpers";
 import { PubSubHelper } from "../helpers/pubsub.helper";
+import { TokenHelper } from "../helpers/token.helper";
 import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
+import LocalBroker from "../services/broker";
 import { onApprovedCompletedOrder } from "./onApprovedCompletedOrder.event";
 import { onApprovedFailureOrder } from "./onApprovedFailureOrder.event";
 import { onCanceledOrder } from "./onCanceledOrder.event";
@@ -110,4 +116,23 @@ onDelivering.subscribe(async (order) => {
 // Publish order stream
 onDelivering.subscribe(async (order) => {
   PubSubHelper.publish("order", order);
+});
+
+// Thông báo SMS tới khách hàng
+onDelivering.subscribe(async (order) => {
+  const [seller, buyer, smsTemplate, webappDomain] = await Promise.all([
+    MemberLoader.load(order.sellerId),
+    CustomerLoader.load(order.buyerId),
+    SettingHelper.load(SettingKey.SMS_DELIVERING),
+    SettingHelper.load(SettingKey.WEBAPP_DOMAIN),
+  ]);
+  const customerToken = TokenHelper.getCustomerToken(buyer);
+  const orderLink = `${webappDomain}/order/${order.code}?x-token=${customerToken}`;
+  const encoded = await LocalBroker.call<string, any>("shortLink.encode", { url: orderLink });
+  const context = {
+    SHOP_NAME: seller.shopName,
+    ORDER_LINK: `${webappDomain}/s/${encoded}`,
+  };
+  const parsedMsg = UtilsHelper.parseStringWithInfo({ data: smsTemplate, info: context });
+  await LocalBroker.call("ESMS.send", { phone: order.buyerPhone, content: parsedMsg });
 });

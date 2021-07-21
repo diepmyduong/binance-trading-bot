@@ -1294,7 +1294,7 @@ Nếu quý khách có thắc mắc vui lòng liên hệ vào số hotline 999 c�
         type: SettingType.richText,
         name: "Tin xác nhận đang giao hàng",
         key: SettingKey.SMS_DELIVERING,
-        value: `{{SHOP_NAME}} - Đơn hàng của bạn đang trên đường giao tới. Bạn để ý điện thoại nhé. Xem thông tin đơn hàng tại đây: {{TRACKING_LINK}}`,
+        value: `{{SHOP_NAME}} - Đơn hàng của bạn đang trên đường giao tới. Bạn để ý điện thoại nhé. Xem thông tin đơn hàng tại đây: {{ORDER_LINK}}`,
         isActive: true,
         isPrivate: true,
         readOnly: false,

@@ -3,7 +3,7 @@ import { ROLES } from "../../../constants/role.const";
 import { TokenHelper } from "../../../helpers/token.helper";
 import { Context } from "../../context";
 import { DeviceInfoModel } from "../deviceInfo/deviceInfo.model";
-import { CustomerModel } from "./customer.model";
+import { CustomerModel, ICustomer } from "./customer.model";
 
 export default {
   schema: gql`
@@ -38,12 +38,7 @@ export default {
         }
         return {
           customer,
-          token: TokenHelper.generateToken({
-            role: ROLES.CUSTOMER,
-            _id: customer._id,
-            memberId: context.sellerId,
-            username: customer.name,
-          }),
+          token: TokenHelper.getCustomerToken(customer),
         };
       },
     },

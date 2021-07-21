@@ -27,7 +27,10 @@ import { StaffModel, StaffScope } from "../graphql/modules/staff/staff.model";
 import { staffService } from "../graphql/modules/staff/staff.service";
 import { UserModel } from "../graphql/modules/user/user.model";
 import { PubSubHelper } from "../helpers/pubsub.helper";
+import { TokenHelper } from "../helpers/token.helper";
+import { UtilsHelper } from "../helpers/utils.helper";
 import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
+import LocalBroker from "../services/broker";
 import { EventHelper } from "./event.helper";
 import { onSendChatBotText } from "./onSendToChatbot.event";
 
@@ -367,4 +370,23 @@ onApprovedCompletedOrder.subscribe(async (order) => {
 // Publish order stream
 onApprovedCompletedOrder.subscribe(async (order) => {
   PubSubHelper.publish("order", order);
+});
+
+// Thông báo SMS tới khách hàng
+onApprovedCompletedOrder.subscribe(async (order) => {
+  const [seller, buyer, smsTemplate, webappDomain] = await Promise.all([
+    MemberLoader.load(order.sellerId),
+    CustomerLoader.load(order.buyerId),
+    SettingHelper.load(SettingKey.SMS_ORDER_COMPLETED),
+    SettingHelper.load(SettingKey.WEBAPP_DOMAIN),
+  ]);
+  const customerToken = TokenHelper.getCustomerToken(buyer);
+  const orderLink = `${webappDomain}/order/${order.code}?x-token=${customerToken}`;
+  const encoded = await LocalBroker.call<string, any>("shortLink.encode", { url: orderLink });
+  const context = {
+    SHOP_NAME: seller.shopName,
+    ORDER_LINK: `${webappDomain}/s/${encoded}`,
+  };
+  const parsedMsg = UtilsHelper.parseStringWithInfo({ data: smsTemplate, info: context });
+  await LocalBroker.call("ESMS.send", { phone: order.buyerPhone, content: parsedMsg });
 });

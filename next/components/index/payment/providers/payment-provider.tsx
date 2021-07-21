@@ -1,18 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { useRouter } from "next/router";
-import {
-  OrderInput,
-  OrderItemToppingInput,
-  Order,
-  OrderItemInput,
-} from "../../../../lib/repo/order.repo";
+import { OrderInput, Order, OrderItemInput } from "../../../../lib/repo/order.repo";
 import { useShopContext } from "../../../../lib/providers/shop-provider";
 import { useToast } from "../../../../lib/providers/toast-provider";
 import { useCartContext } from "../../../../lib/providers/cart-provider";
 import { OrderService } from "../../../../lib/repo/order.repo";
 import { ShopVoucher, ShopVoucherService } from "../../../../lib/repo/shop-voucher.repo";
-import { UserService } from "../../../../lib/repo/user.repo";
 
 export const PaymentContext = createContext<
   Partial<{
@@ -41,7 +35,7 @@ export function PaymentProvider(props) {
 
   const [vouchers, setVouchers] = useState<ShopVoucher[]>();
   const { branchSelecting, customer, locationCustomer, shopCode } = useShopContext();
-  const { cartProducts } = useCartContext();
+  const { cartProducts, reOrderInput } = useCartContext();
   const [orderInput, setOrderInput] = useState<OrderInput>();
   const [orderCode, setOrderCode] = useState("");
   const resetOrderInput = () => {
@@ -72,25 +66,6 @@ export function PaymentProvider(props) {
     });
     return itemProduct;
   };
-  // useEffect(() => {
-  //   if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
-  // }, [branchSelecting]);
-  useEffect(() => {
-    if (locationCustomer) console.log(locationCustomer);
-
-    //  setOrderInput({
-    //   ...orderInput,
-    //   longitude: locationCustomer.longitude,
-    //   latitude: locationCustomer.latitude,
-    // });
-  }, [locationCustomer]);
-  // useEffect(() => {
-  //   if (customer) {
-  //     setOrderInput({ ...orderInput, buyerPhone: customer.phone });
-  //   }
-  // }, [customer]);
-
-  ///Checkout
   const generateDraftOrder = () => {
     let items = getItemsOrderInput();
     OrderService.generateDraftOrder({ ...orderInput, items: items })
@@ -124,11 +99,19 @@ export function PaymentProvider(props) {
   //   }
   // }, [orderCode]);
   useEffect(() => {
-    if (orderInput) {
+    if (reOrderInput) {
+      setOrderInput(cloneDeep(reOrderInput));
+    }
+  }, [reOrderInput]);
+  useEffect(() => {
+    if (orderInput && branchSelecting) {
       generateDraftOrder();
     }
   }, [orderInput]);
 
+  useEffect(() => {
+    if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
+  }, [branchSelecting]);
   useEffect(() => {
     if (cartProducts && cartProducts.length == 0) {
       router.replace(`/${shopCode}`);
@@ -137,8 +120,8 @@ export function PaymentProvider(props) {
     if (branchSelecting) {
       branid = branchSelecting.id;
     }
-    let lg = 10.3279394;
-    let lt = 106.2186029;
+    let lg = 106.725484;
+    let lt = 10.72883;
     if (locationCustomer) {
       lg = locationCustomer.longitude;
       lt = locationCustomer.latitude;
@@ -155,8 +138,8 @@ export function PaymentProvider(props) {
       buyerWardId: "",
       buyerFullAddress: customer.fullAddress,
       buyerAddressNote: "",
-      latitude: lg,
-      longitude: lt,
+      latitude: lt,
+      longitude: lg,
       paymentMethod: "COD",
       note: "",
       promotionCode: "",

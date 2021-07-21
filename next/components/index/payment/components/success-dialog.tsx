@@ -4,6 +4,7 @@ import { Img } from "../../../shared/utilities/img";
 import { useRouter } from "next/router";
 import { Button } from "../../../shared/utilities/form/button";
 import { useShopContext } from "../../../../lib/providers/shop-provider";
+import { Spinner } from "../../../shared/utilities/spinner";
 interface Propstype extends DialogPropsType {
   code: string;
 }
@@ -12,18 +13,18 @@ export function SuccessDialog({ code, ...props }: Propstype) {
   const { shopCode } = useShopContext();
   const [sec, setSec] = useState(3);
   const router = useRouter();
-  // useEffect(() => {
-  //   let interval = setInterval(() => {
-  //     // if (sec === 0) {
-  //     //   router.replace(`/order/${code}`);
-  //     //   clearInterval(interval);
-  //     // }
-  //     setSec(sec - 1);
-  //   });
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, []);
+  useEffect(() => {
+    let interval = setInterval(() => {
+      if (sec === 0) {
+        router.replace(`/order/${code}`);
+        clearInterval(interval);
+      }
+      setSec(sec - 1);
+    });
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
   return (
     <Dialog {...props} onClose={() => {}} mobileSizeMode={false} slideFromBottom="none">
       <Dialog.Body>
@@ -32,7 +33,11 @@ export function SuccessDialog({ code, ...props }: Propstype) {
             Đặt hàng thành công
           </h3>
           <p className="text-sm sm:text-lg">Chúng tôi sẽ chuyển bạn đến trang đơn hàng trong</p>
-          <Img src="https://nhahang.so/assets/img/count-down.gif" className="w-3/4" />
+          {sec !== 0 ? (
+            <Img src="https://nhahang.so/assets/img/count-down.gif" className="w-3/4" />
+          ) : (
+            <Spinner />
+          )}
         </div>
       </Dialog.Body>
       <Dialog.Footer>

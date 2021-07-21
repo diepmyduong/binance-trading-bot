@@ -25,32 +25,11 @@ import { Spinner } from "../../shared/utilities/spinner";
 SwiperCore.use([Navigation]);
 export function PaymentPage() {
   const { cartProducts, totalFood, totalMoney } = useCartContext();
-  const {
-    branchSelecting,
-    shopBranchs,
-    setBranchSelecting,
-    locationCustomer,
-    customer,
-  } = useShopContext();
+  const { branchSelecting, shopBranchs, setBranchSelecting } = useShopContext();
   const { vouchers, orderInput, setOrderInput, draftOrder: order, orderCode } = usePaymentContext();
   const [voucherSelected, setVoucherSelected] = useState<ShopVoucher>(null);
   const [openDialogSelectBranch, setopenDialogSelectBranch] = useState(false);
-  useEffect(() => {
-    if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
-  }, []);
-  useEffect(() => {
-    if (locationCustomer)
-      setOrderInput({
-        ...orderInput,
-        longitude: locationCustomer.longitude,
-        latitude: locationCustomer.latitude,
-      });
-  }, []);
-  useEffect(() => {
-    if (customer) {
-      setOrderInput({ ...orderInput, buyerPhone: customer.phone });
-    }
-  }, []);
+
   return (
     <>
       {orderInput && branchSelecting ? (
@@ -262,7 +241,7 @@ const ButtonPayment = (props: ButtonPaymentProps) => {
 
 const InputNote = () => {
   const [openDialog, setOpenDialog] = useState(false);
-  const { orderInput, setOrderInput } = useCartContext();
+  const { orderInput, setOrderInput } = usePaymentContext();
   return (
     <>
       <div className="mt-1">

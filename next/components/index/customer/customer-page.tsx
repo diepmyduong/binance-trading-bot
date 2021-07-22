@@ -104,10 +104,10 @@ export function CustomerPage() {
                         await customerUpdateMe({
                           phone: customer.phone,
                           addressNote: customer.addressNote,
-                          fullAddress: addressData.fullAddress,
+                          fullAddress: addressData.fullAddress || customer.fullAddress,
                           name: customer.name,
-                          latitude: addressData.lat,
-                          longitude: addressData.lg,
+                          latitude: addressData.lat || customer.latitude,
+                          longitude: addressData.lg || customer.longitude,
                         })
                       }
                     />

@@ -86,6 +86,7 @@ export class ShopRepository extends CrudRepository<Shop> {
     ratingQty: Int
     soldQty: Int
     upsaleTitle: String
+    smsOtp: Boolean
     banners {
       image: String
       title: String

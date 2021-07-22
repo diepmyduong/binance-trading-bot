@@ -31,10 +31,17 @@ export function PaymentPage() {
   const { vouchers, orderInput, setOrderInput, draftOrder: order, orderCode } = usePaymentContext();
   const [voucherSelected, setVoucherSelected] = useState<ShopVoucher>(null);
   const [openDialogSelectBranch, setopenDialogSelectBranch] = useState(false);
-
+  const toast = useToast();
+  useEffect(() => {
+    console.log(shopBranchs);
+    if (branchSelecting === null) {
+      setopenDialogSelectBranch(true);
+      toast.error("Vui lòng chọn chi nhánh giao hàng");
+    }
+  }, []);
   return (
     <>
-      {orderInput && branchSelecting && cartProducts && customer ? (
+      {orderInput && cartProducts && customer ? (
         <>
           {cartProducts.length > 0 ? (
             <div className="text-gray-700 bg-gray-100">
@@ -150,19 +157,19 @@ export function PaymentPage() {
             onClose={() => setVoucherSelected(null)}
           />
           {/* <SuccessDialog/> */}
-          {shopBranchs && (
-            <BranchsDialog
-              shopBranchs={shopBranchs}
-              onClose={() => setopenDialogSelectBranch(false)}
-              isOpen={openDialogSelectBranch}
-              onSelect={(branch) => {
-                setBranchSelecting(branch);
-              }}
-            />
-          )}
         </>
       ) : (
         <Spinner />
+      )}
+      {shopBranchs && (
+        <BranchsDialog
+          shopBranchs={shopBranchs}
+          onClose={() => setopenDialogSelectBranch(false)}
+          isOpen={openDialogSelectBranch}
+          onSelect={(branch) => {
+            setBranchSelecting(branch);
+          }}
+        />
       )}
       <SuccessDialog isOpen={orderCode ? true : false} code={orderCode} />
     </>

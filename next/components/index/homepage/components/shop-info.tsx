@@ -33,7 +33,7 @@ export function ShopInfo(props: Propstype) {
 }
 const MoreInfomation = (props) => {
   const [showComments, setShowComments] = useState(false);
-  const { shop } = useShopContext();
+  const { shop, shopCode } = useShopContext();
   const { voucherShow } = useHomeContext();
   return (
     <>
@@ -52,7 +52,7 @@ const MoreInfomation = (props) => {
             icon={<AiOutlineRight />}
             iconPosition="end"
             iconClassName="text-gray-400"
-            href="/promotion"
+            href={`/${shopCode}/promotion`}
           />
         </div>
         <div className="flex justify-between items-center px-4 ">

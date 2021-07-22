@@ -39,7 +39,7 @@ export function ShopProvider(props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [shopCode, setShopCode] = useState<string>();
-  const [branchSelecting, setBranchSelecting] = useState<ShopBranch>(null);
+  const [branchSelecting, setBranchSelecting] = useState<ShopBranch>();
   const [shop, setShop] = useState<Shop>();
   const [productIdSelected, setProductIdSelected] = useState<any>(null);
   const [categoriesShop, setcategoriesShop] = useState<Category[]>(null);
@@ -101,8 +101,12 @@ export function ShopProvider(props) {
             let branchsSorted = orderBy(branchs, (o) => o.distance);
             console.log(branchsSorted);
             setShopBranch(cloneDeep(branchsSorted));
-            let neared = branchsSorted.findIndex((item) => item.activated && item.isOpen);
-            setBranchSelecting(branchsSorted[neared]);
+            let neared = branchsSorted.findIndex((item) => item.isOpen);
+            if (neared) {
+              setBranchSelecting(branchsSorted[neared]);
+            } else {
+              setBranchSelecting(null);
+            }
           });
           setLocationCustomer(position.coords);
         });

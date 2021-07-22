@@ -13,7 +13,7 @@ interface Propstype extends DialogPropsType {
   fullAddress: string;
   onChange: (data: { fullAddress: string; lg: number; lat: number }) => void;
 }
-export const AddressGongDialog = ({ onChange, fullAddress, ...props }: Propstype) => {
+export const AddressGongDialog = ({ onChange, fullAddress = "", ...props }: Propstype) => {
   const [addressInput, setAddressInput] = useState(fullAddress);
   const [placeDetail, setPlaceDetail] = useState<GoongPlaceDetail>(null);
   const [addressList, setAddressList] = useState<GoongAutocompletePlace[]>(null);
@@ -86,7 +86,7 @@ export const AddressGongDialog = ({ onChange, fullAddress, ...props }: Propstype
                         name: address.structured_formatting.main_text,
                         formatted_address: address.structured_formatting.secondary_text,
                       });
-                      props.onClose;
+                      props.onClose();
                     }}
                   >
                     <i className="text-xl mr-2 mt-1">

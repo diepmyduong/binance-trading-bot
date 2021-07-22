@@ -19,7 +19,7 @@ export function CustomerProvider(props) {
   async function getCustomner() {
     let res = await CustomerService.getCustomer();
     console.log(res);
-    setCustomer(cloneDeep(res));
+    setCustomer(res);
   }
   const customerUpdateMe = async (data: CustomeUpdateMeInput) => {
     return CustomerService.mutate({
@@ -55,16 +55,3 @@ export function CustomerProvider(props) {
 }
 
 export const useCustomerContext = () => useContext(CustomerContext);
-export const CustomerConsumer = ({
-  children,
-}: {
-  children: (
-    props: Partial<{
-      customer: Customer;
-      customerUpdateMe: (data: CustomeUpdateMeInput) => Promise<any>;
-      setCustomer: Function;
-    }>
-  ) => any;
-}) => {
-  return <CustomerContext.Consumer>{children}</CustomerContext.Consumer>;
-};

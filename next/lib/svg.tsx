@@ -2,8 +2,8 @@ function PrimaryLinearGradient() {
   return (
     <defs>
       <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" style={{ stopColor: "#38D0FF" }} />
-        <stop offset="100%" style={{ stopColor: "#0D57EF" }} />
+        <stop offset="0%" style={{ stopColor: "var(--color-accent)" }} />
+        <stop offset="100%" style={{ stopColor: "var(--color-primary)" }} />
       </linearGradient>
     </defs>
   );

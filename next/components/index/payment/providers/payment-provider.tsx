@@ -111,10 +111,9 @@ export function PaymentProvider(props) {
       generateDraftOrder();
     }
   }, [orderInput]);
-
-  useEffect(() => {
-    if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
-  }, [branchSelecting]);
+  // useEffect(() => {
+  //   if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
+  // }, [branchSelecting]);
   useEffect(() => {
     let branid = "";
     if (branchSelecting) {

@@ -103,6 +103,7 @@ export class ShopRepository extends CrudRepository<Shop> {
       voucher {
         id: String
         code: String
+        description: String
       }: ShopVoucher
     }: [ShopBanner]
     productGroups {

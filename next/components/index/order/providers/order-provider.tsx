@@ -8,6 +8,7 @@ export function OrderProvider(props) {
   const [orders, setOrders] = useState<Order[]>();
   const statusOrder = ORDER_STATUS;
   async function loadOrders() {
+    await OrderService.clearStore();
     setOrders(null);
     let res = await OrderService.getAll({
       query: { order: { createdAt: -1, cache: false } },

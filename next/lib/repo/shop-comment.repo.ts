@@ -8,6 +8,12 @@ export interface ShopComment extends BaseModel {
   message: string;
   rating: string;
   status: "PENDING" | "PUBLIC" | "HIDDEN";
+  tags: ShopTag[];
+}
+export interface ShopTag {
+  name: string;
+  icon: string;
+  qty: number;
 }
 export class ShopCommentRepository extends CrudRepository<ShopComment> {
   apiName: string = "ShopComment";
@@ -23,6 +29,11 @@ export class ShopCommentRepository extends CrudRepository<ShopComment> {
     message: String
     rating: Int
     status: String
+    tags {
+      name: String
+      icon: String
+      qty: Int
+    }: [ShopTag]
   `);
   fullFragment: string = this.parseFragment(`
     id: String
@@ -35,6 +46,11 @@ export class ShopCommentRepository extends CrudRepository<ShopComment> {
     message: String
     rating: Int
     status: String
+    tags {
+      name: String
+      icon: String
+      qty: Int
+    }: [ShopTag]
   `);
   // async commentOrder(
   //   orderId: string,
@@ -54,7 +70,7 @@ export class ShopCommentRepository extends CrudRepository<ShopComment> {
 export const ShopCommentService = new ShopCommentRepository();
 
 export const SHOP_COMMENT_STATUS: Option[] = [
-  { value: "PENDING", label: "Chờ duyệt", color: "warning" },
   { value: "PUBLIC", label: "Công khai", color: "success" },
+  { value: "PENDING", label: "Chờ duyệt", color: "warning" },
   { value: "HIDDEN", label: "Đang ẩn", color: "bluegray" },
 ];

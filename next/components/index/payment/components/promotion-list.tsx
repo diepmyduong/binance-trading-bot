@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useToast } from "../../../../lib/providers/toast-provider";
 import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
 import { Dialog } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
@@ -5,9 +7,27 @@ import { Input } from "../../../shared/utilities/form/input";
 import { Spinner } from "../../../shared/utilities/spinner";
 import { Promotion } from "../../promotion/components/promotion";
 import { usePromotionContext } from "../../promotion/provider/promotion-provider";
+import { usePaymentContext } from "../providers/payment-provider";
 
 export function PromotionList(props) {
   const { shopVouchers, customerVoucher } = usePromotionContext();
+  const { orderInput, setOrderInput } = usePaymentContext();
+  const [voucherCode, setVoucherCode] = useState("");
+  const toast = useToast();
+  const handleSubmit = () => {
+    var check = false;
+    shopVouchers.forEach((item) => {
+      if (item.code.toUpperCase() == voucherCode.toUpperCase()) {
+        setOrderInput({ ...orderInput, promotionCode: item.code });
+        props.onClose();
+        check = true;
+      }
+    });
+    if (!check) {
+      toast.error("Không tìm thấy khuyến mãi");
+      props.onClose();
+    }
+  };
   return (
     <div className="">
       <Dialog
@@ -20,8 +40,8 @@ export function PromotionList(props) {
       >
         <Dialog.Body>
           <div className="w-full flex sticky top-0">
-            <Input className="flex-1" />
-            <Button text="Áp dụng" primary />
+            <Input className="flex-1" onChange={(data) => setVoucherCode(data)} />
+            <Button text="Áp dụng" primary onClick={() => handleSubmit()} />
           </div>
           <div className="mt-4">
             {shopVouchers ? (
@@ -37,7 +57,8 @@ export function PromotionList(props) {
                         key={index}
                         promotion={item}
                         onClick={() => {
-                          console.log(item.code);
+                          setOrderInput({ ...orderInput, promotionCode: item.code });
+                          props.onClose();
                         }}
                         selectButton
                       />

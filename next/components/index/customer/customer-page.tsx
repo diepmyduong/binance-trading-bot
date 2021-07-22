@@ -10,15 +10,18 @@ import { Spinner } from "../../shared/utilities/spinner";
 import { useToast } from "../../../lib/providers/toast-provider";
 import BreadCrumbs from "../../shared/utilities/breadcrumbs/breadcrumbs";
 import { useShopContext } from "../../../lib/providers/shop-provider";
+import { FaAddressCard } from "react-icons/fa";
+import { AddressGongDialog } from "./components/address-gong-dialog";
 
 export function CustomerPage() {
   const toast = useToast();
+  const [openAddress, setOpenAddress] = useState(false);
   const { shopCode } = useShopContext();
   return (
     <CustomerProvider>
       <CustomerConsumer>
-        {({ customer, customerUpdateMe }) => (
-          <div className="bg-white shadow relative rounded-md w-full">
+        {({ customer, customerUpdateMe, setCustomer }) => (
+          <div className="bg-white shadow  min-h-screen  relative rounded-md w-full">
             <BreadCrumbs
               breadcrumbs={[
                 { label: "Trang chủ", href: `/${shopCode}` },
@@ -38,16 +41,17 @@ export function CustomerPage() {
               {customer ? (
                 <Form
                   initialData={{
-                    wardId: customer.wardId,
-                    districtId: customer.districtId,
-                    provinceId: customer.provinceId,
-                    address: customer.address,
                     name: customer.name,
                     phone: customer.phone,
                   }}
-                  className="w-full px-4"
+                  className="w-full px-4 relative"
                   onSubmit={async (data) => {
-                    customerUpdateMe(data)
+                    customerUpdateMe({
+                      ...data,
+                      longitude: customer.longitude,
+                      latitude: customer.latitude,
+                      fulla,
+                    })
                       .then((res) => {
                         toast.success("Cập nhật thông tin thành công");
                       })
@@ -56,35 +60,58 @@ export function CustomerPage() {
                       });
                   }}
                 >
-                  <div className="w-full pt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-                    <Field label="Họ và Tên" name="name">
-                      <Input defaultValue="Lê Huỳnh Thảo Nguyên" className=" border-gray-300" />
-                    </Field>
-                    <Field label="Số điện thoại" name="phone">
+                  <Field label="Họ và Tên" name="name">
+                    <Input defaultValue="Lê Huỳnh Thảo Nguyên" className=" border-gray-300" />
+                  </Field>
+
+                  <Field label="Số điện thoại" name="phone">
+                    <Input
+                      defaultValue="032 77 33 883"
+                      className=" border-gray-300"
+                      type="tel"
+                      readonly
+                    />
+                  </Field>
+                  <div
+                    onClick={() => {
+                      setOpenAddress(true);
+                    }}
+                  >
+                    <Field label="Địa chỉ">
                       <Input
-                        defaultValue="032 77 33 883"
-                        className=" border-gray-300"
-                        type="tel"
                         readonly
+                        value={customer.fullAddress}
+                        type="text"
+                        placeholder="Nhập địa chỉ giao đến"
+                        prefix={<FaAddressCard />}
+                        className=" bg-primary-light"
                       />
                     </Field>
                   </div>
-                  <AddressGroup
-                    {...{
-                      wardId: customer.wardId,
-                      districtId: customer.districtId,
-                      provinceId: customer.provinceId,
-                      address: customer.address,
-                    }}
-                  />
-                  <div className=" w-full">
-                    <SaveButtonGroup />
+                  <div className=" w-full sticky bottom-4">
+                    <SaveButtonGroup bgGadient />
                   </div>
                 </Form>
               ) : (
                 <Spinner />
               )}
             </div>
+            <AddressGongDialog
+              slideFromBottom="all"
+              title="Nhập địa chỉ"
+              mobileSizeMode
+              isOpen={openAddress}
+              fullAddress={customer.fullAddress}
+              onClose={() => setOpenAddress(false)}
+              onChange={(data) =>
+                setCustomer({
+                  ...customer,
+                  fullAddress: data.fullAddress,
+                  latitude: data.lat,
+                  longitude: data.lg,
+                })
+              }
+            />
           </div>
         )}
       </CustomerConsumer>

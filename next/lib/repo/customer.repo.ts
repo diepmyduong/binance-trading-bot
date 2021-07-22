@@ -25,6 +25,7 @@ export interface Customer extends BaseModel {
   pageAccounts: [CustomerPageAccount];
   latitude: number;
   longitude: number;
+  addressNote: String;
   orderStats: {
     revenue: number;
     voucher: number;
@@ -51,6 +52,7 @@ export interface CustomeUpdateMeInput {
   gender: string;
   latitude: number;
   longitude: number;
+  fullAddress: string;
 }
 export class CustomerRepository extends CrudRepository<Customer> {
   apiName: string = "Customer";

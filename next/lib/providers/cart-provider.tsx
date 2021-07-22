@@ -50,46 +50,43 @@ export function CartProvider(props) {
   useEffect(() => {
     let listCart = JSON.parse(localStorage.getItem("cartProducts"));
     if (listCart) {
-      if (listCart) {
-        ProductService.getAll({
-          query: {
-            limit: 0,
-            filter: {
-              _id: { __in: listCart.map((x) => x.productId) },
-            },
+      ProductService.getAll({
+        query: {
+          limit: 0,
+          filter: {
+            _id: { __in: listCart.map((x) => x.productId) },
+            cache: false,
           },
-        }).then((res) => {
-          let cartProducts = [];
-          if (res.data) {
-            listCart.forEach((cartProduct) => {
-              const product = res.data.find((x) => x.id === cartProduct.productId);
-              if (product) {
-                let isValid = true;
-                for (let cartProductTopping of cartProduct.product
-                  .selectedToppings as OrderItemToppingInput[]) {
-                  const topping = product.toppings.find(
-                    (x) => x.id == cartProductTopping.toppingId
+        },
+      }).then((res) => {
+        let cartProducts = [];
+        if (res.data) {
+          listCart.forEach((cartProduct) => {
+            const product = res.data.find((x) => x.id === cartProduct.productId);
+            if (product) {
+              let isValid = true;
+              for (let cartProductTopping of cartProduct.product
+                .selectedToppings as OrderItemToppingInput[]) {
+                const topping = product.toppings.find((x) => x.id == cartProductTopping.toppingId);
+                if (!topping) {
+                  isValid = false;
+                  break;
+                } else {
+                  const option = topping.options.find(
+                    (x) => x.name == cartProductTopping.optionName
                   );
-                  if (!topping) {
+                  if (!option || option.price != cartProductTopping.price) {
                     isValid = false;
                     break;
-                  } else {
-                    const option = topping.options.find(
-                      (x) => x.name == cartProductTopping.optionName
-                    );
-                    if (!option || option.price != cartProductTopping.price) {
-                      isValid = false;
-                      break;
-                    }
                   }
                 }
-                if (isValid) cartProducts.push(cartProduct);
               }
-            });
-          }
-          setCartProducts(cartProducts);
-        });
-      }
+              if (isValid) cartProducts.push(cartProduct);
+            }
+          });
+        }
+        setCartProducts(cartProducts);
+      });
     }
   }, []);
 

@@ -7,7 +7,11 @@ import {
 } from "../../../../lib/repo/customer.repo";
 import cloneDeep from "lodash/cloneDeep";
 export const CustomerContext = createContext<
-  Partial<{ customer: Customer; customerUpdateMe: (data: CustomeUpdateMeInput) => Promise<any> }>
+  Partial<{
+    customer: Customer;
+    customerUpdateMe: (data: CustomeUpdateMeInput) => Promise<any>;
+    setCustomer: Function;
+  }>
 >({});
 
 export function CustomerProvider(props) {
@@ -17,7 +21,7 @@ export function CustomerProvider(props) {
     console.log(res);
     setCustomer(cloneDeep(res));
   }
-  const customerUpdateMe = async (data) => {
+  const customerUpdateMe = async (data: CustomeUpdateMeInput) => {
     return CustomerService.mutate({
       mutation: `
         customerUpdateMe(data: $data) {
@@ -44,7 +48,7 @@ export function CustomerProvider(props) {
   }, []);
 
   return (
-    <CustomerContext.Provider value={{ customer, customerUpdateMe }}>
+    <CustomerContext.Provider value={{ customer, customerUpdateMe, setCustomer }}>
       {props.children}
     </CustomerContext.Provider>
   );
@@ -58,6 +62,7 @@ export const CustomerConsumer = ({
     props: Partial<{
       customer: Customer;
       customerUpdateMe: (data: CustomeUpdateMeInput) => Promise<any>;
+      setCustomer: Function;
     }>
   ) => any;
 }) => {

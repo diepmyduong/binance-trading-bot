@@ -17,8 +17,12 @@ export function DefaultLayout({ ...props }) {
             {({ shop, shopCode, customer }) => (
               <div className="flex flex-col min-h-screen relative bg-gray-800">
                 <>
-                  <DefaultHead shopCode={shopCode} />
-                  {shop && <Header {...props} />}
+                  {shop && (
+                    <>
+                      <DefaultHead shopCode={shopCode} shopLogo={shop.shopLogo} />
+                      <Header {...props} />
+                    </>
+                  )}
                   <div className="w-full max-w-lg mx-auto shadow-lg">
                     <div
                       className={`w-full flex-1 bg-gray-100 text-gray-700 ${

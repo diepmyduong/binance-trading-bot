@@ -23,6 +23,109 @@ export function Dashboard() {
   );
 }
 
+function TableProduct(props) {
+  return (
+    <CardCustom className=" w-full ">
+      <CardCustom.Header
+        title="Sản phẩm bán chạy"
+        filter={[
+          {
+            value: "Tháng này",
+            label: "Tháng này",
+          },
+          {
+            value: "Tháng trước",
+            label: "Tháng trước",
+          },
+          {
+            value: "3 tháng gần nhất",
+            label: "3 tháng gần nhất",
+          },
+        ]}
+        onChange={(data) => props.setFilterReportProduct(data)}
+      />
+      <CardCustom.Body
+        style={{
+          padding: 0,
+        }}
+        className=""
+      >
+        <div className="grid grid-cols-2 bg-gradient sticky top-0 border-b-2 border border-gray-200 shadow-lg p-4 font-semibold text-white">
+          <div className="text-center">Tên sản phẩm</div>
+          <div className="text-center">Số lượng</div>
+        </div>
+        <div
+          className=" overflow-auto"
+          style={{
+            height: "372px",
+          }}
+        >
+          {!props.top10Products ? (
+            <Spinner />
+          ) : props.top10Products.length == 0 ? (
+            <NotFound text="Không có sản phẩm nào" />
+          ) : (
+            props.top10Products.map((item, ind) => {
+              let backgroundGray = ind % 2 == 1 && " bg-gray-200 ";
+              return (
+                <div key={ind} className={`grid grid-cols-2 p-4 ${backgroundGray}`}>
+                  <div className="text-center">{item.productName}</div>
+                  <div className="text-center">{item.qty}</div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </CardCustom.Body>
+    </CardCustom>
+  );
+}
+
+function TableVoucher(props) {
+  const { top10Vouchers } = useDashboardContext();
+  console.log("top10Vouchers", top10Vouchers);
+  return (
+    <CardCustom className={` w-full ${props.className}`}>
+      <CardCustom.Header title="Top 10 voucher được sử dụng nhiều nhất" />
+      <CardCustom.Body
+        style={{
+          padding: 0,
+        }}
+        className=""
+      >
+        <div className="grid grid-cols-3 bg-gradient sticky top-0 border-b-2 border border-gray-200 shadow-lg p-4 font-semibold text-white">
+          <div className="text-center">Mã Voucher</div>
+          <div className="text-center">Mô tả</div>
+          <div className="text-center">Số lượng sử dụng</div>
+        </div>
+        <div
+          className=" overflow-auto"
+          style={{
+            height: "372px",
+          }}
+        >
+          {!top10Vouchers ? (
+            <Spinner />
+          ) : top10Vouchers.length == 0 ? (
+            <NotFound text="Không có voucher nào" />
+          ) : (
+            top10Vouchers.map((item, ind) => {
+              let backgroundGray = ind % 2 == 1 && " bg-gray-200 ";
+              return (
+                <div key={ind} className={`grid grid-cols-3 p-4 ${backgroundGray}`}>
+                  <div className="text-center">{item.voucher.code}</div>
+                  <div className="text-center">{item.voucher.description}</div>
+                  <div className="text-center">{item.qty}</div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </CardCustom.Body>
+    </CardCustom>
+  );
+}
+
 function ReportProductOrder(props) {
   const {
     loadReportProduct,
@@ -41,88 +144,46 @@ function ReportProductOrder(props) {
     loadReportShopOrder(date.fromDate, date.toDate);
   }, []);
   return (
-    <div className="mt-4 grid grid-cols-5">
-      <div className="flex flex-col col-span-2 space-y-4">
-        <Card className="min-w-sm">
+    <div className="mt-4">
+      <div className="grid grid-cols-3 items-center">
+        <Card className="mt-2 mr-2">
           <div className="text-sm">Tổng đơn hàng</div>
           <div className="font-bold text-2xl">{shopOrderReport?.completed}</div>
         </Card>
-        <Card className="min-w-sm">
+        <Card className="mt-2 mr-2">
           <div className="text-sm">Doanh thu bán hàng</div>
           <div className="font-bold text-2xl">{NumberPipe(shopOrderReport?.revenue)}đ</div>
         </Card>
-        <Card className="min-w-sm">
+        <Card className="mt-2 mr-2">
           <div className="text-sm">Trung bình mỗi đơn</div>
           <div className="font-bold text-2xl">
             {NumberPipe(Math.floor(shopOrderReport?.revenue / shopOrderReport?.completed))}đ
           </div>
         </Card>
-        <Card className="min-w-sm">
+        <Card className="mt-2 mr-2">
           <div className="text-sm">Tổng giảm giá</div>
           <div className="font-bold text-2xl">{NumberPipe(shopOrderReport?.discount)}đ</div>
         </Card>
-        <Card className="min-w-sm">
+        <Card className="mt-2 mr-2">
           <div className="text-sm">Doanh số ship</div>
-          <div className="font-bold text-2xl">{NumberPipe(shopOrderReport?.partnerShipfee)}đ</div>
-          <div className="text-sm font-bold text-primary">
-            Lợi nhuận ship {" " + NumberPipe(shopOrderReport?.shipfee)}đ
+          <div className="flex items-end">
+            <div className="font-bold text-2xl">{NumberPipe(shopOrderReport?.partnerShipfee)}đ</div>
+            <div className="text-sm font-bold text-primary ml-2 pb-1">
+              Lợi nhuận ship {" " + NumberPipe(shopOrderReport?.shipfee)}đ
+            </div>
           </div>
         </Card>
       </div>
-      <div className="h-full w-full  pl-4 col-span-3 overflow-auto">
-        <CardCustom className=" w-full ">
-          <CardCustom.Header
-            title="Sản phẩm bán chạy"
-            filter={[
-              {
-                value: "Tháng này",
-                label: "Tháng này",
-              },
-              {
-                value: "Tháng trước",
-                label: "Tháng trước",
-              },
-              {
-                value: "3 tháng gần nhất",
-                label: "3 tháng gần nhất",
-              },
-            ]}
-            onChange={(data) => setFilterReportProduct(data)}
-          />
-          <CardCustom.Body
-            style={{
-              padding: 0,
-            }}
-            className=""
-          >
-            <div className="grid grid-cols-2 bg-gradient sticky top-0 border-b-2 border border-gray-200 shadow-lg p-4 text-white">
-              <div className="">Tên sản phẩm</div>
-              <div className="">Số lượng</div>
-            </div>
-            <div
-              className=" overflow-auto"
-              style={{
-                height: "372px",
-              }}
-            >
-              {!top10Products ? (
-                <Spinner />
-              ) : top10Products.length == 0 ? (
-                <NotFound text="Không có sản phẩm nào" />
-              ) : (
-                top10Products.map((item, ind) => {
-                  let backgroundGray = ind % 2 == 1 && " bg-gray-200 ";
-                  return (
-                    <div key={ind} className={`grid grid-cols-2 p-4 ${backgroundGray}`}>
-                      <div className="">{item.productName}</div>
-                      <div className="">{item.qty}</div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </CardCustom.Body>
-        </CardCustom>
+      <div className="h-full w-full mt-4 flex items-center">
+        <TableProduct
+          top10Products={top10Products}
+          setFilterReportProduct={setFilterReportProduct}
+        ></TableProduct>
+        <TableVoucher
+          className="ml-2"
+          top10Products={top10Products}
+          setFilterReportProduct={setFilterReportProduct}
+        ></TableVoucher>
       </div>
     </div>
   );
@@ -168,28 +229,6 @@ const BusinessStepByStep = () => {
   }, []);
   return (
     <div className="mt-4">
-      {/* <div className="py-4">
-        <h1 className="text-primary text-lg">Từng bước kinh doanh online</h1>
-      </div>
-      <CardCustom>
-        <CardCustom.Header title="Thử đặt đơn hàng đầu tiên" />
-        <CardCustom.Body>
-          {step.map((item, index) => {
-            let first = index == 0;
-            return (
-              <div
-                className={`flex items-center cursor-pointer text-sm px-2 ${!first && "pt-6"}`}
-                key={index}
-              >
-                <div className="w-5 h-5 text-white flex items-center justify-center rounded-full bg-gradient">
-                  {index + 1}
-                </div>
-                <div className="ml-2">{item}</div>
-              </div>
-            );
-          })}
-        </CardCustom.Body>
-      </CardCustom> */}
       <div className="mt-4 flex">
         <CardCustom className="min-w-max">
           <CardCustom.Header title="Tổng số khách hàng"></CardCustom.Header>

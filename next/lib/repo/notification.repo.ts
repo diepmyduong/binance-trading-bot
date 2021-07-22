@@ -65,6 +65,7 @@ export class NotificationRepository extends CrudRepository<Notification> {
         order {
           id
           code
+          status
         }
         product {
           id
@@ -102,6 +103,7 @@ export class NotificationRepository extends CrudRepository<Notification> {
         order {
           id
           code
+          status
         }
         product {
           id

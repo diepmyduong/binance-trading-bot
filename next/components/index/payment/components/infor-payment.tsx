@@ -21,7 +21,7 @@ import { SelectTime } from "./select-time";
 export function InforPayment() {
   const [openDialog, setOpenDialog] = useState(false);
   const { orderInput, setOrderInput } = usePaymentContext();
-  const { shopBranchs, setBranchSelecting } = useShopContext();
+  const { shopBranchs, setBranchSelecting, customer } = useShopContext();
   const [openAddress, setOpenAddress] = useState(false);
   const [placeDetail, setPlaceDetail] = useState<GoongPlaceDetail>(null);
   const [addressInput, setAddressInput] = useState("");
@@ -120,7 +120,13 @@ export function InforPayment() {
                     textPrimary
                     icon={<RiAddFill />}
                     text="Thêm ghi chú địa chỉ giao hàng"
-                    onClick={() => setBuyerAddressNote(null)}
+                    onClick={() => {
+                      if (customer && customer.addressNote) {
+                        setBuyerAddressNote(customer.addressNote);
+                      } else {
+                        setBuyerAddressNote(null);
+                      }
+                    }}
                   />
                 ) : (
                   <Input

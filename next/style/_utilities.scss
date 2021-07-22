@@ -325,6 +325,9 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath fill='%23E74D3D' d='M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z'/%3E%3C/g%3E%3C/svg%3E%0A");
   }
 }
+.swiper-pagination-bullet-active {
+  background: var(--color-primary);
+}
 .center-item {
   position: absolute;
   left: 50%; /* adjusts the element 50% from the left */

@@ -13,6 +13,7 @@ export function NotificationProvider(props) {
     order: { _id: -1 },
     page: 1,
   });
+
   return (
     <NotificationContext.Provider value={{ ...paginationQueryContext }}>
       {props.children}

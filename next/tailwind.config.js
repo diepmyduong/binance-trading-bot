@@ -80,6 +80,9 @@ module.exports = {
         48: '48px',
         64: '64px',
       },
+      borderWidth:{
+        0.5:"0.5px"
+      },
       maxWidth: {
         1: '0.25rem',
         2: '0.5rem',

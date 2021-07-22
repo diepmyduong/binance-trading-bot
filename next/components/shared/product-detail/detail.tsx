@@ -58,11 +58,8 @@ export function ProductDetail({ ...props }: PropsType) {
                 <HiOutlineX />
               </i>
             </div>
-            <div
-              className={`z-50 w-full absolute top-0 h-12 max-w-lg bg-white `}
-              style={{ opacity }}
-            >
-              <h2 className={`text-xl text-center w-full pt-2`}>{product.name}</h2>
+            <div className={`z-50 w-full absolute top-0 h-12 max-w-lg  `} style={{ opacity }}>
+              {/* <h2 className={`text-xl text-center w-full pt-2`}>{product.name}</h2> */}
               <div
                 className={`absolute top-2 right-2 w-8 h-8 z-200 rounded-full bg-gray-50 flex items-center justify-center cursor-pointer`}
                 onClick={props.onClose}
@@ -73,7 +70,7 @@ export function ProductDetail({ ...props }: PropsType) {
               </div>
             </div>
             <div className="relative w-full top-0 ">
-              <Img src={product.image} ratio169 compress={512} />
+              <Img src={product.cover || product.image} ratio169 compress={512} />
               <div className="absolute bottom-0 left-0 w-full h-12 p-3 text-xs text-white flex items-end bg-opacity-20 bg-gradient-to-t from-primary">
                 {product.rating > 0 && (
                   <div className="flex items-center">

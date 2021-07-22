@@ -66,7 +66,10 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
           tags,
         },
       },
-    }).then((res) => toast.success(res.data.g0));
+    }).then((res) => {
+      toast.success(res.data.g0);
+      loadOrder(id);
+    });
     // mutation: `
     //     memberUpdateMe(data: $data) {
     //       ${MemberService.fullFragment}
@@ -93,10 +96,9 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
         .then((res) => {
           setOrder(cloneDeep(res));
           if (
-            (res.status !== "PENDING" &&
-              res.status !== "CONFIRMED" &&
-              res.status !== "DELIVERING") ||
-            res.pickupMethod === "STORE"
+            res.status !== "PENDING" &&
+            res.status !== "CONFIRMED" &&
+            res.status !== "DELIVERING"
           ) {
             setIsInterval(false);
             clearInterval(interval);
@@ -119,7 +121,7 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
     return () => {
       clearInterval(interval);
     };
-  }, [id]);
+  }, []);
   useEffect(() => {
     if (order) {
       let sta = ORDER_STATUS.find((x) => x.value === order.status);
@@ -142,7 +144,7 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
       });
   }
   const loadOrder = (id: string) => {
-    OrderService.getOne({ id })
+    OrderService.getOne({ id, cache: false })
       .then((res) => {
         if (
           res.pickupMethod === "DELIVERY" &&

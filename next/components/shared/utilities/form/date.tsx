@@ -101,9 +101,11 @@ export function DatePicker({
       setValue(date);
       if (props.onChange) {
         props.onChange(date);
-        setTimeout(() => {
-          ref.current.input.focus();
-        });
+        if (!props.timeOnly) {
+          setTimeout(() => {
+            ref.current.input.focus();
+          });
+        }
       }
     }
   };

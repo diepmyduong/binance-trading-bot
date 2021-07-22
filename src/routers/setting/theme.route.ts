@@ -15,12 +15,12 @@ export default [
       const shopColor = await ShopColorLoader.load(shopCode);
       res.type(".css");
       res.send(`:root {
-        --color-primary-light: "${LightenDarkenColor(shopColor.primaryColor, 40)}";
-        --color-primary: "${shopColor.primaryColor}";
-        --color-primary-dark: "${LightenDarkenColor(shopColor.primaryColor, -40)}";
-        --color-accent-light: "${LightenDarkenColor(shopColor.accentColor, 40)}";
-        --color-accent: "${shopColor.accentColor}";
-        --color-accent-dark: "${LightenDarkenColor(shopColor.accentColor, -40)}";
+        --color-primary-light: ${LightenDarkenColor(shopColor.primaryColor, 90)};
+        --color-primary: ${shopColor.primaryColor};
+        --color-primary-dark: ${LightenDarkenColor(shopColor.primaryColor, -10)};
+        --color-accent-light: ${LightenDarkenColor(shopColor.accentColor, 90)};
+        --color-accent: ${shopColor.accentColor};
+        --color-accent-dark: ${LightenDarkenColor(shopColor.accentColor, -10)};
       }`);
       res.end();
     },
@@ -37,6 +37,7 @@ const ShopColorLoader = new DataLoader<string, { primaryColor: string; accentCol
       { $unwind: "$config" },
     ]).then((list) => {
       const keyById = keyBy(list, "code");
+      console.log(keyById, list);
       return ids.map((code) =>
         get(keyById, code + ".config", { primaryColor: "#0D57EF", accentColor: "#38D0FF" })
       );

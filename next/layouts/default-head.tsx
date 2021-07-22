@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
 
-export function DefaultHead() {
+export function DefaultHead({ shopCode }: { shopCode?: string }) {
   return (
     <Head>
       <meta
@@ -14,7 +14,7 @@ export function DefaultHead() {
         href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet"
       />
-      <link rel="stylesheet" href="https://booking-hospital.mcom.app/api/theme-color.css"></link>
+      <link rel="stylesheet" href={`/api/setting/theme/${shopCode || "DEFAULT"}.css`}></link>
     </Head>
   );
 }

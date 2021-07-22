@@ -32,13 +32,14 @@ export const ShopContext = createContext<
     setBranchSelecting: Function;
     loginCustomerByPhone: Function;
     loading: boolean;
+    setCustomer: Function;
   }>
 >({});
 export function ShopProvider(props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [shopCode, setShopCode] = useState<string>();
-  const [branchSelecting, setBranchSelecting] = useState<ShopBranch>(null);
+  const [branchSelecting, setBranchSelecting] = useState<ShopBranch>();
   const [shop, setShop] = useState<Shop>();
   const [productIdSelected, setProductIdSelected] = useState<any>(null);
   const [categoriesShop, setcategoriesShop] = useState<Category[]>(null);
@@ -69,6 +70,7 @@ export function ShopProvider(props) {
       if (phoneUser) {
         let dataCus = await UserService.loginCustomerByPhone(phoneUser);
         if (dataCus) {
+          console.log(dataCus.customer);
           SetCustomerToken(dataCus.token);
           setCustomer(cloneDeep(dataCus.customer));
           localStorage.setItem("phoneUser", dataCus.customer.phone);
@@ -99,8 +101,12 @@ export function ShopProvider(props) {
             let branchsSorted = orderBy(branchs, (o) => o.distance);
             console.log(branchsSorted);
             setShopBranch(cloneDeep(branchsSorted));
-            let neared = branchsSorted.findIndex((item) => item.activated && item.isOpen);
-            setBranchSelecting(branchsSorted[neared]);
+            let neared = branchsSorted.findIndex((item) => item.isOpen);
+            if (neared) {
+              setBranchSelecting(branchsSorted[neared]);
+            } else {
+              setBranchSelecting(null);
+            }
           });
           setLocationCustomer(position.coords);
         });
@@ -110,7 +116,7 @@ export function ShopProvider(props) {
     let brs = await ShopBranchService.getAll();
     if (brs && !brsnav) {
       setShopBranch(cloneDeep(brs.data));
-      let active = brs.data.findIndex((item) => item.activated && item.isOpen);
+      let active = brs.data.findIndex((item) => item.isOpen);
       setBranchSelecting(brs.data[active]);
     }
     let res = await ShopService.getShopData();
@@ -166,6 +172,7 @@ export function ShopProvider(props) {
         shopBranchs,
         setBranchSelecting,
         loading,
+        setCustomer,
       }}
     >
       {props.children}

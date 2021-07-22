@@ -8,13 +8,10 @@ import { Form } from "../../shared/utilities/form/form";
 import { Field } from "../../shared/utilities/form/field";
 import { Textarea } from "../../shared/utilities/form/textarea";
 import { useOrderDetailContext } from "./providers/order-detail-provider";
-import { OrderStatus } from "./components/order-status";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import BreadCrumbs from "../../shared/utilities/breadcrumbs/breadcrumbs";
-import { Select } from "../../shared/utilities/form/select";
-import { Radio } from "../../shared/utilities/form/radio";
 import { useToast } from "../../../lib/providers/toast-provider";
-import { HiCheckCircle, HiOutlinePhone } from "react-icons/hi";
+import { HiOutlinePhone } from "react-icons/hi";
 import { RatingOrder } from "./components/rating-order";
 import { OrderLog } from "../../../lib/repo/order.repo";
 import { FaCheckCircle, FaDotCircle } from "react-icons/fa";
@@ -27,11 +24,11 @@ interface ItemStatusOrderProps {
 
 function ItemStatusOrder({ status, text, actived, ...props }: ItemStatusOrderProps) {
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col justify-center items-center min-w-24">
       {actived ? (
         <i
           className={`text-xl ${
-            text == "Đã hủy" || text == "Thất bại" ? "text-gray-400" : "text-danger"
+            text == "Đã hủy" || text == "Thất bại" ? "text-danger" : "text-success"
           }`}
         >
           <FaCheckCircle />
@@ -43,9 +40,9 @@ function ItemStatusOrder({ status, text, actived, ...props }: ItemStatusOrderPro
       )}
       <div className={`py-1 ${actived && "font-semibold"}`}>{text}</div>
       {status && (
-        <div className="text-sm text-gray-300">{`${new Date(
-          status.createdAt
-        ).getHours()}:${new Date(status.createdAt).getMinutes()}`}</div>
+        <div className="text-sm text-gray-300">
+          {formatDate(new Date(status.createdAt), "HH:mm")}
+        </div>
       )}
     </div>
   );
@@ -81,28 +78,31 @@ function StatusOrder(props) {
       });
     }
   }, [order.logs]);
-  console.log("canceled", canceled);
   return (
     <div className="flex flex-col">
       <div className="w-full flex justify-center items-end text-base">
         <div className="text-gray-500">Mã đơn hàng:</div>
         <div className="ml-1 font-bold">{order.code}</div>
       </div>
-      <div className="w-full mx-auto flex items-start justify-between text-base mt-4">
+      <div className="w-full mx-auto flex items-start justify-center flex-wrap text-base mt-4">
         <ItemStatusOrder
           status={pending}
           actived={order.status == "PENDING" || order.status == "CONFIRMED"}
           text="Đã đặt"
         />
-        <div className="border-b-2 border-gray-400 flex-1 pt-2"></div>
+        <div className="border-b-2 border-gray-400 flex-1 pt-2 max-w-28"></div>
         {!canceled ? (
           <>
-            <ItemStatusOrder
-              status={shipping}
-              actived={order.status == "DELIVERING"}
-              text="Đang giao"
-            />
-            <div className="border-b-2 border-gray-400 flex-1 pt-2"></div>
+            {order.pickupMethod == "DELIVERY" && (
+              <>
+                <ItemStatusOrder
+                  status={shipping}
+                  actived={order.status == "DELIVERING"}
+                  text="Đang giao"
+                />
+                <div className="border-b-2 border-gray-400 flex-1 pt-2 max-w-28"></div>
+              </>
+            )}
             {order.status != "FAILURE" ? (
               <ItemStatusOrder
                 status={finished}
@@ -148,7 +148,7 @@ export function OrderDetailPage(props) {
       <BreadCrumbs
         breadcrumbs={[
           { label: "Trang chủ", href: `/${shopCode}` },
-          { label: "Lịch sử đơn hàng", href: `/order` },
+          { label: "Lịch sử đơn hàng", href: `/${shopCode}/order` },
           { label: "Chi tiết đơn hàng" },
         ]}
         className="p-4"
@@ -160,7 +160,7 @@ export function OrderDetailPage(props) {
           ) : ( */}
           <div className="text-gray-800 text-sm sm:text-lg">
             <div className="w-full px-4">
-              <StatusOrder></StatusOrder>
+              <StatusOrder />
               {order.cancelReason && (
                 <div className="p-4 text-gray-500 bg-gray-50 my-2">
                   Lý do hủy: {order.cancelReason}
@@ -274,7 +274,7 @@ export function OrderDetailPage(props) {
                 <div className="font-bold text-primary">{NumberPipe(order.amount, true)}</div>
               </div>
               <div className="p-2 sticky bottom-0 w-full bg-white">
-                {order.status === "COMPLETED" && (
+                {order.status === "COMPLETED" && !order.commented && (
                   <Button
                     text="Bình luận đơn hàng này"
                     primary
@@ -287,7 +287,7 @@ export function OrderDetailPage(props) {
                 )}
                 {order.status !== "PENDING" &&
                   order.status !== "DELIVERING" &&
-                  order.status !== "COMFIRMED" && (
+                  order.status !== "CONFIRMED" && (
                     <Button
                       text="Đặt lại"
                       outline
@@ -391,7 +391,7 @@ export function OrderDetailPage(props) {
                     ))}
                   </div>
                   <RatingOrder
-                    className="p-2 my-2 border rounded-full"
+                    className="p-2 my-2 "
                     voted={rating}
                     onChange={(val) => {
                       setRating(val);

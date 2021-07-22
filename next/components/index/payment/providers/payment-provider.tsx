@@ -36,7 +36,7 @@ export function PaymentProvider(props) {
   });
 
   const [vouchers, setVouchers] = useState<ShopVoucher[]>();
-  const { branchSelecting, customer, locationCustomer, shopCode } = useShopContext();
+  const { branchSelecting, customer, locationCustomer, shopCode, setCustomer } = useShopContext();
   const { cartProducts, reOrderInput, clearCartProduct } = useCartContext();
   const [orderInput, setOrderInput] = useState<OrderInput>();
   const [orderCode, setOrderCode] = useState("");
@@ -94,15 +94,14 @@ export function PaymentProvider(props) {
         .catch((err) => toast.error("Đặt hàng thất bại"));
     }
   };
-  // useEffect(() => {
-  //   if (orderCode) {
-  //     UserService.userGetMe().then((res) => console.log(res));
-  //   }
-  // }, [orderCode]);
+  useEffect(() => {
+    if (orderCode) {
+      CustomerService.getCustomer().then((res) => setCustomer(cloneDeep(res)));
+    }
+  }, [orderCode]);
   useEffect(() => {
     if (reOrderInput) {
       console.log(reOrderInput);
-
       setOrderInput(cloneDeep(reOrderInput));
     }
   }, [reOrderInput]);
@@ -112,10 +111,9 @@ export function PaymentProvider(props) {
       generateDraftOrder();
     }
   }, [orderInput]);
-
-  useEffect(() => {
-    if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
-  }, [branchSelecting]);
+  // useEffect(() => {
+  //   if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
+  // }, [branchSelecting]);
   useEffect(() => {
     let branid = "";
     if (branchSelecting) {
@@ -126,6 +124,10 @@ export function PaymentProvider(props) {
     if (locationCustomer) {
       lg = locationCustomer.longitude;
       lt = locationCustomer.latitude;
+    }
+    if (customer && customer.longitude && customer.latitude) {
+      lg = customer.longitude;
+      lt = customer.latitude;
     }
     setOrderInput({
       buyerName: customer.name || "",
@@ -147,9 +149,6 @@ export function PaymentProvider(props) {
     });
   }, [branchSelecting || customer || locationCustomer]);
   useEffect(() => {
-    if (cartProducts && cartProducts.length == 0) {
-      router.replace(`/${shopCode}`);
-    }
     ShopVoucherService.getAll({
       query: { order: { createdAt: -1 }, filter: { isPrivate: false, isActive: true } },
       fragment: ShopVoucherService.fullFragment,

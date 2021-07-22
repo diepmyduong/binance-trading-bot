@@ -6,7 +6,7 @@ export interface ShopVoucher extends BaseModel {
   code: string;
   description: string;
   isActive: boolean;
-  type: "DISCOUNT_BILL" | "DISCOUNT_ITEM" | "OFFER_ITEM" | "SHIP_FEE";
+  type: "DISCOUNT_BILL" | "DISCOUNT_ITEM" | "OFFER_ITEM" | "SHIP_FEE" | "SAME_PRICE";
   issueNumber: number;
   issueByDate: boolean;
   useLimit: number;
@@ -26,6 +26,7 @@ export interface ShopVoucher extends BaseModel {
   isPrivate: boolean;
   image: string;
   content: string;
+  samePrice: boolean;
 }
 export interface OfferItem {
   productId: string;
@@ -105,6 +106,7 @@ export class ShopVoucherRepository extends CrudRepository<ShopVoucher> {
     isPrivate: Boolean
     image: String
     content: String
+    samePrice: Float
   `);
 }
 export const ShopVoucherService = new ShopVoucherRepository();
@@ -113,6 +115,7 @@ export const SHOP_VOUCHER_TYPES: Option[] = [
   { value: "DISCOUNT_BILL", label: "Giảm giá đơn hàng", color: "danger" },
   { value: "DISCOUNT_ITEM", label: "Giảm giá sản phẩm", color: "orange" },
   { value: "OFFER_ITEM", label: "Tặng sản phẩm", color: "info" },
+  { value: "SAME_PRICE", label: "Đồng giá", color: "cyan" },
   { value: "SHIP_FEE", label: "Giảm phí giao hàng", color: "success" },
 ];
 

@@ -21,139 +21,155 @@ import { PromotionDetailDialog } from "../promotion/components/promotion-detail.
 import { usePaymentContext } from "./providers/payment-provider";
 import { SuccessDialog } from "./components/success-dialog";
 import { Spinner } from "../../shared/utilities/spinner";
+import { PromotionList } from "./components/promotion-list";
+import { PromotionProvider } from "../promotion/provider/promotion-provider";
 // SwiperCore.use([Pagination]);
 SwiperCore.use([Navigation]);
 export function PaymentPage() {
   const { cartProducts, totalFood, totalMoney } = useCartContext();
-  const { branchSelecting, shopBranchs, setBranchSelecting } = useShopContext();
+  const { branchSelecting, shopBranchs, setBranchSelecting, shopCode, customer } = useShopContext();
   const { vouchers, orderInput, setOrderInput, draftOrder: order, orderCode } = usePaymentContext();
   const [voucherSelected, setVoucherSelected] = useState<ShopVoucher>(null);
   const [openDialogSelectBranch, setopenDialogSelectBranch] = useState(false);
-
+  const toast = useToast();
+  useEffect(() => {
+    console.log(shopBranchs);
+    if (branchSelecting === null) {
+      setopenDialogSelectBranch(true);
+      toast.error("Vui lòng chọn chi nhánh giao hàng");
+    }
+  }, []);
   return (
     <>
-      {orderInput && branchSelecting ? (
+      {orderInput && cartProducts && customer ? (
         <>
-          <div className="text-gray-700 bg-gray-100">
-            <InforPayment />
-            <div className="mt-1 bg-white">
-              <div className="flex items-center justify-between">
-                <div className="font-semibold px-4 py-2">
-                  {branchSelecting ? branchSelecting.name : "Chưa chọn chi nhánh"}
+          {cartProducts.length > 0 ? (
+            <div className="text-gray-700 bg-gray-100">
+              <InforPayment />
+              <div className="mt-1 bg-white">
+                <div className="flex items-center justify-between">
+                  <div className="font-semibold px-4 py-2">
+                    {branchSelecting ? branchSelecting.name : "Chưa chọn chi nhánh"}
+                  </div>
+                  <Button
+                    textPrimary
+                    text="Đổi chi nhánh"
+                    small
+                    onClick={() => setopenDialogSelectBranch(true)}
+                  />
                 </div>
-                <Button
-                  textPrimary
-                  text="Đổi chi nhánh"
-                  small
-                  onClick={() => setopenDialogSelectBranch(true)}
-                />
-              </div>
-              <div className="">
-                {cartProducts.map((cartProduct, index) => {
-                  const last = cartProducts.length - 1 == index;
-                  return (
-                    <div
-                      className={`flex px-4 items-start border-gray-300 py-3 ${
-                        !last && "border-b"
-                      }`}
-                      key={index}
-                    >
-                      <div className="font-bold text-primary flex items-center">
-                        <div className="min-w-4 text-center">{cartProduct.qty}</div>
-                        <div className="px-1">X</div>
-                      </div>
-                      <div className="flex-1 flex flex-col text-gray-700">
-                        <div className="font-semibold">{cartProduct.product.name}</div>
-                        {!!cartProduct.product.selectedToppings?.length && (
-                          <div>
-                            {cartProduct.product.selectedToppings
-                              .map((topping) => topping.optionName)
-                              .join(", ")}
-                          </div>
-                        )}
-                        {cartProduct.note && <div>Ghi chú: {cartProduct.note}</div>}
-                      </div>
-                      <div className="font-bold">{NumberPipe(cartProduct.amount, true)}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <InputNote />
-            <div className="px-4 py-4 mt-1 bg-white ">
-              <div className="flex justify-between items-center">
                 <div className="">
-                  Tạm tính: <span className="font-bold">{totalFood} món</span>
+                  {cartProducts.map((cartProduct, index) => {
+                    const last = cartProducts.length - 1 == index;
+                    return (
+                      <div
+                        className={`flex px-4 items-start border-gray-300 py-3 ${
+                          !last && "border-b"
+                        }`}
+                        key={index}
+                      >
+                        <div className="font-bold text-primary flex items-center">
+                          <div className="min-w-4 text-center">{cartProduct.qty}</div>
+                          <div className="px-1">X</div>
+                        </div>
+                        <div className="flex-1 flex flex-col text-gray-700">
+                          <div className="font-semibold">{cartProduct.product.name}</div>
+                          {!!cartProduct.product.selectedToppings?.length && (
+                            <div>
+                              {cartProduct.product.selectedToppings
+                                .map((topping) => topping.optionName)
+                                .join(", ")}
+                            </div>
+                          )}
+                          {cartProduct.note && <div>Ghi chú: {cartProduct.note}</div>}
+                        </div>
+                        <div className="font-bold">{NumberPipe(cartProduct.amount, true)}</div>
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className="">{NumberPipe(totalMoney)}đ</div>
               </div>
-              <div className="flex justify-between items-center">
-                <div className="">
-                  Phí áp dụng:{" "}
-                  <span className="font-bold">
-                    {order.order?.shipDistance ? `${order?.order?.shipDistance} km` : ""}
-                  </span>
+              <InputNote />
+              <div className="px-4 py-4 mt-1 bg-white ">
+                <div className="flex justify-between items-center">
+                  <div className="">
+                    Tạm tính: <span className="font-bold">{totalFood} món</span>
+                  </div>
+                  <div className="">{NumberPipe(totalMoney)}đ</div>
                 </div>
-                <div className="">{NumberPipe(order?.order?.shipfee)}đ</div>
-              </div>
-              <div className="flex justify-between items-center">
-                <div className="">Giảm giá:</div>
-                <div className="text-danger">
-                  {order.order?.discount > 0
-                    ? NumberPipe(-order?.order?.discount, true)
-                    : NumberPipe(0, true)}
+                <div className="flex justify-between items-center">
+                  <div className="">
+                    Phí áp dụng:{" "}
+                    <span className="font-bold">
+                      {order.order?.shipDistance ? `${order?.order?.shipDistance} km` : ""}
+                    </span>
+                  </div>
+                  <div className="">{NumberPipe(order?.order?.shipfee)}đ</div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="">Giảm giá:</div>
+                  <div className="text-danger">
+                    {order.order?.discount > 0
+                      ? NumberPipe(-order?.order?.discount, true)
+                      : NumberPipe(0, true)}
+                  </div>
                 </div>
               </div>
+              {vouchers && vouchers.length > 0 ? (
+                <Swiper
+                  spaceBetween={10}
+                  freeMode={true}
+                  grabCursor
+                  slidesPerView={"auto"}
+                  className="w-auto p-4"
+                  navigation
+                  // className="main-container overflow-visible"
+                >
+                  {vouchers.map((item: ShopVoucher, index) => {
+                    return (
+                      <SwiperSlide key={index} className="w-2/3">
+                        <TicketVoucher
+                          voucher={item}
+                          showDetail={(val) => setVoucherSelected(val)}
+                          onClick={(val) => {
+                            setOrderInput({ ...orderInput, promotionCode: val.code });
+                          }}
+                        />
+                      </SwiperSlide>
+                    );
+                  })}
+                </Swiper>
+              ) : (
+                ""
+              )}
+              <div className="h-24"></div>
+              <ButtonPayment />
             </div>
-            {vouchers && vouchers.length > 0 ? (
-              <Swiper
-                spaceBetween={10}
-                freeMode={true}
-                grabCursor
-                slidesPerView={"auto"}
-                className="w-auto p-4"
-                navigation
-                // className="main-container overflow-visible"
-              >
-                {vouchers.map((item: ShopVoucher, index) => {
-                  return (
-                    <SwiperSlide key={index} className="w-2/3">
-                      <TicketVoucher
-                        voucher={item}
-                        showDetail={(val) => setVoucherSelected(val)}
-                        onClick={(val) => {
-                          setOrderInput({ ...orderInput, promotionCode: val.code });
-                        }}
-                      />
-                    </SwiperSlide>
-                  );
-                })}
-              </Swiper>
-            ) : (
-              ""
-            )}
-            <div className="h-24"></div>
-            <ButtonPayment />
-          </div>
+          ) : (
+            <div className="min-h-screen flex flex-col w-full items-center">
+              <div className="pt-20">Chưa có sản phẩm trong giỏ hàng</div>
+              <Button text="Về trang chủ" primary className="bg-gradient" href={`/${shopCode}`} />
+            </div>
+          )}
           <PromotionDetailDialog
             promotion={voucherSelected}
             isOpen={voucherSelected ? true : false}
             onClose={() => setVoucherSelected(null)}
           />
           {/* <SuccessDialog/> */}
-          {shopBranchs && (
-            <BranchsDialog
-              shopBranchs={shopBranchs}
-              onClose={() => setopenDialogSelectBranch(false)}
-              isOpen={openDialogSelectBranch}
-              onSelect={(branch) => {
-                setBranchSelecting(branch);
-              }}
-            />
-          )}
         </>
       ) : (
         <Spinner />
+      )}
+      {shopBranchs && (
+        <BranchsDialog
+          shopBranchs={shopBranchs}
+          onClose={() => setopenDialogSelectBranch(false)}
+          isOpen={openDialogSelectBranch}
+          onSelect={(branch) => {
+            setBranchSelecting(branch);
+          }}
+        />
       )}
       <SuccessDialog isOpen={orderCode ? true : false} code={orderCode} />
     </>
@@ -169,6 +185,7 @@ const ButtonPayment = (props: ButtonPaymentProps) => {
     draftOrder,
   } = usePaymentContext();
   const toast = useToast();
+  const [isOpenListPromotion, setIsOpenListPromotion] = useState(false);
   function validData() {
     if (!orderInput.shopBranchId) {
       toast.error("Chưa chọn chi nhánh");
@@ -221,7 +238,13 @@ const ButtonPayment = (props: ButtonPaymentProps) => {
             />
           </div>
         ) : (
-          <Button text="Mã khuyến mãi" textPrimary className="px-0" small />
+          <Button
+            text="Mã khuyến mãi"
+            onClick={() => setIsOpenListPromotion(true)}
+            textPrimary
+            className="px-0"
+            small
+          />
         )}
       </div>
       <div className="w-full py-2 px-4">
@@ -230,17 +253,20 @@ const ButtonPayment = (props: ButtonPaymentProps) => {
           text={order.order ? `Đặt hàng ${NumberPipe(order?.order?.amount)}đ` : "Đặt hàng"}
           primary
           className="w-full bg-gradient h-12"
-          onClick={async () => {
+          onClick={() => {
             if (validData()) {
               if (draftOrder.invalid) {
                 toast.error(draftOrder.invalidReason || "Đã xảy ra lỗi");
               } else {
-                await generateOrder();
+                generateOrder();
               }
             }
           }}
         />
       </div>
+      <PromotionProvider>
+        <PromotionList isOpen={isOpenListPromotion} onClose={() => setIsOpenListPromotion(false)} />
+      </PromotionProvider>
     </div>
   );
 };

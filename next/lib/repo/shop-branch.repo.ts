@@ -11,7 +11,6 @@ export interface ShopBranch extends BaseModel {
   province?: string;
   district?: string;
   ward?: string;
-  activated?: boolean;
   location?: any;
   coverImage: string;
   isOpen: boolean;
@@ -25,10 +24,10 @@ export interface ShopBranch extends BaseModel {
   operatingTimes?: OperatingTime[];
   distance: number;
 }
-interface OperatingTime {
+export interface OperatingTime {
   day: number;
-  timeFrames: string[];
-  status: string;
+  timeFrames: string[][];
+  status: "OPEN" | "CLOSED" | "TIME_FRAME";
 }
 export class ShopBranchRepository extends CrudRepository<ShopBranch> {
   apiName: string = "ShopBranch";
@@ -46,7 +45,6 @@ export class ShopBranchRepository extends CrudRepository<ShopBranch> {
     province: String
     district: String
     ward: String
-    activated: Boolean
     coverImage: String
     isOpen: Boolean
     shipPreparationTime: String
@@ -78,7 +76,6 @@ export class ShopBranchRepository extends CrudRepository<ShopBranch> {
     province: String
     district: String
     ward: String
-    activated: Boolean
     location: Mixed
     coverImage: String
     isOpen: Boolean
@@ -106,3 +103,9 @@ export class ShopBranchRepository extends CrudRepository<ShopBranch> {
 }
 
 export const ShopBranchService = new ShopBranchRepository();
+
+export const OPERATING_TIME_STATUS: Option[] = [
+  { value: "OPEN", label: "Mở 24h" },
+  { value: "CLOSED", label: "Đóng cửa" },
+  { value: "TIME_FRAME", label: "Mở theo giờ" },
+];

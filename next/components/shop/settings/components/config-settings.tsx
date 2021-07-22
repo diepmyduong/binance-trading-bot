@@ -31,6 +31,7 @@ import { Select } from "../../../shared/utilities/form/select";
 import { ProductService } from "../../../../lib/repo/product.repo";
 import { Accordion } from "../../../shared/utilities/accordion/accordion";
 import { NumberPipe } from "../../../../lib/pipes/number";
+import { PRODUCT_LABEL_COLORS } from "../../../../lib/repo/product-label.repo";
 
 export function ConfigSettings() {
   const { shopConfig, updateShopConfig } = useShopLayoutContext();
@@ -80,7 +81,25 @@ export function ConfigSettings() {
   return (
     <>
       <Form initialData={shopConfig} className="max-w-screen-sm animate-emerge" onSubmit={onSubmit}>
-        <div className="text-gray-400 font-semibold mt-4 mb-4 pl-1 text-lg">Đánh giá của quán</div>
+        <div className="text-gray-400 font-semibold mt-4 mb-4 pl-1 text-lg">Màu chủ đạo</div>
+        <div className="flex gap-x-5 w-full">
+          <Field className="flex-1" label="Màu chính" name="primaryColor">
+            <Select hasColor clearable placeholder="Mặc định" options={PRODUCT_LABEL_COLORS} />
+          </Field>
+          <Field className="flex-1" label="Màu phụ" name="accentColor">
+            <Select hasColor clearable placeholder="Mặc định" options={PRODUCT_LABEL_COLORS} />
+          </Field>
+        </div>
+        <Label text="Tin nhắn SMS"/>
+        <div className="flex gap-x-5 w-full">
+          <Field className="flex-1" name="smsOrder">
+            <Switch placeholder="Gửi SMS đơn hàng"/>
+          </Field>
+          <Field className="flex-1" name="smsOtp">
+            <Switch placeholder="Gửi SMS OTP"/>
+          </Field>
+        </div>
+        <div className="text-gray-400 font-semibold mt-1 mb-4 pl-1 text-lg">Đánh giá của quán</div>
         <FormConsumer>
           {({ data }) => (
             <Field name="rating" label="Đánh giá" constraints={{ min: 0, max: 5 }} cols={8}>

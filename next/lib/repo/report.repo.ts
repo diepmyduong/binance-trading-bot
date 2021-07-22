@@ -22,6 +22,17 @@ export class ReportRepository extends CrudRepository<any> {
       })
       .then((res) => res.data["reportShopProduct"]);
   }
+  async reportShopVoucher(fromDate: string, toDate: string) {
+    return await this.apollo
+      .query({
+        query: this
+          .gql`query {  reportShopVoucher(filter:{fromDate:"${fromDate}", toDate: "${toDate}"})
+           { 
+             top10{ voucherId qty voucher{code description}}
+            }}`,
+      })
+      .then((res) => res.data["reportShopVoucher"]);
+  }
 
   async reportShopOrder(fromDate: string, toDate: string, shopBrandId?: string) {
     return await this.apollo

@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useShopContext } from "../../../../lib/providers/shop-provider";
 import { useToast } from "../../../../lib/providers/toast-provider";
 import { ReportService } from "../../../../lib/repo/report.repo";
+import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
 
 type shopOrderType = {
   pending: number;
@@ -25,6 +26,11 @@ export const DashboardContext = createContext<
       productId: string;
       qty: number;
       productName: string;
+    }[];
+    top10Vouchers: {
+      voucherId: string;
+      qty: number;
+      voucher: ShopVoucher;
     }[];
     shopOrderReport: shopOrderType;
     shopOrderReportToday: shopOrderType;
@@ -69,6 +75,13 @@ export function DashboardProvider(props) {
       productName: string;
     }[]
   >([]);
+  const [top10Vouchers, setTop10Vouchers] = useState<
+    {
+      voucherId: string;
+      qty: number;
+      voucher: ShopVoucher;
+    }[]
+  >([]);
   const [shopOrderReport, setShopOrderReport] = useState<shopOrderType>({
     pending: 0,
     confirmed: 0,
@@ -104,10 +117,7 @@ export function DashboardProvider(props) {
     }
     return { fromDate: firstDay, toDate: lastDay };
   };
-  useEffect(() => {
-    let today = new Date().toISOString();
-    ReportService.reportShopOrder(today, today).then((res) => setShopOrderReportToday(res));
-  }, []);
+
   const loadReportChart = (fromDate: string, toDate: string) => {
     return ReportService.reportShopOrderKline(fromDate, toDate).then((res) =>
       setDataChart({ ...res })
@@ -119,16 +129,30 @@ export function DashboardProvider(props) {
   const loadReportShopOrder = (fromDate: string, toDate: string) => {
     return ReportService.reportShopOrder(fromDate, toDate).then((res) => setShopOrderReport(res));
   };
-  const loadReportProduct = (fromDate: string, toDate: string) => {
-    return ReportService.reportShopProduct(fromDate, toDate).then((res) =>
-      setTop10Products(res.top10)
+
+  const loadReportVoucher = (fromDate: string, toDate: string) => {
+    return ReportService.reportShopVoucher(fromDate, toDate).then((res) =>
+      setTop10Vouchers([...cloneDeep(res.top10)])
     );
   };
+
+  const loadReportProduct = (fromDate: string, toDate: string) => {
+    return ReportService.reportShopProduct(fromDate, toDate).then((res) =>
+      setTop10Products(cloneDeep(res.top10))
+    );
+  };
+  useEffect(() => {
+    let today = new Date().toISOString();
+    let date = getDate("Tháng này");
+    ReportService.reportShopOrder(today, today).then((res) => setShopOrderReportToday(res));
+    loadReportVoucher(date.fromDate, date.toDate);
+  }, []);
   return (
     <DashboardContext.Provider
       value={{
         loadReportProduct,
         top10Products,
+        top10Vouchers,
         getDate,
         loadReportShopOrder,
         shopCustomerReport,

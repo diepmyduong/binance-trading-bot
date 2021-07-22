@@ -24,6 +24,10 @@ const schema = gql`
     gender: String,
     latitude: Float,
     longitude: Float,
+    "Full địa chỉ"
+    fullAddress: String
+    "Ghi chú địa chỉ"
+    addressNote: String
   }
 
   type Customer {

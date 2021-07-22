@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRef } from "react";
 import { Dropdown } from "../../../components/shared/utilities/popover/dropdown";
 import { useRouter } from "next/router";
-import { FaHistory, FaPercent, FaSignInAlt, FaUserAlt } from "react-icons/fa";
+import { FaBell, FaHistory, FaPercent, FaSignInAlt, FaUserAlt } from "react-icons/fa";
 import { useShopContext } from "../../../lib/providers/shop-provider";
 import { Button } from "../../../components/shared/utilities/form/button";
 import { useAuth } from "../../../lib/providers/auth-provider";
@@ -72,17 +72,30 @@ export function Header({ code, ...props }: HeaderPropsType) {
               onClick={() => setIsOpen(true)}
             />
           )}
-          <button
-            className={`btn text-primary bg-primary-light rounded-full flex items-center px-2 ${
-              !customer ? "hidden" : ""
-            }`}
-            ref={userRef}
-          >
-            {/* <Img avatar src="/assets/default/avatar.png" className="w-10" /> */}
-            <i className="text-18 pr-1">
-              <FaUserAlt />
-            </i>
-          </button>
+          <div className="flex items-center justify-center">
+            <button
+              className={`btn text-primary bg-primary-light rounded-full mr-2 flex items-center px-2 ${
+                !customer ? "hidden" : ""
+              }`}
+              onClick={() => router.push(`/${shopCode}/notification`)}
+            >
+              {/* <Img avatar src="/assets/default/avatar.png" className="w-10" /> */}
+              <i className="text-18 pr-1">
+                <FaBell />
+              </i>
+            </button>
+            <button
+              className={`btn text-primary bg-primary-light rounded-full flex items-center px-2 ${
+                !customer ? "hidden" : ""
+              }`}
+              ref={userRef}
+            >
+              {/* <Img avatar src="/assets/default/avatar.png" className="w-10" /> */}
+              <i className="text-18 pr-1">
+                <FaUserAlt />
+              </i>
+            </button>
+          </div>
           <Dropdown reference={userRef}>
             {menus.map((item, index) => {
               return (

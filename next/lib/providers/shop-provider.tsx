@@ -116,7 +116,7 @@ export function ShopProvider(props) {
     let brs = await ShopBranchService.getAll();
     if (brs && !brsnav) {
       setShopBranch(cloneDeep(brs.data));
-      let active = brs.data.findIndex((item) => item.activated && item.isOpen);
+      let active = brs.data.findIndex((item) => item.isOpen);
       setBranchSelecting(brs.data[active]);
     }
     let res = await ShopService.getShopData();

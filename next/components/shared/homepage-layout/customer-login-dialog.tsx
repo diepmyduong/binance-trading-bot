@@ -23,15 +23,37 @@ export function CustomerLoginDialog({ otp = false, ...props }: Propstype) {
     >
       <div className="flex flex-col items-center w-full pt-4">
         <h3 className="text-32 font-bold text-accent">Đăng nhập</h3>
+        {otp && awaitOtp && <p>Thời gian còn lại 60 giây</p>}
         <Field label="Số điện thoại" name="phoneUser" className="mt-4 w-full">
           <Input type="tel"></Input>
         </Field>
         {!otp || (otp && awaitOtp) ? (
           <Button text="Đăng nhập" className="w-full bg-gradient" submit primary />
         ) : (
-          <Button text="Nhận OTP" className="w-full bg-gradient" primary />
+          <Button
+            text="Nhận OTP"
+            className="w-full bg-gradient"
+            primary
+            onClick={() => setAwaitOtp(true)}
+          />
         )}
       </div>
     </Form>
+  );
+}
+function Login() {
+  return (
+    <div>
+      <Field label="Số điện thoại" name="phoneUser" className="mt-4 w-full">
+        <Input type="tel"></Input>
+      </Field>
+    </div>
+  );
+}
+function LoginOTP() {
+  return (
+    <Field label="Số điện thoại" name="phoneUser" className="mt-4 w-full">
+      <Input type="tel"></Input>
+    </Field>
   );
 }

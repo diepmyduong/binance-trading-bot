@@ -16,7 +16,7 @@ import { Rating } from "../../../shared/homepage-layout/rating";
 interface Propstype extends DialogPropsType {}
 export function CartDialog(props: Propstype) {
   const router = useRouter();
-  const { customer, customerLogin, shopCode } = useShopContext();
+  const { customer, customerLogin, shopCode, shop } = useShopContext();
   const [showLogin, setShowLogin] = useState(false);
   const { cartProducts, totalMoney, changeProductQuantity, saleUpProducts } = useCartContext();
   const { isMobile } = useDevice();
@@ -84,6 +84,7 @@ export function CartDialog(props: Propstype) {
       </Dialog.Footer>
       <CustomerLoginDialog
         isOpen={showLogin}
+        otp={shop.config.smsOtp}
         onClose={() => setShowLogin(false)}
         onConfirm={(val) => {
           if (val) {

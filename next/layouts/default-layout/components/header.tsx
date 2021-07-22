@@ -101,6 +101,7 @@ export function Header({ code, ...props }: HeaderPropsType) {
         </div>
         <CustomerLoginDialog
           isOpen={isOpen}
+          otp={true}
           onClose={() => setIsOpen(false)}
           onConfirm={(val) => {
             if (val) {

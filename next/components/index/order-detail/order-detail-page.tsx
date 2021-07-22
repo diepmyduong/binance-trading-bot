@@ -14,7 +14,7 @@ import { useToast } from "../../../lib/providers/toast-provider";
 import { HiOutlinePhone } from "react-icons/hi";
 import { RatingOrder } from "./components/rating-order";
 import { OrderLog } from "../../../lib/repo/order.repo";
-import { FaCheckCircle, FaDotCircle } from "react-icons/fa";
+import { FaCheckCircle, FaDotCircle, FaTimesCircle } from "react-icons/fa";
 
 interface ItemStatusOrderProps {
   status?: OrderLog;
@@ -31,7 +31,7 @@ function ItemStatusOrder({ status, text, actived, ...props }: ItemStatusOrderPro
             text == "Đã hủy" || text == "Thất bại" ? "text-danger" : "text-success"
           }`}
         >
-          <FaCheckCircle />
+          {text == "Đã hủy" || text == "Thất bại" ? <FaTimesCircle /> : <FaCheckCircle />}
         </i>
       ) : (
         <i className="text-xl text-gray-300">

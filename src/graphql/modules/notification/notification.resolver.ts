@@ -14,7 +14,7 @@ import { notificationService } from "./notification.service";
 
 const Query = {
   getAllNotification: async (root: any, args: any, context: Context) => {
-    context.auth(ROLES.ADMIN_EDITOR_MEMBER_STAFF);
+    context.auth(ROLES.MEMBER_STAFF_CUSTOMER);
     if (context.isMember()) {
       _.set(args, "q.filter.target", NotificationTarget.MEMBER);
       _.set(args, "q.filter.memberId", context.id);
@@ -23,10 +23,14 @@ const Query = {
       _.set(args, "q.filter.target", NotificationTarget.STAFF);
       _.set(args, "q.filter.staffId", context.id);
     }
+    if (context.isCustomer()) {
+      _.set(args, "q.filter.target", NotificationTarget.CUSTOMER);
+      _.set(args, "q.filter.customerId", context.id);
+    }
     return notificationService.fetch(args.q);
   },
   getOneNotification: async (root: any, args: any, context: Context) => {
-    context.auth(ROLES.ADMIN_EDITOR_MEMBER_STAFF);
+    context.auth(ROLES.MEMBER_STAFF_CUSTOMER);
     const { id } = args;
     return await notificationService.findOne({ _id: id });
   },

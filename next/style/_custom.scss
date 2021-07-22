@@ -16,3 +16,12 @@
   right: initial !important;
   max-width: 32rem !important;
 }
+.datepicker-header {
+  @apply text-primary #{!important};
+}
+.datepicker-navbar-btn {
+  @apply text-primary #{!important};
+}
+.datepicker-wheel {
+  @apply border-primary #{!important};
+}

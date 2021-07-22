@@ -53,7 +53,6 @@ export function PaymentProvider(props) {
       paymentMethod: "COD",
     });
   };
-  const router = useRouter();
   const toast = useToast();
   const getItemsOrderInput = () => {
     let itemProduct: OrderItemInput[] = [];
@@ -115,38 +114,43 @@ export function PaymentProvider(props) {
   //   if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
   // }, [branchSelecting]);
   useEffect(() => {
-    let branid = "";
-    if (branchSelecting) {
-      branid = branchSelecting.id;
-    }
-    let lg = 106.725484;
-    let lt = 10.72883;
-    if (locationCustomer) {
-      lg = locationCustomer.longitude;
-      lt = locationCustomer.latitude;
-    }
-    if (customer && customer.longitude && customer.latitude) {
-      lg = customer.longitude;
-      lt = customer.latitude;
-    }
-    setOrderInput({
-      buyerName: customer.name || "",
-      buyerPhone: customer.phone,
+    let newOrderInput = {
+      buyerName: "",
+      buyerPhone: "",
       pickupMethod: "DELIVERY",
-      shopBranchId: branid,
+      shopBranchId: "",
       pickupTime: null,
       buyerAddress: "",
       buyerProvinceId: "70",
       buyerDistrictId: "",
       buyerWardId: "",
-      buyerFullAddress: customer.fullAddress || "",
+      buyerFullAddress: "",
       buyerAddressNote: "",
-      latitude: lt,
-      longitude: lg,
+      latitude: 106.725484,
+      longitude: 10.72883,
       paymentMethod: "COD",
       note: "",
       promotionCode: "",
-    });
+    };
+    if (branchSelecting) {
+      newOrderInput.shopBranchId = branchSelecting.id;
+    }
+    if (customer) {
+      console.log(customer);
+
+      if (customer.longitude && customer.latitude) {
+        newOrderInput.longitude = customer.longitude;
+        newOrderInput.latitude = customer.latitude;
+      }
+      newOrderInput.buyerName = customer.name || "";
+      newOrderInput.buyerPhone = customer.phone || "";
+      newOrderInput.buyerFullAddress = customer.fullAddress || "";
+    }
+    if (locationCustomer) {
+      newOrderInput.longitude = locationCustomer.longitude;
+      newOrderInput.latitude = locationCustomer.latitude;
+    }
+    setOrderInput(cloneDeep(newOrderInput));
   }, [branchSelecting || customer || locationCustomer]);
   useEffect(() => {
     ShopVoucherService.getAll({

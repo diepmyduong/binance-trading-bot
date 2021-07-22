@@ -66,7 +66,7 @@ export function Header({ code, ...props }: HeaderPropsType) {
           {!customer ? (
             <Button
               text="Đăng nhâp"
-              className="whitespace-nowrap"
+              className="whitespace-nowrap bg-gradient"
               primary
               small
               onClick={() => setIsOpen(true)}

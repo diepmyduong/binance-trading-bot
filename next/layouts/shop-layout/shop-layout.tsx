@@ -32,7 +32,7 @@ export function ShopLayout({ ...props }: PropsType) {
               router.push("/shop/orders");
             },
             position: "top-right",
-            delay: 10000,
+            delay: 5000,
           });
           console.log("Message received. ", payload);
         });
@@ -51,7 +51,7 @@ export function ShopLayout({ ...props }: PropsType) {
               </div>
             ) : (
               <>
-                <DefaultHead />
+                <DefaultHead shopCode={member.code} shopLogo={member.shopLogo} />
                 {/* <Header /> */}
                 <div className="flex w-full relative min-h-screen">
                   <Sidebar />

@@ -17,7 +17,10 @@ export function PromotionDetailDialog(props: Propstype) {
       slideFromBottom="all"
     >
       <Dialog.Body>
-        <div style={{ minHeight: `calc(70vh)` }}>
+        <div
+          className=" v-scrollbar"
+          style={{ maxHeight: `calc(96vh - 150px)`, minHeight: `calc(70vh)` }}
+        >
           {props.promotion ? <PromotionDetail promotion={props.promotion} /> : <Spinner />}
         </div>
       </Dialog.Body>

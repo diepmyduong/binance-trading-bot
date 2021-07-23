@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RiEyeLine } from "react-icons/ri";
 import {
   Order,
@@ -14,19 +14,45 @@ import { Field } from "../utilities/form/field";
 import { Select } from "../utilities/form/select";
 import { DataTable } from "../utilities/table/data-table";
 import format from "date-fns/format";
+import startOfDay from "date-fns/startOfDay";
+import endOfDay from "date-fns/endOfDay";
+import { DatePicker } from "../utilities/form/date";
 
 interface PropsType extends DialogPropsType {
   filter: any;
+  mode?: "driver" | "customer";
 }
-export function OrdersDialog({ filter, ...props }: PropsType) {
+export function OrdersDialog({ filter, mode = "customer", ...props }: PropsType) {
   const [orderId, setOrderId] = useState("");
+  const [startDate, setStartDate] = useState<Date>(null);
+  const [endDate, setEndDate] = useState<Date>(null);
+  const [dateFilter, setDateFilter] = useState<any>({});
+
+  useEffect(() => {
+    if (startDate || endDate) {
+      let temp = { createdAt: {} };
+      if (startDate) {
+        temp.createdAt["$gte"] = startOfDay(startDate);
+      }
+      if (endDate) {
+        temp.createdAt["$lte"] = endOfDay(endDate);
+      }
+      setDateFilter(temp);
+    } else {
+      setDateFilter({});
+    }
+  }, [startDate, endDate]);
 
   return (
     <Dialog width="1280px" {...props}>
       <Dialog.Body>
         {filter && (
           <>
-            <DataTable<Order> crudService={OrderService} order={{ createdAt: -1 }} filter={filter}>
+            <DataTable<Order>
+              crudService={OrderService}
+              order={{ createdAt: -1 }}
+              filter={{ ...filter, ...dateFilter }}
+            >
               <DataTable.Header>
                 <DataTable.Title />
                 <DataTable.Buttons>
@@ -44,36 +70,60 @@ export function OrdersDialog({ filter, ...props }: PropsType) {
               <DataTable.Toolbar>
                 <DataTable.Search className="h-12" />
                 <DataTable.Filter>
+                  {mode == "driver" && (
+                    <>
+                      <Field noError>
+                        <DatePicker
+                          className="h-12"
+                          placeholder="Lọc từ ngày"
+                          value={startDate}
+                          onChange={setStartDate}
+                        />
+                      </Field>
+                      <Field noError>
+                        <DatePicker
+                          className="h-12"
+                          placeholder="Lọc đến ngày"
+                          value={endDate}
+                          onChange={setEndDate}
+                        />
+                      </Field>
+                    </>
+                  )}
                   <Field name="shopBranchId" noError>
                     <Select
-                      className="h-12 inline-grid"
+                      className="h-12"
                       autosize
                       clearable
                       placeholder="Tất cả chi nhánh"
                       optionsPromise={() => ShopBranchService.getAllOptionsPromise()}
                     />
                   </Field>
-                  <Field name="pickupMethod" noError>
-                    <Select
-                      className="h-12 inline-grid"
-                      autosize
-                      clearable
-                      placeholder="Tất cả hình thức lấy hàng"
-                      options={PICKUP_METHODS}
-                    />
-                  </Field>
-                  <Field name="paymentMethod" noError>
-                    <Select
-                      className="h-12 inline-grid"
-                      autosize
-                      clearable
-                      placeholder="Tất cả hình thức thanh toán"
-                      options={PAYMENT_METHODS}
-                    />
-                  </Field>
+                  {mode == "customer" && (
+                    <>
+                      <Field name="pickupMethod" noError>
+                        <Select
+                          className="h-12"
+                          autosize
+                          clearable
+                          placeholder="Tất cả hình thức lấy hàng"
+                          options={PICKUP_METHODS}
+                        />
+                      </Field>
+                      <Field name="paymentMethod" noError>
+                        <Select
+                          className="h-12"
+                          autosize
+                          clearable
+                          placeholder="Tất cả hình thức thanh toán"
+                          options={PAYMENT_METHODS}
+                        />
+                      </Field>
+                    </>
+                  )}
                   <Field name="status" noError>
                     <Select
-                      className="h-12 inline-grid"
+                      className="h-12"
                       autosize
                       clearable
                       placeholder="Tất cả trạng thái"

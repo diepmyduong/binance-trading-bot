@@ -42,7 +42,7 @@ export function BannerPromtion(props: Propstype) {
               {
                 PRODUCT: (
                   <Link
-                    href={{ pathname: location.pathname, query: { productId: item.product?.code } }}
+                    href={{ pathname: location.pathname, query: { product: item.product?.code } }}
                     shallow
                   >
                     <a>

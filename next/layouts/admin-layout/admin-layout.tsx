@@ -31,7 +31,6 @@ export function AdminLayout({ ...props }: PropsType) {
         </div>
       ) : (
         <>
-          <DefaultHead />
           <Header />
           <div className="flex pt-14 w-full relative min-h-screen">
             <Sidebar />

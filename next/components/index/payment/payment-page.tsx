@@ -154,24 +154,25 @@ function DetailRow({ label, value, subfix, danger = false }) {
 
 function OrderSummary(props) {
   const { draftOrder } = usePaymentContext();
-  if (!draftOrder || !draftOrder.order) return <Spinner />;
+  const { totalFood, totalMoney } = useCartContext();
+  // if (!draftOrder || !draftOrder.order) return <Spinner />;
   return (
     <div className="px-4 py-4 mt-1 bg-white ">
       <DetailRow
         label="Tạm tính"
-        value={`${draftOrder.order.itemCount} món`}
-        subfix={`${NumberPipe(draftOrder.order.subtotal)}đ`}
+        value={`${draftOrder?.order?.itemCount || totalFood} món`}
+        subfix={`${NumberPipe(draftOrder?.order?.subtota || totalMoney)}đ`}
       />
       <DetailRow
         label="Phí áp dụng"
-        value={draftOrder.order.shipDistance ? `${draftOrder.order.shipDistance} km` : ""}
-        subfix={`${NumberPipe(draftOrder.order.shipfee)}đ`}
+        value={draftOrder?.order?.shipDistance ? `${draftOrder?.order?.shipDistance} km` : ""}
+        subfix={`${NumberPipe(draftOrder?.order?.shipfee || 0)}đ`}
       />
       <DetailRow
         label="Giảm giá"
         value=""
         subfix={
-          draftOrder.order.discount > 0
+          draftOrder && draftOrder.order && draftOrder.order.discount > 0
             ? NumberPipe(-draftOrder.order.discount, true)
             : NumberPipe(0, true)
         }

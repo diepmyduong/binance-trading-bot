@@ -27,8 +27,8 @@ export function CommentsDialog(props: Propstype) {
     >
       <Dialog.Body>
         <div
-          className={`flex flex-col text-sm sm:text-base ${isMobile ? "pb-12" : ""}`}
-          style={{ minHeight: `calc(100vh - 100px)` }}
+          className={`flex flex-col text-sm sm:text-base  v-scrollbar ${isMobile ? "pb-12" : ""}`}
+          style={{ maxHeight: `calc(96vh - 150px)`, minHeight: `calc(96vh - 350px)` }}
         >
           {comments ? (
             <>
@@ -44,7 +44,7 @@ export function CommentsDialog(props: Propstype) {
                   ))}
                 </>
               ) : (
-                <span>Chưa có bình luận</span>
+                <span className="px-4 py-5">Chưa có bình luận</span>
               )}
             </>
           ) : (

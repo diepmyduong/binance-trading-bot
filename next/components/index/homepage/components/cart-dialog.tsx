@@ -34,8 +34,8 @@ export function CartDialog(props: Propstype) {
     >
       <Dialog.Body>
         <div
-          className={`text-sm sm:text-base px-4 ${isMobile ? "pb-12" : ""}`}
-          style={{ minHeight: `calc(100vh - 350px)` }}
+          className={`text-sm sm:text-base v-scrollbar  px-4 ${isMobile ? "pb-12" : ""}`}
+          style={{ maxHeight: `calc(96vh - 150px)`, minHeight: `calc(96vh - 350px)` }}
         >
           {cartProducts.map((cartProduct, index) => (
             <div key={index} className=" py-1.5 border-b ">
@@ -126,7 +126,7 @@ export function SaleUpProduct(props: SaleUpProductProps) {
           <SwiperSlide key={index} className="w-3/4">
             <Link
               key={index}
-              href={{ pathname: location.pathname, query: { productId: item.code } }}
+              href={{ pathname: location.pathname, query: { product: item.code } }}
               shallow
             >
               <a>

@@ -232,6 +232,8 @@ export function CartProvider(props) {
           },
         },
       }).then((res) => setSaleUpProducts(cloneDeep(res.data)));
+    } else {
+      setSaleUpProducts([]);
     }
   }, [cartProducts]);
 

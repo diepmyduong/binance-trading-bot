@@ -45,7 +45,7 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
               //   }, 200);
               // }
               clearInterval(scrollCheckInterval);
-            }, 200);
+            }, 100);
             break;
           }
         }
@@ -128,7 +128,7 @@ export function ShopCategory(props: ShopCategoryPropsType) {
           {props.list.map((item: Product, index: number) => (
             <Link
               key={index}
-              href={{ pathname: location.pathname, query: { productId: item.code } }}
+              href={{ pathname: location.pathname, query: { product: item.code } }}
               shallow
             >
               <a>

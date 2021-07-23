@@ -188,7 +188,7 @@ const Note = ({ onChange, ...props }: NoteProps) => {
           <Textarea placeholder="Nhập Lời nhắn của khách hàng" />
         </Field>
         <Form.Footer>
-          <Form.ButtonGroup />
+          <Form.ButtonGroup submitText="Xác nhận" />
         </Form.Footer>
       </Form>
     </div>

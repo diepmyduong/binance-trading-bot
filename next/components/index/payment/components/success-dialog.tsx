@@ -5,13 +5,17 @@ import { useRouter } from "next/router";
 import { Button } from "../../../shared/utilities/form/button";
 import { useShopContext } from "../../../../lib/providers/shop-provider";
 import { Spinner } from "../../../shared/utilities/spinner";
+import { usePaymentContext } from "../providers/payment-provider";
+import { useCartContext } from "../../../../lib/providers/cart-provider";
 interface Propstype extends DialogPropsType {
   code: string;
 }
 
 export function SuccessDialog({ code, ...props }: Propstype) {
   const { shopCode } = useShopContext();
-  const [sec, setSec] = useState(5);
+  const { clearCartProduct } = useCartContext();
+  const { orderInput, setOrderInput } = usePaymentContext();
+  const [sec, setSec] = useState(6);
   const router = useRouter();
   useEffect(() => {
     if (code !== "") {
@@ -20,6 +24,10 @@ export function SuccessDialog({ code, ...props }: Propstype) {
         secTime--;
         setSec(secTime);
         if (secTime === 1) {
+          localStorage.removeItem(shopCode + "cartProducts");
+          // orderInput = { ...orderInput, note: "", promotionCode: "" };
+          setOrderInput({ ...orderInput, note: "", promotionCode: "" });
+          clearCartProduct();
           router.replace(`/${shopCode}/order/${code}`);
         }
         if (secTime === 0) {

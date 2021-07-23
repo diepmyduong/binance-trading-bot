@@ -4,7 +4,7 @@ import { DefaultHead } from "./../default-head";
 export function NoneLayout({ ...props }: PropsType) {
   return (
     <>
-      <DefaultHead />
+      <DefaultHead shopCode="" shopLogo="" />
       <div className="flex flex-col w-full min-h-screen">{props.children}</div>
     </>
   );

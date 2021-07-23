@@ -140,8 +140,8 @@ export function PaymentProvider(props) {
       ...orderInput,
       buyerName: customer.name,
       buyerPhone: customer.phone,
-      buyerFullAddress: customer.fullAddress,
-      buyerAddressNote: customer.addressNote,
+      buyerFullAddress: customer.fullAddress || "",
+      buyerAddressNote: customer.addressNote || "",
       latitude: customer.latitude || locationCustomer.latitude,
       longitude: customer.longitude || locationCustomer.longitude,
     };

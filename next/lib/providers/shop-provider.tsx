@@ -131,8 +131,8 @@ export function ShopProvider(props) {
     }
   }
   function customerLogout() {
+    ClearCustomerToken(shopCode);
     localStorage.removeItem("phoneUser");
-    localStorage.removeItem("customer-token");
     setCustomer(null);
     if (router.pathname !== "/") {
       router.push(`/${shopCode}`);

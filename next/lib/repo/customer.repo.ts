@@ -131,11 +131,12 @@ export class CustomerRepository extends CrudRepository<Customer> {
     }: CustomerOrderStats
   `);
   async getCustomer() {
-    return await this.apollo
-      .query({
-        query: this.gql`query {  customerGetMe { ${this.fullFragment} }}`,
-      })
-      .then((res) => res.data["customerGetMe"] as Customer);
+    return await this.query({
+      query: `customerGetMe { ${this.fullFragment} }`,
+      options: {
+        fetchPolicy: "no-cache",
+      },
+    }).then((res) => res.data["g0"] as Customer);
   }
 }
 

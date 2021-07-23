@@ -13,38 +13,46 @@ import { ProductDetailProvider } from "../../shared/product-detail/provider/prod
 import { HomeProvider, HomeConsumer } from "./providers/homepage-provider";
 import { forceCheck } from "react-lazyload";
 
+function ShopHeader() {
+  return (
+    <div>
+      <ShopInfo />
+      <ShopCategories />
+    </div>
+  );
+}
+
+function CartButton() {
+  const { cartProducts, totalFood, totalMoney } = useCartContext();
+  const [showDialogCart, setShowDialogCart] = useState(false);
+  if (!cartProducts || !cartProducts.length) return <></>;
+  return (
+    <div>
+      <FloatingButton
+        totalFood={totalFood}
+        totalMoney={totalMoney}
+        onClick={() => setShowDialogCart(true)}
+      />
+      <CartDialog
+        isOpen={showDialogCart && !!cartProducts.length}
+        onClose={() => setShowDialogCart(false)}
+        slideFromBottom="all"
+      />
+    </div>
+  );
+}
+
 export function Homepage() {
   const { shop } = useShopContext();
   const router = useRouter();
   const { productId } = router.query;
-  const { cartProducts, totalFood, totalMoney } = useCartContext();
-  const [showDialogCart, setShowDialogCart] = useState(false);
-
+  console.log("shop home page", shop);
+  if (!shop) return <Spinner />;
   return (
     <HomeProvider>
       <div className={`z-0 relative bg-white min-h-screen text-gray-800`}>
-        {!shop ? (
-          <Spinner />
-        ) : (
-          <>
-            <ShopInfo />
-            <ShopCategories />
-          </>
-        )}
-        {!!cartProducts?.length && (
-          <>
-            <FloatingButton
-              totalFood={totalFood}
-              totalMoney={totalMoney}
-              onClick={() => setShowDialogCart(true)}
-            />
-            <CartDialog
-              isOpen={showDialogCart && !!cartProducts.length}
-              onClose={() => setShowDialogCart(false)}
-              slideFromBottom="all"
-            />
-          </>
-        )}
+        <ShopHeader></ShopHeader>
+        <CartButton></CartButton>
       </div>
       <ProductDetailProvider productCode={productId}>
         <ProductDetail

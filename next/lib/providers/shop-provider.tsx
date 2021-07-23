@@ -6,13 +6,15 @@ import {
   SetCustomerToken,
   ClearAnonymousToken,
   ClearCustomerToken,
+  GetAnonymousToken,
+  GetCustomerToken,
 } from "../graphql/auth.link";
 import cloneDeep from "lodash/cloneDeep";
 import { Category, CategoryService } from "../repo/category.repo";
 import { ShopBranchService, ShopBranch } from "../repo/shop-branch.repo";
 import { UserService } from "../repo/user.repo";
 import sortBy, { orderBy } from "lodash";
-import { Customer } from "../repo/customer.repo";
+import { Customer, CustomerService } from "../repo/customer.repo";
 
 export const ShopContext = createContext<
   Partial<{
@@ -26,7 +28,6 @@ export const ShopContext = createContext<
     customerLogout: Function;
     shopCode: string;
     setShopCode: Function;
-    categoriesShop: Category[];
     shopBranchs: ShopBranch[];
     branchSelecting: ShopBranch;
     setBranchSelecting: Function;
@@ -38,102 +39,87 @@ export const ShopContext = createContext<
 export function ShopProvider(props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [shopCode, setShopCode] = useState<string>();
-  const [branchSelecting, setBranchSelecting] = useState<ShopBranch>();
-  const [shop, setShop] = useState<Shop>();
+  let [shopCode, setShopCode] = useState<string>();
+  let [branchSelecting, setBranchSelecting] = useState<ShopBranch>();
+  let [shop, setShop] = useState<Shop>();
   const [productIdSelected, setProductIdSelected] = useState<any>(null);
-  const [categoriesShop, setcategoriesShop] = useState<Category[]>(null);
-  const [customer, setCustomer] = useState<Customer>();
-  const [shopBranchs, setShopBranch] = useState<ShopBranch[]>([]);
+  let [customer, setCustomer] = useState<Customer>();
+  let [shopBranchs, setShopBranch] = useState<ShopBranch[]>([]);
   const [locationCustomer, setLocationCustomer] = useState<any>();
   async function getShop() {
     setLoading(true);
-    let haveShop = "";
-    if (shopCode && shop) {
-      sessionStorage.setItem("shopCode", shopCode);
-      sessionStorage.setItem("shop", JSON.stringify(shop));
-    } else {
-      let scode = sessionStorage.getItem("shopCode");
-      let shopStorage = sessionStorage.getItem("shop");
-      if (scode && JSON.parse(shopStorage)) {
-        setShopCode(scode);
-        haveShop = scode;
-      }
-    }
-    let brsnav = null;
-    if (haveShop) {
-      ClearAnonymousToken();
-      ClearCustomerToken();
-      let token = await ShopService.loginAnonymous(haveShop);
-      SetAnonymousToken(token);
+    shopCode = sessionStorage.getItem("shopCode");
+    if (!shopCode) router.push("404");
+    setShopCode(shopCode);
+
+    const anonymousToken = GetAnonymousToken(shopCode);
+    if (!anonymousToken) await ShopService.loginAnonymous(shopCode);
+    console.log("GET SHOP DATA", shopCode);
+    await ShopService.getShopData().then(setShop);
+    const customerToken = GetCustomerToken(shopCode);
+    if (!customerToken) {
       let phoneUser = localStorage.getItem("phoneUser");
       if (phoneUser) {
         let dataCus = await UserService.loginCustomerByPhone(phoneUser);
         if (dataCus) {
-          console.log(dataCus.customer);
-          SetCustomerToken(dataCus.token);
-          setCustomer(cloneDeep(dataCus.customer));
-          localStorage.setItem("phoneUser", dataCus.customer.phone);
+          SetCustomerToken(dataCus.token, shopCode);
+          customer = cloneDeep(dataCus.customer);
+          setCustomer(customer);
         } else {
           setCustomer(null);
         }
       } else {
         setCustomer(null);
       }
-      let cats = await CategoryService.getAll({
-        query: {
-          limit: 0,
-          order: { priority: -1, createdAt: 1 },
-        },
-        fragment: CategoryService.fullFragment,
-      });
-      if (cats) {
-        setcategoriesShop(cloneDeep(cats.data));
-      }
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          ShopBranchService.getAll({
-            fragment: `${ShopBranchService.fullFragment} distance(lat:${position.coords.latitude}, lng:${position.coords.longitude})`,
-            query: { order: { distance: 1 } },
-          }).then((res) => {
-            brsnav = res.data;
-            let branchs = res.data;
-            let branchsSorted = orderBy(branchs, (o) => o.distance);
-            console.log(branchsSorted);
-            setShopBranch(cloneDeep(branchsSorted));
-            let neared = branchsSorted.findIndex((item) => item.isOpen);
-            if (neared) {
-              setBranchSelecting(branchsSorted[neared]);
-            } else {
-              setBranchSelecting(null);
-            }
-          });
-          setLocationCustomer(position.coords);
-        });
-      } else {
-      }
-    }
-    let brs = await ShopBranchService.getAll();
-    if (brs && !brsnav) {
-      setShopBranch(cloneDeep(brs.data));
-      let active = brs.data.findIndex((item) => item.isOpen);
-      setBranchSelecting(brs.data[active]);
-    }
-    let res = await ShopService.getShopData();
-
-    if (res) {
-      setShop(cloneDeep(res));
     } else {
-      setShop(null);
+      await getCustomner();
     }
-
     setLoading(false);
+  }
+  function loadLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocationCustomer(position.coords);
+        },
+        (err) => {
+          if (customer && customer.latitude && customer.longitude) {
+            setLocationCustomer({ latitude: customer.latitude, longitude: customer.longitude });
+          } else {
+            setLocationCustomer({ latitude: 106.725484, longitude: 10.72883 });
+          }
+        }
+      );
+    }
+  }
+  function loadBrand(coords?: any) {
+    ShopBranchService.getAll({
+      fragment: `${ShopBranchService.fullFragment} ${
+        coords ? `distance(lat:${coords.latitude}, lng:${coords.longitude})` : ""
+      } `,
+    }).then((res) => {
+      let branchs = res.data;
+      shopBranchs = orderBy(branchs, (o) => o.distance);
+      setShopBranch(shopBranchs);
+      let neared = shopBranchs.findIndex((item) => item.isOpen);
+      if (neared) {
+        branchSelecting = shopBranchs[neared];
+        setBranchSelecting(branchSelecting);
+      } else {
+        setBranchSelecting(shopBranchs[0]);
+      }
+    });
+  }
+
+  async function getCustomner() {
+    let res = await CustomerService.getCustomer();
+    setCustomer(res);
   }
   async function customerLogin(phone: string) {
     if (phone) {
       let dataCus = await UserService.loginCustomerByPhone(phone);
       if (dataCus) {
-        SetCustomerToken(dataCus.token);
+        SetCustomerToken(dataCus.token, shopCode);
         setCustomer(cloneDeep(dataCus.customer));
         localStorage.setItem("phoneUser", dataCus.customer.phone);
       } else {
@@ -154,6 +140,14 @@ export function ShopProvider(props) {
   useEffect(() => {
     getShop();
   }, []);
+  useEffect(() => {
+    if (!shop) return;
+    loadLocation();
+  }, [shop]);
+  useEffect(() => {
+    if (!locationCustomer) return;
+    loadBrand(locationCustomer);
+  }, [locationCustomer]);
   return (
     <ShopContext.Provider
       value={{
@@ -165,7 +159,6 @@ export function ShopProvider(props) {
         customerLogout,
         productIdSelected,
         setProductIdSelected,
-        categoriesShop,
         setShop,
         setShopCode,
         branchSelecting,

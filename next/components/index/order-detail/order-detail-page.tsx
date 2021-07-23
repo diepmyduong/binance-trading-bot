@@ -219,7 +219,7 @@ export function OrderDetailPage(props) {
                   const last = order.items.length - 1 == index;
                   return (
                     <div
-                      className={`flex px-4 items-start border-gray-300 py-3 ${
+                      className={`flex px-4 items-start border-gray-100 py-3 ${
                         !last && "border-b"
                       }`}
                       key={index}

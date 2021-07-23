@@ -17,12 +17,12 @@ export default [
       const accentHSL = HexToHSL(shopColor.accentColor);
       res.type(".css");
       res.send(`:root {
-        --color-primary-light: ${HSLtoHex(primaryHSL[0], primaryHSL[1], 96)};
-        --color-primary: ${shopColor.primaryColor};
-        --color-primary-dark: ${LightenDarkenColor(shopColor.primaryColor, -6)};
-        --color-accent-light: ${HSLtoHex(accentHSL[0], accentHSL[1], 96)};
-        --color-accent: ${shopColor.accentColor};
-        --color-accent-dark: ${LightenDarkenColor(shopColor.accentColor, -6)};
+        --color-primary-light: ${HSLtoHex(primaryHSL[0], primaryHSL[1], 96)} !important;
+        --color-primary: ${shopColor.primaryColor} !important;
+        --color-primary-dark: ${LightenDarkenColor(shopColor.primaryColor, -6)} !important;
+        --color-accent-light: ${HSLtoHex(accentHSL[0], accentHSL[1], 96)} !important;
+        --color-accent: ${shopColor.accentColor} !important;
+        --color-accent-dark: ${LightenDarkenColor(shopColor.accentColor, -6)} !important;
       }`);
       res.end();
     },

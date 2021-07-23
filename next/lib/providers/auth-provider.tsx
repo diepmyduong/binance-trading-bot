@@ -11,6 +11,7 @@ import { firebase } from "../helpers/firebase";
 import { GraphService } from "../repo/graph.repo";
 import { Member, MemberService } from "../repo/member.repo";
 import { User, UserService } from "../repo/user.repo";
+import { v4 as uuidv4 } from "uuid";
 
 export const AuthContext = createContext<
   Partial<{
@@ -177,10 +178,24 @@ export function AuthProvider(props) {
   };
 
   const loginMemberByPassword = async (username: string, password: string) => {
+    let deviceId = localStorage.getItem("device-id");
+    if (!deviceId) {
+      deviceId = uuidv4();
+      localStorage.setItem("device-id", deviceId);
+    }
+
+    let deviceToken = "";
+    try {
+      const messaging = firebase.messaging();
+      deviceToken = await messaging.getToken({ vapidKey: VAPID_KEY });
+    } catch (err) {
+      console.error(err);
+    }
+
     try {
       let res = await GraphService.mutate({
         mutation: `
-          loginMemberByPassword(username: "${username}", password: "${password}") {
+          loginMemberByPassword(username: "${username}", password: "${password}", deviceId: "${deviceId}", deviceToken: "${deviceToken}") {
             member { ${MemberService.fullFragment} } token
           }
         `,
@@ -195,6 +210,7 @@ export function AuthProvider(props) {
   };
 
   const logoutMember = async () => {
+    localStorage.removeItem("device-id");
     ClearAuthTokenMember();
     setMember(null);
     await MemberService.clearStore();
@@ -307,3 +323,5 @@ export function AuthProvider(props) {
 }
 
 export const useAuth = () => useContext(AuthContext);
+
+const VAPID_KEY = `BKh34EjqetrcY6C1ZSSzbVXLlk0CZElMcjByujFcZUpgqbAQ8mAhWDl62g-EhsWx9_r7fz_jp91PikA9IVsUvgg`;

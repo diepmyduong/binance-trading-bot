@@ -36,7 +36,7 @@ function ItemNotification(props) {
   }, [props.item]);
   return (
     <div
-      className={`p-4 border-b border-gray-300 cursor-pointer ${!props.item.seen && "bg-gray-100"}`}
+      className={`p-4 border-b border-gray-200 cursor-pointer ${!props.item.seen && "bg-gray-100"}`}
       onClick={() => {
         readNotification(props.item.id);
         if (props.item.order) router.push(`/${shopCode}/order/${props.item.order.code}`);

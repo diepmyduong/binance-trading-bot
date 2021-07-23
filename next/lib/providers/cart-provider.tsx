@@ -48,14 +48,13 @@ export function CartProvider(props) {
   const toast = useToast();
 
   useEffect(() => {
-    let listCart = JSON.parse(localStorage.getItem("cartProducts"));
+    let listCart = JSON.parse(localStorage.getItem(shopCode + "cartProducts"));
     if (listCart) {
       ProductService.getAll({
         query: {
           limit: 0,
           filter: {
             _id: { __in: listCart.map((x) => x.productId) },
-            cache: false,
           },
         },
       })
@@ -99,7 +98,7 @@ export function CartProvider(props) {
   useEffect(() => {
     setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
     setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
-    localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
+    localStorage.setItem(shopCode + "cartProducts", JSON.stringify(cartProducts));
   }, [cartProducts]);
 
   const addProductToCart = (product: Product, qty: number, note: string): boolean => {

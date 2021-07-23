@@ -85,7 +85,7 @@ export function PaymentProvider(props) {
       let items = getItemsOrderInput();
       return OrderService.generateOrder({ ...orderInput, items: items })
         .then((res) => {
-          localStorage.removeItem("cartProducts");
+          localStorage.removeItem(shopCode + "cartProducts");
           setOrderInput(null);
           clearCartProduct();
           setOrderCode(res.code);

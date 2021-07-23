@@ -27,7 +27,7 @@ function CartButton() {
   const [showDialogCart, setShowDialogCart] = useState(false);
   if (!cartProducts || !cartProducts.length) return <></>;
   return (
-    <div>
+    <>
       <FloatingButton
         totalFood={totalFood}
         totalMoney={totalMoney}
@@ -38,7 +38,7 @@ function CartButton() {
         onClose={() => setShowDialogCart(false)}
         slideFromBottom="all"
       />
-    </div>
+    </>
   );
 }
 

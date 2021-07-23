@@ -19,7 +19,7 @@ export interface HeaderPropsType extends ReactProps {
   showAvatar?: boolean;
   code?: string;
 }
-export function Header({ code, ...props }: HeaderPropsType) {
+export function Header({ ...props }: HeaderPropsType) {
   const { customer, customerLogin, customerLogout, shop, shopCode } = useShopContext();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();

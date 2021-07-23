@@ -9,10 +9,10 @@ import { HomeProvider } from "../../components/index/homepage/providers/homepage
 import { ClearCustomerToken, ClearAnonymousToken } from "../../lib/graphql/auth.link";
 
 export default function Page(props) {
-  useEffect(() => {
-    sessionStorage.setItem("shop", JSON.stringify(props.shop));
-    sessionStorage.setItem("shopCode", props.code);
-  }, []);
+  // useEffect(() => {
+  //   sessionStorage.setItem("shop", JSON.stringify(props.shop));
+  //   sessionStorage.setItem("shopCode", props.code);
+  // }, []);
 
   return (
     <>

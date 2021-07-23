@@ -114,6 +114,12 @@ export function PaymentPage() {
                       : NumberPipe(0, true)}
                   </div>
                 </div>
+                {order.invalid && (
+                  <div className="flex justify-between items-center">
+                    {/* <div className="">Giảm giá:</div> */}
+                    <div className="text-danger">{order.invalidReason}</div>
+                  </div>
+                )}
               </div>
               {vouchers && vouchers.length > 0 ? (
                 <Swiper
@@ -249,7 +255,7 @@ const ButtonPayment = (props: ButtonPaymentProps) => {
       </div>
       <div className="w-full py-2 px-4">
         <Button
-          // disabled={order.invalid}
+          disabled={order.invalid}
           text={order.order ? `Đặt hàng ${NumberPipe(order?.order?.amount)}đ` : "Đặt hàng"}
           primary
           className="w-full bg-gradient h-12"

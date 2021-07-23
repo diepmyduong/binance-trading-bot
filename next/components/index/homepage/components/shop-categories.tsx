@@ -133,7 +133,7 @@ export function ShopCategory(props: ShopCategoryPropsType) {
             >
               <a>
                 <div
-                  className={`py-2  hover:bg-primary-light cursor-pointer border-b-0.5 transition-all duration-300  ${
+                  className={`py-2  hover:bg-primary-light cursor-pointer border-b border-gray-100 transition-all duration-300  ${
                     item.allowSale ? "" : "hidden"
                   }`}
                   // onClick={() => {

@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { cloneDeep } from "lodash";
+import { useEffect, useState } from "react";
 import { useToast } from "../../../../lib/providers/toast-provider";
-import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
+import { CustomerVoucher } from "../../../../lib/repo/customer-voucher.repo";
+import { ShopVoucher, ShopVoucherService } from "../../../../lib/repo/shop-voucher.repo";
 import { Dialog } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
 import { Input } from "../../../shared/utilities/form/input";
@@ -13,10 +15,11 @@ export function PromotionList(props) {
   const { shopVouchers, customerVoucher } = usePromotionContext();
   const { orderInput, setOrderInput } = usePaymentContext();
   const [voucherCode, setVoucherCode] = useState("");
+  const [allVouchers, setAllVouchers] = useState<any[]>([]);
   const toast = useToast();
   const handleSubmit = () => {
     var check = false;
-    shopVouchers.forEach((item) => {
+    allVouchers.forEach((item) => {
       if (item.code.toUpperCase() == voucherCode.toUpperCase()) {
         setOrderInput({ ...orderInput, promotionCode: item.code });
         props.onClose();
@@ -28,6 +31,15 @@ export function PromotionList(props) {
       props.onClose();
     }
   };
+  useEffect(() => {
+    ShopVoucherService.getAll()
+      .then((res) => {
+        setAllVouchers([...cloneDeep(res.data)]);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   return (
     <div className="">
       <Dialog

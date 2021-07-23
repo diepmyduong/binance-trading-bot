@@ -115,7 +115,7 @@ function ListOrderItem(props) {
         const last = cartProducts.length - 1 == index;
         return (
           <div
-            className={`flex px-4 items-start border-gray-300 py-3 ${!last && "border-b"}`}
+            className={`flex px-4 items-start border-gray-100 py-3 ${!last && "border-b"}`}
             key={index}
           >
             <div className="font-bold text-primary flex items-center">

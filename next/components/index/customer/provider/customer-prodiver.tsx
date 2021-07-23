@@ -32,7 +32,6 @@ export function CustomerProvider(props) {
   }>();
   async function getCustomner() {
     let res = await CustomerService.getCustomer();
-    console.log(res);
     setCustomer(res);
   }
   const toast = useToast();

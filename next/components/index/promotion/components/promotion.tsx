@@ -24,6 +24,7 @@ export function Promotion(props: Propstype) {
         <Img
           src={props.promotion.image || "/assets/img/defaultvoucher.png"}
           className="w-14 h-14 rounded-md"
+          compress={200}
         />
         <div className="sm:leading-7 flex-1 px-3">
           <p className="font-bold">{props.promotion.description}</p>

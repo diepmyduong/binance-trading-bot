@@ -37,7 +37,7 @@ export function NewestNews() {
                 <SwiperSlide key={post.id} className="max-w-full lg:min-h-xs lg:max-h-72 ">
                   <Link href={post.redirectLink ? post.redirectLink : "/news/" + post.slug}>
                     <a target={post.redirectLink ? "_blank" : ""} className="px-1 block">
-                      <Img ratio169 rounded src={post.featureImage} />
+                      <Img ratio169 rounded src={post.featureImage} compress={200} />
                       <div className="text-gray-700 text-lg font-semibold text-ellipsis-2 mt-2 leading-tight">
                         {post.title}
                       </div>

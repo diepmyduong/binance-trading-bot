@@ -20,7 +20,6 @@ export default function LoginPage() {
   }, [user]);
 
   const login = async ({ username, password }) => {
-    console.log(username, password);
     if (username && password) {
       await loginFirebaseEmail(username, password)
         .then((user) => {})

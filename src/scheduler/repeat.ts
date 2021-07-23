@@ -51,6 +51,7 @@ export function InitRepeatJobs() {
     .repeatEvery("1 day", { skipImmediate: true })
     .unique({ name: SendNotificationJob.jobName })
     .save();
+  // .then((job) => job.run());
 
   CancelPickupStoreOrderJob.create({})
     .repeatEvery("0 0 * * *", { skipImmediate: true, timezone: configs.timezone })

@@ -1,8 +1,10 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+
 import { Spinner } from "../../components/shared/utilities/spinner";
+import { SetCustomerToken } from "../../lib/graphql/auth.link";
 import { CartProvider } from "../../lib/providers/cart-provider";
-import { ShopContext, ShopProvider, useShopContext } from "../../lib/providers/shop-provider";
+import { ShopProvider, useShopContext } from "../../lib/providers/shop-provider";
 import { DefaultHead } from "../default-head";
 import { Header } from "./components/header";
 import { DefaulLayoutProvider } from "./provider/default-layout-provider";
@@ -39,6 +41,9 @@ export function DefaultLayout({ ...props }) {
   const shopCode = router.query.code as string;
   if (typeof sessionStorage != "undefined") {
     sessionStorage.setItem("shopCode", shopCode);
+    if (router.query["x-token"]) {
+      SetCustomerToken(router.query["x-token"] as string, shopCode);
+    }
   }
 
   if (!shopCode) return <Spinner />;

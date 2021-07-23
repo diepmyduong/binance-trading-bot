@@ -27,7 +27,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     Redirect(context.res, `/not-found-shop`);
   }
   const seo = await SEO("Lịch sử đơn hàng", {
-    image: shop.shopCover,
+    image: shop.shopCover || shop.shopLogo,
     description: shop.shopName,
     shopName: shop.shopName,
   });

@@ -3,6 +3,8 @@ export default async function SEO(
   data: { description?: string; image?: string; keyword?: string; shopName?: string } = {}
 ) {
   return {
+    titleTemplate: `%s | ${data.shopName}`,
+    defaultTitle: `${data.shopName}`,
     title,
     description: data.description,
     image: data.image,
@@ -10,9 +12,12 @@ export default async function SEO(
       type: "website",
       locale: "vi_VN",
       site_name: "3mShop",
+      title,
+      description: data.description,
       images: [
         {
           url: data.image,
+          alt: data.shopName,
         },
       ],
     },
@@ -22,7 +27,5 @@ export default async function SEO(
         content: data.keyword,
       },
     ],
-    titleTemplate: `%s | ${data.shopName}`,
-    defaultTitle: `${data.shopName}`,
   };
 }

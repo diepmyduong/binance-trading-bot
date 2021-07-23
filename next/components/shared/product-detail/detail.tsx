@@ -70,7 +70,11 @@ export function ProductDetail({ ...props }: PropsType) {
               </div>
             </div>
             <div className="relative w-full top-0 ">
-              <Img src={product.cover || product.image} ratio169 compress={512} />
+              {product.cover != null ? (
+                <Img src={product.cover} compress={512} percent={75} />
+              ) : (
+                <Img src={product.image} ratio169 compress={512} />
+              )}
               <div className="absolute bottom-0 left-0 w-full h-12 p-3 text-xs text-white flex items-end bg-opacity-20 bg-gradient-to-t from-primary">
                 {product.rating > 0 && (
                   <div className="flex items-center">

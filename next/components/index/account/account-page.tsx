@@ -33,7 +33,7 @@ export function AccountPage() {
       <div className="min-w-3xl bg-white shadow relative rounded-md">
         <div className="w-full flex flex-col items-center justify-center py-14">
           <div className="absolute -top-10 w-full flex justify-center">
-            <Img src={user.code} avatar className="w-20 h-20" />
+            <Img src={user.code} avatar className="w-20 h-20" compress={200} />
           </div>
           <div className="">
             <h1 className="text-2xl font-bold text-gray-700 text-center">{user.name}</h1>

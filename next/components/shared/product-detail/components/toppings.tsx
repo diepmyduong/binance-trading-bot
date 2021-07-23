@@ -85,7 +85,7 @@ const ProductToppingOption = ({ option, onClick }: ToppingOptionProps) => {
   return (
     <div
       key={option.name}
-      className="flex items-center justify-between px-4 py-1 border-t border-gray-300 cursor-pointer hover:bg-gray-50"
+      className="flex items-center justify-between px-4 py-1 border-t border-gray-100 cursor-pointer hover:bg-gray-50"
       onClick={onClick}
     >
       {/* <div className="flex items-center w-full">

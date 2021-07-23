@@ -7,6 +7,7 @@ import {
 } from "../../../../lib/repo/customer.repo";
 import cloneDeep from "lodash/cloneDeep";
 import { useToast } from "../../../../lib/providers/toast-provider";
+import { useShopContext } from "../../../../lib/providers/shop-provider";
 export const CustomerContext = createContext<
   Partial<{
     customer: Customer;
@@ -23,6 +24,7 @@ export const CustomerContext = createContext<
 
 export function CustomerProvider(props) {
   const [customer, setCustomer] = useState<Customer>();
+  const { setCustomer: setShopCustomer } = useShopContext();
   const [addressData, setAddressData] = useState<{
     fullAddress: string;
     lat: number;
@@ -60,6 +62,11 @@ export function CustomerProvider(props) {
   useEffect(() => {
     getCustomner();
   }, []);
+  useEffect(() => {
+    if (customer) {
+      setShopCustomer(customer);
+    }
+  }, [customer]);
   return (
     <CustomerContext.Provider value={{ customer, customerUpdateMe, setCustomer }}>
       {props.children}

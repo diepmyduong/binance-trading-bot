@@ -4,7 +4,7 @@ import { Notification, NotificationService } from "../../../../lib/repo/notifica
 
 export const NotificationContext = createContext<
   PaginationQueryProps<Notification> &
-    Partial<{ Notifications: Notification[]; statusNotification: Option[] }>
+    Partial<{ Notifications: Notification[]; statusNotification: Option[]; readNotification: any }>
 >({});
 
 export function NotificationProvider(props) {
@@ -14,8 +14,12 @@ export function NotificationProvider(props) {
     page: 1,
   });
 
+  const readNotification = (id: string) => {
+    NotificationService.readNotification(id).catch((err) => console.log(err.message));
+  };
+
   return (
-    <NotificationContext.Provider value={{ ...paginationQueryContext }}>
+    <NotificationContext.Provider value={{ readNotification, ...paginationQueryContext }}>
       {props.children}
     </NotificationContext.Provider>
   );

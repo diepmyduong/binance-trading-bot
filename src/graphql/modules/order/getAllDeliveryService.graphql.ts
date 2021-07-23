@@ -46,6 +46,7 @@ export default {
           ShopConfigModel.findOne({ memberId: context.sellerId }),
           OrderModel.findById(orderId),
         ]);
+        if (!order) throw Error("Không tìm thấy đơn hàng");
         const branch = await ShopBranchModel.findById(order.shopBranchId);
         const services: DeliveryService[] = [];
         await setAhamoveServices(order, shopConfig, services, branch);

@@ -1,6 +1,8 @@
 import { useState } from "react";
+
 import { useToast } from "../../../../lib/providers/toast-provider";
-import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
+import { CustomerVoucher } from "../../../../lib/repo/customer-voucher.repo";
+import { ShopVoucher, ShopVoucherService } from "../../../../lib/repo/shop-voucher.repo";
 import { Dialog } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
 import { Input } from "../../../shared/utilities/form/input";
@@ -10,23 +12,12 @@ import { usePromotionContext } from "../../promotion/provider/promotion-provider
 import { usePaymentContext } from "../providers/payment-provider";
 
 export function PromotionList(props) {
-  const { shopVouchers, customerVoucher } = usePromotionContext();
+  const { shopVouchers } = usePromotionContext();
   const { orderInput, setOrderInput } = usePaymentContext();
   const [voucherCode, setVoucherCode] = useState("");
-  const toast = useToast();
   const handleSubmit = () => {
-    var check = false;
-    shopVouchers.forEach((item) => {
-      if (item.code.toUpperCase() == voucherCode.toUpperCase()) {
-        setOrderInput({ ...orderInput, promotionCode: item.code });
-        props.onClose();
-        check = true;
-      }
-    });
-    if (!check) {
-      toast.error("Không tìm thấy khuyến mãi");
-      props.onClose();
-    }
+    setOrderInput({ ...orderInput, promotionCode: voucherCode.toUpperCase() });
+    props.onClose();
   };
   return (
     <div className="">

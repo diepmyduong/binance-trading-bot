@@ -39,62 +39,63 @@ export interface CartProduct {
 }
 
 export function CartProvider(props) {
-  const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
-  const [totalFood, setTotalFood] = useState(0);
-  const [totalMoney, setTotalMoney] = useState(0);
-  const [reOrderInput, setReOrderInput] = useState<OrderInput>();
+  let [cartProducts, setCartProducts] = useState<CartProduct[]>();
+  let [totalFood, setTotalFood] = useState(0);
+  let [totalMoney, setTotalMoney] = useState(0);
+  let [reOrderInput, setReOrderInput] = useState<OrderInput>();
   const { shopCode } = useShopContext();
   const router = useRouter();
   const toast = useToast();
 
   useEffect(() => {
-    let listCart = JSON.parse(localStorage.getItem("cartProducts"));
+    let listCart = JSON.parse(localStorage.getItem(shopCode + "cartProducts"));
     if (listCart) {
       ProductService.getAll({
         query: {
           limit: 0,
           filter: {
             _id: { __in: listCart.map((x) => x.productId) },
-            cache: false,
           },
         },
-      }).then((res) => {
-        let cartProducts = [];
-        if (res.data) {
-          listCart.forEach((cartProduct) => {
-            const product = res.data.find((x) => x.id === cartProduct.productId);
-            if (product) {
-              let isValid = true;
-              for (let cartProductTopping of cartProduct.product
-                .selectedToppings as OrderItemToppingInput[]) {
-                const topping = product.toppings.find((x) => x.id == cartProductTopping.toppingId);
-                if (!topping) {
-                  isValid = false;
-                  break;
-                } else {
-                  const option = topping.options.find(
-                    (x) => x.name == cartProductTopping.optionName
+      })
+        .then((res) => {
+          let cartProducts = [];
+          if (res.data) {
+            listCart.forEach((cartProduct) => {
+              const product = res.data.find((x) => x.id === cartProduct.productId);
+              if (product) {
+                let isValid = true;
+                for (let cartProductTopping of cartProduct.product
+                  .selectedToppings as OrderItemToppingInput[]) {
+                  const topping = product.toppings.find(
+                    (x) => x.id == cartProductTopping.toppingId
                   );
-                  if (!option || option.price != cartProductTopping.price) {
+                  if (!topping) {
                     isValid = false;
                     break;
+                  } else {
+                    const option = topping.options.find(
+                      (x) => x.name == cartProductTopping.optionName
+                    );
+                    if (!option || option.price != cartProductTopping.price) {
+                      isValid = false;
+                      break;
+                    }
                   }
                 }
+                if (isValid) cartProducts.push(cartProduct);
               }
-              if (isValid) cartProducts.push(cartProduct);
-            }
-          });
-        }
-        setCartProducts(cartProducts);
-      });
+            });
+          }
+          setCartProducts(cartProducts);
+        })
+        .catch((err) => {
+          console.log("get product erorr", err.message);
+        });
+    } else {
+      setCartProducts([]);
     }
   }, []);
-
-  useEffect(() => {
-    setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
-    setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
-    localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
-  }, [cartProducts]);
 
   const addProductToCart = (product: Product, qty: number, note: string): boolean => {
     if (!qty) return false;
@@ -207,26 +208,31 @@ export function CartProvider(props) {
   const [saleUpProducts, setSaleUpProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    let upSalePros = saleUpProducts;
-    cartProducts.forEach((cart) => {
-      let upsale = cart.product.upsaleProducts;
-      if (upsale && upsale.length > 0) {
-        cart.product.upsaleProducts.forEach((product) => {
-          let index = upSalePros.findIndex((p) => p.id === product.id);
-          if (index === -1) {
-            upSalePros.push(product);
-          }
-        });
-      }
-    });
-    ProductService.getAll({
-      query: {
-        limit: 0,
-        filter: {
-          _id: { __in: upSalePros.map((x) => x.id) },
+    if (cartProducts) {
+      setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
+      setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
+      localStorage.setItem(shopCode + "cartProducts", JSON.stringify(cartProducts));
+      let upSalePros = saleUpProducts;
+      cartProducts.forEach((cart) => {
+        let upsale = cart.product.upsaleProducts;
+        if (upsale && upsale.length > 0) {
+          cart.product.upsaleProducts.forEach((product) => {
+            let index = upSalePros.findIndex((p) => p.id === product.id);
+            if (index === -1) {
+              upSalePros.push(product);
+            }
+          });
+        }
+      });
+      ProductService.getAll({
+        query: {
+          limit: 0,
+          filter: {
+            _id: { __in: upSalePros.map((x) => x.id) },
+          },
         },
-      },
-    }).then((res) => setSaleUpProducts(cloneDeep(res.data)));
+      }).then((res) => setSaleUpProducts(cloneDeep(res.data)));
+    }
   }, [cartProducts]);
 
   return (

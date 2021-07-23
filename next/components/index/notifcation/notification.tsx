@@ -10,6 +10,7 @@ import { NotificationService } from "../../../lib/repo/notification.repo";
 function ItemNotification(props) {
   const [color, setColor] = useState("");
   const { shopCode } = useShopContext();
+  const { readNotification } = useNotificationContext();
   const router = useRouter();
   useEffect(() => {
     switch (props.item?.order.status) {
@@ -35,9 +36,11 @@ function ItemNotification(props) {
   }, [props.item]);
   return (
     <div
-      className="p-4 border-b border-gray-300 cursor-pointer"
+      className={`p-4 border-b border-gray-200 cursor-pointer ${!props.item.seen && "bg-gray-100"}`}
       onClick={() => {
+        readNotification(props.item.id);
         if (props.item.order) router.push(`/${shopCode}/order/${props.item.order.code}`);
+        else router.push(props.item.link);
       }}
     >
       <div className="flex items-center">
@@ -81,6 +84,12 @@ export function NotificationPage() {
     window.addEventListener("scroll", loadMore);
     console.log("Start scroll");
     return () => window.removeEventListener("scroll", loadMore);
+  }, []);
+  useEffect(() => {
+    var interval = setInterval(() => {
+      console.log("interval");
+    }, 2000);
+    return () => clearInterval(interval);
   }, []);
 
   if (!items) return <Spinner />;

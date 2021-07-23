@@ -43,7 +43,7 @@ function ItemNotification(props) {
       <div className="flex items-center">
         <div className="font-semibold">{props.item.title}</div>
         <div className="ml-2 text-sm text-gray-500">
-          {format(new Date(props.item.createdAt), "mm:HH - dd/MM/yyy")}
+          {format(new Date(props.item.createdAt), "HH:mm - dd/MM/yyy")}
         </div>
       </div>
       <div className={`${color}`}>{props.item.body}</div>

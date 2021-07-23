@@ -4,16 +4,18 @@ import DatePicker from "react-mobile-datepicker";
 import { Button } from "../../../shared/utilities/form/button";
 import { FaAngleDown } from "react-icons/fa";
 import { usePaymentContext } from "../providers/payment-provider";
+import { format } from "date-fns";
+import { useToast } from "../../../../lib/providers/toast-provider";
 
 export function SelectTime() {
   const { branchSelecting } = useShopContext();
   const { orderInput, setOrderInput } = usePaymentContext();
   const [times, setTimes] = useState<{ label: string; value: string }[]>([]);
+  const toast = useToast();
   const [selectDate, setSelectDate] = useState(new Date());
   const [selectTime, setSelectTime] = useState(new Date());
   const [openDatePickerDate, setOpenDatePickerDate] = useState(false);
   const [openDatePickerTime, setOpenDatePickerTime] = useState(false);
-  const today = new Date();
   const getDiffDate = (date1: Date, date2: Date) => {
     const diffTime = Math.abs(date2.getTime() - date1.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -27,8 +29,9 @@ export function SelectTime() {
       `${dateTemp.getMonth() + 1}/${dateTemp.getDate()}/${dateTemp.getFullYear()} ${time}`
     ).toISOString();
   };
-  const startDate = new Date(getDateString("00:00", new Date()));
-  const endDate = new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000);
+  const today = new Date(getDateString("00:00", new Date()));
+  const startDate = today;
+  const endDate = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(endDate);
   const generateTime = () => {
@@ -43,23 +46,24 @@ export function SelectTime() {
       openTime = rangeTime[(current_day + 1 + diffDate) % 7].timeFrames[0][0];
       closeTime = rangeTime[(current_day + 1 + diffDate) % 7].timeFrames[0][1];
     }
-    let hourClose = new Date(getDateString(closeTime, selectDate));
-    if (hourClose.getHours() < today.getHours()) {
-      setStartTime(new Date(getDateString(closeTime, selectDate)));
+    let hourClose = new Date(getDateString(closeTime, today));
+    let now = new Date();
+    if (hourClose.toISOString() < now.toISOString()) {
+      if (selectDate.getDate() == today.getDate()) {
+        setSelectDate(new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000));
+        toast.warn("Do hôm nay quán đã đóng cửa. Nên sẽ chọn vào ngày mai nhé!");
+      }
+      setStartTime(new Date(getDateString(openTime, selectDate)));
     } else {
       setStartTime(new Date());
-      setOpenDatePickerTime(true);
     }
-    if (selectDate.getDate() == today.getDate()) {
-      //nếu chọn ngày hôm nay
-    } else setStartTime(new Date(getDateString(openTime, selectDate)));
     setEndTime(new Date(getDateString(closeTime, selectDate)));
+    setOpenDatePickerTime(true);
   };
   useEffect(() => {
     generateTime();
   }, [selectDate]);
   useEffect(() => {
-    // let temp = getDate(selectTime, selectDate);
     setOrderInput({ ...orderInput, pickupTime: selectTime.toISOString() });
   }, [selectTime]);
   useEffect(() => {}, []);
@@ -100,58 +104,47 @@ export function SelectTime() {
         <Button
           outline
           primary
-          text={`${selectDate.getDate()}/${selectDate.getMonth() + 1}/${selectDate.getFullYear()}`}
+          text={format(new Date(selectTime), "dd/MM/yyyy HH:mm")}
           icon={<FaAngleDown />}
           iconPosition="end"
+          className="rounded-2xl"
           onClick={() => setOpenDatePickerDate(true)}
         />
-        {startTime == endTime ? (
-          "Quán đóng cửa"
-        ) : (
-          <Button
-            outline
-            primary
-            text={`${selectTime.getHours().toString()}:${
-              selectTime.getMinutes() < 10
-                ? "0" + selectTime.getMinutes().toString()
-                : selectTime.getMinutes().toString()
-            }`}
-            icon={<FaAngleDown />}
-            iconPosition="end"
-            onClick={() => setOpenDatePickerTime(true)}
-          />
-        )}
       </div>
       <DatePicker
         isOpen={openDatePickerDate}
         min={startDate}
         max={endDate}
+        value={selectDate}
         showHeader
         confirmText="Chọn"
         cancelText="Hủy"
+        headerFormat="Ngày DD/MM/YYYY"
+        theme="ios"
         onCancel={() => setOpenDatePickerDate(false)}
         onSelect={(date) => {
-          setSelectDate(date);
+          setSelectDate(new Date(date));
           setOpenDatePickerDate(false);
         }}
         dateConfig={configDate}
       />
-      {startTime != endTime && (
-        <DatePicker
-          isOpen={openDatePickerTime}
-          min={startTime}
-          max={endTime}
-          showHeader
-          confirmText="Chọn"
-          cancelText="Hủy"
-          onCancel={() => setOpenDatePickerTime(false)}
-          onSelect={(time) => {
-            setOpenDatePickerTime(false);
-            setSelectTime(time);
-          }}
-          dateConfig={configTime}
-        />
-      )}
+      <DatePicker
+        isOpen={openDatePickerTime}
+        min={startTime}
+        max={endTime}
+        value={selectTime}
+        showHeader
+        confirmText="Chọn"
+        cancelText="Hủy"
+        headerFormat="Vào lúc hh:mm"
+        theme="ios"
+        onCancel={() => setOpenDatePickerTime(false)}
+        onSelect={(time) => {
+          setOpenDatePickerTime(false);
+          setSelectTime(time);
+        }}
+        dateConfig={configTime}
+      />
     </>
   );
 }

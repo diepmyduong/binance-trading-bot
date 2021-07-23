@@ -1,5 +1,5 @@
-import { cloneDeep } from "lodash";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
 import { useToast } from "../../../../lib/providers/toast-provider";
 import { CustomerVoucher } from "../../../../lib/repo/customer-voucher.repo";
 import { ShopVoucher, ShopVoucherService } from "../../../../lib/repo/shop-voucher.repo";
@@ -12,34 +12,13 @@ import { usePromotionContext } from "../../promotion/provider/promotion-provider
 import { usePaymentContext } from "../providers/payment-provider";
 
 export function PromotionList(props) {
-  const { shopVouchers, customerVoucher } = usePromotionContext();
+  const { shopVouchers } = usePromotionContext();
   const { orderInput, setOrderInput } = usePaymentContext();
   const [voucherCode, setVoucherCode] = useState("");
-  const [allVouchers, setAllVouchers] = useState<any[]>([]);
-  const toast = useToast();
   const handleSubmit = () => {
-    var check = false;
-    allVouchers.forEach((item) => {
-      if (item.code.toUpperCase() == voucherCode.toUpperCase()) {
-        setOrderInput({ ...orderInput, promotionCode: item.code });
-        props.onClose();
-        check = true;
-      }
-    });
-    if (!check) {
-      toast.error("Không tìm thấy khuyến mãi");
-      props.onClose();
-    }
+    setOrderInput({ ...orderInput, promotionCode: voucherCode.toUpperCase() });
+    props.onClose();
   };
-  useEffect(() => {
-    ShopVoucherService.getAll()
-      .then((res) => {
-        setAllVouchers([...cloneDeep(res.data)]);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
   return (
     <div className="">
       <Dialog

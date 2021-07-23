@@ -39,10 +39,10 @@ export interface CartProduct {
 }
 
 export function CartProvider(props) {
-  const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
-  const [totalFood, setTotalFood] = useState(0);
-  const [totalMoney, setTotalMoney] = useState(0);
-  const [reOrderInput, setReOrderInput] = useState<OrderInput>();
+  let [cartProducts, setCartProducts] = useState<CartProduct[]>();
+  let [totalFood, setTotalFood] = useState(0);
+  let [totalMoney, setTotalMoney] = useState(0);
+  let [reOrderInput, setReOrderInput] = useState<OrderInput>();
   const { shopCode } = useShopContext();
   const router = useRouter();
   const toast = useToast();
@@ -92,14 +92,10 @@ export function CartProvider(props) {
         .catch((err) => {
           console.log("get product erorr", err.message);
         });
+    } else {
+      setCartProducts([]);
     }
   }, []);
-
-  useEffect(() => {
-    setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
-    setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
-    localStorage.setItem(shopCode + "cartProducts", JSON.stringify(cartProducts));
-  }, [cartProducts]);
 
   const addProductToCart = (product: Product, qty: number, note: string): boolean => {
     if (!qty) return false;
@@ -212,26 +208,31 @@ export function CartProvider(props) {
   const [saleUpProducts, setSaleUpProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    let upSalePros = saleUpProducts;
-    cartProducts.forEach((cart) => {
-      let upsale = cart.product.upsaleProducts;
-      if (upsale && upsale.length > 0) {
-        cart.product.upsaleProducts.forEach((product) => {
-          let index = upSalePros.findIndex((p) => p.id === product.id);
-          if (index === -1) {
-            upSalePros.push(product);
-          }
-        });
-      }
-    });
-    ProductService.getAll({
-      query: {
-        limit: 0,
-        filter: {
-          _id: { __in: upSalePros.map((x) => x.id) },
+    if (cartProducts) {
+      setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
+      setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
+      localStorage.setItem(shopCode + "cartProducts", JSON.stringify(cartProducts));
+      let upSalePros = saleUpProducts;
+      cartProducts.forEach((cart) => {
+        let upsale = cart.product.upsaleProducts;
+        if (upsale && upsale.length > 0) {
+          cart.product.upsaleProducts.forEach((product) => {
+            let index = upSalePros.findIndex((p) => p.id === product.id);
+            if (index === -1) {
+              upSalePros.push(product);
+            }
+          });
+        }
+      });
+      ProductService.getAll({
+        query: {
+          limit: 0,
+          filter: {
+            _id: { __in: upSalePros.map((x) => x.id) },
+          },
         },
-      },
-    }).then((res) => setSaleUpProducts(cloneDeep(res.data)));
+      }).then((res) => setSaleUpProducts(cloneDeep(res.data)));
+    }
   }, [cartProducts]);
 
   return (

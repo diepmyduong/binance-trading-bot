@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import { FaAddressCard, FaBlenderPhone, FaEdit, FaUserAlt } from "react-icons/fa";
 import { RiAddFill, RiMapPinLine } from "react-icons/ri";
+
 import {
   GoongAutocompletePlace,
   GoongGeocoderService,
   GoongPlaceDetail,
 } from "../../../../lib/helpers/goong";
-import { useCartContext } from "../../../../lib/providers/cart-provider";
 import { useShopContext } from "../../../../lib/providers/shop-provider";
 import { Dialog } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
 import { Input } from "../../../shared/utilities/form/input";
-import { Select } from "../../../shared/utilities/form/select";
 import { NotFound } from "../../../shared/utilities/not-found";
 import { Spinner } from "../../../shared/utilities/spinner";
 import { BranchsDialog } from "../../homepage/components/branchs-dialog";

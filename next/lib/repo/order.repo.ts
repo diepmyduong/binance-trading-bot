@@ -8,22 +8,22 @@ import { Product } from "./product.repo";
 import { User } from "./user.repo";
 
 export interface OrderInput {
-  promotionCode: string;
-  buyerName: string;
-  buyerPhone: string;
-  pickupMethod: string;
-  shopBranchId: string;
-  pickupTime: string;
-  buyerAddress: string;
-  buyerProvinceId: string;
-  buyerDistrictId: string;
-  buyerWardId: string;
-  buyerFullAddress: string;
-  buyerAddressNote: string;
-  latitude: number;
-  longitude: number;
-  paymentMethod: string;
-  note: string;
+  promotionCode?: string;
+  buyerName?: string;
+  buyerPhone?: string;
+  pickupMethod?: string;
+  shopBranchId?: string;
+  pickupTime?: string;
+  buyerAddress?: string;
+  buyerProvinceId?: string;
+  buyerDistrictId?: string;
+  buyerWardId?: string;
+  buyerFullAddress?: string;
+  buyerAddressNote?: string;
+  latitude?: number;
+  longitude?: number;
+  paymentMethod?: string;
+  note?: string;
   items?: OrderItemInput[];
 }
 

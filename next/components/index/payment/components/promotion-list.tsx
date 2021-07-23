@@ -1,7 +1,8 @@
 import { useState } from "react";
 
 import { useToast } from "../../../../lib/providers/toast-provider";
-import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
+import { CustomerVoucher } from "../../../../lib/repo/customer-voucher.repo";
+import { ShopVoucher, ShopVoucherService } from "../../../../lib/repo/shop-voucher.repo";
 import { Dialog } from "../../../shared/utilities/dialog/dialog";
 import { Button } from "../../../shared/utilities/form/button";
 import { Input } from "../../../shared/utilities/form/input";
@@ -11,10 +12,9 @@ import { usePromotionContext } from "../../promotion/provider/promotion-provider
 import { usePaymentContext } from "../providers/payment-provider";
 
 export function PromotionList(props) {
-  const { shopVouchers, customerVoucher } = usePromotionContext();
+  const { shopVouchers } = usePromotionContext();
   const { orderInput, setOrderInput } = usePaymentContext();
   const [voucherCode, setVoucherCode] = useState("");
-  const toast = useToast();
   const handleSubmit = () => {
     setOrderInput({ ...orderInput, promotionCode: voucherCode.toUpperCase() });
     props.onClose();

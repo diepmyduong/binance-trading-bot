@@ -86,7 +86,7 @@ export function ShopProvider(props) {
           if (customer && customer.latitude && customer.longitude) {
             setLocationCustomer({ latitude: customer.latitude, longitude: customer.longitude });
           } else {
-            setLocationCustomer({ latitude: 106.725484, longitude: 10.72883 });
+            setLocationCustomer({ latitude: 10.72883, longitude: 106.725484 });
           }
         }
       );
@@ -104,10 +104,11 @@ export function ShopProvider(props) {
       let neared = shopBranchs.findIndex((item) => item.isOpen);
       if (neared) {
         branchSelecting = shopBranchs[neared];
-        setBranchSelecting(branchSelecting);
       } else {
-        setBranchSelecting(shopBranchs[0]);
+        branchSelecting = shopBranchs[0];
       }
+      console.log("setBranchSelecting", branchSelecting);
+      setBranchSelecting(branchSelecting);
     });
   }
 
@@ -130,8 +131,8 @@ export function ShopProvider(props) {
     }
   }
   function customerLogout() {
+    ClearCustomerToken(shopCode);
     localStorage.removeItem("phoneUser");
-    localStorage.removeItem("customer-token");
     setCustomer(null);
     if (router.pathname !== "/") {
       router.push(`/${shopCode}`);

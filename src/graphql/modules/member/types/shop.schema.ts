@@ -8,6 +8,7 @@ const schema = gql`
   }
 
   type Shop {
+    code: String
     id: String
     "Mã chủ shop"
     username: String

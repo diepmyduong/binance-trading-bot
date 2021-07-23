@@ -19,7 +19,7 @@ export interface HeaderPropsType extends ReactProps {
   showAvatar?: boolean;
   code?: string;
 }
-export function Header({ code, ...props }: HeaderPropsType) {
+export function Header({ ...props }: HeaderPropsType) {
   const { customer, customerLogin, customerLogout, shop, shopCode } = useShopContext();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -63,7 +63,7 @@ export function Header({ code, ...props }: HeaderPropsType) {
               </p>
             </a>
           </Link>
-          {!customer ? (
+          {!customer && (
             <Button
               text="Đăng nhâp"
               className="whitespace-nowrap bg-gradient"
@@ -71,32 +71,31 @@ export function Header({ code, ...props }: HeaderPropsType) {
               small
               onClick={() => setIsOpen(true)}
             />
-          ) : (
-            <div className="flex items-center justify-center">
-              <button
-                className={`btn text-primary bg-primary-light rounded-full mr-2 flex items-center px-2 ${
-                  !customer ? "hidden" : ""
-                }`}
-                onClick={() => router.push(`/${shopCode}/notification`)}
-              >
-                {/* <Img avatar src="/assets/default/avatar.png" className="w-10" /> */}
-                <i className="text-18 pr-1">
-                  <FaBell />
-                </i>
-              </button>
-              <button
-                className={`btn text-primary bg-primary-light rounded-full flex items-center px-2 ${
-                  !customer ? "hidden" : ""
-                }`}
-                ref={userRef}
-              >
-                {/* <Img avatar src="/assets/default/avatar.png" className="w-10" /> */}
-                <i className="text-18 pr-1">
-                  <FaUserAlt />
-                </i>
-              </button>
-            </div>
           )}
+          <div className={`flex items-center justify-center ${!customer ? "hidden" : ""}`}>
+            <button
+              className={`btn text-primary bg-primary-light rounded-full mr-2 flex items-center px-2 ${
+                !customer ? "hidden" : ""
+              }`}
+              onClick={() => router.push(`/${shopCode}/notification`)}
+            >
+              {/* <Img avatar src="/assets/default/avatar.png" className="w-10" /> */}
+              <i className="text-18 pr-1">
+                <FaBell />
+              </i>
+            </button>
+            <button
+              className={`btn text-primary bg-primary-light rounded-full flex items-center px-2 ${
+                !customer ? "hidden" : ""
+              }`}
+              ref={userRef}
+            >
+              {/* <Img avatar src="/assets/default/avatar.png" className="w-10" /> */}
+              <i className="text-18 pr-1">
+                <FaUserAlt />
+              </i>
+            </button>
+          </div>
           <Dropdown reference={userRef}>
             {menus.map((item, index) => {
               return (

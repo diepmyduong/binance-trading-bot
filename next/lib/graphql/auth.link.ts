@@ -13,16 +13,16 @@ export function GetAuthToken() {
   return localStorage.getItem("user-token") || "";
 }
 
-export function ClearCustomerToken() {
-  localStorage.removeItem("customer-token");
+export function ClearCustomerToken(shopCode: string) {
+  localStorage.removeItem(shopCode + "customer-token");
 }
 
-export function GetCustomerToken() {
-  return localStorage.getItem("customer-token") || "";
+export function GetCustomerToken(shopCode: string) {
+  return localStorage.getItem(shopCode + "customer-token") || "";
 }
-export function SetCustomerToken(token: string) {
+export function SetCustomerToken(token: string, shopCode: string) {
   console.log("customer token", token);
-  localStorage.setItem("customer-token", token);
+  localStorage.setItem(shopCode + "customer-token", token);
 }
 export function SetAuthTokenMember(token: string) {
   console.log("member token", token);
@@ -44,15 +44,15 @@ export function GetIP() {
 export function SetIP(ip: string) {
   return localStorage.setItem("user-ip", ip);
 }
-export function GetAnonymousToken() {
-  return sessionStorage.getItem("anonymous-token") || "";
+export function GetAnonymousToken(shopCode: string) {
+  return sessionStorage.getItem(shopCode + "anonymous-token") || "";
 }
-export function ClearAnonymousToken() {
-  localStorage.removeItem("anonymous-token");
+export function ClearAnonymousToken(shopCode: string) {
+  localStorage.removeItem(shopCode + "anonymous-token");
 }
-export function SetAnonymousToken(token: string) {
+export function SetAnonymousToken(token: string, shopCode: string) {
   console.log("set token", token);
-  sessionStorage.setItem("anonymous-token", token);
+  sessionStorage.setItem(shopCode + "anonymous-token", token);
 }
 export const AuthLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
@@ -65,8 +65,9 @@ export const AuthLink = setContext((_, { headers }) => {
       token = GetAuthToken();
       // console.log("admin token", token);
     } else {
-      const customerToken = GetCustomerToken();
-      const anonymousToken = GetAnonymousToken();
+      const shopCode = sessionStorage.getItem("shopCode");
+      const customerToken = GetCustomerToken(shopCode);
+      const anonymousToken = GetAnonymousToken(shopCode);
       // if (customerToken) {
       //   console.log("customer token", customerToken);
       // } else {

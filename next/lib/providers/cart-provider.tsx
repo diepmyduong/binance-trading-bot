@@ -48,52 +48,57 @@ export function CartProvider(props) {
   const toast = useToast();
 
   useEffect(() => {
-    let listCart = JSON.parse(localStorage.getItem("cartProducts"));
+    let listCart = JSON.parse(localStorage.getItem(shopCode + "cartProducts"));
     if (listCart) {
       ProductService.getAll({
         query: {
           limit: 0,
           filter: {
             _id: { __in: listCart.map((x) => x.productId) },
-            cache: false,
           },
         },
-      }).then((res) => {
-        let cartProducts = [];
-        if (res.data) {
-          listCart.forEach((cartProduct) => {
-            const product = res.data.find((x) => x.id === cartProduct.productId);
-            if (product) {
-              let isValid = true;
-              for (let cartProductTopping of cartProduct.product
-                .selectedToppings as OrderItemToppingInput[]) {
-                const topping = product.toppings.find((x) => x.id == cartProductTopping.toppingId);
-                if (!topping) {
-                  isValid = false;
-                  break;
-                } else {
-                  const option = topping.options.find(
-                    (x) => x.name == cartProductTopping.optionName
+      })
+        .then((res) => {
+          let cartProducts = [];
+          if (res.data) {
+            listCart.forEach((cartProduct) => {
+              const product = res.data.find((x) => x.id === cartProduct.productId);
+              if (product) {
+                let isValid = true;
+                for (let cartProductTopping of cartProduct.product
+                  .selectedToppings as OrderItemToppingInput[]) {
+                  const topping = product.toppings.find(
+                    (x) => x.id == cartProductTopping.toppingId
                   );
-                  if (!option || option.price != cartProductTopping.price) {
+                  if (!topping) {
                     isValid = false;
                     break;
+                  } else {
+                    const option = topping.options.find(
+                      (x) => x.name == cartProductTopping.optionName
+                    );
+                    if (!option || option.price != cartProductTopping.price) {
+                      isValid = false;
+                      break;
+                    }
                   }
                 }
+                if (isValid) cartProducts.push(cartProduct);
               }
-              if (isValid) cartProducts.push(cartProduct);
-            }
-          });
-        }
-        setCartProducts(cartProducts);
-      });
+            });
+          }
+          setCartProducts(cartProducts);
+        })
+        .catch((err) => {
+          console.log("get product erorr", err.message);
+        });
     }
   }, []);
 
   useEffect(() => {
     setTotalFood(cartProducts.reduce((count, item) => (count += item.qty), 0));
     setTotalMoney(cartProducts.reduce((total, item) => (total += item.amount), 0));
-    localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
+    localStorage.setItem(shopCode + "cartProducts", JSON.stringify(cartProducts));
   }, [cartProducts]);
 
   const addProductToCart = (product: Product, qty: number, note: string): boolean => {

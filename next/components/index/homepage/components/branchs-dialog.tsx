@@ -26,7 +26,10 @@ export function BranchsDialog({ shopBranchs = [], ...props }: Propstype) {
       bodyClass="relative bg-white rounded"
     >
       <Dialog.Body>
-        <div className={`flex flex-col text-sm sm:text-base ${isMobile ? "pb-12" : ""}`}>
+        <div
+          className={`flex flex-col text-sm sm:text-base ${isMobile ? "pb-12" : ""}`}
+          style={{ maxHeight: `calc(100vh - 150px)`, minHeight: `calc(100vh - 350px)` }}
+        >
           {shopBranchs.map((item: ShopBranch, index) => (
             <div className="flex px-4 mt-2 border-b pb-2" key={index}>
               <div className="flex-1 leading-7">

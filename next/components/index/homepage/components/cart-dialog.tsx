@@ -35,7 +35,7 @@ export function CartDialog(props: Propstype) {
       <Dialog.Body>
         <div
           className={`text-sm sm:text-base px-4 ${isMobile ? "pb-12" : ""}`}
-          style={{ minHeight: `calc(100vh - 350px)` }}
+          style={{ maxHeight: `calc(100vh - 150px)`, minHeight: `calc(100vh - 350px)` }}
         >
           {cartProducts.map((cartProduct, index) => (
             <div key={index} className=" py-1.5 border-b ">

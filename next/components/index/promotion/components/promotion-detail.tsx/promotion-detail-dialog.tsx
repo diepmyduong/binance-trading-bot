@@ -17,7 +17,7 @@ export function PromotionDetailDialog(props: Propstype) {
       slideFromBottom="all"
     >
       <Dialog.Body>
-        <div style={{ minHeight: `calc(70vh)` }}>
+        <div style={{ maxHeight: `calc(100vh - 150px)`, minHeight: `calc(100vh - 350px)` }}>
           {props.promotion ? <PromotionDetail promotion={props.promotion} /> : <Spinner />}
         </div>
       </Dialog.Body>

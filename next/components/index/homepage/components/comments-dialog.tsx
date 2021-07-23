@@ -28,7 +28,7 @@ export function CommentsDialog(props: Propstype) {
       <Dialog.Body>
         <div
           className={`flex flex-col text-sm sm:text-base ${isMobile ? "pb-12" : ""}`}
-          style={{ minHeight: `calc(100vh - 100px)` }}
+          style={{ maxHeight: `calc(100vh - 150px)`, minHeight: `calc(100vh - 350px)` }}
         >
           {comments ? (
             <>

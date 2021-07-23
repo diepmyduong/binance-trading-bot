@@ -4,7 +4,7 @@ import { useEffect } from "react";
 export default function Page(props) {
   const router = useRouter();
   useEffect(() => {
-    router.replace(`/ERROR/not-found-shop`);
+    router.replace(`/not-found-shop`);
   });
   return null;
   // useEffect(() => {

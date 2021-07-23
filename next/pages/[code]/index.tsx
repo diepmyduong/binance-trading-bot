@@ -30,7 +30,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   console.log(productId);
   const shop = await MemberModel.findOne({ code }, "shopName shopLogo");
   if (!shop) {
-    Redirect(context.res, `${code}/not-found-shop`);
+    Redirect(context.res, `/not-found-shop`);
   }
   return {
     props: JSON.parse(

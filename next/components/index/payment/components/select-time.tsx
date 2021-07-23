@@ -10,7 +10,6 @@ import { useToast } from "../../../../lib/providers/toast-provider";
 export function SelectTime() {
   const { branchSelecting } = useShopContext();
   const { orderInput, setOrderInput } = usePaymentContext();
-  const [times, setTimes] = useState<{ label: string; value: string }[]>([]);
   const toast = useToast();
   const [selectDate, setSelectDate] = useState(new Date());
   const [selectTime, setSelectTime] = useState(new Date());

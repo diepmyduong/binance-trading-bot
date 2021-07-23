@@ -104,10 +104,11 @@ export function ShopProvider(props) {
       let neared = shopBranchs.findIndex((item) => item.isOpen);
       if (neared) {
         branchSelecting = shopBranchs[neared];
-        setBranchSelecting(branchSelecting);
       } else {
-        setBranchSelecting(shopBranchs[0]);
+        branchSelecting = shopBranchs[0];
       }
+      console.log("setBranchSelecting", branchSelecting);
+      setBranchSelecting(branchSelecting);
     });
   }
 

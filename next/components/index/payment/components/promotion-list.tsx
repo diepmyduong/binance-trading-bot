@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { useToast } from "../../../../lib/providers/toast-provider";
 import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
 import { Dialog } from "../../../shared/utilities/dialog/dialog";
@@ -15,18 +16,8 @@ export function PromotionList(props) {
   const [voucherCode, setVoucherCode] = useState("");
   const toast = useToast();
   const handleSubmit = () => {
-    var check = false;
-    shopVouchers.forEach((item) => {
-      if (item.code.toUpperCase() == voucherCode.toUpperCase()) {
-        setOrderInput({ ...orderInput, promotionCode: item.code });
-        props.onClose();
-        check = true;
-      }
-    });
-    if (!check) {
-      toast.error("Không tìm thấy khuyến mãi");
-      props.onClose();
-    }
+    setOrderInput({ ...orderInput, promotionCode: voucherCode.toUpperCase() });
+    props.onClose();
   };
   return (
     <div className="">

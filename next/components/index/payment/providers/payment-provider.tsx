@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import cloneDeep from "lodash/cloneDeep";
-import { useRouter } from "next/router";
+import router, { useRouter } from "next/router";
 import { OrderInput, Order, OrderItemInput } from "../../../../lib/repo/order.repo";
 import { useShopContext } from "../../../../lib/providers/shop-provider";
 import { useToast } from "../../../../lib/providers/toast-provider";
@@ -12,7 +12,7 @@ import { CustomerService } from "../../../../lib/repo/customer.repo";
 
 export const PaymentContext = createContext<
   Partial<{
-    draftOrder?: any;
+    draftOrder?: { invalid: boolean; invalidReason: string; order: Order };
     orderInput?: OrderInput;
     setOrderInput?: (val: OrderInput) => any;
     inforBuyers: any;
@@ -38,7 +38,20 @@ export function PaymentProvider(props) {
   const [vouchers, setVouchers] = useState<ShopVoucher[]>();
   const { branchSelecting, customer, locationCustomer, shopCode, setCustomer } = useShopContext();
   const { cartProducts, reOrderInput, clearCartProduct } = useCartContext();
-  const [orderInput, setOrderInput] = useState<OrderInput>();
+  let [orderInput, setOrderInput] = useState<OrderInput>({
+    buyerName: "",
+    buyerPhone: "",
+    pickupMethod: "DELIVERY",
+    shopBranchId: "",
+    pickupTime: null,
+    buyerFullAddress: "",
+    buyerAddressNote: "",
+    latitude: 0,
+    longitude: 0,
+    paymentMethod: "COD",
+    note: "",
+    promotionCode: "",
+  });
   const [orderCode, setOrderCode] = useState("");
   const resetOrderInput = () => {
     setOrderInput({
@@ -86,8 +99,10 @@ export function PaymentProvider(props) {
       return OrderService.generateOrder({ ...orderInput, items: items })
         .then((res) => {
           localStorage.removeItem(shopCode + "cartProducts");
-          setOrderInput(null);
+          orderInput = { ...orderInput, note: "", promotionCode: "" };
+          setOrderInput(orderInput);
           clearCartProduct();
+          // router.push(`${shopCode}/order/${res.code}/success`);
           setOrderCode(res.code);
         })
         .catch((err) => toast.error("Đặt hàng thất bại"));
@@ -105,60 +120,35 @@ export function PaymentProvider(props) {
     }
   }, [reOrderInput]);
   useEffect(() => {
+    console.log("ORDER INPUT CHANGE", orderInput);
     if (orderInput && orderInput.shopBranchId) {
-      console.log(orderInput);
+      console.log("generate draft order");
       generateDraftOrder();
     }
   }, [orderInput]);
-  // useEffect(() => {
-  //   if (branchSelecting) setOrderInput({ ...orderInput, shopBranchId: branchSelecting.id });
-  // }, [branchSelecting]);
   useEffect(() => {
-    let newOrderInput = {
-      buyerName: "",
-      buyerPhone: "",
-      pickupMethod: "DELIVERY",
-      shopBranchId: "",
-      pickupTime: null,
-      buyerAddress: "",
-      buyerProvinceId: "70",
-      buyerDistrictId: "",
-      buyerWardId: "",
-      buyerFullAddress: "",
-      buyerAddressNote: "",
-      latitude: 106.725484,
-      longitude: 10.72883,
-      paymentMethod: "COD",
-      note: "",
-      promotionCode: "",
-    };
+    console.log("branchSelecting", branchSelecting);
     if (branchSelecting) {
-      newOrderInput.shopBranchId = branchSelecting.id;
+      console.log("SET BRANCH TO ORDER INPUT");
+      orderInput = { ...orderInput, shopBranchId: branchSelecting.id };
+      setOrderInput(orderInput);
     }
-    if (customer) {
-      console.log(customer);
-
-      if (customer.longitude && customer.latitude) {
-        newOrderInput.longitude = customer.longitude;
-        newOrderInput.latitude = customer.latitude;
-      }
-      newOrderInput.buyerName = customer.name || "";
-      newOrderInput.buyerPhone = customer.phone || "";
-      newOrderInput.buyerFullAddress = customer.fullAddress || "";
-    }
-    if (locationCustomer) {
-      newOrderInput.longitude = locationCustomer.longitude;
-      newOrderInput.latitude = locationCustomer.latitude;
-    }
-    setOrderInput(cloneDeep(newOrderInput));
-  }, [branchSelecting || customer || locationCustomer]);
+  }, [branchSelecting]);
   useEffect(() => {
-    ShopVoucherService.getAll({
-      query: { order: { createdAt: -1 }, filter: { isPrivate: false, isActive: true } },
-      fragment: ShopVoucherService.fullFragment,
-    })
-      .then((res) => setVouchers(cloneDeep(res.data)))
-      .catch((err) => setVouchers(null));
+    if (!customer) return;
+    orderInput = {
+      ...orderInput,
+      buyerName: customer.name,
+      buyerPhone: customer.phone,
+      buyerFullAddress: customer.fullAddress,
+      buyerAddressNote: customer.addressNote,
+      latitude: customer.latitude || locationCustomer.latitude,
+      longitude: customer.longitude || locationCustomer.longitude,
+    };
+    setOrderInput(orderInput);
+  }, [customer]);
+  useEffect(() => {
+    loadVoucher();
   }, []);
   return (
     <PaymentContext.Provider
@@ -176,6 +166,15 @@ export function PaymentProvider(props) {
       {props.children}
     </PaymentContext.Provider>
   );
+
+  function loadVoucher() {
+    ShopVoucherService.getAll({
+      query: { order: { createdAt: -1 }, filter: { isPrivate: false, isActive: true } },
+      fragment: ShopVoucherService.fullFragment,
+    })
+      .then((res) => setVouchers(cloneDeep(res.data)))
+      .catch((err) => setVouchers(null));
+  }
 }
 
 export const usePaymentContext = () => useContext(PaymentContext);

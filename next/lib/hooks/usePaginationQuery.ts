@@ -13,7 +13,8 @@ export function usePaginationQuery<T>(
   service: CrudRepository<T>,
   listState?: [T[], any],
   query: QueryInput = {},
-  fragment?: string
+  fragment?: string,
+  cache?: boolean
 ) {
   const [items, setItems] = listState || useState<T[]>();
   const [pagination, setPagination] = useState<Pagination>({
@@ -29,7 +30,7 @@ export function usePaginationQuery<T>(
   });
   const loadAll = (query: QueryInput = {}) => {
     queryRef.current = { ...queryRef.current, ...query };
-    return service.getAll({ query: queryRef.current, fragment }).then((res) => {
+    return service.getAll({ query: queryRef.current, fragment, cache }).then((res) => {
       setItems(res.data);
       setPagination(res.pagination);
       return res.data;

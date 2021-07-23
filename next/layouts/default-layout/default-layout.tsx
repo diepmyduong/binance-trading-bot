@@ -38,7 +38,7 @@ function NavBar(props) {
     <CartProvider>
       <div className="flex flex-col min-h-screen relative bg-gray-800">
         <>
-          <DefaultHead shopName={shop.shopName} shopCode={shopCode} shopLogo={shop.shopLogo} />
+          <DefaultHead shopCode={shopCode} shopLogo={shop.shopLogo} />
           <Header />
           <div className="w-full max-w-lg mx-auto shadow-lg">
             <div className={`w-full flex-1 bg-gray-100 text-gray-700 pt-14 min-h-screen`}>

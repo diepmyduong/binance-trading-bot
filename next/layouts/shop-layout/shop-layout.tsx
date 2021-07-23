@@ -51,11 +51,7 @@ export function ShopLayout({ ...props }: PropsType) {
               </div>
             ) : (
               <>
-                <DefaultHead
-                  shopName={member.shopName}
-                  shopCode={member.code}
-                  shopLogo={member.shopLogo}
-                />
+                <DefaultHead shopCode={member.code} shopLogo={member.shopLogo} />
                 {/* <Header /> */}
                 <div className="flex w-full relative min-h-screen">
                   <Sidebar />

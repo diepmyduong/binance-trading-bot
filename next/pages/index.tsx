@@ -1,17 +1,11 @@
-import { GetServerSidePropsContext } from "next";
-import { NextSeo } from "next-seo";
-import { Homepage } from "../components/index/homepage/homepage";
-import { DefaultLayout } from "../layouts/default-layout/default-layout";
-import { useEffect } from "react";
-import { Redirect } from "../lib/helpers/redirect";
-import { HomeProvider } from "../components/index/homepage/providers/homepage-provider";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 export default function Page(props) {
   const router = useRouter();
-
   useEffect(() => {
-    router.replace("/3MSHOP/");
+    const shopCode = localStorage.getItem("shopCode");
+    router.replace(`/${shopCode || "404"}`);
   });
   return null;
   // useEffect(() => {

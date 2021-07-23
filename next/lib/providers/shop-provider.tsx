@@ -86,7 +86,7 @@ export function ShopProvider(props) {
           if (customer && customer.latitude && customer.longitude) {
             setLocationCustomer({ latitude: customer.latitude, longitude: customer.longitude });
           } else {
-            setLocationCustomer({ latitude: 106.725484, longitude: 10.72883 });
+            setLocationCustomer({ latitude: 10.72883, longitude: 106.725484 });
           }
         }
       );

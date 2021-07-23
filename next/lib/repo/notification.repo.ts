@@ -72,7 +72,7 @@ export class NotificationRepository extends CrudRepository<Notification> {
         }
       `;
   fullFragment: string = `
-        id: String
+        id
         createdAt
         updatedAt
         target
@@ -109,6 +109,15 @@ export class NotificationRepository extends CrudRepository<Notification> {
           id
         }
       `;
+  async readNotification(id: string): Promise<Order> {
+    return await this.mutate({
+      mutation: `readNotification(notificationId: "${id}") {
+            ${this.fullFragment}
+          }`,
+    }).then((res) => {
+      return res.data["g0"];
+    });
+  }
 }
 
 export const NotificationService = new NotificationRepository();

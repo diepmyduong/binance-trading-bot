@@ -9,6 +9,27 @@ import { DefaultHead } from "../default-head";
 import { Header } from "./components/header";
 import { DefaulLayoutProvider } from "./provider/default-layout-provider";
 
+export function DefaultLayout({ ...props }) {
+  const router = useRouter();
+  const shopCode = router.query.code as string;
+  if (typeof sessionStorage != "undefined") {
+    sessionStorage.setItem("shopCode", shopCode);
+    localStorage.setItem("shopCode", shopCode);
+    if (router.query["x-token"]) {
+      SetCustomerToken(router.query["x-token"] as string, shopCode);
+    }
+  }
+
+  if (!shopCode) return <Spinner />;
+  return (
+    <DefaulLayoutProvider>
+      <ShopProvider>
+        <NavBar>{props.children}</NavBar>
+      </ShopProvider>
+    </DefaulLayoutProvider>
+  );
+}
+
 function NavBar(props) {
   const router = useRouter();
   const { shop, shopCode } = useShopContext();
@@ -33,25 +54,5 @@ function NavBar(props) {
         </>
       </div>
     </CartProvider>
-  );
-}
-
-export function DefaultLayout({ ...props }) {
-  const router = useRouter();
-  const shopCode = router.query.code as string;
-  if (typeof sessionStorage != "undefined") {
-    sessionStorage.setItem("shopCode", shopCode);
-    if (router.query["x-token"]) {
-      SetCustomerToken(router.query["x-token"] as string, shopCode);
-    }
-  }
-
-  if (!shopCode) return <Spinner />;
-  return (
-    <DefaulLayoutProvider>
-      <ShopProvider>
-        <NavBar>{props.children}</NavBar>
-      </ShopProvider>
-    </DefaulLayoutProvider>
   );
 }

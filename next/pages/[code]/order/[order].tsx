@@ -29,7 +29,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   if (!order) Redirect(context.res, "/404");
   const { id } = orderDetail;
   const seo = await SEO("Chi tiết đơn hàng", {
-    image: shop.shopCover,
+    image: shop.shopCover || shop.shopLogo,
     description: shop.shopName,
     shopName: shop.shopName,
   });

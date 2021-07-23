@@ -11,11 +11,11 @@ interface Propstype extends ReactProps {
 export function PromotionDetail({ promotion, ...props }: Propstype) {
   const des = [
     {
-      label: "Ưu đãi",
+      label: "Ưu đãi:",
       content: promotion.description,
     },
     {
-      label: "Có hiệu lực",
+      label: "Có hiệu lực:",
       content: promotion.startDate
         ? `${formatDate(new Date(promotion.startDate), "dd-MM-yyyy HH:mm")} - ${formatDate(
             new Date(promotion.endDate),
@@ -24,26 +24,26 @@ export function PromotionDetail({ promotion, ...props }: Propstype) {
         : "",
     },
     {
-      label: "Phương thức thanh toán",
+      label: "Phương thức thanh toán:",
       content: promotion.applyPaymentMethods.map((item) => item).join(", "),
     },
     {
-      label: "Giảm tối đa",
+      label: "Giảm tối đa:",
       content: promotion.maxDiscount,
     },
     {
-      label: "Đơn hàng tối thiểu",
+      label: "Đơn hàng tối thiểu:",
       content: promotion.minSubtotal,
     },
     {
-      label: "Sảm phẩm tối thiểu",
+      label: "Sảm phẩm tối thiểu:",
       content: promotion.minItemQty,
     },
   ];
   const [showMore, setShowMore] = useState(false);
   const { isMobile } = useDevice();
   return (
-    <div className={`text-sm bg-primary-light ${isMobile ? "pb-12" : ""}`}>
+    <div className={`text-sm ${isMobile ? "pb-12" : ""}`}>
       {promotion && <Promotion promotion={promotion} />}
       <h3 className="text-2xl">{promotion.code}</h3>
       {des?.map((item, index) => (
@@ -66,7 +66,7 @@ export function PromotionDetail({ promotion, ...props }: Propstype) {
       /> */}
       <p className="pt-4">{promotion.description}</p>
       <div
-        className="ql-editor ql-snow mb-10 mt-5 px-5 text-sm"
+        className="ql-editor ql-snow mb-10 mt-5 text-sm"
         dangerouslySetInnerHTML={{ __html: promotion.content }}
       ></div>
     </div>

@@ -197,7 +197,7 @@ interface CellProps extends ReactProps {
 }
 
 interface CellTextProps extends CellProps {
-  subText?: string;
+  subText?: any;
   subTextClassName?: string;
   image?: string;
   imageClassName?: string;

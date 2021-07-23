@@ -18,7 +18,7 @@ export function ProductsGroup(props: Propstype) {
             {item.products?.map((item: Product, index) => (
               <Link
                 key={index}
-                href={{ pathname: location.pathname, query: { productId: item.code } }}
+                href={{ pathname: location.pathname, query: { product: item.code } }}
                 shallow
               >
                 <a>

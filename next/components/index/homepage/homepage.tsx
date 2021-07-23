@@ -45,7 +45,7 @@ function CartButton() {
 export function Homepage() {
   const { shop } = useShopContext();
   const router = useRouter();
-  const { productId } = router.query;
+  const { product } = router.query;
   console.log("shop home page", shop);
   if (!shop) return <Spinner />;
   return (
@@ -54,12 +54,12 @@ export function Homepage() {
         <ShopHeader></ShopHeader>
         <CartButton></CartButton>
       </div>
-      <ProductDetailProvider productCode={productId}>
+      <ProductDetailProvider productCode={product}>
         <ProductDetail
-          isOpen={!!productId}
+          isOpen={!!product}
           onClose={() => {
             const url = new URL(location.href);
-            url.searchParams.delete("productId");
+            url.searchParams.delete("product");
             router.push(url.toString(), null, { shallow: true });
           }}
         />

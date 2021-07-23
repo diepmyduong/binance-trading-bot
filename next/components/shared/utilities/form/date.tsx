@@ -101,11 +101,11 @@ export function DatePicker({
       setValue(date);
       if (props.onChange) {
         props.onChange(date);
-        if (!props.timeOnly) {
-          setTimeout(() => {
-            ref.current.input.focus();
-          });
-        }
+        // if (!props.timeOnly) {
+        //   setTimeout(() => {
+        //     ref.current.input.focus();
+        //   });
+        // }
       }
     }
   };
@@ -133,6 +133,11 @@ export function DatePicker({
       //   setIsClosedRecently(false);
       // }, 100);
     }
+  };
+
+  const onBlur = (e) => {
+    console.log("SDsjLKSJK", e, JSON.stringify(document.activeElement));
+    // ref.current.setOpen(false);
   };
 
   const clearDate = () => {

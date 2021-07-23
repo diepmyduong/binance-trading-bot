@@ -126,7 +126,7 @@ export function SaleUpProduct(props: SaleUpProductProps) {
           <SwiperSlide key={index} className="w-3/4">
             <Link
               key={index}
-              href={{ pathname: location.pathname, query: { productId: item.code } }}
+              href={{ pathname: location.pathname, query: { product: item.code } }}
               shallow
             >
               <a>

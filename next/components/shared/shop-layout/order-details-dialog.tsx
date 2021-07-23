@@ -123,7 +123,7 @@ export function OrderDetailsDialog({ orderId, ...props }: PropsType) {
             {order.pickupMethod == "STORE" && (
               <div className="text-gray-700">
                 <div className="font-semibold">Thời gian lấy hàng</div>
-                <div>{order.pickupTime}</div>
+                <div>【{format(new Date(order.pickupTime), "HH:mm dd-MM-yyyy")}】</div>
               </div>
             )}
           </div>

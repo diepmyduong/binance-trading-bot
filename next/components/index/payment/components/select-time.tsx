@@ -124,6 +124,9 @@ export function SelectTime() {
         onCancel={() => setOpenDatePickerDate(false)}
         onSelect={(date) => {
           setSelectDate(new Date(date));
+          setSelectTime(
+            new Date(getDateString(`${selectTime.getHours()}:${selectTime.getMinutes()}`, date))
+          );
           setOpenDatePickerDate(false);
         }}
         dateConfig={configDate}

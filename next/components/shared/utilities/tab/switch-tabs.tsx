@@ -58,7 +58,7 @@ export function SwitchTabs({
             block: "nearest",
             inline: "center",
           });
-        }, 300);
+        }, 50);
       }
       setTimeout(() => {
         checkLeftnRight();

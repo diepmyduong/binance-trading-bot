@@ -44,7 +44,7 @@ export function CommentsDialog(props: Propstype) {
                   ))}
                 </>
               ) : (
-                <span>Chưa có bình luận</span>
+                <span className="px-4 py-5">Chưa có bình luận</span>
               )}
             </>
           ) : (

@@ -63,6 +63,7 @@ const Mutation = {
         ...shopConfigService.getDefaultConfig(),
       }),
     ]);
+    shopConfigService.setAhamoveToken(helper.member);
     helper.setActivedAt();
     return await helper.member.save();
   },

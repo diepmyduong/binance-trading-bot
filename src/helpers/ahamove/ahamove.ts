@@ -40,7 +40,7 @@ export class Ahamove {
       .get(`${this.host}/v1/partner/register_account`, {
         params: {
           ...props,
-          api_key: this.config.apiKey,
+          api_key: this.apiKey,
         },
       })
       .then((res) => ({

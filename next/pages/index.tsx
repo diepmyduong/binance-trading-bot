@@ -4,8 +4,7 @@ import { useEffect } from "react";
 export default function Page(props) {
   const router = useRouter();
   useEffect(() => {
-    const shopCode = localStorage.getItem("shopCode");
-    router.replace(`/${shopCode || "404"}`);
+    router.replace(`/ERROR/not-found-shop`);
   });
   return null;
   // useEffect(() => {

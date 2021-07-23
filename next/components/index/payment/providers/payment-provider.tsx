@@ -9,6 +9,7 @@ import { OrderService } from "../../../../lib/repo/order.repo";
 import { ShopVoucher, ShopVoucherService } from "../../../../lib/repo/shop-voucher.repo";
 import { UserService } from "../../../../lib/repo/user.repo";
 import { CustomerService } from "../../../../lib/repo/customer.repo";
+import useDebounce from "../../../../lib/hooks/useDebounce";
 
 export const PaymentContext = createContext<
   Partial<{
@@ -99,9 +100,6 @@ export function PaymentProvider(props) {
       return OrderService.generateOrder({ ...orderInput, items: items })
         .then((res) => {
           localStorage.removeItem(shopCode + "cartProducts");
-          orderInput = { ...orderInput, note: "", promotionCode: "" };
-          setOrderInput(orderInput);
-          clearCartProduct();
           // router.push(`${shopCode}/order/${res.code}/success`);
           setOrderCode(res.code);
         })
@@ -119,17 +117,15 @@ export function PaymentProvider(props) {
       setOrderInput(cloneDeep(reOrderInput));
     }
   }, [reOrderInput]);
+  let debounceInput = useDebounce(orderInput, 600);
   useEffect(() => {
-    console.log("ORDER INPUT CHANGE", orderInput);
-    if (orderInput && orderInput.shopBranchId) {
+    if (debounceInput && debounceInput.shopBranchId) {
       console.log("generate draft order");
       generateDraftOrder();
     }
-  }, [orderInput]);
+  }, [debounceInput]);
   useEffect(() => {
-    console.log("branchSelecting", branchSelecting);
     if (branchSelecting) {
-      console.log("SET BRANCH TO ORDER INPUT");
       orderInput = { ...orderInput, shopBranchId: branchSelecting.id };
       setOrderInput(orderInput);
     }
@@ -138,7 +134,7 @@ export function PaymentProvider(props) {
     if (!customer) return;
     orderInput = {
       ...orderInput,
-      buyerName: customer.name,
+      buyerName: customer.name || "",
       buyerPhone: customer.phone,
       buyerFullAddress: customer.fullAddress || "",
       buyerAddressNote: customer.addressNote || "",

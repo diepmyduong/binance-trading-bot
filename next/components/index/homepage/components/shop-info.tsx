@@ -19,13 +19,13 @@ interface Propstype extends ReactProps {}
 export function ShopInfo(props: Propstype) {
   const { branchSelecting, shop } = useShopContext();
   return (
-    <div className="relative text-sm bg-white">
+    <div className=" text-sm bg-white">
       <Img
         src={branchSelecting ? branchSelecting.coverImage : shop.shopCover}
         ratio169
-        className="bannerShop"
+        className="bannerShop relative"
       />
-      <ShopBranch className="center-item top-1/4 w-11/12 sm:mt-10" />
+      <ShopBranch className="w-11/12 mx-auto relative -mt-6 mb-2" />
       <MoreInfomation />
       <BannerPromtion banner={shop.config.banners} />
     </div>
@@ -37,7 +37,7 @@ const MoreInfomation = (props) => {
   const { voucherShow } = useHomeContext();
   return (
     <>
-      <div className={`pt-20`}>
+      <div>
         <div className="flex items-center justify-between border-b px-4 ">
           <p className="flex items-center flex-1 text-ellipsis font-semibold text-primary">
             <i className="text-primary p-0.5 border rounded-full text-10 border-primary mr-1">
@@ -86,7 +86,7 @@ const ShopBranch = (props: ShopInfoProps) => {
   if (!shopBranchs) return <Spinner />;
   return (
     <div className={`bg-white p-3 pb-0 rounded-md shadow-lg text-center  ${props.className || ""}`}>
-      <h2 className="text-xl font-semibold pb-2">{shop.shopName}</h2>
+      <h2 className="text-xl font-semibold pb-2 text-ellipsis-2">{shop.shopName}</h2>
       <p className="text-sm text-gray-400 pb-2 border-b">
         Thời gian làm món khoảng{" "}
         {branchSelecting?.shipPreparationTime || shop.config.shipPreparationTime}

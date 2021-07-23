@@ -9,6 +9,7 @@ import { ShopLayoutContext, ShopLayoutProvider } from "./providers/shop-layout-p
 import { firebase } from "./../../lib/helpers/firebase";
 import { useToast } from "../../lib/providers/toast-provider";
 import { useRouter } from "next/router";
+import { GraphService } from "../../lib/repo/graph.repo";
 
 interface PropsType extends ReactProps {}
 export function ShopLayout({ ...props }: PropsType) {
@@ -26,7 +27,8 @@ export function ShopLayout({ ...props }: PropsType) {
         const messaging = firebase.messaging();
         messaging.onMessage((payload) => {
           toast.info(`${payload.notification.title}. ${payload.notification.body || ""}`, {
-            onClick: () => {
+            onClick: async () => {
+              await GraphService.clearStore();
               router.push("/shop/orders");
             },
             position: "top-right",

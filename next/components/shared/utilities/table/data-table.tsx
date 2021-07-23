@@ -65,14 +65,12 @@ export function DataTable<T extends BaseModel>({
 
   useInterval(async () => {
     if (!isLoading && !refreshing) {
-      console.log("CHECK THIS TOO");
       await loadAll(true, false);
     }
   }, props.autoRefresh);
 
   useEffect(() => {
     if (loadDone) {
-      console.log("RUN HERERE");
       loadAll();
     }
   }, [loadDone, search, filter, props.filter, currentOrder, pagination.page, pagination.limit]);
@@ -91,7 +89,6 @@ export function DataTable<T extends BaseModel>({
   };
 
   const loadAll = async (refresh = false, showLoading: boolean = true) => {
-    console.log("herererererer");
     if (refreshing) {
       await waitUntil(() => !refreshing);
     }
@@ -191,7 +188,6 @@ export function DataTable<T extends BaseModel>({
   const onRefresh = async () => {
     try {
       setRefreshing(true);
-      console.log("REFRESH");
       await loadAll(true);
     } finally {
       setRefreshing(false);

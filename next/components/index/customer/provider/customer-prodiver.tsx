@@ -30,7 +30,6 @@ export function CustomerProvider(props) {
   }>();
   async function getCustomner() {
     let res = await CustomerService.getCustomer();
-    console.log(res);
     setCustomer(res);
   }
   const toast = useToast();
@@ -50,7 +49,6 @@ export function CustomerProvider(props) {
     })
       .then((res) => {
         setCustomer(res.data.g0);
-        console.log(res.data.g0);
         toast.success("Thay đổi thông tin thành công");
         return res.data.g0;
       })

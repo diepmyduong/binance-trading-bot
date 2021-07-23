@@ -88,7 +88,7 @@ export function PaymentProvider(props) {
         setDraftOrder(cloneDeep(res));
         console.log(res);
         if (res.invalid && items.length > 0) {
-          toast.error(res.invalidReason);
+          toast.dark(res.invalidReason, { position: "top-center" });
         }
       })
       .catch((err) => {});

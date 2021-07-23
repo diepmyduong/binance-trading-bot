@@ -43,11 +43,14 @@ export function SwitchTabs({
       setClickToView(false);
     }, 500);
   }
-  const debounceValue = useDebounce(props.value, 200);
   useEffect(() => {
     if (!clickToView && chevron) {
-      setValue(debounceValue);
-      let selected = document.getElementsByClassName("tab")[debounceValue];
+      setValue(props.value);
+    }
+  }, [props.value]);
+  useEffect(() => {
+    if (!clickToView && chevron) {
+      let selected = document.getElementsByClassName("tab")[value];
       if (selected) {
         setTimeout(() => {
           selected.scrollIntoView({
@@ -55,13 +58,13 @@ export function SwitchTabs({
             block: "nearest",
             inline: "center",
           });
-        }, 50);
+        }, 300);
       }
       setTimeout(() => {
         checkLeftnRight();
-      }, 500);
+      }, 400);
     }
-  }, [debounceValue]);
+  }, [value]);
   const debounceValue2 = useDebounce(value, 200);
   useEffect(() => {
     let selected = document.getElementsByClassName("tab")[debounceValue2];
@@ -111,7 +114,7 @@ export function SwitchTabs({
           }, 50);
           setTimeout(() => {
             checkLeftnRight();
-          }, 500);
+          }, 300);
           break;
         }
       }
@@ -127,12 +130,13 @@ export function SwitchTabs({
           }, 50);
           setTimeout(() => {
             checkLeftnRight();
-          }, 500);
+          }, 300);
           break;
         }
       }
     }
   }
+
   const { isMobile } = useDevice();
   return (
     <div className={`relative group w-full ${props.className || ""} tab-container`}>

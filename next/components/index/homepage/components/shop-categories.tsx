@@ -42,7 +42,7 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
               //   }, 200);
               // }
               clearInterval(scrollCheckInterval);
-            }, 200);
+            }, 100);
             break;
           }
         }

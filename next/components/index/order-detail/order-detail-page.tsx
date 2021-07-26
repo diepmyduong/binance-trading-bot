@@ -137,10 +137,8 @@ export function OrderDetailPage(props) {
     reOrderClick,
   } = useOrderDetailContext();
   const [showComment, setShowComment] = useState(false);
-  const [showCancel, setShowCancel] = useState(false);
   const { shopCode, shop } = useShopContext();
   const [rating, setRating] = useState(5);
-  const toast = useToast();
   return (
     <div className="bg-white min-h-screen">
       <BreadCrumbs

@@ -129,10 +129,8 @@ export function OrderDetailPage(props) {
   const {
     order,
     status,
-    cancelOrder,
     setLoading,
     loading,
-    isInterval,
     tags,
     addTags,
     commentOrder,
@@ -298,26 +296,26 @@ export function OrderDetailPage(props) {
                   )}
 
                 {order.status === "PENDING" && (
-                  <div className="flex flex-wrap-reverse items-center justify-center mt-2 gap-2">
-                    <Button
-                      text="Hủy đơn"
-                      outline
-                      primary
-                      asyncLoading={loading}
-                      className="rounded-sm w-full"
-                      onClick={() => {
-                        setLoading(true);
-                        setShowCancel(true);
-                      }}
-                    />
-                    <Button
-                      text="Gọi nhà hàng"
-                      primary
-                      href={`tel:${order.shopBranch.phone}`}
-                      className="rounded-sm bg-gradient w-full"
-                      icon={<HiOutlinePhone />}
-                    />
-                  </div>
+                  // <div className="flex flex-wrap-reverse items-center justify-center mt-2 gap-2">
+                  //   <Button
+                  //     text="Hủy đơn"
+                  //     outline
+                  //     primary
+                  //     asyncLoading={loading}
+                  //     className="rounded-sm w-full"
+                  //     onClick={() => {
+                  //       setLoading(true);
+                  //       setShowCancel(true);
+                  //     }}
+                  //   />
+                  <Button
+                    text="Gọi nhà hàng"
+                    primary
+                    href={`tel:${order.shopBranch.phone}`}
+                    className="rounded-sm bg-gradient w-full"
+                    icon={<HiOutlinePhone />}
+                  />
+                  // </div>
                 )}
                 {order.status === "CONFIRMED" && (
                   <Button
@@ -347,7 +345,7 @@ export function OrderDetailPage(props) {
                     />
                   </div>
                 )}
-                <Form
+                {/* <Form
                   title="Lý do hủy"
                   dialog
                   isOpen={showCancel}
@@ -363,7 +361,7 @@ export function OrderDetailPage(props) {
                   <div className="flex justify-end">
                     <Button submit text="Xác nhận" large primary />
                   </div>
-                </Form>
+                </Form> */}
                 <Form
                   title="Bình luận đơn hàng này"
                   slideFromBottom="none"

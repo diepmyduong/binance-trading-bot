@@ -16,7 +16,7 @@ export const OrderDetailContext = createContext<
     setLoading: Function;
     isInterval: boolean;
     tags: ShopTag[];
-    cancelOrder: (id: string, note: string) => any;
+    // cancelOrder: (id: string, note: string) => any;
     addTags: (tag: ShopTag) => any;
     commentOrder: (inputData: { message: string; rating: number }) => any;
     reOrderClick: () => any;
@@ -129,20 +129,20 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
       if (sta) setStatus(cloneDeep(sta));
     }
   }, [order]);
-  function cancelOrder(id: string, note: string) {
-    OrderService.cancelOrder(id, note)
-      .then((res) => {
-        setOrder(cloneDeep(res));
-        console.log(res);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        alert.error("Hủy đơn hàng thất bại", err.message);
-        loadOrder(id);
-        setLoading(false);
-      });
-  }
+  // function cancelOrder(id: string, note: string) {
+  //   OrderService.cancelOrder(id, note)
+  //     .then((res) => {
+  //       setOrder(cloneDeep(res));
+  //       console.log(res);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //       alert.error("Hủy đơn hàng thất bại", err.message);
+  //       loadOrder(id);
+  //       setLoading(false);
+  //     });
+  // }
   const loadOrder = (id: string) => {
     OrderService.getOne({ id, cache: false })
       .then((res) => {
@@ -209,7 +209,7 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
         status,
         loading,
         setLoading,
-        cancelOrder,
+        // cancelOrder,
         isInterval,
         tags,
         addTags,

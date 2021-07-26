@@ -21,7 +21,7 @@ export function CustomerLoginDialog(props: Propstype) {
       className="main-container mb-4"
     >
       <Field label="Số điện thoại" name="phoneUser" className="mt-3">
-        <Input type="tel"></Input>
+        <Input type="tel" autoFocus></Input>
       </Field>
       <Button text="Đăng nhập" className="w-full" submit primary />
     </Form>

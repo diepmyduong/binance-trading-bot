@@ -45,7 +45,7 @@ export function PaymentPage() {
 
 function PaymentSuccess() {
   const { orderCode } = usePaymentContext();
-  return <SuccessDialog isOpen={orderCode ? true : false} code={orderCode} />;
+  return <SuccessDialog isOpen={true} code={orderCode} />;
 }
 
 function Payment() {

@@ -7,6 +7,8 @@ import { useShopContext } from "../../../../lib/providers/shop-provider";
 import { Spinner } from "../../../shared/utilities/spinner";
 import { usePaymentContext } from "../providers/payment-provider";
 import { useCartContext } from "../../../../lib/providers/cart-provider";
+import useDevice from "../../../../lib/hooks/useDevice";
+import useScreen from "../../../../lib/hooks/useScreen";
 interface Propstype extends DialogPropsType {
   code: string;
 }
@@ -39,8 +41,15 @@ export function SuccessDialog({ code, ...props }: Propstype) {
       };
     }
   }, [code]);
+  const { isMobile } = useDevice();
+  const screenSm = useScreen("sm");
   return (
-    <Dialog {...props} onClose={() => {}} mobileSizeMode={false} slideFromBottom="none">
+    <Dialog
+      {...props}
+      onClose={() => {}}
+      slideFromBottom="none"
+      extraDialogClass=" transform -translate-y-10 w-5/6"
+    >
       <Dialog.Body>
         <div className="sm:p-2 flex flex-col items-center">
           <h3 className="text-lg sm:text-32 font-bold text-primary text-center p-2">
@@ -48,7 +57,11 @@ export function SuccessDialog({ code, ...props }: Propstype) {
           </h3>
 
           {sec !== 0 ? (
-            <Img src="https://nhahang.so/assets/img/count-down.gif" className="w-3/4" />
+            <Img
+              src="https://nhahang.so/assets/img/count-down.gif"
+              className="w-full sm:w-5/6"
+              ratio169={isMobile || !screenSm}
+            />
           ) : (
             <Spinner />
           )}

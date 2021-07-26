@@ -35,7 +35,6 @@ export function SettingsProvider(props) {
     SettingGroupService.getAll({ query: { limit: 0 } }).then((res) => {
       setSettingGroups([...res.data]);
       setLoadDone(true);
-      console.log(res.data);
     });
   }, []);
 
@@ -111,7 +110,6 @@ export function SettingsProvider(props) {
   };
 
   const saveSetting = async (id: string, data: Setting) => {
-    console.log("asdasd");
     const { type, name, key, isActive, isPrivate, readOnly, value, valueKeys } = data;
     let groupId = settingGroup.id;
     let newValue = undefined;

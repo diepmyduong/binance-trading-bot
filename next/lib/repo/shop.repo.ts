@@ -1,7 +1,9 @@
 import { ShopConfig } from "./shop-config.repo";
 import { BaseModel, CrudRepository } from "./crud.repo";
+import { SetAnonymousToken } from "../graphql/auth.link";
 
 export interface Shop extends BaseModel {
+  code: string;
   id: string;
   username: string;
   uid: string;
@@ -29,6 +31,7 @@ export class ShopRepository extends CrudRepository<Shop> {
   apiName: string = "Shop";
   displayName: string = "shop";
   shortFragment: string = this.parseFragment(`
+  code: String
   id: String
   username: String
   uid: String
@@ -49,6 +52,7 @@ export class ShopRepository extends CrudRepository<Shop> {
   ward: String
   allowSale: Boolean`);
   fullFragment: string = this.parseFragment(`
+  code: String
   id: String
   username: String
   uid: String
@@ -104,6 +108,7 @@ export class ShopRepository extends CrudRepository<Shop> {
       voucher {
         id: String
         code: String
+        description: String
       }: ShopVoucher
     }: [ShopBanner]
     productGroups {
@@ -152,7 +157,11 @@ export class ShopRepository extends CrudRepository<Shop> {
           loginAnonymous(shopCode:"${shopCode}")
         }`,
       })
-      .then((res) => res.data["loginAnonymous"] as string);
+      .then((res) => res.data["loginAnonymous"] as string)
+      .then((token) => {
+        SetAnonymousToken(token, shopCode);
+        return token;
+      });
   }
 }
 export const ShopService = new ShopRepository();

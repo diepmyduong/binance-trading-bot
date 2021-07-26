@@ -100,6 +100,7 @@ export class ShopConfigRepository extends CrudRepository<ShopConfig> {
       voucher {
         id: String
         code: String
+        description: String
       }: ShopVoucher
     }: [ShopBanner]
     productGroups {

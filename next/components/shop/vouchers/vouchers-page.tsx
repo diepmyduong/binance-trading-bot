@@ -5,7 +5,6 @@ import {
   ShopVoucherService,
   SHOP_VOUCHER_TYPES,
 } from "../../../lib/repo/shop-voucher.repo";
-import { Staff } from "../../../lib/repo/staff.repo";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
 import { Field } from "../../shared/utilities/form/field";
 import { Select } from "../../shared/utilities/form/select";
@@ -138,7 +137,7 @@ export function VouchersPage(props: ReactProps) {
           />
           <DataTable.Column
             right
-            render={(item: Staff) => (
+            render={(item: ShopVoucher) => (
               <>
                 <DataTable.CellButton value={item} isEditButton />
                 <DataTable.CellButton hoverDanger value={item} isDeleteButton />

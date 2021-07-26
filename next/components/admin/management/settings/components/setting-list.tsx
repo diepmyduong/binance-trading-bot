@@ -67,7 +67,6 @@ export function SettingList(props: PropTypes) {
         switch (setting.type) {
           case "object": {
             setting.valueKeys = Object.keys(setting?.value || {});
-            console.log("herer", settings);
             // setting.values = Object.keys(setting.value).map((key) => ({ key, value: setting.value[key] }));
             break;
           }
@@ -159,7 +158,6 @@ export function SettingList(props: PropTypes) {
                     isOpen={!!openSettings}
                     onClose={() => setOpenSettings(null)}
                     onSubmit={async (data) => {
-                      console.log("data,", data);
                       await saveSetting(data.id, data).then((res) => {
                         setOpenSettings(null);
                       });

@@ -10,12 +10,15 @@ import { SwitchTabs } from "../../../shared/utilities/tab/switch-tabs";
 import { ProductsGroup } from "./products-group";
 import { ImgProduct } from "../../../shared/homepage-layout/img-product";
 import Link from "next/link";
+import { useHomeContext } from "../providers/homepage-provider";
+import { Spinner } from "../../../shared/utilities/spinner";
 interface ShopCategoriesPropsType extends ReactProps {}
 
 export function ShopCategories(props: ShopCategoriesPropsType) {
-  const { categoriesShop, shop } = useShopContext();
+  const { shop } = useShopContext();
   const [isViewing, setIsViewing] = useState<number>();
   const [isClickView, setIsClickView] = useState(false);
+  const { categoryContext } = useHomeContext();
   function isInViewport(element) {
     const rect = element.getBoundingClientRect();
     return (
@@ -42,7 +45,7 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
               //   }, 200);
               // }
               clearInterval(scrollCheckInterval);
-            }, 200);
+            }, 100);
             break;
           }
         }
@@ -71,39 +74,43 @@ export function ShopCategories(props: ShopCategoriesPropsType) {
       setIsClickView(false);
     }, 500);
   };
+
   return (
     <div className="bg-white mt-4">
       <ProductsGroup productGroups={shop.config.productGroups} />
-      {categoriesShop?.length > 0 && (
-        <>
-          <SwitchTabs
-            chevron
-            id="menus"
-            value={isViewing}
-            className=" sticky top-14 bg-white z-20 shadow-sm "
-            native
-            options={[
-              ...categoriesShop.map(
-                (item, index) =>
-                  item.productIds.length > 0 && {
-                    value: index,
-                    label: item.name,
-                  }
-              ),
-            ]}
-            onChange={(val) => handleChange(val)}
-          />
-          <div className="flex flex-col bg-gray-200 ">
-            {categoriesShop.map(
-              (item: Category, index: number) =>
-                item.productIds.length > 0 && (
-                  <ShopCategory list={item.products} title={item.name} key={index} />
-                )
-            )}
-          </div>
-        </>
-      )}
+      <ListCategory isViewing={isViewing} handleChange={handleChange} />
     </div>
+  );
+}
+
+function ListCategory(props) {
+  const { categoryContext } = useHomeContext();
+  if (!categoryContext.items) return <Spinner />;
+  return (
+    <>
+      <SwitchTabs
+        chevron
+        id="menus"
+        value={props.isViewing}
+        className=" sticky top-14 bg-white z-20 shadow-sm "
+        native
+        options={[
+          ...categoryContext.items.map(
+            (item, index) =>
+              item.productIds.length > 0 && {
+                value: index,
+                label: item.name,
+              }
+          ),
+        ]}
+        onChange={(val) => props.handleChange(val)}
+      />
+      <div className="flex flex-col bg-gray-200 ">
+        {categoryContext.items.map((item: Category, index: number) => (
+          <ShopCategory list={item.products} title={item.name} key={index} />
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -121,12 +128,12 @@ export function ShopCategory(props: ShopCategoryPropsType) {
           {props.list.map((item: Product, index: number) => (
             <Link
               key={index}
-              href={{ pathname: location.pathname, query: { productId: item.code } }}
+              href={{ pathname: location.pathname, query: { product: item.code } }}
               shallow
             >
               <a>
                 <div
-                  className={`py-2  hover:bg-primary-light cursor-pointer border-b transition-all duration-300  ${
+                  className={`py-2  hover:bg-primary-light cursor-pointer border-b border-gray-100 transition-all duration-300  ${
                     item.allowSale ? "" : "hidden"
                   }`}
                   // onClick={() => {

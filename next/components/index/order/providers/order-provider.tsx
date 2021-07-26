@@ -1,28 +1,21 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Order, OrderService, ORDER_STATUS } from "../../../../lib/repo/order.repo";
 import cloneDeep from "lodash/cloneDeep";
+import { PaginationQueryProps, usePaginationQuery } from "../../../../lib/hooks/usePaginationQuery";
 
-export const OrderContext = createContext<Partial<{ orders: Order[]; statusOrder: Option[] }>>({});
+export const OrderContext = createContext<PaginationQueryProps<Order> & Partial<{}>>({});
 
 export function OrderProvider(props) {
-  const [orders, setOrders] = useState<Order[]>();
-  const statusOrder = ORDER_STATUS;
-  async function loadOrders() {
-    await OrderService.clearStore();
-    setOrders(null);
-    let res = await OrderService.getAll({
-      query: { order: { createdAt: -1, cache: false } },
-    });
-    if (res) {
-      setOrders(cloneDeep(res.data));
-    }
-  }
-  useEffect(() => {
-    loadOrders();
-  }, []);
-  return (
-    <OrderContext.Provider value={{ orders, statusOrder }}>{props.children}</OrderContext.Provider>
+  const context = usePaginationQuery(
+    OrderService,
+    null,
+    {
+      order: { createdAt: -1 },
+    },
+    undefined, // fragment
+    false // cache
   );
+  return <OrderContext.Provider value={{ ...context }}>{props.children}</OrderContext.Provider>;
 }
 
 export const useOrderContext = () => useContext(OrderContext);

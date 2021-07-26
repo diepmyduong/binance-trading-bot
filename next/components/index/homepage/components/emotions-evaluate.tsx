@@ -29,21 +29,20 @@ export function EmotionsEvaluate(props: Propstype) {
               onClick={() => setReactSelected(item)}
             >
               {item.icon}
-              <p className="pl-2">
+              <span className="pl-2">
                 {item.name} ({item.qty}+)
-              </p>
+              </span>
             </div>
           </SwiperSlide>
         ))}
       </Swiper>
       <Dialog
-        title="Đánh giá"
         isOpen={reactSelected ? true : false}
         onClose={() => setReactSelected(null)}
         slideFromBottom="all"
         mobileSizeMode
       >
-        <div className=" flex flex-col py-4 text-center max-w-lg">
+        <div className=" flex flex-col pt-10 p-4 text-center max-w-lg min-h-3xs">
           <span className="text-48 py-2">{reactSelected?.icon}</span>
           <span className="text-28 py-2">{reactSelected?.name}</span>
           <span className=" py-2">{reactSelected?.qty}+ khách hàng đã đánh giá như vậy</span>

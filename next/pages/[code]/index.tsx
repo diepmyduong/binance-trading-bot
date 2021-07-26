@@ -1,23 +1,17 @@
 import { GetServerSidePropsContext } from "next";
 import { NextSeo } from "next-seo";
 import { Homepage } from "../../components/index/homepage/homepage";
-import { DefaultLayout } from "../../layouts/default-layout/default-layout";
-import { MemberModel } from "./../../../dist/graphql/modules/member/member.model";
-import { useEffect } from "react";
-import { Redirect } from "../../lib/helpers/redirect";
 import { HomeProvider } from "../../components/index/homepage/providers/homepage-provider";
-import { ClearCustomerToken, ClearAnonymousToken } from "../../lib/graphql/auth.link";
+import { DefaultLayout } from "../../layouts/default-layout/default-layout";
+import { Redirect } from "../../lib/helpers/redirect";
+import SEO from "../../lib/helpers/seo";
+import { MemberModel } from "./../../../dist/graphql/modules/member/member.model";
 
 export default function Page(props) {
-  useEffect(() => {
-    sessionStorage.setItem("shop", JSON.stringify(props.shop));
-    sessionStorage.setItem("shopCode", props.code);
-  }, []);
-
   return (
     <>
       <HomeProvider code={props.code} shop={props.shop}>
-        <NextSeo title={`Trang chủ`} />
+        <NextSeo {...props.seo} />
         <Homepage />
       </HomeProvider>
     </>
@@ -25,19 +19,23 @@ export default function Page(props) {
 }
 Page.Layout = DefaultLayout;
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { productId } = context.query;
+  const { product } = context.query;
   const { code = "3MSHOP" } = context.params;
-  console.log(productId);
-  const shop = await MemberModel.findOne({ code }, "shopName shopLogo");
+  const shop = await MemberModel.findOne({ code }, "shopName shopLogo shopCover");
   if (!shop) {
-    Redirect(context.res, `${code}/not-found-shop`);
+    Redirect(context.res, `/not-found-shop`);
   }
+  const seo = await SEO("Cửa hàng", {
+    image: shop.shopCover || shop.shopLogo,
+    description: shop.shopName,
+    shopName: shop.shopName,
+  });
   return {
     props: JSON.parse(
       JSON.stringify({
         code,
-        productId,
         shop,
+        seo,
       })
     ),
   };

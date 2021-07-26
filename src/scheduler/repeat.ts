@@ -10,6 +10,8 @@ import OrderJob from "./jobs/order.job";
 import SyncSocialEngagementJob from "./jobs/syncSocialEngagement.job";
 import SendNotificationJob from "./jobs/sendNotification.job";
 import RefreshAhamoveTokenJob from "./jobs/refreshAhamoveToken.job";
+import CancelPickupStoreOrderJob from "./jobs/cancelPickupStoreOrder.job";
+import { configs } from "../configs";
 
 export function InitRepeatJobs() {
   console.log("Generate Repeat Jobs");
@@ -49,4 +51,11 @@ export function InitRepeatJobs() {
     .repeatEvery("1 day", { skipImmediate: true })
     .unique({ name: SendNotificationJob.jobName })
     .save();
+  // .then((job) => job.run());
+
+  CancelPickupStoreOrderJob.create({})
+    .repeatEvery("0 0 * * *", { skipImmediate: true, timezone: configs.timezone })
+    .unique({ name: CancelPickupStoreOrderJob.jobName })
+    .save();
+  // .then((job) => job.run());
 }

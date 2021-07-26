@@ -15,10 +15,10 @@ type HeaderProps = ReactProps & {
 CardCustom.Header = (props: HeaderProps) => {
   return (
     <div className={`w-full ${props.className}`}>
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center min-h-18 justify-between p-4">
         <div className="flex items-center w-full">
           {props.icon && <i className="text-xl">{props.icon}</i>}
-          <h1 className="">{props.title}</h1>
+          <h1 className="font-semibold">{props.title}</h1>
         </div>
         {props.filter && (
           <div className="w-full">

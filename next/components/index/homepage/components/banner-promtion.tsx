@@ -42,24 +42,39 @@ export function BannerPromtion(props: Propstype) {
               {
                 PRODUCT: (
                   <Link
-                    href={{ pathname: location.pathname, query: { productId: item.product?.code } }}
+                    href={{ pathname: location.pathname, query: { product: item.product?.code } }}
                     shallow
                   >
                     <a>
-                      <Img key={index} src={item.image || "/assets/default/default.png"} ratio169 />
+                      <Img
+                        key={index}
+                        src={item.image || "/assets/default/default.png"}
+                        ratio169
+                        compress={512}
+                      />
                     </a>
                   </Link>
                 ),
                 WEBSITE: (
                   <Link href={item.link}>
                     <a>
-                      <Img key={index} src={item.image || "/assets/default/default.png"} ratio169 />
+                      <Img
+                        key={index}
+                        src={item.image || "/assets/default/default.png"}
+                        ratio169
+                        compress={512}
+                      />
                     </a>
                   </Link>
                 ),
                 VOUCHER: (
                   <div onClick={() => handleClick(item)}>
-                    <Img key={index} src={item.image || "/assets/default/default.png"} ratio169 />
+                    <Img
+                      key={index}
+                      src={item.image || "/assets/default/default.png"}
+                      ratio169
+                      compress={512}
+                    />
                   </div>
                 ),
               }[item.actionType]

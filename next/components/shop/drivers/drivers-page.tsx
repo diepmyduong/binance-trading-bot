@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { RiPhoneLine } from "react-icons/ri";
-import { Driver, DriverService } from "../../../lib/repo/driver.repo";
+import { RiBillLine, RiPhoneLine } from "react-icons/ri";
+import { NumberPipe } from "../../../lib/pipes/number";
+import { Driver, DriverService, DRIVER_STATUS } from "../../../lib/repo/driver.repo";
+import { OrdersDialog } from "../../shared/shop-layout/orders-dialog";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
 import { Field } from "../../shared/utilities/form/field";
 import { ImageInput } from "../../shared/utilities/form/image-input";
@@ -8,6 +10,8 @@ import { Input } from "../../shared/utilities/form/input";
 import { DataTable } from "../../shared/utilities/table/data-table";
 
 export function DriversPage(props: ReactProps) {
+  const [openOrders, setOpenOrders] = useState<string>("");
+
   return (
     <>
       <DataTable<Driver> crudService={DriverService} order={{ createdAt: -1 }}>
@@ -34,9 +38,24 @@ export function DriversPage(props: ReactProps) {
         <DataTable.Table className="mt-4 bg-white">
           <DataTable.Column
             label="Tài xế"
-            render={(item: Driver) => <DataTable.CellText avatar={item.avatar} value={item.name} />}
+            render={(item: Driver) => (
+              <DataTable.CellText
+                avatar={item.avatar}
+                value={item.name}
+                className="font-semibold"
+                subTextClassName="flex"
+                subText={
+                  <>
+                    <i className="mt-1 mr-1">
+                      <RiPhoneLine />
+                    </i>
+                    {item.phone}
+                  </>
+                }
+              />
+            )}
           />
-          <DataTable.Column
+          {/* <DataTable.Column
             label="Số điện thoại"
             render={(item: Driver) => (
               <DataTable.CellText
@@ -51,7 +70,7 @@ export function DriversPage(props: ReactProps) {
                 }
               />
             )}
-          />
+          /> */}
           <DataTable.Column
             center
             label="Biển số xe"
@@ -73,9 +92,57 @@ export function DriversPage(props: ReactProps) {
             )}
           />
           <DataTable.Column
+            center
+            label="Trạng thái"
+            render={(item: Driver) => (
+              <DataTable.CellStatus value={item.status} options={DRIVER_STATUS} />
+            )}
+          />
+          <DataTable.Column
+            label="Đơn hàng"
+            render={(item: Driver) => (
+              <DataTable.CellText
+                value={
+                  <>
+                    <div className="flex whitespace-nowrap">
+                      <span className="w-28">Tổng ship:</span>
+                      <span className="text-primary font-semibold">
+                        {NumberPipe(item.orderStats?.shipfee, true)}
+                      </span>
+                    </div>
+                    <div className="flex whitespace-nowrap">
+                      <span className="w-28">Thành công:</span>
+                      <span className="text-success font-semibold">
+                        {NumberPipe(item.orderStats?.completed)} đơn
+                      </span>
+                    </div>
+                    <div className="flex whitespace-nowrap">
+                      <span className="w-28">Thất bại:</span>
+                      <span className="text-danger font-semibold">
+                        {NumberPipe(item.orderStats?.failure)} đơn
+                      </span>
+                    </div>
+                    <div className="flex whitespace-nowrap">
+                      <span className="w-28">Tổng đơn:</span>
+                      <span className="font-bold">{NumberPipe(item.orderStats?.total)} đơn</span>
+                    </div>
+                  </>
+                }
+              />
+            )}
+          />
+          <DataTable.Column
             right
             render={(item: Driver) => (
               <>
+                <DataTable.CellButton
+                  value={item}
+                  icon={<RiBillLine />}
+                  tooltip="Đơn hàng đã giao"
+                  onClick={() => {
+                    setOpenOrders(item.id);
+                  }}
+                />
                 <DataTable.CellButton value={item} isEditButton />
                 <DataTable.CellButton hoverDanger value={item} isDeleteButton />
               </>
@@ -108,6 +175,12 @@ export function DriversPage(props: ReactProps) {
         </DataTable.Form>
         <DataTable.Pagination />
       </DataTable>
+      <OrdersDialog
+        mode="driver"
+        isOpen={!!openOrders}
+        onClose={() => setOpenOrders("")}
+        filter={openOrders ? { driverId: openOrders } : null}
+      />
     </>
   );
 }

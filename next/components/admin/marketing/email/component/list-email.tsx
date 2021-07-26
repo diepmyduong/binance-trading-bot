@@ -68,7 +68,6 @@ export function ListEmailPage(props) {
     }
   };
   const handleDuplicateMail = async (email: Email) => {
-    console.log("email", email);
     const confirm = await alert.question(
       "Xác nhận nhân bản Email",
       "Bạn có chắc chắn muốn nhân bản Email mẫu này?"
@@ -84,7 +83,6 @@ export function ListEmailPage(props) {
     }
   };
   if (!emails) return <Spinner />;
-  console.log(listEmailDefault);
   return (
     <>
       <div className="grid grid-cols-3 w-full h-full" style={{ height: "calc(100vh - 105px)" }}>

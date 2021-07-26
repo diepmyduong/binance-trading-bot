@@ -69,6 +69,7 @@ export default {
               ...shopConfigService.getDefaultConfig(),
             }),
           ]);
+          shopConfigService.setAhamoveToken(helper.member);
           await sendApproveEmail(regis, password);
           return regis;
         } else {

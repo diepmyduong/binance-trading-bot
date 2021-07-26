@@ -286,7 +286,6 @@ export const parseNumberToText = (
 };
 
 export const parseTextToNumber = (text: string) => {
-  console.log(text, "asdasd");
   if (text) {
     if (typeof text == "number") return text;
 

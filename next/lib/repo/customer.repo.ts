@@ -25,6 +25,7 @@ export interface Customer extends BaseModel {
   pageAccounts: [CustomerPageAccount];
   latitude: number;
   longitude: number;
+  addressNote: string;
   orderStats: {
     revenue: number;
     voucher: number;
@@ -42,15 +43,17 @@ interface CustomerPageAccount {
 }
 export interface CustomeUpdateMeInput {
   name: string;
-  address: string;
+  address?: string;
   phone: string;
-  provinceId: string;
-  districtId: string;
-  wardId: string;
-  avatar: string;
-  gender: string;
+  provinceId?: string;
+  districtId?: string;
+  wardId?: string;
+  avatar?: string;
+  gender?: string;
   latitude: number;
   longitude: number;
+  fullAddress: string;
+  addressNote: string;
 }
 export class CustomerRepository extends CrudRepository<Customer> {
   apiName: string = "Customer";
@@ -73,6 +76,7 @@ export class CustomerRepository extends CrudRepository<Customer> {
     district: String
     ward: String
     fullAddress: String
+    addressNote: String;
     orderStats {
       revenue: Float
       voucher: Int
@@ -105,6 +109,7 @@ export class CustomerRepository extends CrudRepository<Customer> {
     cumulativePoint: Float
     commission: Float
     fullAddress: String
+    addressNote: String;
     pageAccounts {
       psid: fullAddress: String
       pageId: fullAddress: String
@@ -126,11 +131,12 @@ export class CustomerRepository extends CrudRepository<Customer> {
     }: CustomerOrderStats
   `);
   async getCustomer() {
-    return await this.apollo
-      .query({
-        query: this.gql`query {  customerGetMe { ${this.fullFragment} }}`,
-      })
-      .then((res) => res.data["customerGetMe"] as Customer);
+    return await this.query({
+      query: `customerGetMe { ${this.fullFragment} }`,
+      options: {
+        fetchPolicy: "no-cache",
+      },
+    }).then((res) => res.data["g0"] as Customer);
   }
 }
 

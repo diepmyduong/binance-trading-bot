@@ -22,9 +22,12 @@ export function TicketVoucher({ voucher, onClick, showDetail, ...props }: Propst
           </a>
         </Link> */}
       </div>
-      <div className="rounded-r-2xl rounded-l-xl flex items-center justify-center bg-white px-2 border-l-2 border-dashed h-18 ">
-        <Button text="Chọn" className="px-0" textPrimary onClick={() => onClick(voucher)} />
-      </div>
+      <Button
+        text="Chọn"
+        className="rounded-r-2xl rounded-l-xl flex items-center justify-center bg-white px-2 border-l-2 border-dashed h-18 "
+        textPrimary
+        onClick={() => onClick(voucher)}
+      />
     </div>
   );
 }

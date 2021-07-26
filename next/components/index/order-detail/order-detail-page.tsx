@@ -14,7 +14,7 @@ import { useToast } from "../../../lib/providers/toast-provider";
 import { HiOutlinePhone } from "react-icons/hi";
 import { RatingOrder } from "./components/rating-order";
 import { OrderLog } from "../../../lib/repo/order.repo";
-import { FaCheckCircle, FaDotCircle } from "react-icons/fa";
+import { FaCheckCircle, FaDotCircle, FaTimesCircle } from "react-icons/fa";
 
 interface ItemStatusOrderProps {
   status?: OrderLog;
@@ -31,7 +31,7 @@ function ItemStatusOrder({ status, text, actived, ...props }: ItemStatusOrderPro
             text == "Đã hủy" || text == "Thất bại" ? "text-danger" : "text-success"
           }`}
         >
-          <FaCheckCircle />
+          {text == "Đã hủy" || text == "Thất bại" ? <FaTimesCircle /> : <FaCheckCircle />}
         </i>
       ) : (
         <i className="text-xl text-gray-300">
@@ -129,20 +129,16 @@ export function OrderDetailPage(props) {
   const {
     order,
     status,
-    cancelOrder,
     setLoading,
     loading,
-    isInterval,
     tags,
     addTags,
     commentOrder,
     reOrderClick,
   } = useOrderDetailContext();
   const [showComment, setShowComment] = useState(false);
-  const [showCancel, setShowCancel] = useState(false);
   const { shopCode, shop } = useShopContext();
   const [rating, setRating] = useState(5);
-  const toast = useToast();
   return (
     <div className="bg-white min-h-screen">
       <BreadCrumbs
@@ -219,7 +215,7 @@ export function OrderDetailPage(props) {
                   const last = order.items.length - 1 == index;
                   return (
                     <div
-                      className={`flex px-4 items-start border-gray-300 py-3 ${
+                      className={`flex px-4 items-start border-gray-100 py-3 ${
                         !last && "border-b"
                       }`}
                       key={index}
@@ -298,26 +294,26 @@ export function OrderDetailPage(props) {
                   )}
 
                 {order.status === "PENDING" && (
-                  <div className="flex flex-wrap-reverse items-center justify-center mt-2 gap-2">
-                    <Button
-                      text="Hủy đơn"
-                      outline
-                      primary
-                      asyncLoading={loading}
-                      className="rounded-sm w-full"
-                      onClick={() => {
-                        setLoading(true);
-                        setShowCancel(true);
-                      }}
-                    />
-                    <Button
-                      text="Gọi nhà hàng"
-                      primary
-                      href={`tel:${order.shopBranch.phone}`}
-                      className="rounded-sm bg-gradient w-full"
-                      icon={<HiOutlinePhone />}
-                    />
-                  </div>
+                  // <div className="flex flex-wrap-reverse items-center justify-center mt-2 gap-2">
+                  //   <Button
+                  //     text="Hủy đơn"
+                  //     outline
+                  //     primary
+                  //     asyncLoading={loading}
+                  //     className="rounded-sm w-full"
+                  //     onClick={() => {
+                  //       setLoading(true);
+                  //       setShowCancel(true);
+                  //     }}
+                  //   />
+                  <Button
+                    text="Gọi nhà hàng"
+                    primary
+                    href={`tel:${order.shopBranch.phone}`}
+                    className="rounded-sm bg-gradient w-full"
+                    icon={<HiOutlinePhone />}
+                  />
+                  // </div>
                 )}
                 {order.status === "CONFIRMED" && (
                   <Button
@@ -347,7 +343,7 @@ export function OrderDetailPage(props) {
                     />
                   </div>
                 )}
-                <Form
+                {/* <Form
                   title="Lý do hủy"
                   dialog
                   isOpen={showCancel}
@@ -363,7 +359,7 @@ export function OrderDetailPage(props) {
                   <div className="flex justify-end">
                     <Button submit text="Xác nhận" large primary />
                   </div>
-                </Form>
+                </Form> */}
                 <Form
                   title="Bình luận đơn hàng này"
                   slideFromBottom="none"

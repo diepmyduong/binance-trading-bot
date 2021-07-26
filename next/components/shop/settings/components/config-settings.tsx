@@ -32,6 +32,7 @@ import { ProductService } from "../../../../lib/repo/product.repo";
 import { Accordion } from "../../../shared/utilities/accordion/accordion";
 import { NumberPipe } from "../../../../lib/pipes/number";
 import { PRODUCT_LABEL_COLORS } from "../../../../lib/repo/product-label.repo";
+import { ShopVoucherService } from "../../../../lib/repo/shop-voucher.repo";
 
 export function ConfigSettings() {
   const { shopConfig, updateShopConfig } = useShopLayoutContext();
@@ -65,7 +66,7 @@ export function ConfigSettings() {
           return item;
         }),
         banners: shopBanners.map((x) => {
-          const { __typename, product, voucher, ...item } = x as any;
+          const { __typename, product, voucher, voucherText, ...item } = x as any;
           return item;
         }),
         productGroups: shopProductGroups.map((x) => {
@@ -90,13 +91,13 @@ export function ConfigSettings() {
             <Select hasColor clearable placeholder="Mặc định" options={PRODUCT_LABEL_COLORS} />
           </Field>
         </div>
-        <Label text="Tin nhắn SMS"/>
+        <Label text="Tin nhắn SMS" />
         <div className="flex gap-x-5 w-full">
           <Field className="flex-1" name="smsOrder">
-            <Switch placeholder="Gửi SMS đơn hàng"/>
+            <Switch placeholder="Gửi SMS đơn hàng" />
           </Field>
           <Field className="flex-1" name="smsOtp">
-            <Switch placeholder="Gửi SMS OTP"/>
+            <Switch placeholder="Gửi SMS OTP" />
           </Field>
         </div>
         <div className="text-gray-400 font-semibold mt-1 mb-4 pl-1 text-lg">Đánh giá của quán</div>
@@ -212,7 +213,12 @@ export function ConfigSettings() {
                   </span>
                 </div>
                 {banner.actionType == "PRODUCT" && <div>{banner.product?.name}</div>}
-                {banner.actionType == "VOUCHER" && <div>【{banner.voucher?.code}】</div>}
+                {banner.actionType == "VOUCHER" && (
+                  <div>
+                    {(banner as any).voucherText ||
+                      `【${banner.voucher?.code}】${banner.voucher?.description}`}
+                  </div>
+                )}
                 {banner.actionType == "WEBSITE" && (
                   <a className="block w-full text-ellipsis">{banner.link}</a>
                 )}
@@ -385,9 +391,15 @@ export function ConfigSettings() {
         initialData={openShopBanner}
         isOpen={openShopBanner !== undefined}
         onClose={() => setOpenShopBanner(undefined)}
-        onSubmit={(data) => {
+        onSubmit={(data, fullData) => {
           if (openShopBanner) {
-            shopBanners[openShopBannerIndex] = data;
+            shopBanners[openShopBannerIndex] = {
+              ...shopBanners[openShopBannerIndex],
+              ...data,
+              product:
+                data.actionType == "PRODUCT" ? { name: fullData.productId.label } : undefined,
+              voucherText: data.actionType == "VOUCHER" ? fullData.voucherId.label : undefined,
+            };
             setShopBanners([...shopBanners]);
           } else {
             setShopBanners([...shopBanners, { ...data, isPublic: true }]);
@@ -414,6 +426,24 @@ export function ConfigSettings() {
                   <Select
                     autocompletePromise={({ id, search }) =>
                       ProductService.getAllAutocompletePromise({ id, search })
+                    }
+                  />
+                </Field>
+              </Accordion>
+              <Accordion className="col-span-12" isOpen={data.actionType == "VOUCHER"}>
+                <Field name="voucherId" label="Chọn khuyến mãi" cols={12}>
+                  <Select
+                    autocompletePromise={({ id, search }) =>
+                      ShopVoucherService.getAllAutocompletePromise(
+                        { id, search },
+                        {
+                          fragment: "id code description",
+                          parseOption: (data) => ({
+                            value: data.id,
+                            label: `【${data.code}】${data.description}`,
+                          }),
+                        }
+                      )
                     }
                   />
                 </Field>

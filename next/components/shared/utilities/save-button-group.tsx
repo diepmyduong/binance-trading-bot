@@ -8,11 +8,13 @@ export interface SaveButtonGroupProps extends ReactProps {
   isLoading?: boolean;
   actions?: JSX.Element[];
   submitProps?: ButtonProps;
+  bgGadient?: boolean;
 }
 export function SaveButtonGroup({
   submitText = "Lưu thay đổi",
   cancelText = "Huỷ",
   submitProps = {},
+  bgGadient = false,
   ...props
 }: SaveButtonGroupProps) {
   return (
@@ -21,6 +23,7 @@ export function SaveButtonGroup({
         text={submitText}
         primary
         submit
+        className={`${bgGadient && "bg-gradient"}`}
         isLoading={props.isLoading}
         onClick={props.onSubmit}
         {...submitProps}

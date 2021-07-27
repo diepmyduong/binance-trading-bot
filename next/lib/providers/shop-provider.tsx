@@ -15,6 +15,7 @@ import { ShopBranchService, ShopBranch } from "../repo/shop-branch.repo";
 import { UserService } from "../repo/user.repo";
 import sortBy, { orderBy } from "lodash";
 import { Customer, CustomerService } from "../repo/customer.repo";
+import jwt_decode from "jwt-decode";
 
 export const ShopContext = createContext<
   Partial<{
@@ -75,7 +76,19 @@ export function ShopProvider(props) {
         setCustomer(null);
       }
     } else {
-      await getCustomner();
+      let decodedToken = jwt_decode(customerToken) as {
+        exp: number;
+        role: string;
+        customer: Customer;
+      };
+      console.log("decodedToken", decodedToken);
+      if (Date.now() >= decodedToken.exp * 1000) {
+        ClearCustomerToken(shopCode);
+        setCustomer(null);
+        return false;
+      } else {
+        await getCustomner();
+      }
     }
   }
   function loadLocation() {
@@ -118,6 +131,7 @@ export function ShopProvider(props) {
     let res = await CustomerService.getCustomer();
     setCustomer(res);
   }
+
   async function customerLogin(phone: string) {
     if (phone) {
       let dataCus = await CustomerService.loginCustomerByPhone(phone);

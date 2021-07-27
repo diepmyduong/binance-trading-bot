@@ -49,7 +49,14 @@ export function CustomerLoginDialog({ ...props }: Propstype) {
       }
     } else {
       if (phone) {
-        customerLogin(phone);
+        let res = await customerLogin(phone);
+        if (res) {
+          toast.success("Đăng nhập thành công");
+          clearInterval(interval);
+          props.onClose();
+        } else {
+          toast.error("Đã xảy ra lỗi");
+        }
       } else {
         toast.warn("Vui lòng nhập số điện thoại");
       }

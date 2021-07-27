@@ -48,7 +48,7 @@ export function SuccessDialog({ code, ...props }: Propstype) {
       {...props}
       onClose={() => {}}
       slideFromBottom="none"
-      extraDialogClass=" transform -translate-y-10 w-5/6"
+      extraDialogClass=" transform -translate-y-10 scale-125 sm:scale-100"
     >
       <Dialog.Body>
         <div className="sm:p-2 flex flex-col items-center">

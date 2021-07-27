@@ -91,6 +91,7 @@ function LogiNoneOTP(props) {
       <Field label="Số điện thoại" name="phone" className="mt-4 w-full">
         <Input
           type="tel"
+          className="h-12"
           autoFocus
           // onChange={(val) => setphone(val)}
         ></Input>
@@ -144,6 +145,7 @@ function LoginOTP(props) {
           <Field label="Số điện thoại" name="phone" className="mt-4 w-full">
             <Input
               type="tel"
+              className="h-12"
               autoFocus
               //  onChange={(val) => setphone(val)}
             ></Input>
@@ -167,8 +169,9 @@ function LoginOTP(props) {
           </p>
           <Field label="Mã OTP của bạn" name="otp" className="mt-4 w-full">
             <Input
-              type="tel"
+              type="number"
               autoFocus
+              className="h-12"
               // onChange={(val) => setOtp(val)}
             ></Input>
           </Field>

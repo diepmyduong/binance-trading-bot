@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { ShopTag } from "../../../../lib/repo/shop-config.repo";
 import { ShopCommentService } from "../../../../lib/repo/shop-comment.repo";
 import { useCartContext, CartProduct } from "../../../../lib/providers/cart-provider";
+import { useShopContext } from "../../../../lib/providers/shop-provider";
 
 export const OrderDetailContext = createContext<
   Partial<{
@@ -26,6 +27,7 @@ interface PropsType extends ReactProps {
   id: string;
 }
 export function OrderDetailProvider({ id, ...props }: PropsType) {
+  const { shopCode, customer } = useShopContext();
   const { reOrder } = useCartContext();
   const [order, setOrder] = useState<Order>(null);
   const alert = useAlert();
@@ -114,7 +116,11 @@ export function OrderDetailProvider({ id, ...props }: PropsType) {
           if (res) {
             setIsInterval(false);
             clearInterval(interval);
-            router.replace("/order");
+            if (customer) {
+              router.replace("/order");
+            } else {
+              router.replace(`/${shopCode}`);
+            }
           }
         });
     }, 3000);

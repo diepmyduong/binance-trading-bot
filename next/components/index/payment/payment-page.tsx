@@ -37,7 +37,7 @@ export function PaymentPage() {
       <PaymentProvider>
         <Payment />
         <PaymentSuccess />
-        {/* <SuccessDialog/> orderCode ? true : false*/}
+        {/* <SuccessDialog/> */}
       </PaymentProvider>
     </>
   );
@@ -45,7 +45,7 @@ export function PaymentPage() {
 
 function PaymentSuccess() {
   const { orderCode } = usePaymentContext();
-  return <SuccessDialog isOpen={true} code={orderCode} />;
+  return <SuccessDialog isOpen={orderCode ? true : false} code={orderCode} />;
 }
 
 function Payment() {

@@ -76,16 +76,13 @@ export function CustomerLoginDialog({ ...props }: Propstype) {
       onSubmit={(data) => handleOnSubmit(data.phone, data.otp)}
     >
       <div className="flex flex-col items-center w-full pt-4">
-        <h3 className="text-28 font-bold text-accent mb-4">Đăng nhập</h3>
+        <h3 className="text-28 font-semibold text-accent mb-2 sm:mb-4">Đăng nhập</h3>
         {shop.config.smsOtp ? <LoginOTP awaitOtp={awaitOtp} sec={sec} /> : <LogiNoneOTP />}
       </div>
     </Form>
   );
 }
-function LogiNoneOTP(props) {
-  const [phone, setphone] = useState("");
-  const { shop, customerLogin } = useShopContext();
-  const toast = useToast();
+function LogiNoneOTP() {
   return (
     <>
       <Field label="Số điện thoại" name="phone" className="mt-4 w-full">

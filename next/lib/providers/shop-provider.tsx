@@ -34,6 +34,7 @@ export const ShopContext = createContext<
     loginCustomerByPhone: Function;
     loading: boolean;
     setCustomer: Function;
+    customerLoginOTP: (phone: string, otp: string) => any;
   }>
 >({});
 export function ShopProvider(props) {
@@ -51,16 +52,18 @@ export function ShopProvider(props) {
     shopCode = sessionStorage.getItem("shopCode");
     if (!shopCode) router.push("404");
     setShopCode(shopCode);
-
     const anonymousToken = GetAnonymousToken(shopCode);
     if (!anonymousToken) await ShopService.loginAnonymous(shopCode);
     console.log("GET SHOP DATA", shopCode);
     await ShopService.getShopData().then(setShop);
+    setLoading(false);
+  }
+  async function loadCustomer() {
     const customerToken = GetCustomerToken(shopCode);
     if (!customerToken) {
       let phoneUser = localStorage.getItem("phoneUser");
-      if (phoneUser) {
-        let dataCus = await UserService.loginCustomerByPhone(phoneUser);
+      if (phoneUser && !shop.config.smsOtp) {
+        let dataCus = await CustomerService.loginCustomerByPhone(phoneUser);
         if (dataCus) {
           SetCustomerToken(dataCus.token, shopCode);
           customer = cloneDeep(dataCus.customer);
@@ -74,7 +77,6 @@ export function ShopProvider(props) {
     } else {
       await getCustomner();
     }
-    setLoading(false);
   }
   function loadLocation() {
     if (navigator.geolocation) {
@@ -118,16 +120,36 @@ export function ShopProvider(props) {
   }
   async function customerLogin(phone: string) {
     if (phone) {
-      let dataCus = await UserService.loginCustomerByPhone(phone);
+      let dataCus = await CustomerService.loginCustomerByPhone(phone);
       if (dataCus) {
         SetCustomerToken(dataCus.token, shopCode);
         setCustomer(cloneDeep(dataCus.customer));
         localStorage.setItem("phoneUser", dataCus.customer.phone);
+        return true;
       } else {
         setCustomer(null);
+        return false;
       }
     } else {
       setCustomer(null);
+      return false;
+    }
+  }
+  async function customerLoginOTP(phone: string, otp: string) {
+    if (phone && otp) {
+      let dataCus = await CustomerService.loginCustomerByPhone(phone, otp);
+      if (dataCus) {
+        SetCustomerToken(dataCus.token, shopCode);
+        setCustomer(cloneDeep(dataCus.customer));
+        localStorage.setItem("phoneUser", dataCus.customer.phone);
+        return true;
+      } else {
+        setCustomer(null);
+        return false;
+      }
+    } else {
+      setCustomer(null);
+      return false;
     }
   }
   function customerLogout() {
@@ -143,6 +165,7 @@ export function ShopProvider(props) {
   }, []);
   useEffect(() => {
     if (!shop) return;
+    loadCustomer();
     loadLocation();
   }, [shop]);
   useEffect(() => {
@@ -167,6 +190,7 @@ export function ShopProvider(props) {
         setBranchSelecting,
         loading,
         setCustomer,
+        customerLoginOTP,
       }}
     >
       {props.children}

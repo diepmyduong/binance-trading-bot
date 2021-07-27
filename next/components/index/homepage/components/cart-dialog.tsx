@@ -84,13 +84,9 @@ export function CartDialog(props: Propstype) {
       </Dialog.Footer>
       <CustomerLoginDialog
         isOpen={showLogin}
-        otp={shop.config.smsOtp}
-        onClose={() => setShowLogin(false)}
-        onConfirm={(val) => {
-          if (val) {
-            customerLogin(val);
-            router.push(`${shopCode}/payment`, null, { shallow: true });
-          }
+        onClose={() => {
+          setShowLogin(false);
+          router.push(`${shopCode}/payment`, null, { shallow: true });
         }}
       />
     </Dialog>

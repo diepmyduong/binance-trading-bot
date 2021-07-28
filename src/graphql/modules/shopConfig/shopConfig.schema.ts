@@ -1,4 +1,6 @@
 import { gql } from "apollo-server-express";
+import { DiscountUnit } from "../shopVoucher/types/discountItem.schema";
+import { CommissionBy } from "./shopConfig.model";
 
 const schema = gql`
   extend type Mutation {
@@ -37,6 +39,18 @@ const schema = gql`
     smsOrder: Boolean
     "Bạt tin nhắn OTP"
     smsOtp: Boolean
+    "Bật / tắt cộng tác viên"
+    collaborator: Boolean
+    "Yêu cầu duyệt cộng tác viên"
+    colApprove: Boolean
+    "Yêu cầu CTV có số đơn tối thiểu"
+    colMinOrder: Boolean
+    "Tính hoa hồng dựa trên điệu kiên gì ${Object.values(CommissionBy)}"
+    colCommissionBy: String
+    "Hoa hồng cố định theo % hoặc VND ${Object.values(DiscountUnit)}"
+    colCommissionUnit: String
+    "Giá trị hoa hồng trên từng đơn hàng"
+    colCommissionValue: Float
   }
 
   type ShopConfig {
@@ -82,6 +96,18 @@ const schema = gql`
     smsOrder: Boolean
     "Bạt tin nhắn OTP"
     smsOtp: Boolean
+    "Bật / tắt cộng tác viên"
+    collaborator: Boolean
+    "Yêu cầu duyệt cộng tác viên"
+    colApprove: Boolean
+    "Yêu cầu CTV có số đơn tối thiểu"
+    colMinOrder: Boolean
+    "Tính hoa hồng dựa trên điệu kiên gì ${Object.values(CommissionBy)}"
+    colCommissionBy: String
+    "Hoa hồng cố định theo % hoặc VND ${Object.values(DiscountUnit)}"
+    colCommissionUnit: String
+    "Giá trị hoa hồng trên từng đơn hàng"
+    colCommissionValue: Float
   }
 `;
 

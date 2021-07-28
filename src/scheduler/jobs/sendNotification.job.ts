@@ -41,13 +41,18 @@ export class SendNotificationJob {
   static async execute(job: Job, done: any) {
     const count = await NotificationStackModel.count({});
     if (count == 0) return done();
-    await Promise.all([
-      sendNotificationToMembers(job),
-      sendNotificationToStaff(job),
-      sendNotificationToCustomer(job),
-    ]);
-    logger.info("Send Done");
-    done();
+    try {
+      await Promise.all([
+        sendNotificationToMembers(job),
+        sendNotificationToStaff(job),
+        sendNotificationToCustomer(job),
+      ]);
+      logger.info("Send Done");
+    } catch (err) {
+      errorLogger.error(err);
+    } finally {
+      done();
+    }
   }
 }
 

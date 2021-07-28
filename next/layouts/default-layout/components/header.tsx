@@ -29,11 +29,16 @@ export function Header({ ...props }: HeaderPropsType) {
       icon: <FaUserAlt />,
       href: `/${shopCode}/customer`,
     },
-    // {
-    //   label: "Quản lý tài khoản",
-    //   icon: <HiOutlineUserCircle />,
-    //   onClick: () => router.push("/"),
-    // },
+    {
+      label: "Đăng ký CTV",
+      icon: <HiOutlineUserCircle />,
+      href: `/${shopCode}/collaborators/register`,
+    },
+    {
+      label: "Thông tin CTV",
+      icon: <HiOutlineUserCircle />,
+      href: `/${shopCode}/collaborators/info`,
+    },
     {
       label: "Lịch sử đặt hàng",
       icon: <FaHistory />,

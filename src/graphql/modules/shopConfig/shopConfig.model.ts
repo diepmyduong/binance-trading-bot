@@ -48,7 +48,7 @@ export type IShopConfig = BaseDocument & {
   // Cộng tác viên
   collaborator?: boolean; // Bật / tắt cộng tác viên
   colApprove?: boolean; // Yêu cầu duyệt cộng tác viên
-  colMinOrder?: boolean; // Yêu cầu CTV có số đơn tối thiểu
+  colMinOrder?: number; // Yêu cầu CTV có số đơn tối thiểu
   colCommissionBy?: CommissionBy; // Tính hoa hồng dựa trên điệu kiên gì
   colCommissionUnit?: DiscountUnit; // Hoa hồng cố định theo % hoặc VND
   colCommissionValue?: number; // Giá trị hoa hồng trên từng đơn hàng

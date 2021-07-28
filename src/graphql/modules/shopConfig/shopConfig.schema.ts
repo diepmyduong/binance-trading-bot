@@ -44,7 +44,7 @@ const schema = gql`
     "Yêu cầu duyệt cộng tác viên"
     colApprove: Boolean
     "Yêu cầu CTV có số đơn tối thiểu"
-    colMinOrder: Boolean
+    colMinOrder: Int
     "Tính hoa hồng dựa trên điệu kiên gì ${Object.values(CommissionBy)}"
     colCommissionBy: String
     "Hoa hồng cố định theo % hoặc VND ${Object.values(DiscountUnit)}"
@@ -101,7 +101,7 @@ const schema = gql`
     "Yêu cầu duyệt cộng tác viên"
     colApprove: Boolean
     "Yêu cầu CTV có số đơn tối thiểu"
-    colMinOrder: Boolean
+    colMinOrder: Int
     "Tính hoa hồng dựa trên điệu kiên gì ${Object.values(CommissionBy)}"
     colCommissionBy: String
     "Hoa hồng cố định theo % hoặc VND ${Object.values(DiscountUnit)}"

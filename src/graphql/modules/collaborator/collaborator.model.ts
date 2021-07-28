@@ -5,6 +5,12 @@ import { MainConnection } from "../../../loaders/database";
 
 const Schema = mongoose.Schema;
 
+export enum CollaboratorStatus {
+  PENDING = "PENDING", // Đang chừo duyệt
+  ACTIVE = "ACTIVE", // Đã kích hoạt
+  BLOCKED = "BLOCKED", // Đã khoá
+}
+
 export type ICollaborator = BaseDocument & {
   code?: string; // mã cộng tác viên
   name?: string; // Tên cộng tác viên
@@ -18,6 +24,7 @@ export type ICollaborator = BaseDocument & {
   shareCount?: number; // Lượt share
   commentCount?: number; // Lượt comment
   engagementCount?: number; // Lượt tương tác
+  status?: CollaboratorStatus; // Trạng thái
 };
 
 const collaboratorSchema = new Schema(
@@ -34,6 +41,11 @@ const collaboratorSchema = new Schema(
     shortCode: { type: String },
     shortUrl: { type: String },
     engagementCount: { type: Number, default: 0 },
+    status: {
+      type: String,
+      enum: Object.values(CollaboratorStatus),
+      default: CollaboratorStatus.PENDING,
+    },
   },
   { timestamps: true }
 );

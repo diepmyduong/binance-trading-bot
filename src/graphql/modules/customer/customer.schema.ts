@@ -81,6 +81,7 @@ const schema = gql`
     isCollaborator: Boolean
     "Danh sách shop đang cộng tác "
     collaboratorShops: [Member]
+    collaboratorId: ID
     "Cộng tác viên"
     collaborator: Collaborator
     

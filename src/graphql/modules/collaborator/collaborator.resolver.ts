@@ -7,10 +7,11 @@ import { AuthHelper, ErrorHelper, KeycodeHelper } from "../../../helpers";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
 import { counterService } from "../counter/counter.service";
-import { CustomerLoader } from "../customer/customer.model";
+import { CustomerLoader, CustomerModel } from "../customer/customer.model";
 import { IMember, MemberLoader, MemberModel } from "../member/member.model";
 import { SettingHelper } from "../setting/setting.helper";
-import { CollaboratorLoader, CollaboratorModel } from "./collaborator.model";
+import { ShopConfigModel } from "../shopConfig/shopConfig.model";
+import { CollaboratorLoader, CollaboratorModel, CollaboratorStatus } from "./collaborator.model";
 import { collaboratorService } from "./collaborator.service";
 
 const Query = {
@@ -37,22 +38,23 @@ const Mutation = {
       data.code = await counterService.trigger("collaborator").then((res) => "CTV" + res);
     }
     data.memberId = context.id;
-    const [host, member] = await Promise.all([
-      SettingHelper.load(SettingKey.WEBAPP_DOMAIN),
-      MemberLoader.load(context.id),
-    ]);
-    const secret = `${phone}-${context.id}`;
-    let shortCode = KeycodeHelper.alpha(secret, 6);
-    let shortUrl = `${host}/${member.code}/ctv/${shortCode}`;
-    let countShortUrl = await CollaboratorModel.count({ shortUrl });
-    while (countShortUrl > 0) {
-      shortCode = KeycodeHelper.alpha(secret, 6);
-      shortUrl = `${host}/ctv/${shortCode}`;
-      countShortUrl = await CollaboratorModel.count({ shortUrl });
-    }
+    const { shortCode, shortUrl, status } = await collaboratorService.generateShortCode(
+      context.id,
+      data
+    );
     data.shortCode = shortCode;
     data.shortUrl = shortUrl;
-    return await collaboratorService.create(data);
+    data.status = status;
+    const customer = await CustomerModel.findOne({ phone: data.phone });
+    if (customer) {
+      data.customerId = customer._id;
+    }
+    const newCol = await collaboratorService.create(data);
+    if (customer) {
+      customer.collaboratorId = newCol._id;
+      await customer.save();
+    }
+    return newCol;
   },
 
   updateCollaborator: async (root: any, args: any, context: Context) => {
@@ -81,6 +83,7 @@ export default {
   Mutation,
   Collaborator,
 };
+
 async function protectDoc(id: any, context: Context) {
   const col = await CollaboratorLoader.load(id);
   if (col.memberId.toString() != context.id) throw ErrorHelper.permissionDeny();

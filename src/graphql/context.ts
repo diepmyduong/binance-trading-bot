@@ -25,6 +25,7 @@ export type SignedRequestPayload = {
 };
 
 export class Context {
+  public meta: any = {};
   constructor(
     public isAuth: boolean = false,
     public isTokenExpired: boolean = false,

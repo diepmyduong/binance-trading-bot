@@ -108,8 +108,8 @@ const FilteredCollaborator = {
   },
 
   total: async (root: ICollaborator, args: any, context: Context) => {
-    let { id, fromDate, toDate } = root;
-
+    let { id } = root;
+    let { fromDate, toDate } = args;
     let $match = {};
 
     const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);

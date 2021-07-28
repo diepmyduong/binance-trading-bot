@@ -63,6 +63,9 @@ const schema = gql`
     commentCount: Int
     "Lượt tương tác"
     engagementCount: Int
+
+    member: Member
+    customer: Customer
   }
 
   type CollaboratorPageData {

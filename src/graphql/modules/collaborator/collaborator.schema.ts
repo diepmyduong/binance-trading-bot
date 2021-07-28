@@ -1,4 +1,5 @@
 import { gql } from "apollo-server-express";
+import { CollaboratorStatus } from "./collaborator.model";
 
 const schema = gql`
   extend type Query {
@@ -32,6 +33,8 @@ const schema = gql`
     name: String
     "Số điện thoại"
     phone: String
+    "Trạng thái ${Object.values(CollaboratorStatus)}"
+    status: String
   }
 
   type Collaborator {
@@ -63,6 +66,8 @@ const schema = gql`
     commentCount: Int
     "Lượt tương tác"
     engagementCount: Int
+    "Trạng thái ${Object.values(CollaboratorStatus)}"
+    status: String
 
     member: Member
     customer: Customer

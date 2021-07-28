@@ -10,7 +10,8 @@ import { counterService } from "../counter/counter.service";
 import { CustomerLoader } from "../customer/customer.model";
 import { IMember, MemberLoader, MemberModel } from "../member/member.model";
 import { SettingHelper } from "../setting/setting.helper";
-import { CollaboratorLoader, CollaboratorModel } from "./collaborator.model";
+import { ShopConfigModel } from "../shopConfig/shopConfig.model";
+import { CollaboratorLoader, CollaboratorModel, CollaboratorStatus } from "./collaborator.model";
 import { collaboratorService } from "./collaborator.service";
 
 const Query = {
@@ -37,9 +38,10 @@ const Mutation = {
       data.code = await counterService.trigger("collaborator").then((res) => "CTV" + res);
     }
     data.memberId = context.id;
-    const [host, member] = await Promise.all([
+    const [host, member, shopConfig] = await Promise.all([
       SettingHelper.load(SettingKey.WEBAPP_DOMAIN),
       MemberLoader.load(context.id),
+      ShopConfigModel.findOne({ memberId: context.id }),
     ]);
     const secret = `${phone}-${context.id}`;
     let shortCode = KeycodeHelper.alpha(secret, 6);
@@ -52,6 +54,7 @@ const Mutation = {
     }
     data.shortCode = shortCode;
     data.shortUrl = shortUrl;
+    data.status = shopConfig.colApprove ? CollaboratorStatus.PENDING : CollaboratorStatus.ACTIVE;
     return await collaboratorService.create(data);
   },
 

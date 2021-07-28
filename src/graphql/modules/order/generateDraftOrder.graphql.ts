@@ -67,18 +67,12 @@ export default {
       generateDraftOrder: async (root: any, args: any, context: Context) => {
         context.auth([ROLES.CUSTOMER]);
         const orderInput = args.data;
-        const { sellerId, id: buyerId, campaignCode, collaboratorId } = context;
+        const { sellerId, id: buyerId, campaignCode } = context;
         const [seller, customer] = await Promise.all([
           MemberLoader.load(sellerId),
           CustomerLoader.load(buyerId),
         ]);
-        const orderGenerator = new OrderGenerator(
-          orderInput,
-          seller,
-          customer,
-          collaboratorId,
-          campaignCode
-        );
+        const orderGenerator = new OrderGenerator(orderInput, seller, customer, campaignCode);
         try {
           await orderGenerator.generate();
           set(context, "isDraft", true);

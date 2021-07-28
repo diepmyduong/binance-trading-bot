@@ -1,4 +1,5 @@
 import { gql } from "apollo-server-express";
+import { CollaboratorStatus } from "./collaborator.model";
 
 const schema = gql`
   extend type Query {
@@ -17,15 +18,23 @@ const schema = gql`
   }
 
   input CreateCollaboratorInput {
+    "mã cộng t ác viên"
     code: String
+    "Tên cộng tác viên"
     name: String!
+    "Số điện thoại"
     phone: String!
   }
 
   input UpdateCollaboratorInput {
+    "mã cộng tác viên"
     code: String
+    "Tên cộng tác viên"
     name: String
+    "Số điện thoại"
     phone: String
+    "Trạng thái ${Object.values(CollaboratorStatus)}"
+    status: String
   }
 
   type Collaborator {
@@ -33,7 +42,7 @@ const schema = gql`
     createdAt: DateTime
     updatedAt: DateTime
 
-    "Mã Cộng tác viên"
+    "mã cộng tác viên"
     code: String
     "Tên cộng tác viên"
     name: String
@@ -41,25 +50,27 @@ const schema = gql`
     phone: String
     "Chủ shop"
     memberId: ID
-
+    "khách hàng"
+    customerId: ID
     "Mã giới thiệu"
     shortCode: String
-    "Link giới thiệu"
+    "Đường dẫn giới thiệu"
     shortUrl: String
-
-    customer: Customer
-    member: Member
-
-    "Số lượng click"
+    "Lượt click"
     clickCount: Int
-    "Số lượng like"
+    "Lượt like"
     likeCount: Int
-    "Số lượng share"
+    "Lượt share"
     shareCount: Int
-    "Số lượng comment"
+    "Lượt comment"
     commentCount: Int
-    "Số lượt tương tác"
+    "Lượt tương tác"
     engagementCount: Int
+    "Trạng thái ${Object.values(CollaboratorStatus)}"
+    status: String
+
+    member: Member
+    customer: Customer
   }
 
   type CollaboratorPageData {

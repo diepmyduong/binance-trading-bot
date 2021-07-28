@@ -11,6 +11,7 @@ export enum SettingGroupSlug {
   CAU_HINH_TRUYEN_THONG = "CAU_HINH_TRUYEN_THONG",
   CAU_HINH_TIN_NHAN = "CAU_HINH_TIN_NHAN",
   CAU_HINH_DANG_KY_SHOP = "CAU_HINH_DANG_KY_SHOP",
+  CAU_HINH_CONG_TAC_VIEN = "CAU_HINH_CONG_TAC_VIEN",
 }
 export enum SettingKey {
   // CAU_HINH_CHUNG
@@ -157,6 +158,9 @@ export enum SettingKey {
   EMAIL_REGIS_REJECT = "EMAIL_REGIS_REJECT",
   EMAIL_REGIS_APPROVE_TITLE = "EMAIL_REGIS_APPROVE_TITLE",
   EMAIL_REGIS_REJECT_TITLE = "EMAIL_REGIS_REJECT_TITLE",
+
+  // CAU_HINH_CONG_TAC_VIEN
+  CTV_DIEU_KHOAN = "CTV_DIEU_KHOAN",
 }
 
 export const SETTING_DATA = [
@@ -1372,6 +1376,23 @@ Cửa hàng: {{SHOP_NAME}}
 BỊ TỪ CHỐI.`,
         isActive: true,
         isPrivate: true,
+        readOnly: false,
+      },
+    ],
+  },
+  {
+    slug: SettingGroupSlug.CAU_HINH_CONG_TAC_VIEN,
+    name: "Cấu hình Cộng tác viên",
+    desc: "Thiết lập cộng tác viên",
+    readOnly: true,
+    settings: [
+      {
+        type: SettingType.richText,
+        name: "Điều khoản đăng ký CTV",
+        key: SettingKey.CTV_DIEU_KHOAN,
+        value: ``,
+        isActive: true,
+        isPrivate: false,
         readOnly: false,
       },
     ],

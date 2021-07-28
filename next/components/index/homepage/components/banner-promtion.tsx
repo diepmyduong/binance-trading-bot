@@ -36,51 +36,58 @@ export function BannerPromtion(props: Propstype) {
         }}
         pagination={{ clickable: true }}
       >
-        {props.banner.map((item: ShopBanner, index) => (
-          <SwiperSlide key={index} className={`cursor-pointer ${item.isPublic ? "" : "hidden"}`}>
-            {
-              {
-                PRODUCT: (
-                  <Link
-                    href={{ pathname: location.pathname, query: { product: item.product?.code } }}
-                    shallow
-                  >
-                    <a>
-                      <Img
-                        key={index}
-                        src={item.image || "/assets/default/default.png"}
-                        ratio169
-                        compress={512}
-                      />
-                    </a>
-                  </Link>
-                ),
-                WEBSITE: (
-                  <Link href={item.link}>
-                    <a>
-                      <Img
-                        key={index}
-                        src={item.image || "/assets/default/default.png"}
-                        ratio169
-                        compress={512}
-                      />
-                    </a>
-                  </Link>
-                ),
-                VOUCHER: (
-                  <div onClick={() => handleClick(item)}>
-                    <Img
-                      key={index}
-                      src={item.image || "/assets/default/default.png"}
-                      ratio169
-                      compress={512}
-                    />
-                  </div>
-                ),
-              }[item.actionType]
-            }
-          </SwiperSlide>
-        ))}
+        {props.banner.map((item: ShopBanner, index) => {
+          if (item.isPublic) {
+            return (
+              <SwiperSlide key={index} className={`cursor-pointer`}>
+                {
+                  {
+                    PRODUCT: (
+                      <Link
+                        href={{
+                          pathname: location.pathname,
+                          query: { product: item.product?.code },
+                        }}
+                        shallow
+                      >
+                        <a>
+                          <Img
+                            key={index}
+                            src={item.image || "/assets/default/default.png"}
+                            ratio169
+                            compress={512}
+                          />
+                        </a>
+                      </Link>
+                    ),
+                    WEBSITE: (
+                      <Link href={item.link}>
+                        <a>
+                          <Img
+                            key={index}
+                            src={item.image || "/assets/default/default.png"}
+                            ratio169
+                            compress={512}
+                          />
+                        </a>
+                      </Link>
+                    ),
+                    VOUCHER: (
+                      <div onClick={() => handleClick(item)}>
+                        <Img
+                          key={index}
+                          src={item.image || "/assets/default/default.png"}
+                          ratio169
+                          compress={512}
+                        />
+                      </div>
+                    ),
+                  }[item.actionType]
+                }
+              </SwiperSlide>
+            );
+          }
+        })}
       </Swiper>
       <PromotionDetailDialog
         isOpen={voucher ? true : false}

@@ -77,7 +77,11 @@ export function CustomerLoginDialog({ ...props }: Propstype) {
     >
       <div className="flex flex-col items-center w-full pt-4">
         <h3 className="text-28 font-semibold text-accent mb-2 sm:mb-4">Đăng nhập</h3>
-        {shop.config.smsOtp ? <LoginOTP awaitOtp={awaitOtp} sec={sec} /> : <LogiNoneOTP />}
+        {shop.config.smsOtp ? (
+          <LoginOTP awaitOtp={awaitOtp} sec={sec} setSec={setSec} setAwaitOtp={setAwaitOtp} />
+        ) : (
+          <LogiNoneOTP />
+        )}
       </div>
     </Form>
   );
@@ -193,11 +197,10 @@ function LoginOTP(props) {
             <Button
               text="Thay đổi số điện thoại"
               className="w-full bg-gradient"
-              // onClick={() => {
-              //   setSec(60);
-              //   setAwaitOtp(false);
-              // }}
-              submit
+              onClick={() => {
+                props.setSec(60);
+                props.setAwaitOtp(false);
+              }}
               primary
             />
           )}

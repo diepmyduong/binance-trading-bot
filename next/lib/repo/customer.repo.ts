@@ -130,6 +130,23 @@ export class CustomerRepository extends CrudRepository<Customer> {
       canceled: Int
     }: CustomerOrderStats
   `);
+  async loginCustomerByPhone(phone, otp?): Promise<{ customer: Customer; token: string }> {
+    return await this.apollo
+      .mutate({
+        mutation: this.gql`mutation {  loginCustomerByPhone(phone: "${phone}", ${
+          otp ? `otp:"${otp}"` : ""
+        }) {
+          token
+          customer{
+            ${CustomerService.fullFragment}
+          }
+        }}`,
+      })
+      .then((res) => ({
+        customer: res.data["loginCustomerByPhone"]["customer"] as Customer,
+        token: res.data["loginCustomerByPhone"]["token"] as string,
+      }));
+  }
   async getCustomer() {
     return await this.query({
       query: `customerGetMe { ${this.fullFragment} }`,
@@ -137,6 +154,11 @@ export class CustomerRepository extends CrudRepository<Customer> {
         fetchPolicy: "no-cache",
       },
     }).then((res) => res.data["g0"] as Customer);
+  }
+  async requestOtp(phone: string) {
+    return await this.mutate({
+      mutation: `requestOtp(phone:"${phone}")`,
+    }).then((res) => res.data["g0"]);
   }
 }
 

@@ -16,11 +16,12 @@ import { Spinner } from "../../../shared/utilities/spinner";
 import { BranchsDialog } from "../../homepage/components/branchs-dialog";
 import { usePaymentContext } from "../providers/payment-provider";
 import { SelectTime } from "./select-time";
+import BreadCrumbs from "../../../shared/utilities/breadcrumbs/breadcrumbs";
 
 export function InforPayment() {
   const [openDialog, setOpenDialog] = useState(false);
   const { orderInput, setOrderInput } = usePaymentContext();
-  const { shopBranchs, setBranchSelecting, customer } = useShopContext();
+  const { shopBranchs, setBranchSelecting, customer, shopCode } = useShopContext();
   const [openAddress, setOpenAddress] = useState(false);
   const [placeDetail, setPlaceDetail] = useState<GoongPlaceDetail>(null);
   const [addressInput, setAddressInput] = useState("");
@@ -71,6 +72,10 @@ export function InforPayment() {
 
   return (
     <div className="pt-4 bg-white">
+      <BreadCrumbs
+        breadcrumbs={[{ label: "Trang chủ", href: `/${shopCode}` }, { label: "Thanh toán" }]}
+        className="py-4 pl-4"
+      />
       <div className="">
         <TabCustom />
         <div className="p-4 text-sm">

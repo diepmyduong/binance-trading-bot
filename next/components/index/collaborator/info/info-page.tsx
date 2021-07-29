@@ -7,23 +7,28 @@ import { Button } from "../../../shared/utilities/form/button";
 import Link from "next/link";
 import { useToast } from "../../../../lib/providers/toast-provider";
 import { FaRegCopy } from "react-icons/fa";
-import { FbIcon, TgIcon } from "../../../../public/assets/svg/svg";
+import { FbIcon, TgIcon, QRIcon } from "../../../../public/assets/svg/svg";
 import { AiOutlineRight } from "react-icons/ai";
+import QRCode from "qrcode.react";
+import { Dialog } from "../../../shared/utilities/dialog/dialog";
+import useDevice from "../../../../lib/hooks/useDevice";
+import useScreen from "../../../../lib/hooks/useScreen";
 
 export function InfoPage() {
   const { shopCode, customer } = useShopContext();
   return (
     <div className="bg-white shadow  min-h-screen  relative rounded-md w-full">
-      <div className="p-4 bg-gradient-to-t from-accent to-primary">
+      <div className="p-4 bg-gradient-to-t from-accent to-primary-light">
         <BreadCrumbs
           breadcrumbs={[{ label: "Trang chủ", href: `/${shopCode}` }, { label: "Thông tin CTV" }]}
           className="pb-4"
+          light
         />
         <div className="flex flex-col items-center text-white">
           <span className="pt-6 text-sm">Cộng tác viên</span>
           <span className="font-semibold text-lg">{customer.name}</span>
           <span className="pt-6 text-sm">Hoa hồng nhận được</span>
-          <span className="text-success-dark text-xl font-bold pb-2">
+          <span className="text-primary-dark text-xl font-bold pb-2">
             {NumberPipe(123123123, true)}
           </span>
         </div>
@@ -35,7 +40,6 @@ export function InfoPage() {
 }
 function Share({ link, ...props }: { link: string }) {
   const toast = useToast();
-  const [showShareType, setShowShareType] = useState(false);
   const coppyToClip = () => {
     let listener = (e: ClipboardEvent) => {
       e.clipboardData.setData("text/plain", link);
@@ -43,45 +47,61 @@ function Share({ link, ...props }: { link: string }) {
     };
     document.addEventListener("copy", listener);
     document.execCommand("copy");
-    toast.success("Đã sao chép", { position: "top-center" });
+    toast.success("Đã sao chép");
     document.removeEventListener("copy", listener);
   };
   const [showQRcode, setShowQRcode] = useState(false);
+  const screenSm = useScreen("sm");
   return (
     <div className="px-4 py-6">
-      <span>Link giới thiệu:</span>
-      <div className="flex items-center h-12 pt-2">
-        <Input value={link} readonly className="h-12" />
+      <span className="font-semibold">Link giới thiệu:</span>
+      <div className="flex mb-4 mt-1 border-group rounded-sm h-12">
+        <Input value={link} />
         <Button
-          text={showShareType ? "Xong" : "Chia sẻ"}
-          className="whitespace-nowrap"
-          onClick={() => setShowShareType(!showShareType)}
+          icon={<FaRegCopy />}
+          outline
+          className="h-12"
+          iconClassName="text-28"
+          onClick={() => coppyToClip()}
         />
       </div>
-      {showShareType ? (
-        <div className="flex gap-2 py-3">
-          <Button
-            icon={<FaRegCopy />}
-            className="px-0"
-            iconClassName="text-28"
-            onClick={() => coppyToClip()}
-          />
-          <Link
-            href={{ pathname: "https://www.facebook.com/sharer/sharer.php", query: { u: link } }}
-          >
-            <a target="_blank" className="w-10 h-10">
-              <FbIcon />
-            </a>
-          </Link>
-          <Link href={{ pathname: "https://telegram.me/share/url", query: { url: link } }}>
-            <a target="_blank" className="w-10 h-10">
-              <TgIcon />
-            </a>
-          </Link>
+      {!screenSm && <span className="font-semibold">Chia sẻ với</span>}
+      <div className="flex border-group rounded-sm">
+        <Button
+          href={{ pathname: "https://www.facebook.com/sharer/sharer.php", query: { u: link } }}
+          text={screenSm ? "Chia sẻ" : ""}
+          className="flex-1"
+          info
+          icon={<FbIcon />}
+          iconPosition="end"
+          iconClassName="w-6 h-6"
+          tooltip="Chia sẻ lên facebook"
+        />
+        <Button
+          href={{ pathname: "https://telegram.me/share/url", query: { url: link } }}
+          text={screenSm ? "Chia sẻ" : ""}
+          className="flex-1 bg-blue-300 hover:bg-blue-600 text-white hover:text-white"
+          icon={<TgIcon />}
+          iconPosition="end"
+          iconClassName="w-6 h-6 text-white hover:text-white"
+          tooltip="Chia sẻ lên telegram"
+        />
+        <Button
+          text={screenSm ? "Mã QR" : ""}
+          icon={<QRIcon />}
+          outline
+          className="flex-1"
+          iconPosition="end"
+          tooltip="Xem mã QR"
+          iconClassName="w-6 h-6"
+          onClick={() => setShowQRcode(!showQRcode)}
+        />
+      </div>
+      <Dialog isOpen={showQRcode} onClose={() => setShowQRcode(false)} slideFromBottom="none">
+        <div className="flex flex-col items-center w-full p-3">
+          <QRCode value={link} size={screenSm ? 230 : 300} />
         </div>
-      ) : (
-        ""
-      )}
+      </Dialog>
     </div>
   );
 }
@@ -105,7 +125,9 @@ function MenuCollaborator() {
     <div className="flex flex-col border-t">
       {menu.map((item) => (
         <Button
+          key={item.label}
           text={item.label}
+          href={item.href}
           icon={<AiOutlineRight />}
           iconPosition="end"
           className="justify-between border-b px-4 h-12"

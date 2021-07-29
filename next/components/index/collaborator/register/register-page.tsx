@@ -22,7 +22,7 @@ export function RegisterPage() {
   }
   return (
     <div className="bg-white shadow  min-h-screen  relative rounded-md w-full">
-      <div className="px-4">
+      <div className="px-4 min-h-screen">
         <BreadCrumbs
           breadcrumbs={[{ label: "Trang chủ", href: `/${shopCode}` }, { label: "Đăng ký CTV" }]}
           className="pt-4"

@@ -29,7 +29,7 @@ export function Header({ ...props }: HeaderPropsType) {
       icon: <FaUserAlt />,
       href: `/${shopCode}/customer`,
     },
-    customer.isCollaborator
+    customer?.isCollaborator
       ? {
           label: "Thông tin CTV",
           icon: <HiOutlineUserCircle />,

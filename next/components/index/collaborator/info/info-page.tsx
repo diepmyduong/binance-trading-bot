@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useToast } from "../../../../lib/providers/toast-provider";
 import { FaRegCopy } from "react-icons/fa";
 import { FbIcon } from "../../../../public/assets/svg/svg";
-import { HiArrowRight } from "react-icons/hi";
+import { AiOutlineRight } from "react-icons/ai";
 
 export function InfoPage() {
   const { shopCode, customer } = useShopContext();
@@ -29,6 +29,7 @@ export function InfoPage() {
         </div>
       </div>
       <Share link={customer.collaborator.shortUrl} />
+      <MenuCollaborator />
     </div>
   );
 }
@@ -46,7 +47,7 @@ function Share({ link, ...props }: { link: string }) {
     document.removeEventListener("copy", listener);
   };
   return (
-    <div className="p-4">
+    <div className="px-4 py-6">
       <span>Link giới thiệu:</span>
       <div className="flex items-center h-12 pt-2">
         <Input value={link} readonly className="h-12" />
@@ -69,7 +70,6 @@ function Share({ link, ...props }: { link: string }) {
           </a>
         </Link>
       </div> */}
-      <MenuCollaborator />
     </div>
   );
 }
@@ -90,9 +90,14 @@ function MenuCollaborator() {
     },
   ];
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col border-t">
       {menu.map((item) => (
-        <Button text={item.label} icon={<HiArrowRight />} iconPosition="end" />
+        <Button
+          text={item.label}
+          icon={<AiOutlineRight />}
+          iconPosition="end"
+          className="justify-between border-b px-4 h-12"
+        />
       ))}
     </div>
   );

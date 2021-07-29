@@ -216,7 +216,9 @@ export function ConfigSettings() {
                 {banner.actionType == "VOUCHER" && (
                   <div>
                     {(banner as any).voucherText ||
-                      `【${banner.voucher?.code}】${banner.voucher?.description}`}
+                      (banner?.voucher?.code != undefined
+                        ? `【${banner?.voucher?.code}】${banner?.voucher?.description}`
+                        : "Chưa chọn mã khuyến mãi")}
                   </div>
                 )}
                 {banner.actionType == "WEBSITE" && (

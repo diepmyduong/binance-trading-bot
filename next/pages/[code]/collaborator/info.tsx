@@ -4,7 +4,7 @@ import { Redirect } from "../../../lib/helpers/redirect";
 import SEO from "../../../lib/helpers/seo";
 import { MemberModel } from "../../../../dist/graphql/modules/member/member.model";
 import { GetServerSidePropsContext } from "next";
-import { InfoPage } from "../../../components/index/collaborators/info/info-page";
+import { InfoPage } from "../../../components/index/collaborator/info/info-page";
 
 export default function Page(props) {
   return (

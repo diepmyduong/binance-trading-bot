@@ -29,16 +29,18 @@ export function Header({ ...props }: HeaderPropsType) {
       icon: <FaUserAlt />,
       href: `/${shopCode}/customer`,
     },
-    {
-      label: "Đăng ký CTV",
-      icon: <HiOutlineUserCircle />,
-      href: `/${shopCode}/collaborators/register`,
-    },
-    {
-      label: "Thông tin CTV",
-      icon: <HiOutlineUserCircle />,
-      href: `/${shopCode}/collaborators/info`,
-    },
+    customer.isCollaborator
+      ? {
+          label: "Thông tin CTV",
+          icon: <HiOutlineUserCircle />,
+          href: `/${shopCode}/collaborator/info`,
+        }
+      : {
+          label: "Đăng ký CTV",
+          icon: <HiOutlineUserCircle />,
+          href: `/${shopCode}/collaborator/register`,
+        },
+    ,
     {
       label: "Lịch sử đặt hàng",
       icon: <FaHistory />,

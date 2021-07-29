@@ -96,6 +96,7 @@
     "password-hash": "^1.2.2",
     "pdfmake": "^0.1.70",
     "postcss-preset-env": "^6.7.0",
+    "qrcode.react": "^1.0.1",
     "react": "^17.0.2",
     "react-chartjs-2": "^2.11.1",
     "react-datepicker": "^4.1.1",

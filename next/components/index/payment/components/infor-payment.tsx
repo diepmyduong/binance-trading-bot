@@ -74,7 +74,7 @@ export function InforPayment() {
     <div className="pt-4 bg-white">
       <BreadCrumbs
         breadcrumbs={[{ label: "Trang chủ", href: `/${shopCode}` }, { label: "Thanh toán" }]}
-        className="py-4 pl-4"
+        className="pb-6 pl-4"
       />
       <div className="">
         <TabCustom />

@@ -23,6 +23,9 @@ export const PaymentContext = createContext<
     generateDraftOrder: Function;
     vouchers: ShopVoucher[];
     orderCode: string;
+    loadPrivate: (code: string) => any;
+    voucherSelected: ShopVoucher;
+    setVoucherSelected: (e: ShopVoucher) => any;
   }>
 >({});
 export function PaymentProvider(props) {
@@ -39,6 +42,8 @@ export function PaymentProvider(props) {
   const [vouchers, setVouchers] = useState<ShopVoucher[]>();
   const { branchSelecting, customer, locationCustomer, shopCode, setCustomer } = useShopContext();
   const { cartProducts, reOrderInput, clearCartProduct } = useCartContext();
+  const [voucherSelected, setVoucherSelected] = useState<ShopVoucher>(null);
+
   let [orderInput, setOrderInput] = useState<OrderInput>({
     buyerName: "",
     buyerPhone: "",
@@ -143,6 +148,26 @@ export function PaymentProvider(props) {
     };
     setOrderInput(orderInput);
   }, [customer]);
+  function loadVoucher() {
+    ShopVoucherService.getAll({
+      query: { order: { createdAt: -1 }, filter: { isPrivate: false, isActive: true } },
+      fragment: ShopVoucherService.fullFragment,
+    })
+      .then((res) => setVouchers(cloneDeep(res.data)))
+      .catch((err) => setVouchers(null));
+  }
+  function loadPrivate(code) {
+    ShopVoucherService.getAll({
+      query: { filter: { code: code } },
+      fragment: ShopVoucherService.fullFragment,
+    })
+      .then((res) =>
+        res.data && res.data.length > 0
+          ? setVoucherSelected(res.data[0])
+          : toast.error("Không tìm thấy khuyến mãi")
+      )
+      .catch((err) => console.log(err));
+  }
   useEffect(() => {
     loadVoucher();
   }, []);
@@ -157,20 +182,14 @@ export function PaymentProvider(props) {
         generateDraftOrder,
         vouchers,
         orderCode,
+        loadPrivate,
+        voucherSelected,
+        setVoucherSelected,
       }}
     >
       {props.children}
     </PaymentContext.Provider>
   );
-
-  function loadVoucher() {
-    ShopVoucherService.getAll({
-      query: { order: { createdAt: -1 }, filter: { isPrivate: false, isActive: true } },
-      fragment: ShopVoucherService.fullFragment,
-    })
-      .then((res) => setVouchers(cloneDeep(res.data)))
-      .catch((err) => setVouchers(null));
-  }
 }
 
 export const usePaymentContext = () => useContext(PaymentContext);

@@ -189,8 +189,13 @@ function OrderSummary(props) {
 }
 
 function VoucherSlider(props) {
-  const { vouchers, setOrderInput, orderInput } = usePaymentContext();
-  const [voucherSelected, setVoucherSelected] = useState<ShopVoucher>(null);
+  const {
+    vouchers,
+    setOrderInput,
+    orderInput,
+    setVoucherSelected,
+    voucherSelected,
+  } = usePaymentContext();
   if (!vouchers) return <Spinner />;
   if (vouchers.length == 0) return <></>;
   return (
@@ -234,10 +239,11 @@ const ButtonPayment = (props: ButtonPaymentProps) => {
     draftOrder: order,
     setOrderInput,
     draftOrder,
-    orderCode,
+    loadPrivate,
   } = usePaymentContext();
   const toast = useToast();
   const [isOpenListPromotion, setIsOpenListPromotion] = useState(false);
+
   function validData() {
     if (!orderInput.shopBranchId) {
       toast.error("Chưa chọn chi nhánh");
@@ -278,9 +284,13 @@ const ButtonPayment = (props: ButtonPaymentProps) => {
         </div>
         {orderInput.promotionCode ? (
           <div className="flex items-center justify-between px-2">
-            <p className="text-primary text-sm font-semibold text-center py-1">
+            <Button
+              className="text-sm  py-1"
+              textPrimary
+              onClick={() => loadPrivate(orderInput.promotionCode)}
+            >
               {orderInput.promotionCode}
-            </p>
+            </Button>
             <Button
               text="Xóa"
               textDanger

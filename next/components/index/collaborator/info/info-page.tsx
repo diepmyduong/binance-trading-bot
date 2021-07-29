@@ -7,7 +7,7 @@ import { Button } from "../../../shared/utilities/form/button";
 import Link from "next/link";
 import { useToast } from "../../../../lib/providers/toast-provider";
 import { FaRegCopy } from "react-icons/fa";
-import { FbIcon } from "../../../../public/assets/svg/svg";
+import { FbIcon, TgIcon } from "../../../../public/assets/svg/svg";
 import { AiOutlineRight } from "react-icons/ai";
 
 export function InfoPage() {
@@ -46,6 +46,7 @@ function Share({ link, ...props }: { link: string }) {
     toast.success("Đã sao chép", { position: "top-center" });
     document.removeEventListener("copy", listener);
   };
+  const [showQRcode, setShowQRcode] = useState(false);
   return (
     <div className="px-4 py-6">
       <span>Link giới thiệu:</span>
@@ -57,19 +58,30 @@ function Share({ link, ...props }: { link: string }) {
           onClick={() => setShowShareType(!showShareType)}
         />
       </div>
-      {/* <div>
-        <Button
-          icon={<FaRegCopy />}
-          className=""
-          iconClassName="text-28"
-          onClick={() => coppyToClip()}
-        />
-        <Link href={{ pathname: "https://www.facebook.com/sharer/sharer.php", query: { u: link } }}>
-          <a target="_blank" className="w-10 h-10">
-            <FbIcon />
-          </a>
-        </Link>
-      </div> */}
+      {showShareType ? (
+        <div className="flex gap-2 py-3">
+          <Button
+            icon={<FaRegCopy />}
+            className="px-0"
+            iconClassName="text-28"
+            onClick={() => coppyToClip()}
+          />
+          <Link
+            href={{ pathname: "https://www.facebook.com/sharer/sharer.php", query: { u: link } }}
+          >
+            <a target="_blank" className="w-10 h-10">
+              <FbIcon />
+            </a>
+          </Link>
+          <Link href={{ pathname: "https://telegram.me/share/url", query: { url: link } }}>
+            <a target="_blank" className="w-10 h-10">
+              <TgIcon />
+            </a>
+          </Link>
+        </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 }

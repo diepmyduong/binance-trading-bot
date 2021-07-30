@@ -20,7 +20,7 @@ export interface HeaderPropsType extends ReactProps {
   code?: string;
 }
 export function Header({ ...props }: HeaderPropsType) {
-  const { customer, customerLogin, customerLogout, shop, shopCode } = useShopContext();
+  const { customer, customerLogout, shop, shopCode } = useShopContext();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const menus = [
@@ -29,11 +29,18 @@ export function Header({ ...props }: HeaderPropsType) {
       icon: <FaUserAlt />,
       href: `/${shopCode}/customer`,
     },
-    // {
-    //   label: "Quản lý tài khoản",
-    //   icon: <HiOutlineUserCircle />,
-    //   onClick: () => router.push("/"),
-    // },
+    customer?.isCollaborator
+      ? {
+          label: "Thông tin CTV",
+          icon: <HiOutlineUserCircle />,
+          href: `/${shopCode}/collaborator/info`,
+        }
+      : {
+          label: "Đăng ký CTV",
+          icon: <HiOutlineUserCircle />,
+          href: `/${shopCode}/collaborator/register`,
+        },
+    ,
     {
       label: "Lịch sử đặt hàng",
       icon: <FaHistory />,
@@ -56,7 +63,7 @@ export function Header({ ...props }: HeaderPropsType) {
       <header className={`fixed top-0 w-full z-100`}>
         <div className="w-full mx-auto h-14 flex justify-between items-center max-w-lg shadow bg-white px-4">
           <Link href={`/${shopCode}`}>
-            <a className="flex items-center cursor-pointer w-3/4">
+            <a className="flex items-center cursor-pointer w-2/3 sm:w-3/4">
               {shop && <Img src={shop.shopLogo || ""} className="w-10 rounded-full" />}
               <span className="text-ellipsis font-semibold px-2 text-sm sm:text-base flex-1">
                 {shop?.shopName}
@@ -116,16 +123,7 @@ export function Header({ ...props }: HeaderPropsType) {
             })}
           </Dropdown>
         </div>
-        <CustomerLoginDialog
-          isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
-          onConfirm={(val) => {
-            if (val) {
-              customerLogin(val);
-              setIsOpen(false);
-            }
-          }}
-        />
+        <CustomerLoginDialog isOpen={isOpen} onClose={() => setIsOpen(false)} />
       </header>
     </>
   );

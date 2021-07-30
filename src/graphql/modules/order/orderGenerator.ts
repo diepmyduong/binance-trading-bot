@@ -16,7 +16,7 @@ import {
 } from "../addressStorehouse/addressStorehouse.model";
 import { CampaignModel } from "../campaign/campaign.model";
 import { CampaignSocialResultModel } from "../campaignSocialResult/campaignSocialResult.model";
-import { CollaboratorModel } from "../collaborator/collaborator.model";
+import { CollaboratorLoader, CollaboratorModel } from "../collaborator/collaborator.model";
 import { ICustomer } from "../customer/customer.model";
 import { IMember } from "../member/member.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
@@ -76,7 +76,6 @@ export class OrderGenerator {
     public orderInput: CreateOrderInput,
     public seller: IMember,
     public buyer: ICustomer,
-    public collaboratorId?: string,
     public campaignCode?: string
   ) {
     this.order = new OrderModel({
@@ -592,17 +591,10 @@ export class OrderGenerator {
     ]);
   }
   private async setCollaborator() {
-    let collaborator;
-    if (this.collaboratorId) {
-      collaborator = await CollaboratorModel.findById(this.collaboratorId);
+    if (this.buyer.collaboratorId) {
+      const collaborator = await CollaboratorLoader.load(this.buyer.collaboratorId);
+      if (collaborator) this.order.collaboratorId = collaborator._id;
     }
-    if (!collaborator) {
-      collaborator = await CollaboratorModel.findOne({
-        phone: this.order.buyerPhone,
-        memberId: this.order.fromMemberId,
-      });
-    }
-    if (collaborator) this.order.collaboratorId = collaborator._id;
   }
   private async getUnitPrice() {
     this.unitPrice = this.unitPrice || (await SettingHelper.load(SettingKey.UNIT_PRICE));

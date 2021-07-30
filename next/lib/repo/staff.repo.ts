@@ -49,6 +49,16 @@ export class StaffRepository extends CrudRepository<Staff> {
     }: ShopBranch
     scopes: String
   `);
+
+  updateStaffPassword(staffId: string, password: string) {
+    return this.mutate({
+      mutation: `
+        updateStaffPassword(staffId: "${staffId}", password: "${password}") {
+          id
+        }
+      `,
+    });
+  }
 }
 
 export const StaffService = new StaffRepository();

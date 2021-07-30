@@ -32,8 +32,9 @@ export function DefaultLayout({ ...props }) {
 
 function NavBar(props) {
   const router = useRouter();
-  const { shop, shopCode } = useShopContext();
+  const { shop, shopCode, customer } = useShopContext();
   if (!shop) return <></>;
+  if (customer === undefined) return <Spinner />;
   return (
     <CartProvider>
       <div className="flex flex-col min-h-screen relative bg-gray-800">

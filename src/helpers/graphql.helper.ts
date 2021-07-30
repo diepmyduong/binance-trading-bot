@@ -25,9 +25,13 @@ export class GraphQLHelper {
         : undefined;
     };
   }
-  static requireRoles(roles: string[]) {
+  static requireRoles(roles: string[], defaultValue: any = null) {
     return (root: any, args: any, context: Context, info: any) => {
-      context.auth(roles);
+      try {
+        context.auth(roles);
+      } catch (err) {
+        return defaultValue;
+      }
       return root[info.fieldName];
     };
   }

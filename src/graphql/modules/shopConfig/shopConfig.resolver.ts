@@ -1,4 +1,5 @@
 import { ROLES } from "../../../constants/role.const";
+import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
 import { ShopConfigModel } from "./shopConfig.model";
 
@@ -14,7 +15,11 @@ const Mutation = {
   },
 };
 
-const ShopConfig = {};
+const ShopConfig = {
+  colCommissionBy: GraphQLHelper.requireRoles([ROLES.MEMBER]),
+  colCommissionUnit: GraphQLHelper.requireRoles([ROLES.MEMBER]),
+  colCommissionValue: GraphQLHelper.requireRoles([ROLES.MEMBER]),
+};
 
 export default {
   Mutation,

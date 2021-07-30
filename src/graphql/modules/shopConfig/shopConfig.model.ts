@@ -2,11 +2,17 @@ import mongoose from "mongoose";
 
 import { BaseDocument, ModelHook, ModelLoader } from "../../../base/baseModel";
 import { MainConnection } from "../../../loaders/database";
+import { DiscountUnit } from "../shopVoucher/types/discountItem.schema";
 import { ShopBanner, ShopBannerSchema } from "./shopBanner.graphql";
 import { ShopProductGroup, ShopProductGroupSchema } from "./shopProductGroup.graphql";
 import { ShopTag, ShopTagSchema } from "./shopTag.graphql";
 
 const Schema = mongoose.Schema;
+
+export enum CommissionBy {
+  ORDER = "ORDER", // Hoa hồng trên đơn hàng
+  ITEM = "ITEM", // Hoa hồng trên sản phẩm
+}
 
 export type IShopConfig = BaseDocument & {
   memberId?: string; // Mã chủ shop
@@ -39,6 +45,13 @@ export type IShopConfig = BaseDocument & {
   // sms
   smsOrder?: boolean; // Bật tin nhắn đơn hàng
   smsOtp?: boolean; // Bạt tin nhắn OTP
+  // Cộng tác viên
+  collaborator?: boolean; // Bật / tắt cộng tác viên
+  colApprove?: boolean; // Yêu cầu duyệt cộng tác viên
+  colMinOrder?: number; // Yêu cầu CTV có số đơn tối thiểu
+  colCommissionBy?: CommissionBy; // Tính hoa hồng dựa trên điệu kiên gì
+  colCommissionUnit?: DiscountUnit; // Hoa hồng cố định theo % hoặc VND
+  colCommissionValue?: number; // Giá trị hoa hồng trên từng đơn hàng
 };
 
 const shopConfigSchema = new Schema(
@@ -67,6 +80,20 @@ const shopConfigSchema = new Schema(
     accentColor: { type: String },
     smsOrder: { type: Boolean, default: false },
     smsOtp: { type: Boolean, default: false },
+    collaborator: { type: Boolean, default: false },
+    colApprove: { type: Boolean, default: false },
+    colMinOrder: { type: Number, default: 0, min: 0 },
+    colCommissionBy: {
+      type: String,
+      enum: Object.values(CommissionBy),
+      default: CommissionBy.ORDER,
+    },
+    colCommissionUnit: {
+      type: String,
+      enum: Object.values(DiscountUnit),
+      default: DiscountUnit.VND,
+    },
+    colCommissionValue: { type: Number, default: 0, min: 0 },
   },
   { timestamps: true }
 );

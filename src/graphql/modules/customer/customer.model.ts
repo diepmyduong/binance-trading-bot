@@ -48,6 +48,7 @@ export type ICustomer = BaseDocument & {
   otpExpired?: Date; // Thời hạn OTP
   otpRetry?: number; // Số lần gửi lại OTP
   otpRetryExpired?: Date; // Thời gian thử lại
+  collaboratorId?: string; // Mã cộng tác viên
 };
 
 const customerSchema = new Schema(
@@ -81,6 +82,7 @@ const customerSchema = new Schema(
     otpExpired: { type: Date },
     otpRetry: { type: Number, default: 0 },
     otpRetryExpired: { type: Date },
+    collaboratorId: { type: Schema.Types.ObjectId, ref: "Collaborator" },
   },
   { timestamps: true }
 );

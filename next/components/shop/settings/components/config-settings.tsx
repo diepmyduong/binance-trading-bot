@@ -216,7 +216,9 @@ export function ConfigSettings() {
                 {banner.actionType == "VOUCHER" && (
                   <div>
                     {(banner as any).voucherText ||
-                      `【${banner.voucher?.code}】${banner.voucher?.description}`}
+                      (banner?.voucher?.code != undefined
+                        ? `【${banner?.voucher?.code}】${banner?.voucher?.description}`
+                        : "Chưa chọn mã khuyến mãi")}
                   </div>
                 )}
                 {banner.actionType == "WEBSITE" && (
@@ -424,8 +426,16 @@ export function ConfigSettings() {
               <Accordion className="col-span-12" isOpen={data.actionType == "PRODUCT"}>
                 <Field name="productId" label="Chọn món" cols={12}>
                   <Select
-                    autocompletePromise={({ id, search }) =>
-                      ProductService.getAllAutocompletePromise({ id, search })
+                    optionsPromise={() =>
+                      ProductService.getAllOptionsPromise({
+                        fragment: "id name image basePrice",
+                        parseOption: (data) => ({
+                          value: data.id,
+                          label: data.name,
+                          image: data.image,
+                          basePrice: data.basePrice,
+                        }),
+                      })
                     }
                   />
                 </Field>
@@ -488,19 +498,16 @@ export function ConfigSettings() {
         </Field>
         <Field name="productIds" label="Sản phẩm" cols={12} required>
           <Select
-            autocompletePromise={({ id, search }) =>
-              ProductService.getAllAutocompletePromise(
-                { id, search },
-                {
-                  fragment: "id name image basePrice",
-                  parseOption: (data) => ({
-                    value: data.id,
-                    label: data.name,
-                    image: data.image,
-                    basePrice: data.basePrice,
-                  }),
-                }
-              )
+            optionsPromise={() =>
+              ProductService.getAllOptionsPromise({
+                fragment: "id name image basePrice",
+                parseOption: (data) => ({
+                  value: data.id,
+                  label: data.name,
+                  image: data.image,
+                  basePrice: data.basePrice,
+                }),
+              })
             }
             multi
             hasImage

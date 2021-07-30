@@ -357,10 +357,11 @@ export function Select({
         );
       } else {
         if (option) {
+          console.log(option, "herere");
           if (Array.isArray(option)) {
             props.onChange(
               option.map((x) => x.value),
-              { ...option }
+              option
             );
           } else {
             props.onChange(option.value, { ...option });

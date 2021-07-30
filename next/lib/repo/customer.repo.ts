@@ -1,6 +1,7 @@
 import { BaseModel, CrudRepository } from "./crud.repo";
 import { Member } from "./member.repo";
 import { ProductService } from "./product.repo";
+import { Collaborator } from "./collaborator.repo";
 
 export interface Customer extends BaseModel {
   memberId: string;
@@ -26,6 +27,8 @@ export interface Customer extends BaseModel {
   latitude: number;
   longitude: number;
   addressNote: string;
+  isCollaborator: Boolean;
+  collaborator: Collaborator;
   orderStats: {
     revenue: number;
     voucher: number;
@@ -76,6 +79,7 @@ export class CustomerRepository extends CrudRepository<Customer> {
     district: String
     ward: String
     fullAddress: String
+    isCollaborator: Boolean
     addressNote: String;
     orderStats {
       revenue: Float
@@ -110,6 +114,11 @@ export class CustomerRepository extends CrudRepository<Customer> {
     commission: Float
     fullAddress: String
     addressNote: String;
+    isCollaborator: Boolean
+    collaborator{
+      shortCode: String
+      shortUrl: String
+    }
     pageAccounts {
       psid: fullAddress: String
       pageId: fullAddress: String
@@ -130,6 +139,23 @@ export class CustomerRepository extends CrudRepository<Customer> {
       canceled: Int
     }: CustomerOrderStats
   `);
+  async loginCustomerByPhone(phone, otp?): Promise<{ customer: Customer; token: string }> {
+    return await this.apollo
+      .mutate({
+        mutation: this.gql`mutation {  loginCustomerByPhone(phone: "${phone}", ${
+          otp ? `otp:"${otp}"` : ""
+        }) {
+          token
+          customer{
+            ${CustomerService.fullFragment}
+          }
+        }}`,
+      })
+      .then((res) => ({
+        customer: res.data["loginCustomerByPhone"]["customer"] as Customer,
+        token: res.data["loginCustomerByPhone"]["token"] as string,
+      }));
+  }
   async getCustomer() {
     return await this.query({
       query: `customerGetMe { ${this.fullFragment} }`,
@@ -137,6 +163,11 @@ export class CustomerRepository extends CrudRepository<Customer> {
         fetchPolicy: "no-cache",
       },
     }).then((res) => res.data["g0"] as Customer);
+  }
+  async requestOtp(phone: string) {
+    return await this.mutate({
+      mutation: `requestOtp(phone:"${phone}")`,
+    }).then((res) => res.data["g0"]);
   }
 }
 

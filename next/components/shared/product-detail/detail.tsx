@@ -47,7 +47,7 @@ export function ProductDetail({ ...props }: PropsType) {
           <div
             ref={ref}
             className="v-scrollbar"
-            style={{ height: "calc(96vh - 120px)" }}
+            style={{ height: "calc(96vh - 150px)" }}
             onScroll={(e) => checkScrollTop(e.currentTarget.scrollTop)}
           >
             <div

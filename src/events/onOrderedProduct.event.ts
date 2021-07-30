@@ -14,12 +14,11 @@ import { orderService } from "../graphql/modules/order/order.service";
 import { OrderItemLoader } from "../graphql/modules/orderItem/orderItem.model";
 import { OrderLogModel, OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
-import { StaffModel } from "../graphql/modules/staff/staff.model";
 import { staffService } from "../graphql/modules/staff/staff.service";
 import { UserModel } from "../graphql/modules/user/user.model";
 import { UtilsHelper } from "../helpers";
 import { PubSubHelper } from "../helpers/pubsub.helper";
-import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
+import LocalBroker from "../services/broker";
 import { onSendChatBotText } from "./onSendToChatbot.event";
 
 export const onOrderedProduct = new Subject<IOrder>();
@@ -162,4 +161,8 @@ onOrderedProduct.subscribe(async (order) => {
 // Publish order stream
 onOrderedProduct.subscribe(async (order) => {
   PubSubHelper.publish("order", order);
+});
+
+onOrderedProduct.subscribe(async (order) => {
+  LocalBroker.emit("order.pending", { orderId: order._id.toString() });
 });

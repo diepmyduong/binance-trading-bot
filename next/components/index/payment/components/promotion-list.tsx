@@ -30,9 +30,9 @@ export function PromotionList(props) {
         isOpen={props.isOpen}
       >
         <Dialog.Body>
-          <div className="w-full flex sticky top-0">
+          <div className="w-full flex sticky top-0 border-group h-12 rounded-md">
             <Input className="flex-1" onChange={(data) => setVoucherCode(data)} />
-            <Button text="Áp dụng" primary onClick={() => handleSubmit()} />
+            <Button text="Áp dụng" primary className="h-12" onClick={() => handleSubmit()} />
           </div>
           <div className="mt-4">
             {shopVouchers ? (

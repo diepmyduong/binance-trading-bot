@@ -60,6 +60,7 @@ export default {
         }),
       ]);
       if (!order || !customer) throw Error("Dữ liệu không hợp lệ");
+      if (log) return { error: null, data: log };
       const session = await MainConnection.startSession();
       try {
         let result;
@@ -116,7 +117,7 @@ export default {
         if (commission2 <= 0) return;
         await this.addToCustomerFromOrder({
           orderId: orderId.toString(),
-          customerId: buyerId.toString(),
+          customerId: collaborator.customerId.toString(),
           value: commission2,
         });
       },

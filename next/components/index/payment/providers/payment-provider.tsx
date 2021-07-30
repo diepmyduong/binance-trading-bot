@@ -157,16 +157,9 @@ export function PaymentProvider(props) {
       .catch((err) => setVouchers(null));
   }
   function loadPrivate(code) {
-    ShopVoucherService.getAll({
-      query: { filter: { code: code } },
-      fragment: ShopVoucherService.fullFragment,
-    })
-      .then((res) =>
-        res.data && res.data.length > 0
-          ? setVoucherSelected(res.data[0])
-          : toast.error("Không tìm thấy khuyến mãi")
-      )
-      .catch((err) => console.log(err));
+    ShopVoucherService.getShopVoucherByCode(code)
+      .then((res) => setVoucherSelected(res))
+      .catch((err) => toast.dark("Đã xảy ra lỗi"));
   }
   useEffect(() => {
     loadVoucher();

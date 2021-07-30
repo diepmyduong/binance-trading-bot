@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { DialogPropsType, Dialog } from "../../../shared/utilities/dialog/dialog";
-import useDevice from "../../../../lib/hooks/useDevice";
+import formatDate from "date-fns/format";
+import { NumberPipe } from "../../../../lib/pipes/number";
 import useScreen from "../../../../lib/hooks/useScreen";
+import useDevice from "../../../../lib/hooks/useDevice";
 
-interface RecommendedDialogProps extends DialogPropsType {}
-export function RecommendedDialog(props: RecommendedDialogProps) {
-  const { isMobile } = useDevice();
+interface HistoryDialogProps extends DialogPropsType {}
+export function HistoryDialog(props: HistoryDialogProps) {
   let screenSm = useScreen("sm");
+  const { isMobile } = useDevice();
   return (
     <Dialog {...props}>
       <div
@@ -18,16 +20,13 @@ export function RecommendedDialog(props: RecommendedDialogProps) {
         {listCommision.map((item, index) => (
           <div key={index} className="px-4 py-2 border-b flex items-center justify-between">
             <div>
-              <span className="font-semibold">Nguyễn Văn A</span>
-              <span className="px-1">-</span>
-              <span>0123345561</span>
-              {/* <span
-                className={`px-1 rounded-full ${
-                  item === "Đã mua" ? "bg-success" : "bg-trueGray"
-                } text-white font-semibold`}
-              >
-                {item}
-              </span> */}
+              <span>
+                <span>{formatDate(new Date(), "dd-MM-yyyy hh:mm")}</span>
+                <span className="px-1">-</span>
+                <span className="font-semibold">DH123123</span>
+              </span>
+              <br />
+              <span className="font-semibold">{NumberPipe(99000, true)}</span>
             </div>
             <span className="font-bold text-success text-lg">+{item}</span>
           </div>

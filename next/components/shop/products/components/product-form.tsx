@@ -219,22 +219,19 @@ export function ProductForm({ product, category, ...props }: PropsType) {
               </Field>
               <Field name="upsaleProductIds" label="Món mua kèm" cols={12}>
                 <Select
-                  autocompletePromise={({ id, search }) =>
-                    ProductService.getAllAutocompletePromise(
-                      { id, search },
-                      {
-                        fragment: "id name image basePrice",
-                        parseOption: (data) => ({
-                          value: data.id,
-                          label: data.name,
-                          image: data.image,
-                          basePrice: data.basePrice,
-                        }),
-                        query: {
-                          filter: { _id: { $ne: product.id } },
-                        },
-                      }
-                    )
+                  optionsPromise={() =>
+                    ProductService.getAllOptionsPromise({
+                      fragment: "id name image basePrice",
+                      parseOption: (data) => ({
+                        value: data.id,
+                        label: data.name,
+                        image: data.image,
+                        basePrice: data.basePrice,
+                      }),
+                      query: {
+                        filter: { _id: { $ne: product.id } },
+                      },
+                    })
                   }
                   placeholder="Nhập hoặc tìm kiếm món mua kèm"
                   multi

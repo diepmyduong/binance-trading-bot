@@ -4,6 +4,7 @@ import { ShopVoucher } from "../../../../lib/repo/shop-voucher.repo";
 import formatDate from "date-fns/format";
 import { Button } from "../../../shared/utilities/form/button";
 import { select } from "async";
+import useScreen from "../../../../lib/hooks/useScreen";
 interface Propstype extends ReactProps {
   selectButton?: boolean;
   promotion: ShopVoucher;
@@ -11,6 +12,7 @@ interface Propstype extends ReactProps {
 }
 
 export function Promotion(props: Propstype) {
+  const screenSm = useScreen("sm");
   return (
     <div
       className="flex cursor-pointer shadow-md border-l-8 rounded-lg overflow-hidden text-sm sm:text-base border-primary items-center mb-3"
@@ -33,7 +35,7 @@ export function Promotion(props: Propstype) {
           )}
         </div>
       </div>
-      {props.selectButton && (
+      {props.selectButton && screenSm && (
         <>
           <hr className="h-14 border-r-2 bg-white border-dashed border-gray-400" />
           <div className="bg-white rounded-l-2xl rounded-r-lg py-2 sm:py-4 shadow-lg">

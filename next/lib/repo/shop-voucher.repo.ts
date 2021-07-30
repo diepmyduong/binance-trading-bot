@@ -108,6 +108,17 @@ export class ShopVoucherRepository extends CrudRepository<ShopVoucher> {
     content: String
     samePrice: Float
   `);
+  async getShopVoucherByCode(code: string) {
+    return await this.apollo
+      .query({
+        query: this.gql`query{
+          getShopVoucherByCode(code:"${code}"){
+            ${this.fullFragment}
+          }
+        }`,
+      })
+      .then((res) => res.data["getShopVoucherByCode"]);
+  }
 }
 export const ShopVoucherService = new ShopVoucherRepository();
 

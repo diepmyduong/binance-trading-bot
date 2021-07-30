@@ -44,6 +44,7 @@
     "@next/bundle-analyzer": "^10.2.3",
     "@tailwindcss/aspect-ratio": "^0.2.1",
     "@tippyjs/react": "^4.2.5",
+    "@types/qrcode.react": "^1.0.2",
     "agenda": "^3.1.0",
     "ajv": "^6.12.3",
     "ajv-errors": "^1.0.1",

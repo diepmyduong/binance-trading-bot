@@ -15,27 +15,30 @@ import useDevice from "../../../../lib/hooks/useDevice";
 import useScreen from "../../../../lib/hooks/useScreen";
 import { HistoryDialog } from "../history/history-dialog";
 import { RecommendedDialog } from "../recommended/recommended-page";
+import { CollaboratorProvider } from "../providers/collaborator-provider";
 
 export function InfoPage() {
   const { shopCode, customer } = useShopContext();
   return (
-    <div className="bg-white shadow  min-h-screen  relative rounded-md w-full">
-      <div className="p-4 bg-gradient-to-t from-accent to-primary-light">
-        <BreadCrumbs
-          breadcrumbs={[{ label: "Trang chủ", href: `/${shopCode}` }, { label: "Thông tin CTV" }]}
-          className="pb-4"
-          light
-        />
-        <div className="flex flex-col items-center text-white">
-          <span className="pt-6 text-sm">Cộng tác viên</span>
-          <span className="font-semibold text-lg">{customer.name}</span>
-          <span className="pt-6 text-sm">Hoa hồng nhận được</span>
-          <span className="text-lg font-bold pb-2">{NumberPipe(123123123, true)}</span>
+    <CollaboratorProvider>
+      <div className="bg-white shadow  min-h-screen  relative rounded-md w-full">
+        <div className="p-4 bg-gradient-to-t from-accent to-primary-light">
+          <BreadCrumbs
+            breadcrumbs={[{ label: "Trang chủ", href: `/${shopCode}` }, { label: "Thông tin CTV" }]}
+            className="pb-4"
+            light
+          />
+          <div className="flex flex-col items-center text-white">
+            <span className="pt-6 text-sm">Cộng tác viên</span>
+            <span className="font-semibold text-lg">{customer.name}</span>
+            <span className="pt-6 text-sm">Hoa hồng nhận được</span>
+            <span className="text-lg font-bold pb-2">{NumberPipe(123123123, true)}</span>
+          </div>
         </div>
+        <Share link={customer.collaborator.shortUrl} />
+        <MenuCollaborator />
       </div>
-      <Share link={customer.collaborator.shortUrl} />
-      <MenuCollaborator />
-    </div>
+    </CollaboratorProvider>
   );
 }
 function Share({ link, ...props }: { link: string }) {

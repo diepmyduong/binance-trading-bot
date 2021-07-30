@@ -1,8 +1,10 @@
 import { compact } from "lodash";
+
 import { CrudService } from "../../../base/crudService";
 import { Ahamove } from "../../../helpers/ahamove/ahamove";
 import { IMember } from "../member/member.model";
 import { ShopConfigModel } from "./shopConfig.model";
+
 class ShopConfigService extends CrudService<typeof ShopConfigModel> {
   constructor() {
     super(ShopConfigModel);

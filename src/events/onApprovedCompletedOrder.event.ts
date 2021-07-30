@@ -5,11 +5,7 @@ import { CollaboratorModel } from "../graphql/modules/collaborator/collaborator.
 import { CommissionLogType } from "../graphql/modules/commissionLog/commissionLog.model";
 import { CommissionMobifoneLogType } from "../graphql/modules/commissionMobifoneLog/commissionMobifoneLog.model";
 import { CumulativePointLogType } from "../graphql/modules/cumulativePointLog/cumulativePointLog.model";
-import {
-  CustomerLoader,
-  CustomerModel,
-  ICustomer,
-} from "../graphql/modules/customer/customer.model";
+import { CustomerLoader, ICustomer } from "../graphql/modules/customer/customer.model";
 import { CustomerPointLogType } from "../graphql/modules/customerPointLog/customerPointLog.model";
 import { IMember, MemberLoader, MemberModel } from "../graphql/modules/member/member.model";
 import {
@@ -24,13 +20,11 @@ import { OrderItemLoader } from "../graphql/modules/orderItem/orderItem.model";
 import { OrderLogModel, OrderLogType } from "../graphql/modules/orderLog/orderLog.model";
 import { SettingHelper } from "../graphql/modules/setting/setting.helper";
 import { ShopConfigModel } from "../graphql/modules/shopConfig/shopConfig.model";
-import { StaffModel, StaffScope } from "../graphql/modules/staff/staff.model";
 import { staffService } from "../graphql/modules/staff/staff.service";
 import { UserModel } from "../graphql/modules/user/user.model";
 import { PubSubHelper } from "../helpers/pubsub.helper";
 import { TokenHelper } from "../helpers/token.helper";
 import { UtilsHelper } from "../helpers/utils.helper";
-import SendNotificationJob from "../scheduler/jobs/sendNotification.job";
 import LocalBroker from "../services/broker";
 import { EventHelper } from "./event.helper";
 import { onSendChatBotText } from "./onSendToChatbot.event";
@@ -213,55 +207,6 @@ onApprovedCompletedOrder.subscribe(async (order) => {
 });
 
 // duyệt đơn hàng thành công
-// Tính chiết khấu dành cho người giới thiêu  - f2 - commission2
-// Gửi mess cho người giới thiệu
-onApprovedCompletedOrder.subscribe(async (order) => {
-  const { fromMemberId, commission2, id, code, collaboratorId } = order;
-  if (commission2 <= 0) return;
-  const [fromSeller, collaborator] = await Promise.all([
-    MemberModel.findById(fromMemberId),
-    CollaboratorModel.findById(collaboratorId),
-  ]);
-  if (!fromSeller) return;
-  if (collaborator) {
-    const customerPresenter = await CustomerModel.findById(collaborator.customerId);
-    await EventHelper.payCollaboratorCommission({
-      customerId: customerPresenter.id,
-      memberId: fromSeller._id,
-      commission: commission2,
-      currentCommission: customerPresenter.commission,
-      collaboratorId,
-      id,
-    });
-  } else {
-    const commissionResult = await EventHelper.payCommission({
-      memberId: fromSeller._id,
-      type: CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR,
-      currentCommission: fromSeller.commission,
-      commission: commission2,
-      id,
-    });
-    const [, receiver] = commissionResult;
-    if (fromSeller.psids) {
-      SettingHelper.load(SettingKey.ORDER_COMMISSION_MSG_FOR_PRESENTER).then((msg) => {
-        const params = {
-          apiKey: fromSeller.chatbotKey,
-          psids: fromSeller.psids,
-          message: msg,
-          context: {
-            shopper: fromSeller,
-            code,
-            commission: commission2,
-            myCommission: commission2 ? receiver.commission : null,
-          },
-        };
-        onSendChatBotText.next(params);
-      });
-    }
-  }
-});
-
-// duyệt đơn hàng thành công
 // Tính chiết khấu dành cho kho giao hàng  - f3 - commission3
 // Gửi mess cho người giới thiệu
 onApprovedCompletedOrder.subscribe(async (order) => {
@@ -392,4 +337,8 @@ onApprovedCompletedOrder.subscribe(async (order) => {
   };
   const parsedMsg = UtilsHelper.parseStringWithInfo({ data: smsTemplate, info: context });
   await LocalBroker.call("ESMS.send", { phone: order.buyerPhone, content: parsedMsg });
+});
+
+onApprovedCompletedOrder.subscribe(async (order) => {
+  LocalBroker.emit("order.completeOrder", { orderId: order._id.toString() });
 });

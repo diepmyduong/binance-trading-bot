@@ -33,11 +33,13 @@ export abstract class CrudService<M extends Model<Document, {}>> extends BaseSer
       } else {
         const textSearchIndex = this.model.schema
           .indexes()
-          .find((c: any) => _.values(c[0]!).some((d: any) => d == "text"));
-        if (textSearchIndex) {
+          .filter((c: any) => _.values(c[0]!).some((d: any) => d == "text"));
+        if (textSearchIndex.length > 0) {
           const or: any[] = [];
-          Object.keys(textSearchIndex[0]!).forEach((key) => {
-            or.push({ [key]: { $regex: search, $options: "i" } });
+          textSearchIndex.forEach((index) => {
+            Object.keys(index[0]!).forEach((key) => {
+              or.push({ [key]: { $regex: search, $options: "i" } });
+            });
           });
           _.set(queryInput, "filter.$or", or);
         }

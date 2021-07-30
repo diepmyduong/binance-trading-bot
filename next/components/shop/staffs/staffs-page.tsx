@@ -1,14 +1,20 @@
-import { RiHome3Line, RiPhoneLine } from "react-icons/ri";
+import { useState } from "react";
+import { RiHome3Line, RiLock2Line, RiPhoneLine } from "react-icons/ri";
+import { useToast } from "../../../lib/providers/toast-provider";
 import { ShopBranchService } from "../../../lib/repo/shop-branch.repo";
 import { Staff, StaffService, STAFF_SCOPES } from "../../../lib/repo/staff.repo";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
 import { Field } from "../../shared/utilities/form/field";
+import { Form } from "../../shared/utilities/form/form";
 import { ImageInput } from "../../shared/utilities/form/image-input";
 import { Input } from "../../shared/utilities/form/input";
 import { Select } from "../../shared/utilities/form/select";
 import { DataTable } from "../../shared/utilities/table/data-table";
 
 export function StaffsPage(props: ReactProps) {
+  const [openUpdateStaffPassword, setOpenUpdateStaffPassword] = useState<Staff>(null);
+  const toast = useToast();
+
   return (
     <>
       <DataTable<Staff> crudService={StaffService} order={{ createdAt: -1 }}>
@@ -73,6 +79,14 @@ export function StaffsPage(props: ReactProps) {
             right
             render={(item: Staff) => (
               <>
+                <DataTable.CellButton
+                  value={item}
+                  icon={<RiLock2Line />}
+                  tooltip="Đổi mật khẩu"
+                  onClick={() => {
+                    setOpenUpdateStaffPassword(item);
+                  }}
+                />
                 <DataTable.CellButton value={item} isEditButton />
                 <DataTable.CellButton hoverDanger value={item} isDeleteButton />
               </>
@@ -125,6 +139,42 @@ export function StaffsPage(props: ReactProps) {
         </DataTable.Form>
         <DataTable.Pagination />
       </DataTable>
+      <Form
+        dialog
+        title="Đổi mật khẩu nhân viên"
+        isOpen={!!openUpdateStaffPassword}
+        onClose={() => setOpenUpdateStaffPassword(null)}
+        onSubmit={async (data) => {
+          await StaffService.updateStaffPassword(openUpdateStaffPassword.id, data.password)
+            .then((res) => {
+              toast.success("Đổi mật khẩu nhân viên thành công");
+              setOpenUpdateStaffPassword(null);
+            })
+            .catch((err) => {
+              toast.error("Đổi mật khẩu nhân viên thất bại. " + err.message);
+            });
+        }}
+      >
+        <Field label="Tên nhân viên" readonly>
+          <Input value={openUpdateStaffPassword?.name} />
+        </Field>
+        <Field name="password" label="Mật khẩu mới" required>
+          <Input type="password" />
+        </Field>
+        <Field
+          name="retypePassword"
+          label="Nhập lại mật khẩu mới"
+          required
+          validate={async (value, data) =>
+            value != data.password ? "Mật khẩu nhập lại không đúng" : ""
+          }
+        >
+          <Input type="password" />
+        </Field>
+        <Form.Footer>
+          <Form.ButtonGroup submitText="Đổi mật khẩu" />
+        </Form.Footer>
+      </Form>
     </>
   );
 }

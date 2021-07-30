@@ -54,8 +54,6 @@ const schema = gql`
     customerId: ID
     "Mã giới thiệu"
     shortCode: String
-    "Đường dẫn giới thiệu"
-    shortUrl: String
     "Lượt click"
     clickCount: Int
     "Lượt like"

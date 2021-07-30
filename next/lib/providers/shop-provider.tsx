@@ -186,6 +186,16 @@ export function ShopProvider(props) {
     if (!locationCustomer) return;
     loadBrand(locationCustomer);
   }, [locationCustomer]);
+  useEffect(() => {
+    if (customer) {
+      const colCode = sessionStorage.getItem(shopCode + "colCode");
+      if (colCode) {
+        CustomerService.updatePresenter(colCode).then((res) => {
+          sessionStorage.removeItem(shopCode + "colCode");
+        });
+      }
+    }
+  }, [customer]);
   return (
     <ShopContext.Provider
       value={{

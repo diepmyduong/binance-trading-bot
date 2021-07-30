@@ -79,7 +79,7 @@ export type IOrder = BaseDocument & {
   commission0?: number; // Hoa hồng Mobifone
   commission1?: number; // Hoa hồng điểm bán
   commission2?: number; // Hoa hồng giới thiệu
-  commission3?: number; // Hoa hồng giới thiệu
+  commission3?: number; // Hoa hồng kho
   buyerId?: string; // Khách hàng mua
   buyerName?: string; // Tên khách hàng
   buyerPhone?: string; // Điện thoại khách hàng

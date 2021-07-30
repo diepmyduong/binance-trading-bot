@@ -594,6 +594,12 @@ export class OrderGenerator {
     if (this.buyer.collaboratorId) {
       const collaborator = await CollaboratorLoader.load(this.buyer.collaboratorId);
       if (collaborator) this.order.collaboratorId = collaborator._id;
+    } else if (this.buyer.presenterId) {
+      const collaborator = await CollaboratorModel.findOne({
+        customerId: this.buyer.presenterId,
+        memberId: this.seller._id,
+      });
+      if (collaborator) this.order.collaboratorId = collaborator._id;
     }
   }
   private async getUnitPrice() {

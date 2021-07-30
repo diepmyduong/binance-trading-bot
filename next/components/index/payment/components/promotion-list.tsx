@@ -32,7 +32,12 @@ export function PromotionList(props) {
         <Dialog.Body>
           <div className="w-full flex sticky top-0 border-group h-12 rounded-md">
             <Input className="flex-1" onChange={(data) => setVoucherCode(data)} />
-            <Button text="Áp dụng" primary className="h-12" onClick={() => handleSubmit()} />
+            <Button
+              text="Áp dụng"
+              primary
+              className="h-12 whitespace-nowrap w-1/3 sm:w-1/4"
+              onClick={() => handleSubmit()}
+            />
           </div>
           <div className="mt-4">
             {shopVouchers ? (

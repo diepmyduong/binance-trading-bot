@@ -30,41 +30,43 @@ export function PromotionList(props) {
         isOpen={props.isOpen}
       >
         <Dialog.Body>
-          <div className="w-full flex sticky top-0 border-group h-12 rounded-md">
-            <Input className="flex-1" onChange={(data) => setVoucherCode(data)} />
-            <Button
-              text="Áp dụng"
-              primary
-              className="h-12 whitespace-nowrap w-1/3 sm:w-1/4"
-              onClick={() => handleSubmit()}
-            />
-          </div>
-          <div className="mt-4">
-            {shopVouchers ? (
-              <div className="mb-4">
-                {shopVouchers.length === 0 ? (
-                  <span className="h-screen font-semibold text-center">
-                    Cửa hàng hiện chưa có mã khuyến mãi nào
-                  </span>
-                ) : (
-                  <>
-                    {shopVouchers.map((item: ShopVoucher, index) => (
-                      <Promotion
-                        key={index}
-                        promotion={item}
-                        onClick={() => {
-                          setOrderInput({ ...orderInput, promotionCode: item.code });
-                          props.onClose();
-                        }}
-                        selectButton
-                      />
-                    ))}
-                  </>
-                )}
-              </div>
-            ) : (
-              <Spinner />
-            )}
+          <div style={{ maxHeight: `calc(96vh - 150px)`, minHeight: `calc(70vh)` }}>
+            <div className="w-full flex sticky top-0 border-group h-12 rounded-md">
+              <Input className="flex-1" onChange={(data) => setVoucherCode(data)} />
+              <Button
+                text="Áp dụng"
+                primary
+                className="h-12 whitespace-nowrap w-1/3 sm:w-1/4"
+                onClick={() => handleSubmit()}
+              />
+            </div>
+            <div className="mt-4">
+              {shopVouchers ? (
+                <div className="mb-4">
+                  {shopVouchers.length === 0 ? (
+                    <span className="h-screen font-semibold text-center">
+                      Cửa hàng hiện chưa có mã khuyến mãi nào
+                    </span>
+                  ) : (
+                    <>
+                      {shopVouchers.map((item: ShopVoucher, index) => (
+                        <Promotion
+                          key={index}
+                          promotion={item}
+                          onClick={() => {
+                            setOrderInput({ ...orderInput, promotionCode: item.code });
+                            props.onClose();
+                          }}
+                          selectButton
+                        />
+                      ))}
+                    </>
+                  )}
+                </div>
+              ) : (
+                <Spinner />
+              )}
+            </div>
           </div>
         </Dialog.Body>
       </Dialog>

@@ -28,7 +28,11 @@ export class CommissionLogRepository extends CrudRepository<CommissionLog> {
     type: String
     orderId: ID
     note: String
-    order{code}
+    order{
+      code 
+      amount
+      subtotal
+    }
   `);
   fullFragment: string = this.parseFragment(`
   id: String

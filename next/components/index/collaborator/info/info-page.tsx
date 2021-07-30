@@ -16,9 +16,11 @@ import useScreen from "../../../../lib/hooks/useScreen";
 import { HistoryDialog } from "../history/history-dialog";
 import { RecommendedDialog } from "../recommended/recommended-page";
 import { CollaboratorProvider } from "../providers/collaborator-provider";
+import { Spinner } from "../../../shared/utilities/spinner";
 
 export function InfoPage() {
   const { shopCode, customer } = useShopContext();
+  if (!customer) return <Spinner />;
   return (
     <CollaboratorProvider>
       <div className="bg-white shadow  min-h-screen  relative rounded-md w-full">

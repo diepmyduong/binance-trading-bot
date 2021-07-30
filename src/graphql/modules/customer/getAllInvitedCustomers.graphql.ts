@@ -1,6 +1,7 @@
 import { gql } from "apollo-server-express";
-import { set } from "lodash";
+import { get, set } from "lodash";
 import { ROLES } from "../../../constants/role.const";
+import LocalBroker from "../../../services/broker";
 import { Context } from "../../context";
 import { customerService } from "./customer.service";
 
@@ -34,11 +35,21 @@ export default {
       getAllInvitedCustomers: async (root: any, args: any, context: Context) => {
         context.auth(ROLES.MEMBER_STAFF_CUSTOMER);
         const { customerId } = args;
-        set(args, "q.filter.presenterId", customerId);
-        if (context.isCustomer()) {
-          set(args, "q.filter.presenterId", context.id);
-        }
-        return customerService.fetch(args.q, "_id name phone avatar presenterId");
+        let presenterId = context.isCustomer() ? context.id : customerId;
+        context.meta.presenterId = presenterId;
+        set(args, "q.filter.presenterId", presenterId);
+        return customerService.fetch(args.q, "_id name phone avatar presenterId context");
+      },
+    },
+    InvitedCustomer: {
+      ordered: async (root: any, args: any, context: Context) => {
+        return get(root, "context.order", 0) > 0;
+      },
+      commission: async (root: any, args: any, context: Context) => {
+        return LocalBroker.call("commission.estimateFromCustomer", {
+          id: context.meta.presenterId,
+          from: root._id.toString(),
+        });
       },
     },
   },

@@ -12,6 +12,7 @@ import { CustomerLoader, CustomerModel } from "../../graphql/modules/customer/cu
 import { OrderLoader } from "../../graphql/modules/order/order.model";
 import { CommissionBy, IShopConfig } from "../../graphql/modules/shopConfig/shopConfig.model";
 import { DiscountUnit } from "../../graphql/modules/shopVoucher/types/discountItem.schema";
+import { ttlCache } from "../../helpers/ttlCache";
 import { MainConnection } from "../../loaders/database";
 
 const delay = (duration: number) =>
@@ -44,6 +45,13 @@ export default {
           session.endSession();
           return result;
         }
+      },
+    },
+    estimateFromCustomer: {
+      params: { id: { type: "string" }, from: { type: "string" } },
+      async handler(ctx) {
+        const { id, from } = ctx.params;
+        return EstimateCommissionFromCustomerLoader.load([id, from].join("|"));
       },
     },
   },
@@ -115,6 +123,7 @@ export default {
           }
         }
         if (commission2 <= 0) return;
+
         await this.addToCustomerFromOrder({
           orderId: orderId.toString(),
           customerId: collaborator.customerId.toString(),
@@ -137,4 +146,49 @@ const CustomerCommissionLoader = new DataLoader<string, number>(
     });
   },
   { cache: false }
+);
+
+const EstimateCommissionFromCustomerLoader = new DataLoader<string, number>(
+  (ids: string[]) => {
+    const splits = ids.map((id) => id.split("|"));
+    const presenterIds = splits.map((l) => Types.ObjectId(l[0]));
+    const buyerIds = splits.map((l) => Types.ObjectId(l[1]));
+    return CommissionLogModel.aggregate([
+      {
+        $match: {
+          customerId: { $in: presenterIds },
+          type: CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER,
+        },
+      },
+      {
+        $lookup: {
+          from: "orders",
+          localField: "orderId",
+          foreignField: "_id",
+          as: "order",
+        },
+      },
+      { $unwind: "$order" },
+      { $match: { "order.buyerId": { $in: buyerIds } } },
+      {
+        $group: {
+          _id: { buyerId: "$order.buyerId", customerId: "$customerId" },
+          commission: { $sum: "$value" },
+        },
+      },
+    ]).then((list) => {
+      const keyByIds = keyBy(
+        list.map((l) => {
+          l.id = [l._id.customerId, l._id.buyerId].join("|");
+          return l;
+        }),
+        "id"
+      );
+      return ids.map((id) => get(keyByIds, id + ".commission", 0));
+    });
+  },
+  {
+    cache: true,
+    cacheMap: ttlCache({ ttl: 30000, maxSize: 100 }),
+  }
 );

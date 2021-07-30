@@ -14,7 +14,7 @@ import { Dialog } from "../../../shared/utilities/dialog/dialog";
 import useDevice from "../../../../lib/hooks/useDevice";
 import useScreen from "../../../../lib/hooks/useScreen";
 import { HistoryDialog } from "../history/history-dialog";
-import { RecommendedDialog } from "../recommended/recommended-page";
+import { RecommendedDialog } from "../recommended/recommended-dialog";
 import { CollaboratorProvider } from "../providers/collaborator-provider";
 import { Spinner } from "../../../shared/utilities/spinner";
 

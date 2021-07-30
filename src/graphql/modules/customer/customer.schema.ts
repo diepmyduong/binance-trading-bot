@@ -84,6 +84,10 @@ const schema = gql`
     collaboratorId: ID
     "Cộng tác viên"
     collaborator: Collaborator
+    "Mã người giới thiệu"
+    presenterId: ID
+    "KH Giới thiệu"
+    presenter: Customer
     
     latitude: Float,
     longitude: Float,

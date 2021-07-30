@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { MainConnection } from "../../../loaders/database";
 import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 import DataLoader from "dataloader";
+import { ttlCache } from "../../../helpers/ttlCache";
 const Schema = mongoose.Schema;
 export enum SettingType {
   string = "string",
@@ -56,6 +57,6 @@ export const SettingKeyLoader = new DataLoader<string, ISetting>(
       keys.map((k) => settings.find((s) => s.key == k)!)
     );
   },
-  { cache: false }
+  { cache: true, cacheMap: ttlCache({ ttl: 30000, maxSize: 100 }) }
 );
 export const SettingLoader = ModelLoader<ISetting>(SettingModel, SettingHook);

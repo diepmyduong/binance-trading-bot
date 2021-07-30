@@ -8,6 +8,7 @@ interface PropsType extends ReactProps {
   }[];
   native?: boolean;
   accent?: boolean;
+  light?: boolean;
 }
 
 export default function BreadCrumbs({ breadcrumbs, ...props }: PropsType) {
@@ -23,8 +24,8 @@ export default function BreadCrumbs({ breadcrumbs, ...props }: PropsType) {
             <>
               <Link href={breadcrumb.href}>
                 <a
-                  className={`text-gray-600 hover:underline ${
-                    (props.accent && " hover:text-accent ") || " hover:text-primary "
+                  className={`"text-gray-600" hover:underline transition-all duration-200 ${
+                    (props.accent && " hover:text-accent ") || " hover:text-primary-dark "
                   }`}
                 >
                   <span>{breadcrumb.label}</span>
@@ -33,7 +34,11 @@ export default function BreadCrumbs({ breadcrumbs, ...props }: PropsType) {
               <span className="px-1">/</span>
             </>
           ) : (
-            <a className={(props.accent && "text-accent ") || " text-primary "}>
+            <a
+              className={
+                (props.accent && "text-accent ") || (props.light && "text-white") || "text-primary"
+              }
+            >
               <span>{breadcrumb.label}</span>
             </a>
           )}

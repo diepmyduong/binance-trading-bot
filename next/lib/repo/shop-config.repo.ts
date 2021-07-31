@@ -25,6 +25,12 @@ export interface ShopConfig extends BaseModel {
   accentColor: string;
   smsOrder: boolean;
   smsOtp: boolean;
+  collaborator: boolean;
+  colApprove: boolean;
+  colMinOrder: number;
+  colCommissionBy: string;
+  colCommissionUnit: string;
+  colCommissionValue: number;
 }
 
 export interface ShopTag {
@@ -83,6 +89,12 @@ export class ShopConfigRepository extends CrudRepository<ShopConfig> {
     accentColor: string
     smsOrder: Boolean
     smsOtp: Boolean
+    collaborator: Boolean
+    colApprove: Boolean
+    colMinOrder: Int
+    colCommissionBy: String
+    colCommissionUnit: String
+    colCommissionValue: Float
     banners {
       image: String
       title: String

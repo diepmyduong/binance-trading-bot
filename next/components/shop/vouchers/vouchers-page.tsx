@@ -8,6 +8,7 @@ import {
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
 import { Field } from "../../shared/utilities/form/field";
 import { Select } from "../../shared/utilities/form/select";
+import { Switch } from "../../shared/utilities/form/switch";
 import { DataTable } from "../../shared/utilities/table/data-table";
 import { VoucherForm } from "./components/voucher-form";
 
@@ -67,86 +68,96 @@ export function VouchersPage(props: ReactProps) {
           </DataTable.Filter>
         </DataTable.Toolbar>
 
-        <DataTable.Table className="mt-4 bg-white">
-          <DataTable.Column
-            label="Mã khuyến mãi"
-            className="max-w-xs"
-            render={(item: ShopVoucher) => (
-              <DataTable.CellText
-                image={item.image}
-                className="font-semibold"
-                value={item.code}
-                subText={item.description}
-              />
-            )}
-          />
-          <DataTable.Column
-            center
-            label="Loại"
-            render={(item: ShopVoucher) => (
-              <DataTable.CellStatus value={item.type} options={SHOP_VOUCHER_TYPES} />
-            )}
-          />
-          <DataTable.Column
-            center
-            label="Ngày hoạt động"
-            render={(item: ShopVoucher) => (
-              <DataTable.CellText
-                className="text-gray-500 text-sm"
-                value={
-                  <>
-                    {item.startDate && (
-                      <div className="flex">
-                        <i className="mt-1 mr-1">
-                          <RiCalendarEventLine />
-                        </i>
-                        Từ ngày {format(new Date(item.startDate), "dd-MM-yyyy")}
-                      </div>
-                    )}
-                    {item.endDate && (
-                      <div className="flex">
-                        <i className="mt-1 mr-1">
-                          <RiCalendarEventLine />
-                        </i>
-                        Đến ngày {format(new Date(item.endDate), "dd-MM-yyyy")}
-                      </div>
-                    )}
-                  </>
-                }
-              />
-            )}
-          />
-          <DataTable.Column
-            center
-            label="Kích hoạt"
-            render={(item: ShopVoucher) => (
-              <DataTable.CellText
-                value={
-                  item.isActive ? (
-                    <i className="text-success text-xl flex-center">
-                      <RiCheckLine />
-                    </i>
-                  ) : (
-                    <i className="text-gray-400 text-xl flex-center">
-                      <RiCloseLine />
-                    </i>
-                  )
-                }
-              />
-            )}
-          />
-          <DataTable.Column
-            right
-            render={(item: ShopVoucher) => (
-              <>
-                <DataTable.CellButton value={item} isEditButton />
-                <DataTable.CellButton hoverDanger value={item} isDeleteButton />
-              </>
-            )}
-          />
-        </DataTable.Table>
         <DataTable.Consumer>
-          {({ formItem }: { formItem: ShopVoucher }) => <VoucherForm voucher={formItem} />}
+          {({ changeRowData, formItem }) => (
+            <>
+              <DataTable.Table className="mt-4 bg-white">
+                <DataTable.Column
+                  label="Mã khuyến mãi"
+                  className="max-w-xs"
+                  render={(item: ShopVoucher) => (
+                    <DataTable.CellText
+                      image={item.image}
+                      className="font-semibold"
+                      value={item.code}
+                      subText={item.description}
+                    />
+                  )}
+                />
+                <DataTable.Column
+                  center
+                  label="Loại"
+                  render={(item: ShopVoucher) => (
+                    <DataTable.CellStatus value={item.type} options={SHOP_VOUCHER_TYPES} />
+                  )}
+                />
+                <DataTable.Column
+                  center
+                  label="Ngày hoạt động"
+                  render={(item: ShopVoucher) => (
+                    <DataTable.CellText
+                      className="text-gray-500 text-sm"
+                      value={
+                        <>
+                          {item.startDate && (
+                            <div className="flex">
+                              <i className="mt-1 mr-1">
+                                <RiCalendarEventLine />
+                              </i>
+                              Từ ngày {format(new Date(item.startDate), "dd-MM-yyyy")}
+                            </div>
+                          )}
+                          {item.endDate && (
+                            <div className="flex">
+                              <i className="mt-1 mr-1">
+                                <RiCalendarEventLine />
+                              </i>
+                              Đến ngày {format(new Date(item.endDate), "dd-MM-yyyy")}
+                            </div>
+                          )}
+                        </>
+                      }
+                    />
+                  )}
+                />
+                <DataTable.Column
+                  center
+                  label="Kích hoạt"
+                  render={(item: ShopVoucher) => (
+                    <DataTable.CellText
+                      className="flex justify-center"
+                      value={
+                        <Switch
+                          value={item.isActive}
+                          onChange={async () => {
+                            try {
+                              const res = await ShopVoucherService.update({
+                                id: item.id,
+                                data: { isActive: !item.isActive },
+                              });
+                              changeRowData(item, "isActive", res.isActive);
+                            } catch (err) {
+                              changeRowData(item, "isActive", item.isActive);
+                            }
+                          }}
+                        />
+                      }
+                    />
+                  )}
+                />
+                <DataTable.Column
+                  right
+                  render={(item: ShopVoucher) => (
+                    <>
+                      <DataTable.CellButton value={item} isEditButton />
+                      <DataTable.CellButton hoverDanger value={item} isDeleteButton />
+                    </>
+                  )}
+                />
+              </DataTable.Table>
+              <VoucherForm voucher={formItem} />
+            </>
+          )}
         </DataTable.Consumer>
         <DataTable.Pagination />
       </DataTable>

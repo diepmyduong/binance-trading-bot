@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { RiHome3Line, RiLock2Line, RiPhoneLine } from "react-icons/ri";
+import { useAuth } from "../../../lib/providers/auth-provider";
 import { useToast } from "../../../lib/providers/toast-provider";
 import { ShopBranchService } from "../../../lib/repo/shop-branch.repo";
 import { Staff, StaffService, STAFF_SCOPES } from "../../../lib/repo/staff.repo";
@@ -13,6 +14,7 @@ import { DataTable } from "../../shared/utilities/table/data-table";
 
 export function StaffsPage(props: ReactProps) {
   const [openUpdateStaffPassword, setOpenUpdateStaffPassword] = useState<Staff>(null);
+  const { member } = useAuth();
   const toast = useToast();
 
   return (
@@ -120,6 +122,9 @@ export function StaffsPage(props: ReactProps) {
                 </Field>
                 <Field name="branchId" label="Chi nhánh trực thuộc" cols={12} required>
                   <Select optionsPromise={() => ShopBranchService.getAllOptionsPromise()} />
+                </Field>
+                <Field label="Mã cửa hàng" cols={12} readonly>
+                  <Input value={member.code} />
                 </Field>
                 <Field name="phone" label="Số điện thoại" cols={6}>
                   <Input />

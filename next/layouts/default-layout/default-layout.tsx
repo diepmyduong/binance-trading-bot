@@ -18,6 +18,9 @@ export function DefaultLayout({ ...props }) {
     if (router.query["x-token"]) {
       SetCustomerToken(router.query["x-token"] as string, shopCode);
     }
+    if (router.query["colCode"]) {
+      sessionStorage.setItem(shopCode + "colCode", router.query["colCode"] as string);
+    }
   }
 
   if (!shopCode) return <Spinner />;

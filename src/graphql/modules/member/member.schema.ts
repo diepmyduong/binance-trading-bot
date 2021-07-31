@@ -57,8 +57,8 @@ const schema = gql`
     birthday: DateTime
     parentIds: [ID]
     activated: Boolean
-    type: String!
-    branchId: ID!
+    type: String
+    branchId: ID
     positionId: ID
     password: String!
     allowSale:Boolean

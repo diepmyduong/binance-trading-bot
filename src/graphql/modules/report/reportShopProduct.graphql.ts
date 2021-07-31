@@ -4,7 +4,7 @@ import { Types } from "mongoose";
 import { ROLES } from "../../../constants/role.const";
 import { UtilsHelper } from "../../../helpers";
 import { Context } from "../../context";
-import { OrderStatus } from "../order/order.model";
+import { OrderModel, OrderStatus } from "../order/order.model";
 import { OrderItemModel } from "../orderItem/orderItem.model";
 
 export default {
@@ -15,6 +15,7 @@ export default {
     input ReportShopProductInput {
       fromDate: String!
       toDate: String!
+      shopBranchId: ID
     }
     type ReportShopProductData {
       top10: [ProductOrder]
@@ -29,7 +30,7 @@ export default {
     Query: {
       reportShopProduct: async (root: any, args: any, context: Context) => {
         context.auth(ROLES.MEMBER_STAFF);
-        const { fromDate, toDate } = args.filter;
+        const { fromDate, toDate, shopBranchId } = args.filter;
         const $match: any = {
           sellerId: Types.ObjectId(context.sellerId),
           status: {
@@ -42,21 +43,33 @@ export default {
           },
         };
         const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
-        if ($gte) set($match, "createdAt.$gte", $gte);
-        if ($lte) set($match, "createdAt.$lte", $lte);
-        return OrderItemModel.aggregate([
+        if ($gte) set($match, "loggedAt.$gte", $gte);
+        if ($lte) set($match, "loggedAt.$lte", $lte);
+        if (shopBranchId) set($match, "shopBranchId", Types.ObjectId(shopBranchId));
+        const query = [
           { $match },
           {
+            $lookup: {
+              from: "orderitems",
+              localField: "itemIds",
+              foreignField: "_id",
+              as: "items",
+            },
+          },
+          { $unwind: "$items" },
+          {
             $group: {
-              _id: "$productId",
-              productId: { $first: "$productId" },
-              productName: { $first: "$productName" },
-              qty: { $sum: "$qty" },
+              _id: "$items.productId",
+              productId: { $first: "$items.productId" },
+              productName: { $first: "$items.productName" },
+              qty: { $sum: "$items.qty" },
             },
           },
           { $sort: { qty: -1 } },
           { $limit: 10 },
-        ]).then((res) => ({ top10: res }));
+        ];
+        // console.log("query", JSON.stringify(query, null, 2));
+        return OrderModel.aggregate(query).then((res) => ({ top10: res }));
       },
     },
   },

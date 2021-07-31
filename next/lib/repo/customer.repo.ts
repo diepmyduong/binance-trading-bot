@@ -169,6 +169,11 @@ export class CustomerRepository extends CrudRepository<Customer> {
       mutation: `requestOtp(phone:"${phone}")`,
     }).then((res) => res.data["g0"]);
   }
+  async updatePresenter(colCode) {
+    return await this.mutate({
+      mutation: `updatePresenter(colCode: "${colCode}")`,
+    }).then((res) => res.data["g0"]);
+  }
 }
 
 export const CustomerService = new CustomerRepository();

@@ -6,7 +6,7 @@ import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
 import { CollaboratorLoader, CollaboratorModel } from "../collaborator/collaborator.model";
 import { MemberLoader, MemberModel } from "../member/member.model";
-import { ICustomer } from "./customer.model";
+import { CustomerLoader, ICustomer } from "./customer.model";
 import { customerService } from "./customer.service";
 
 const Query = {
@@ -25,6 +25,8 @@ const Query = {
 const Mutation = {};
 
 const Customer = {
+  presenter: GraphQLHelper.loadById(CustomerLoader, "presenterId"),
+  collaborator: GraphQLHelper.loadById(CollaboratorLoader, "collaboratorId"),
   isCollaborator: async (root: ICustomer, args: any, context: Context) => {
     return !!root.collaboratorId;
   },
@@ -34,7 +36,6 @@ const Customer = {
     const members = await MemberModel.find({ _id: { $in: memberIds } });
     return members;
   },
-  collaborator: GraphQLHelper.loadById(CollaboratorLoader, "collaboratorId"),
 };
 
 const CustomerPageAccount = {

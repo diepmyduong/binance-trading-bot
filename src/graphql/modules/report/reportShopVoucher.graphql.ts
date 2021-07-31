@@ -14,6 +14,7 @@ export default {
     input ReportShopVoucherInput {
       fromDate: String!
       toDate: String!
+      shopBranchId: ID
     }
     type ReportShopVoucherData {
       top10: [VoucherOrder]
@@ -29,7 +30,7 @@ export default {
     Query: {
       reportShopVoucher: async (root: any, args: any, context: Context) => {
         context.auth(ROLES.MEMBER_STAFF);
-        const { fromDate, toDate } = args.filter;
+        const { fromDate, toDate, shopBranchId } = args.filter;
         const $match: any = {
           sellerId: Types.ObjectId(context.sellerId),
           status: {
@@ -42,9 +43,10 @@ export default {
           },
           voucherId: { $exists: true },
         };
+        if (shopBranchId) set($match, "shopBranchId", Types.ObjectId(shopBranchId));
         const { $gte, $lte } = UtilsHelper.getDatesWithComparing(fromDate, toDate);
-        if ($gte) set($match, "createdAt.$gte", $gte);
-        if ($lte) set($match, "createdAt.$lte", $lte);
+        if ($gte) set($match, "loggedAt.$gte", $gte);
+        if ($lte) set($match, "loggedAt.$lte", $lte);
         return OrderModel.aggregate([
           { $match },
           { $group: { _id: "$voucherId", qty: { $sum: 1 }, discount: { $sum: "$discount" } } },

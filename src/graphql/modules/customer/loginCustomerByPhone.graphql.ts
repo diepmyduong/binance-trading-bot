@@ -4,6 +4,7 @@ import moment from "moment-timezone";
 import { ROLES } from "../../../constants/role.const";
 import { TokenHelper } from "../../../helpers/token.helper";
 import { Context } from "../../context";
+import { CollaboratorModel } from "../collaborator/collaborator.model";
 import { DeviceInfoModel } from "../deviceInfo/deviceInfo.model";
 import { ShopConfigModel } from "../shopConfig/shopConfig.model";
 import { CustomerModel } from "./customer.model";
@@ -28,6 +29,7 @@ export default {
       loginCustomerByPhone: async (root: any, args: any, context: Context) => {
         context.auth([ROLES.ANONYMOUS]);
         const { phone, otp, deviceId, deviceToken } = args;
+
         const customer = await CustomerModel.findOneAndUpdate(
           { phone, memberId: context.sellerId },
           { $setOnInsert: { name: "Vãng Lai" } },

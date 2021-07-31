@@ -25,15 +25,30 @@ export default {
         const orderGenerator = new OrderGenerator(orderInput, seller, customer, campaignCode);
         await orderGenerator.generate();
         const order = await orderGenerator.toOrder();
-        await customer
-          .updateOne({
-            name: order.buyerName,
-            latitude: order.latitude,
-            longitude: order.longitude,
-            fullAddress: order.buyerFullAddress,
-            addressNote: order.buyerAddressNote,
-          })
-          .exec();
+        if (!customer.collaboratorId) {
+          await customer
+            .updateOne({
+              $set: {
+                name: order.buyerName,
+                latitude: order.latitude,
+                longitude: order.longitude,
+                fullAddress: order.buyerFullAddress,
+                addressNote: order.buyerAddressNote,
+              },
+            })
+            .exec();
+        } else {
+          await customer
+            .updateOne({
+              $set: {
+                latitude: order.latitude,
+                longitude: order.longitude,
+                fullAddress: order.buyerFullAddress,
+                addressNote: order.buyerAddressNote,
+              },
+            })
+            .exec();
+        }
         return order;
       },
     },

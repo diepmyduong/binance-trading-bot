@@ -13,6 +13,8 @@ const schema = gql`
 
     "Mã thành viên"
     memberId: ID
+    "Mã khách hàng"
+    customerId: ID
     "Giá trị"
     value: Float
     "Loại sự kiện ${Object.values(CommissionLogType)}"

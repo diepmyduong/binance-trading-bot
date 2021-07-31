@@ -2,8 +2,6 @@ import { Job } from "agenda";
 import { groupBy } from "lodash";
 import winston from "winston";
 
-import { CounterModel } from "../../graphql/modules/counter/counter.model";
-import { counterService } from "../../graphql/modules/counter/counter.service";
 import { DeviceInfoModel, IDeviceInfo } from "../../graphql/modules/deviceInfo/deviceInfo.model";
 import { NotificationHelper } from "../../graphql/modules/notification/notification.helper";
 import {
@@ -15,6 +13,7 @@ import {
 import { firebaseHelper } from "../../helpers";
 import { errorFormat, simpleTimestampFormat } from "../../loaders/logger";
 import { Agenda } from "../agenda";
+
 const logger = winston.createLogger({
   format: simpleTimestampFormat,
   transports: [
@@ -51,7 +50,7 @@ export class SendNotificationJob {
     } catch (err) {
       errorLogger.error(err);
     } finally {
-      done();
+      return done();
     }
   }
 }
@@ -81,7 +80,6 @@ async function sendNotificationToMembers(job: Job) {
       errorLogger.error(error);
     } finally {
       await updateNoficationCounter(notificationIds);
-      await job.touch();
     }
   }
 }
@@ -109,7 +107,6 @@ async function sendNotificationToStaff(job: Job) {
       errorLogger.error(error);
     } finally {
       await updateNoficationCounter(notificationIds);
-      await job.touch();
     }
   }
 }
@@ -137,7 +134,6 @@ async function sendNotificationToCustomer(job: Job) {
       errorLogger.error(error);
     } finally {
       await updateNoficationCounter(notificationIds);
-      await job.touch();
     }
   }
 }

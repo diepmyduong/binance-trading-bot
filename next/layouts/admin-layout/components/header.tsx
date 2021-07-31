@@ -48,8 +48,9 @@ export function Header({ ...props }: PropsType) {
     <>
       <div className="top-0 left-0 fixed w-full h-14 bg-white z-50 shadow flex items-center">
         <Link href="/">
-          <a className="block py-3 px-6 h-full">
-            <img className="w-auto h-full object-contain" src="/assets/img/logo.png" />
+          <a className="flex py-3 px-6 h-full uppercase font-bold text-xl text-primary items-center">
+            <img className="w-auto h-full object-contain" src="/assets/img/logo-som.png" />
+            <div className="ml-4">3M Marketing</div>
           </a>
         </Link>
         {/* <div className=" w-full h-full flex items-center space-x-4">
@@ -82,15 +83,15 @@ export function Header({ ...props }: PropsType) {
             }, null as any)}
         </div> */}
 
-        <div className="ml-auto" ref={notificationRef}>
+        {/* <div className="ml-auto" ref={notificationRef}>
           <Button icon={<RiNotification3Line />} />
         </div>
         <Popover placement="bottom" reference={notificationRef}>
           <div className="items flex flex-wrap p-8">Thông báo</div>
-        </Popover>
+        </Popover> */}
         {user && (
           <div
-            className="flex items-center pl-4 pr-8 border-l border-gray-100 cursor-pointer group"
+            className="flex items-center pl-4 pr-8 border-l border-gray-100 cursor-pointer group ml-auto"
             ref={userRef}
           >
             <Img compress={80} avatar className="w-8" src={user.profilePicture} alt="avatar" />

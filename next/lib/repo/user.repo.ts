@@ -1,74 +1,67 @@
 import { BaseModel, CrudRepository } from "./crud.repo";
-import { Customer, CustomerService } from "./customer.repo";
 
 export interface User extends BaseModel {
   uid: string;
-  code: string;
-  username: string;
-  name: string;
   email: string;
+  name: string;
   phone: string;
-  position: string;
-  birthday: string;
-  gender: string;
-  role: string;
-  scopes: string[];
   address: string;
+  avatar: string;
   province: string;
   district: string;
   ward: string;
   provinceId: string;
   districtId: string;
   wardId: string;
-  profilePicture: string;
-  loginedAt: string;
+  role: "ADMIN" | "EDITOR";
+  unseenNotify: number;
+  psid: string;
+  subscriber: SubscriberInfo;
+}
+interface SubscriberInfo {
+  id: string;
+  psid: string;
+  name: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
+  locale: string;
+  profilePic: string;
 }
 export class UserRepository extends CrudRepository<User> {
   apiName: string = "User";
   displayName: string = "tài khoản";
   shortFragment: string = this.parseFragment(`
     id: String
+    uid: string
+    email: string
+    name: string
+    phone: string
+    wardId: string
+    role: 'ADMIN' | 'EDITOR'
     createdAt: DateTime
     updatedAt: DateTime
-    code: String
-    username: String
-    name: String
-    email: String
-    phone: String
-    position: String
-    gender: String
-    scopes: [String]
-    profilePicture: String
   `);
   fullFragment: string = this.parseFragment(`
     id: String
+    uid: string
+    email: string
+    name: string
+    phone: string
+    wardId: string
+    role: 'ADMIN' | 'EDITOR'
     createdAt: DateTime
     updatedAt: DateTime
-    uid: String
-    code: String
-    username: String
-    name: String
-    email: String
-    phone: String
-    position: String
-    birthday: DateTime
-    gender: String
-    scopes: [String]
-    address: String
-    provinceId: String
-    districtId: String
-    wardId: String
-    profilePicture: String
   `);
 
   // for firebase
-  async loginUserByToken(token): Promise<{ user: User; token: string }> {
+  async login(token): Promise<{ user: User; token: string }> {
     return await this.apollo
       .mutate({
         mutation: this
-          .gql`mutation {  loginUserByToken(idToken: "${token}") { user { ${this.fullFragment} } token }}`,
+          .gql`mutation {  login(idToken: "${token}") { user { ${this.fullFragment} } token }}`,
       })
-      .then((res) => res.data["loginUserByToken"]);
+      .then((res) => res.data["login"]);
   }
 
   // fore server username
@@ -136,10 +129,5 @@ export const UserService = new UserRepository();
 
 export const USER_ROLES: Option[] = [
   { value: "ADMIN", label: "Quản trị", color: "primary" },
-  { value: "USER", label: "Người dùng", color: "accent" },
-];
-export const USER_STATUS: Option[] = [
-  { value: "ACTIVE", label: "Đã kích hoạt", color: "success" },
-  { value: "INACTIVE", label: "Chưa kích hoạt", color: "bluegray" },
-  { value: "BLOCKED", label: "Đã bị khóa", color: "warning" },
+  { value: "USER", label: "Biên tập viên", color: "success" },
 ];

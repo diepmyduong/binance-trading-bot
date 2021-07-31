@@ -1,27 +1,16 @@
-import { SubMenu } from "./submenu";
+import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import {
-  RiArchiveDrawerLine,
-  RiArchiveLine,
-  RiArrowDownSLine,
-  RiDashboard2Line,
-  RiFileList3Line,
-  RiHistoryLine,
-  RiMailSettingsLine,
-  RiNewspaperLine,
-  RiPagesLine,
-  RiSettings3Line,
-  RiUser2Line,
-} from "react-icons/ri";
+import { RiEdit2Line, RiSettings3Line, RiStore2Line, RiUser2Line } from "react-icons/ri";
 import { Accordion } from "../../../components/shared/utilities/accordion/accordion";
 import { Button } from "../../../components/shared/utilities/form/button";
-import { useRouter } from "next/router";
+import { useAdminLayoutContext } from "../providers/admin-layout-provider";
 import { Footer } from "./footer";
 
 interface PropsType extends ReactProps {}
 export default function Sidebar({ ...props }: PropsType) {
   const [menus, setMenus] = useState<any[]>(SIDEBAR_MENUS);
   const router = useRouter();
+  const { pendingRegistrations } = useAdminLayoutContext();
 
   const toggleMenu = (index) => {
     menus[index].isOpen = !menus[index].isOpen;
@@ -64,14 +53,25 @@ export default function Sidebar({ ...props }: PropsType) {
                   {menu.submenus.map((submenu, index) => (
                     <Button
                       key={index}
-                      accent={router.pathname.includes(submenu.path)}
-                      className={`w-full pl-10 pr-0 justify-start font-normal rounded-none ${
+                      primary={router.pathname.includes(submenu.path)}
+                      className={`w-full pl-8 pr-0 justify-start font-normal rounded-none ${
                         router.pathname.includes(submenu.path) ? "" : "hover:bg-gray-100"
                       }`}
                       icon={submenu.icon}
                       href={submenu.path}
-                      text={submenu.title}
-                    />
+                      text={
+                        <div className="flex items-center">
+                          <span>{submenu.title}</span>
+                          {!!pendingRegistrations && submenu.showRegistrations && (
+                            <div
+                              className={`ml-1.5 bg-warning text-white rounded-full px-1 min-w-5 h-5 flex-center text-sm font-bold`}
+                            >
+                              {pendingRegistrations}
+                            </div>
+                          )}
+                        </div>
+                      }
+                    ></Button>
                   ))}
                 </Accordion>
               </div>
@@ -89,71 +89,57 @@ export const SIDEBAR_MENUS = [
   {
     title: "Quản trị",
     submenus: [
-      {
-        title: "Bảng điều khiển",
-        path: "/admin/management/dashboard",
-        icon: <RiDashboard2Line />,
-      },
+      // {
+      //   title: "Bảng điều khiển",
+      //   path: "/admin/management/dashboard",
+      //   icon: <RiDashboard2Line />,
+      // },
       {
         title: "Tài khoản",
         path: "/admin/management/users",
         icon: <RiUser2Line />,
       },
       {
+        title: "Chủ shop",
+        path: "/admin/management/members",
+        icon: <RiStore2Line />,
+      },
+      {
+        title: "Đăng ký cửa hàng",
+        path: "/admin/management/registrations",
+        icon: <RiEdit2Line />,
+        showRegistrations: true,
+      },
+      {
         title: "Cấu hình",
         path: "/admin/management/settings",
         icon: <RiSettings3Line />,
       },
-      {
-        title: "Lịch sử thao tác",
-        path: "/admin/management/activity",
-        icon: <RiHistoryLine />,
-      },
-    ],
-  },
-  {
-    title: "Sản phẩm",
-    submenus: [
       // {
-      //   title: "Nhóm sản phẩm",
-      //   path: "/admin/products/groups",
-      //   icon: <RiArchiveDrawerLine />,
+      //   title: "Lịch sử thao tác",
+      //   path: "/admin/management/activity",
+      //   icon: <RiHistoryLine />,
       // },
-      {
-        title: "Sản phẩm",
-        path: "/admin/products",
-        icon: <RiArchiveLine />,
-      },
     ],
   },
-  {
-    title: "Báo giá",
-    submenus: [
-      {
-        title: "Lịch sử báo giá",
-        path: "/admin/quotations",
-        icon: <RiPagesLine />,
-      },
-    ],
-  },
-  {
-    title: "Truyền thông",
-    submenus: [
-      {
-        title: "Biểu mẫu",
-        path: "/admin/marketing/forms",
-        icon: <RiFileList3Line />,
-      },
-      {
-        title: "Bài viết",
-        path: "/admin/marketing/posts",
-        icon: <RiNewspaperLine />,
-      },
-      {
-        title: "Email",
-        path: "/admin/marketing/email",
-        icon: <RiMailSettingsLine />,
-      },
-    ],
-  },
+  // {
+  //   title: "Truyền thông",
+  //   submenus: [
+  //     {
+  //       title: "Biểu mẫu",
+  //       path: "/admin/marketing/forms",
+  //       icon: <RiFileList3Line />,
+  //     },
+  //     {
+  //       title: "Bài viết",
+  //       path: "/admin/marketing/posts",
+  //       icon: <RiNewspaperLine />,
+  //     },
+  //     {
+  //       title: "Email",
+  //       path: "/admin/marketing/email",
+  //       icon: <RiMailSettingsLine />,
+  //     },
+  //   ],
+  // },
 ];

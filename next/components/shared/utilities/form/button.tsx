@@ -183,7 +183,7 @@ export function Button({
         onClick={(e) => onClick(e)}
         tabIndex={props.unfocusable && -1}
         data-tooltip={props.tooltip}
-        data-placement={props.placement}
+        data-placement={props.placement || "top"}
       >
         {Children}
       </a>
@@ -198,7 +198,7 @@ export function Button({
       disabled={loading || props.disabled}
       tabIndex={props.unfocusable && -1}
       data-tooltip={props.tooltip}
-      data-placement={props.placement}
+      data-placement={props.placement || "top"}
     >
       {Children}
     </button>

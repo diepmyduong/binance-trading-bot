@@ -109,7 +109,7 @@ export function SettingList(props: PropTypes) {
                   </div>
                   <div
                     className="py-3 px-5 v-scrollbar"
-                    style={{ maxHeight: "calc(100vh - 156px)", minHeight: "250px" }}
+                    style={{ maxHeight: "calc(100vh - 220px)", minHeight: "250px" }}
                   >
                     {!mutableSettings.length ? (
                       <>

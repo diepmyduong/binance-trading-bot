@@ -1,3 +1,4 @@
+import { NextSeo } from "next-seo";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
 import { HiOutlineExclamation } from "react-icons/hi";
@@ -7,7 +8,7 @@ import { Spinner } from "../../components/shared/utilities/spinner";
 import { useAuth } from "../../lib/providers/auth-provider";
 import { DefaultHead } from "../default-head";
 import { Header } from "./components/header";
-import { Footer } from "./components/footer";
+import { AdminLayoutProvider } from "./providers/admin-layout-provider";
 
 const Sidebar = dynamic<any>(() => import("./components/sidebar"));
 
@@ -25,12 +26,14 @@ export function AdminLayout({ ...props }: PropsType) {
 
   return (
     <>
+      <DefaultHead shopCode="" shopLogo="" />
       {!user ? (
         <div className="w-h-screen min-h-screen">
           <Spinner />
         </div>
       ) : (
-        <>
+        <AdminLayoutProvider>
+          <NextSeo title="3MShop Admin" />
           <Header />
           <div className="flex pt-14 w-full relative min-h-screen">
             <Sidebar />
@@ -46,7 +49,7 @@ export function AdminLayout({ ...props }: PropsType) {
               </div>
             </div>
           </div>
-        </>
+        </AdminLayoutProvider>
       )}
     </>
   );

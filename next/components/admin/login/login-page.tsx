@@ -9,12 +9,13 @@ import { Form, FormConsumer } from "../../shared/utilities/form/form";
 import { Input } from "../../shared/utilities/form/input";
 import { Spinner } from "../../shared/utilities/spinner";
 
-export default function LoginPage() {
+export function LoginPage() {
   const { user, loginFirebaseEmail, redirectToAdmin } = useAuth();
   const toast = useToast();
 
   useEffect(() => {
     if (user) {
+      console.log("has yser", user);
       redirectToAdmin();
     }
   }, [user]);
@@ -31,7 +32,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div
+      className="flex flex-col min-h-screen bg-no-repeat bg-cover bg-center"
+      style={{ backgroundImage: `url(/assets/img/admin-background.jpg)` }}
+    >
       <div className="w-screen flex-1 flex items-center justify-center">
         {user !== null ? (
           <Spinner />
@@ -42,15 +46,15 @@ export default function LoginPage() {
               await login(data);
             }}
           >
-            <img className="h-auto py-6 px-12" src="/assets/img/logo.png" />
-            <h2 className="text-xl text-center font-semibold text-gray-700 mb-4">
-              Đăng nhập quản trị
+            <img className="h-auto py-6 w-24 mx-auto" src="/assets/img/logo-som.png" />
+            <h2 className="text-xl text-center font-semibold text-gray-700 mb-4 uppercase">
+              Đăng nhập Admin
             </h2>
             <Field className="mb-1" name="username" required>
-              <Input className="h-12" placeholder="Email / Tên đăng nhập" autoFocus />
+              <Input className="h-14" placeholder="Email / Tên đăng nhập" autoFocus />
             </Field>
             <Field className="mb-1" name="password" required>
-              <Input className="h-12" type="password" placeholder="Mật khẩu" />
+              <Input className="h-14" type="password" placeholder="Mật khẩu" />
             </Field>
             <FormConsumer>
               {({ loading }) => (
@@ -58,7 +62,7 @@ export default function LoginPage() {
                   <Button
                     submit
                     primary
-                    className="h-12"
+                    className="h-14 bg-gradient"
                     text="Đăng nhập quản trị"
                     isLoading={loading}
                   />
@@ -68,7 +72,7 @@ export default function LoginPage() {
           </Form>
         )}
       </div>
-      <Footer />
+      <Footer className="text-primary-light border-none" />
     </div>
   );
 }

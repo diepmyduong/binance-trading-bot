@@ -88,9 +88,9 @@ export function Input({
 
   useEffect(() => {
     if (props.autoFocus && ref.current && (ref.current as any).inputElement) {
-      (ref.current as any).inputElement.focus();
+      (ref.current as any).inputElement?.focus();
       setTimeout(() => {
-        (ref.current as any).inputElement.select();
+        (ref.current as any).inputElement?.select();
       });
     }
   }, [ref]);

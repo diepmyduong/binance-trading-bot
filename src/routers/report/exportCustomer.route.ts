@@ -23,7 +23,7 @@ export default [
         .cursor();
       cursor.on("data", (c) => {
         sheet.addRow([
-          moment(c.createdAt, "YYYY/MM/DD HH:mm"),
+          moment(c.createdAt).format("YYYY/MM/DD HH:mm"),
           c.name || "",
           c.phone || "",
           c.fullAddress || "",

@@ -4,7 +4,7 @@ import { get, keyBy } from "lodash";
 import { Types } from "mongoose";
 import { Context } from "../../context";
 import { OrderModel, OrderStatus } from "../order/order.model";
-import { ICustomer } from "./customer.model";
+import { CustomerModel, ICustomer } from "./customer.model";
 
 export default {
   schema: gql`
@@ -62,19 +62,44 @@ const CustomerOrderStatsLoader = new DataLoader<String, CustomerOrderStats>(
           voucher: { $sum: { $cond: [{ $not: ["$voucherId"] }, 0, 1] } },
         },
       },
-    ]).then((list) => {
-      const listKeyBy = keyBy(list, "_id");
-      return ids.map((id) =>
-        get(listKeyBy, id, {
-          revenue: 0,
-          voucher: 0,
-          discount: 0,
-          total: 0,
-          completed: 0,
-          canceled: 0,
-        })
-      );
-    });
+    ])
+      .then((list) => {
+        const bulk = CustomerModel.collection.initializeUnorderedBulkOp();
+        list.forEach((l) => {
+          bulk.find({ _id: Types.ObjectId(l._id) }).updateOne({
+            $set: {
+              "context.order": l.total,
+              "context.completed": l.completed,
+              "context.canceled": l.canceled,
+              "context.revenue": l.revenue,
+              "context.discount": l.discount,
+              "context.voucher": l.voucher,
+            },
+          });
+        });
+        if (bulk.length > 0) {
+          bulk
+            .execute()
+            .catch((err) => {})
+            .then(() => {
+              console.log("updated", bulk.length);
+            });
+        }
+        return list;
+      })
+      .then((list) => {
+        const listKeyBy = keyBy(list, "_id");
+        return ids.map((id) =>
+          get(listKeyBy, id, {
+            revenue: 0,
+            voucher: 0,
+            discount: 0,
+            total: 0,
+            completed: 0,
+            canceled: 0,
+          })
+        );
+      });
   },
   { cache: false }
 );

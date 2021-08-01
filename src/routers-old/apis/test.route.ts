@@ -1,20 +1,21 @@
-import {
-  BaseRoute,
-  Request,
-  Response,
-  NextFunction,
-} from "../../base/baseRoute";
+import { BaseRoute, Request, Response, NextFunction } from "../../base/baseRoute";
 import { firebaseHelper, VietnamPostHelper } from "../../helpers";
 import { OrderModel, OrderStatus } from "../../graphql/modules/order/order.model";
-import { CommissionLogModel, CommissionLogType } from "../../graphql/modules/commissionLog/commissionLog.model";
+import {
+  CommissionLogModel,
+  CommissionLogType,
+} from "../../graphql/modules/commissionLog/commissionLog.model";
 import { CollaboratorModel } from "../../graphql/modules/collaborator/collaborator.model";
 import { CustomerModel } from "../../graphql/modules/customer/customer.model";
-import { CustomerCommissionLogModel, CustomerCommissionLogType } from "../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
+import {
+  CustomerCommissionLogModel,
+  CustomerCommissionLogType,
+} from "../../graphql/modules/customerCommissionLog/customerCommissionLog.model";
 import { orderService } from "../../graphql/modules/order/order.service";
 import { ProductModel } from "../../graphql/modules/product/product.model";
 import { OrderItemModel } from "../../graphql/modules/orderItem/orderItem.model";
 import { Context } from "../../graphql/context";
-import ConnectChatbotResolver from '../../graphql/modules/member/resolvers/connectChatbot.resolver';
+import ConnectChatbotResolver from "../../graphql/modules/member/resolvers/connectChatbot.resolver";
 import { AddressDeliveryModel } from "../../graphql/modules/addressDelivery/addressDelivery.model";
 import { AddressStorehouseModel } from "../../graphql/modules/addressStorehouse/addressStorehouse.model";
 import { MemberModel, MemberType } from "../../graphql/modules/member/member.model";
@@ -35,7 +36,6 @@ class TestRoute extends BaseRoute {
     res.sendStatus(200);
   }
 
-
   async addAddressToShop(req: Request, res: Response) {
     // console.log("aaaaaaaaaa ........");
 
@@ -44,7 +44,8 @@ class TestRoute extends BaseRoute {
     const addressDeliverys = await AddressDeliveryModel.find({ isPost: true });
 
     const addressStorehouses = await AddressStorehouseModel.find({
-      isPost: true, allowPickup: true
+      isPost: true,
+      allowPickup: true,
     });
 
     for (const member of shops) {
@@ -53,17 +54,11 @@ class TestRoute extends BaseRoute {
         addressDeliveryIds: addressDeliverys.map((id) => id),
       };
 
-      const mainAddressStorehouseId = addressStorehouses.find(
-        (addr) => addr.code === member.code
-      );
+      const mainAddressStorehouseId = addressStorehouses.find((addr) => addr.code === member.code);
 
       params.mainAddressStorehouseId = mainAddressStorehouseId;
 
-      await MemberModel.findByIdAndUpdate(
-        member.id,
-        { $set: params },
-        { new: true }
-      );
+      await MemberModel.findByIdAndUpdate(member.id, { $set: params }, { new: true });
     }
 
     res.sendStatus(200);
@@ -87,7 +82,7 @@ class TestRoute extends BaseRoute {
         type: "Point",
       };
 
-      console.log('getMember', member.shopName);
+      console.log("getMember", member.shopName);
 
       const params: any = {
         code: member.code,
@@ -125,7 +120,7 @@ class TestRoute extends BaseRoute {
         // );
       } else {
         const created = await AddressStorehouseModel.create(params);
-        console.log('created', created.name);
+        console.log("created", created.name);
       }
     }
 
@@ -201,9 +196,7 @@ class TestRoute extends BaseRoute {
     res.sendStatus(200);
   }
 
-
   async changePassAll(req: Request, res: Response) {
-
     const members = await MemberModel.find({
       isPost: true,
       activated: true,
@@ -216,9 +209,9 @@ class TestRoute extends BaseRoute {
         if (user.uid) {
           firebaseHelper.app.auth().updateUser(user.uid, { password: "Pshop#2021" });
         }
-        console.log('user', user);
+        console.log("user", user);
       } catch (error) {
-        console.log("ko update dc")
+        console.log("ko update dc");
       }
     }
 
@@ -226,15 +219,19 @@ class TestRoute extends BaseRoute {
   }
 
   async updateChatbotKey(req: Request, res: Response) {
-    await MemberModel.find({ chatbotKey: { $exists: true } }).then(async res => {
+    await MemberModel.find({ chatbotKey: { $exists: true } }).then(async (res) => {
       for (const member of res) {
         try {
-          console.log('Khoi tao lai member', member.name);
-          const context = new Context();
+          console.log("Khoi tao lai member", member.name);
+          const context = new Context({ req });
           context.tokenData = { _id: member._id } as any;
-          await ConnectChatbotResolver.Mutation.connectChatbot(null, { apiKey: member.chatbotKey }, context);
+          await ConnectChatbotResolver.Mutation.connectChatbot(
+            null,
+            { apiKey: member.chatbotKey },
+            context
+          );
         } catch (err) {
-          console.log('loi', err.message);
+          console.log("loi", err.message);
         }
       }
     });
@@ -246,20 +243,20 @@ class TestRoute extends BaseRoute {
     for (const order of orders) {
       // const member = await MemberModel.findById(order.sellerId);
       // if(!order.sellerCode){
-      //   await OrderModel.findByIdAndUpdate(order.id, { 
-      //     $set: { 
-      //       sellerCode: member.code ? member.code : "", 
-      //       sellerName: member.shopName ? member.shopName : member.name, 
-      //     } 
+      //   await OrderModel.findByIdAndUpdate(order.id, {
+      //     $set: {
+      //       sellerCode: member.code ? member.code : "",
+      //       sellerName: member.shopName ? member.shopName : member.name,
+      //     }
       //   }, { new: true })
       // }
-      console.log('order', order.id);
+      console.log("order", order.id);
 
       await orderService.updateLogToOrder({ order, log: null });
 
-      // const orderLog = await OrderLogModel.findOne({ 
-      //   orderId: order.id , 
-      //   orderStatus:{$in:[ 
+      // const orderLog = await OrderLogModel.findOne({
+      //   orderId: order.id ,
+      //   orderStatus:{$in:[
       //     OrderStatus.CANCELED,
       //     OrderStatus.COMPLETED,
       //     OrderStatus.FAILURE,
@@ -298,8 +295,12 @@ class TestRoute extends BaseRoute {
     for (const product of products) {
       const hhCTV = product.commission1;
       const hhDiemban = product.commission2;
-      console.log('product', product.id);
-      await ProductModel.findByIdAndUpdate(product.id, { $set: { commission1: hhDiemban, commission2: hhCTV } }, { new: true });
+      console.log("product", product.id);
+      await ProductModel.findByIdAndUpdate(
+        product.id,
+        { $set: { commission1: hhDiemban, commission2: hhCTV } },
+        { new: true }
+      );
     }
     res.sendStatus(200);
   }
@@ -308,17 +309,25 @@ class TestRoute extends BaseRoute {
   async changeOrder(req: Request, res: Response) {
     const orders = await OrderModel.find({});
     for (const order of orders) {
-      console.log('orderId', order.id);
+      console.log("orderId", order.id);
       const orderItems = await OrderItemModel.find({ orderId: order.id });
       for (const orderItem of orderItems) {
         const hhCTV = orderItem.commission1;
         const hhDiemban = orderItem.commission2;
-        console.log('orderItem', orderItem.id);
-        await OrderItemModel.findByIdAndUpdate(orderItem.id, { $set: { commission1: hhDiemban, commission2: hhCTV } }, { new: true });
+        console.log("orderItem", orderItem.id);
+        await OrderItemModel.findByIdAndUpdate(
+          orderItem.id,
+          { $set: { commission1: hhDiemban, commission2: hhCTV } },
+          { new: true }
+        );
       }
       const hhCTV = order.commission1;
       const hhDiemban = order.commission2;
-      await OrderModel.findByIdAndUpdate(order.id, { $set: { commission1: hhDiemban, commission2: hhCTV } }, { new: true });
+      await OrderModel.findByIdAndUpdate(
+        order.id,
+        { $set: { commission1: hhDiemban, commission2: hhCTV } },
+        { new: true }
+      );
     }
     res.sendStatus(200);
   }
@@ -326,15 +335,15 @@ class TestRoute extends BaseRoute {
   async compareOrder(req: Request, res: Response) {
     const orders = await OrderModel.find({});
     for (const order of orders) {
-      console.log('orderId', order.id);
+      console.log("orderId", order.id);
       const orderItems = await OrderItemModel.find({ orderId: order.id });
       for (const orderItem of orderItems) {
         if (orderItem.commission1 > orderItem.commission2) {
-          console.log('orderId', orderItem.id, "Chua doi");
+          console.log("orderId", orderItem.id, "Chua doi");
         }
       }
       if (order.commission1 > order.commission2) {
-        console.log('orderId', order.id, "Chua doi");
+        console.log("orderId", order.id, "Chua doi");
       }
     }
     res.sendStatus(200);
@@ -344,16 +353,25 @@ class TestRoute extends BaseRoute {
     const orders = await OrderModel.find({});
     const commissions = await CommissionLogModel.find({});
     for (const commission of commissions) {
-
-      const order = orders.find(o => o.id.toString() === commission.orderId.toString());
-      console.log('order', order);
+      const order = orders.find((o) => o.id.toString() === commission.orderId.toString());
+      console.log("order", order);
       if (order) {
         if (commission.type === CommissionLogType.RECEIVE_COMMISSION_1_FROM_ORDER) {
-          await CommissionLogModel.findByIdAndUpdate(commission.id, { $set: { value: order.commission1 } }, { new: true });
+          await CommissionLogModel.findByIdAndUpdate(
+            commission.id,
+            { $set: { value: order.commission1 } },
+            { new: true }
+          );
         }
 
-        if (commission.type === CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR) {
-          await CommissionLogModel.findByIdAndUpdate(commission.id, { $set: { value: order.commission2 } }, { new: true });
+        if (
+          commission.type === CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER_FOR_COLLABORATOR
+        ) {
+          await CommissionLogModel.findByIdAndUpdate(
+            commission.id,
+            { $set: { value: order.commission2 } },
+            { new: true }
+          );
         }
       }
     }
@@ -364,12 +382,15 @@ class TestRoute extends BaseRoute {
     const orders = await OrderModel.find({});
     const commissions = await CustomerCommissionLogModel.find({});
     for (const commission of commissions) {
-
-      const order = orders.find(o => o.id.toString() === commission.orderId.toString());
+      const order = orders.find((o) => o.id.toString() === commission.orderId.toString());
       // console.log('order', order);
       if (order) {
         if (commission.type === CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER) {
-          await CustomerCommissionLogModel.findByIdAndUpdate(commission.id, { $set: { value: order.commission2 } }, { new: true });
+          await CustomerCommissionLogModel.findByIdAndUpdate(
+            commission.id,
+            { $set: { value: order.commission2 } },
+            { new: true }
+          );
         }
       }
     }
@@ -385,42 +406,41 @@ class TestRoute extends BaseRoute {
         if (collaborator) {
           const customer = await CustomerModel.findById(collaborator.customerId);
           if (customer) {
-            const customerCommissionLog = await CustomerCommissionLogModel.findOne({ customerId: customer.id, orderId: order.id });
+            const customerCommissionLog = await CustomerCommissionLogModel.findOne({
+              customerId: customer.id,
+              orderId: order.id,
+            });
             if (customerCommissionLog) {
               if (!customerCommissionLog.collaboratorId) {
-                console.log('em no ko co collaboratorId', order.collaboratorId);
-                await CustomerCommissionLogModel.findByIdAndUpdate(customerCommissionLog.id, { $set: { collaboratorId: order.collaboratorId } }, { new: true });
+                console.log("em no ko co collaboratorId", order.collaboratorId);
+                await CustomerCommissionLogModel.findByIdAndUpdate(
+                  customerCommissionLog.id,
+                  { $set: { collaboratorId: order.collaboratorId } },
+                  { new: true }
+                );
               }
-            }
-            else {
-              console.log('em bi dinh chuong may thang', order.id);
+            } else {
+              console.log("em bi dinh chuong may thang", order.id);
               await CustomerCommissionLogModel.create({
                 customerId: customer.id,
-                memberId: order.sellerId,  // mã shop
+                memberId: order.sellerId, // mã shop
                 value: order.commission2, // Giá trị
                 type: CustomerCommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER, // Loại sự kiện
                 orderId: order.id, // Mã đơn hàng
-                collaboratorId: order.collaboratorId // Mã cộng tác viên
+                collaboratorId: order.collaboratorId, // Mã cộng tác viên
               });
             }
+          } else {
+            console.log("co collaborator nhung ko thay customer", order.id);
           }
-          else {
-            console.log('co collaborator nhung ko thay customer', order.id);
-          }
-        }
-        else {
-          console.log('co collaboratorId trong don nhung ko co collaborator', order.id);
+        } else {
+          console.log("co collaboratorId trong don nhung ko co collaborator", order.id);
         }
       }
     }
 
     const commission = await CustomerCommissionLogModel.find({});
-
-
-
   }
-
-
 }
 
 export default new TestRoute().router;
@@ -446,8 +466,6 @@ export default new TestRoute().router;
 //   // // cap nhat ten chu shop
 //   // const member = await MemberModel.findOne({ code: "PKDBDTTGD" });
 //   // console.log("member",member);
-
-
 
 //   // const orderLogs = await OrderLogModel.find({ memberId: member.id });
 //   // const orderIds = orderLogs.map(o => new ObjectId(o.orderId));
@@ -480,7 +498,6 @@ export default new TestRoute().router;
 //   //   return total += m.amount;
 //   // }, 0));
 //   // console.log('bdgd',bdgd);
-
 
 //   // cap nhat ten khách hàng
 //   // const collaborators = await CollaboratorModel.find({});

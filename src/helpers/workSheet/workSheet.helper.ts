@@ -2,6 +2,7 @@ import _ from "lodash";
 import { Cell, Row, ValueType, Workbook, Worksheet } from "exceljs";
 import { CellRange } from "./cell-range";
 import { UtilsHelper } from "../utils.helper";
+import moment from "moment-timezone";
 
 /**
  * Callback for iterate cells
@@ -19,18 +20,42 @@ export class WorkSheetHelper {
   get sheetName() {
     return this.worksheet.name;
   }
-
-  public getData(info: any, sheet?: Worksheet) {
-    if (!sheet) sheet = this.worksheet;
-    const cells = this.getSheetValueCell(sheet);
-    cells.forEach((c) => this.parseCell(c, info));
-    console.log("cell", cells[0].value);
+  public displayValues(option: { dateFormat?: string } = {}) {
+    var values: any[] = [];
+    this.worksheet.eachRow((row, rowNum) => {
+      values[rowNum] = [];
+      row.eachCell((cell, cellNum) => {
+        switch (cell.type) {
+          case 4:
+            values[rowNum][cellNum] = option.dateFormat
+              ? moment(cell.value as Date).format(option.dateFormat)
+              : cell.value;
+            break;
+          case 2:
+            values[rowNum][cellNum] = cell.value;
+            break;
+          default:
+            values[rowNum][cellNum] = cell.text;
+        }
+      });
+    });
+    return values;
   }
-
+  public autoSize() {
+    this.worksheet.columns.forEach(function (column, i) {
+      var maxLength = 0;
+      column["eachCell"]({ includeEmpty: true }, function (cell) {
+        var columnLength = cell.value ? cell.value.toString().length : 10;
+        if (columnLength > maxLength) {
+          maxLength = columnLength;
+        }
+      });
+      column.width = maxLength < 10 ? 10 : maxLength;
+    });
+  }
   public parseSheet(info: any, sheet?: Worksheet) {
     if (!sheet) sheet = this.worksheet;
     const cells = this.getSheetValueCell(sheet);
-    console.log("cells", cells);
     cells.forEach((c) => this.parseCell(c, info));
   }
   public parseRange(cellRange: CellRange, info: any, sheet?: Worksheet) {
@@ -54,7 +79,6 @@ export class WorkSheetHelper {
       sheet
     );
   }
-
   public getSheetValueCell(sheet?: Worksheet) {
     if (!sheet) sheet = this.worksheet;
     const data: Cell[] = [];

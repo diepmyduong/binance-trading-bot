@@ -1,6 +1,7 @@
 import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
+import { compact, get } from "lodash";
 const pjson = require("../../package.json");
 
 if (fs.existsSync(path.join(__dirname, "../../.env"))) {
@@ -63,5 +64,9 @@ export default {
   nextDev: (process.env.NEXT_DEV || "FALSE").toUpperCase() == "TRUE",
   ahamove: {
     apiKey: process.env.AHAMOVE_API_KEY || "4cd543d3e4e4fbe97db216828c18644f77558275",
+  },
+  scheduler: {
+    includes: compact(get(process.env, "SCHEDULER_INCLUDES", "").split(",")),
+    excludes: compact(get(process.env, "SCHEDULER_EXCLUDES", "").split(",")),
   },
 };

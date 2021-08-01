@@ -97,7 +97,7 @@ export default {
     },
   },
   events: {
-    "order.completeOrder": {
+    "order.completed": {
       params: {
         orderId: { type: "string" },
       },

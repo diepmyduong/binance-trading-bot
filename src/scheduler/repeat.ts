@@ -12,6 +12,7 @@ import SendNotificationJob from "./jobs/sendNotification.job";
 import RefreshAhamoveTokenJob from "./jobs/refreshAhamoveToken.job";
 import CancelPickupStoreOrderJob from "./jobs/cancelPickupStoreOrder.job";
 import { configs } from "../configs";
+import UpdateCustomerContextJob from "./jobs/updateCustomerContext.job";
 
 export function InitRepeatJobs() {
   console.log("Generate Repeat Jobs");
@@ -56,6 +57,12 @@ export function InitRepeatJobs() {
   CancelPickupStoreOrderJob.create({})
     .repeatEvery("0 0 * * *", { skipImmediate: true, timezone: configs.timezone })
     .unique({ name: CancelPickupStoreOrderJob.jobName })
+    .save();
+  // .then((job) => job.run());
+
+  UpdateCustomerContextJob.create({})
+    .repeatEvery("0 * * * *", { skipImmediate: true, timezone: configs.timezone })
+    .unique({ name: UpdateCustomerContextJob.jobName })
     .save();
   // .then((job) => job.run());
 }

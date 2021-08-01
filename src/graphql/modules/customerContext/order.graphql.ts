@@ -16,7 +16,7 @@ export default {
       order: (root: ICustomer, args: any, context: Context) => {
         return LocalBroker.call("customerContext.estimateOrder", {
           customerId: root._id.toString(),
-        });
+        }).then((res: any) => res.total);
       },
     },
   },

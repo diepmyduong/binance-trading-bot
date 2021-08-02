@@ -43,7 +43,7 @@ const MoreInfomation = (props) => {
             <i className="text-primary p-0.5 border rounded-full text-10 border-primary mr-1">
               {<FaPercent />}
             </i>
-            {voucherShow?.description}
+            {voucherShow ? voucherShow.description : "Chưa có khuyến mãi"}
           </p>
           <Button
             textPrimary

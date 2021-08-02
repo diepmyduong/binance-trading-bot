@@ -45,7 +45,9 @@ export function HistoryDialog(props: HistoryDialogProps) {
                       <br />
                       <span className="font-semibold">{NumberPipe(item.order.amount, true)}</span>
                     </div>
-                    <span className="font-bold text-success text-lg">+{item.value}</span>
+                    <span className="font-bold text-success text-lg">
+                      +{NumberPipe(item.value)}
+                    </span>
                   </div>
                 ))}
               </>

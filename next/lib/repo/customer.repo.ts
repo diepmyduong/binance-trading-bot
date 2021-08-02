@@ -2,6 +2,8 @@ import { BaseModel, CrudRepository } from "./crud.repo";
 import { Member } from "./member.repo";
 import { ProductService } from "./product.repo";
 import { Collaborator } from "./collaborator.repo";
+import axios from "axios";
+import { GetAuthTokenMember } from "../graphql/auth.link";
 
 export interface Customer extends BaseModel {
   memberId: string;
@@ -173,6 +175,25 @@ export class CustomerRepository extends CrudRepository<Customer> {
     return await this.mutate({
       mutation: `updatePresenter(colCode: "${colCode}")`,
     }).then((res) => res.data["g0"]);
+  }
+
+  async exportExcel() {
+    return axios
+      .get("/api/report/exportCustomer", {
+        // params: {
+        //   fromDate,
+        //   toDate,
+        //   filter: Buffer.from(JSON.stringify(filter)).toString("base64"),
+        // },
+        headers: {
+          "x-token": GetAuthTokenMember(),
+        },
+        responseType: "blob",
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        throw err.response.data;
+      });
   }
 }
 

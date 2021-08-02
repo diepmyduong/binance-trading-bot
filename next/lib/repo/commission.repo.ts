@@ -21,8 +21,9 @@ export interface CommissionLog extends BaseModel {
 }
 export class CommissionLogRepository extends CrudRepository<CommissionLog> {
   apiName: string = "CommissionLog";
-  displayName: string = "CommissionLog";
+  displayName: string = "lịch sử hoa hồng";
   shortFragment: string = this.parseFragment(`
+    id: String
     createdAt: DateTime
     value: Float
     type: String

@@ -42,12 +42,15 @@ export abstract class CrudRepository<T extends BaseModel> extends GraphRepositor
       query = { limit: 10 },
       fragment = this.shortFragment,
       apiName,
+      extraParams,
     }: {
       query: QueryInput | string;
       fragment?: string;
       apiName?: string;
+      extraParams?: object;
     } = {
       query: { limit: 10 },
+      extraParams: null,
     }
   ): string {
     if ((query as QueryInput).limit == 0) {
@@ -55,7 +58,7 @@ export abstract class CrudRepository<T extends BaseModel> extends GraphRepositor
     }
 
     const api = apiName || `getAll${this.apiName}`;
-    return `${api}(q: ${queryParser(query, {
+    return `${api}(${extraParams ? `${queryParser(extraParams)}, ` : ""}q: ${queryParser(query, {
       hasBraces: true,
     })}) { data { ${fragment} } total pagination { limit page total } }`;
   }
@@ -65,11 +68,13 @@ export abstract class CrudRepository<T extends BaseModel> extends GraphRepositor
     fragment = this.shortFragment,
     cache = true,
     apiName,
+    extraParams,
   }: {
     fragment?: string;
     query?: QueryInput;
     cache?: boolean;
     apiName?: string;
+    extraParams?: object;
   } = {}): Promise<GetListData<T>> {
     if ((query as QueryInput).limit == 0) {
       (query as QueryInput).limit = 1000;
@@ -78,7 +83,7 @@ export abstract class CrudRepository<T extends BaseModel> extends GraphRepositor
     const options = {
       query: this.gql`${this.generateGQL(
         "query",
-        `${this.getAllQuery({ query: "$q", fragment, apiName })}`,
+        `${this.getAllQuery({ query: "$q", fragment, apiName, extraParams })}`,
         `($q: QueryGetListInput!)`
       )}`,
       variables: { q: query },

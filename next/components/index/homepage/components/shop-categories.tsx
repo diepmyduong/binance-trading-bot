@@ -141,10 +141,12 @@ export function ShopCategory(props: ShopCategoryPropsType) {
                   // }}
                 >
                   <div className={`flex px-4 `}>
-                    <div className="flex-1 justify-start leading-8">
+                    <div className="flex-1 justify-start flex-col flex leading-8">
                       <span className="font-semibold items-start">{item.name}</span>
                       {item.subtitle ? (
-                        <span className="text-gray-500 text-sm">{item.subtitle}</span>
+                        <span className="text-gray-500 text-sm text-ellipsis-2">
+                          {item.subtitle}
+                        </span>
                       ) : (
                         ""
                       )}
@@ -153,7 +155,6 @@ export function ShopCategory(props: ShopCategoryPropsType) {
                       ) : (
                         ""
                       )}
-                      {item.des ? <span className="text-gray-400 text-sm">{item.des}</span> : ""}
                       <Price
                         price={item.basePrice}
                         downPrice={item.downPrice}

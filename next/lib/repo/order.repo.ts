@@ -6,6 +6,8 @@ import { Customer } from "./customer.repo";
 import { Member } from "./member.repo";
 import { Product } from "./product.repo";
 import { User } from "./user.repo";
+import axios from "axios";
+import { GetAuthToken, GetAuthTokenMember } from "../graphql/auth.link";
 
 export interface OrderInput {
   promotionCode?: string;
@@ -473,6 +475,25 @@ export class OrderRepository extends CrudRepository<Order> {
     }).then((res) => {
       return res.data["g0"];
     });
+  }
+
+  async exportExcel(fromDate: string, toDate: string, filter: any) {
+    return axios
+      .get("/api/report/exportOrder", {
+        params: {
+          fromDate,
+          toDate,
+          filter: Buffer.from(JSON.stringify(filter)).toString("base64"),
+        },
+        headers: {
+          "x-token": GetAuthTokenMember(),
+        },
+        responseType: "blob",
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        throw err.response.data;
+      });
   }
 }
 export const OrderService = new OrderRepository();

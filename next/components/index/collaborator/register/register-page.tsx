@@ -16,7 +16,7 @@ export function RegisterPage() {
     CollaboratorService.regisCollaborator()
       .then((res) => {
         toast.success("Đăng ký thành công");
-        router.replace(`/${shopCode}/collaborators/info`);
+        router.replace(`/${shopCode}/collaborator/info`);
       })
       .catch((err) => toast.success("Đăng ký thất bại. Đã xảy ra lỗi trong quá trình đăng ký."));
   }
@@ -32,7 +32,7 @@ export function RegisterPage() {
       </div>
       <div className="flex flex-col p-4 pt-2 border-t-2 sticky bottom-0 bg-white">
         <Checkbox
-          placeholder="Tôi đồng ý với diều khoản"
+          placeholder="Tôi đồng ý với điều khoản"
           defaultValue={confirm}
           onChange={(val) => setConfirm(val)}
         />

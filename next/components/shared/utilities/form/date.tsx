@@ -1,5 +1,6 @@
 import isSameDay from "date-fns/isSameDay";
 import endOfDay from "date-fns/endOfDay";
+import startOfDay from "date-fns/startOfDay";
 import format from "date-fns/format";
 import vi from "date-fns/locale/vi";
 import { forwardRef, MutableRefObject, useEffect, useRef, useState } from "react";
@@ -82,14 +83,14 @@ export function DatePicker({
   const onChange = (date) => {
     if (props.selectsRange) {
       setRange({
-        startDate: date[0],
+        startDate: startOfDay(date[0]),
         endDate: date[1] ? endOfDay(new Date(date[1])) : null,
       });
       if (date[0] && date[1]) {
         ref.current.setOpen(false);
         if (props.onChange) {
           props.onChange({
-            startDate: date[0],
+            startDate: startOfDay(date[0]),
             endDate: date[1] ? endOfDay(new Date(date[1])) : null,
           });
           setTimeout(() => {
@@ -101,11 +102,9 @@ export function DatePicker({
       setValue(date);
       if (props.onChange) {
         props.onChange(date);
-        // if (!props.timeOnly) {
-        //   setTimeout(() => {
-        //     ref.current.input.focus();
-        //   });
-        // }
+        setTimeout(() => {
+          ref.current.input.focus();
+        });
       }
     }
   };
@@ -113,12 +112,13 @@ export function DatePicker({
   const onClose = () => {
     if (props.selectsRange) {
       if (range && range.startDate && !range.endDate) {
-        setRange(null);
+        const newRange = {
+          startDate: startOfDay(range.startDate),
+          endDate: endOfDay(range.startDate),
+        };
+        setRange(newRange);
         if (props.onChange) {
-          props.onChange(range);
-          // setTimeout(() => {
-          //   ref.current.input.focus();
-          // });
+          props.onChange(newRange);
         }
       }
     } else {
@@ -133,11 +133,6 @@ export function DatePicker({
       //   setIsClosedRecently(false);
       // }, 100);
     }
-  };
-
-  const onBlur = (e) => {
-    console.log("SDsjLKSJK", e, JSON.stringify(document.activeElement));
-    // ref.current.setOpen(false);
   };
 
   const clearDate = () => {

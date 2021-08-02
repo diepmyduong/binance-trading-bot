@@ -23,18 +23,20 @@ export function InfoPage() {
   if (!customer) return <Spinner />;
   return (
     <CollaboratorProvider>
-      <div className="bg-white shadow  min-h-screen  relative rounded-md w-full">
-        <div className="p-4 bg-gradient-to-t from-accent to-primary-light">
+      <div className="bg-white shadow  min-h-screen relative rounded-md w-full">
+        <div className="p-4">
           <BreadCrumbs
             breadcrumbs={[{ label: "Trang chủ", href: `/${shopCode}` }, { label: "Thông tin CTV" }]}
-            className="pb-4"
-            light
+            className="pb-2"
           />
-          <div className="flex flex-col items-center text-white">
-            <span className="pt-6 text-sm">Cộng tác viên</span>
+          <div
+            className="flex flex-col text-white bg-no-repeat bg-cover bg-center rounded-md p-4"
+            style={{ backgroundImage: `url(/assets/img/bg-collab-card.png)` }}
+          >
+            <span className="text-sm">Cộng tác viên</span>
             <span className="font-semibold text-lg">{customer.name}</span>
             <span className="pt-6 text-sm">Hoa hồng nhận được</span>
-            <span className="text-lg font-bold pb-2">{NumberPipe(123123123, true)}</span>
+            <span className="text-lg font-bold">{NumberPipe(customer.commission, true)}</span>
           </div>
         </div>
         <Share link={customer.collaborator.shortUrl} />
@@ -59,7 +61,7 @@ function Share({ link, ...props }: { link: string }) {
   const [showShareType, setShowShareType] = useState(false);
   const screenSm = useScreen("sm");
   return (
-    <div className="px-4 py-6">
+    <div className="px-4 py-4">
       <span className="font-semibold">Link giới thiệu:</span>
       <div className="flex mb-4 mt-1 border-group rounded-md h-12">
         <Input value={link} className="border-r-0" />
@@ -164,14 +166,12 @@ function MenuCollaborator() {
         onClose={() => setShowSelected(0)}
         slideFromBottom="all"
         mobileSizeMode
-        title="Lịch sử hoa hồng"
       />
       <RecommendedDialog
         isOpen={showSelected === 2}
         onClose={() => setShowSelected(0)}
         slideFromBottom="all"
         mobileSizeMode
-        title="Danh sách đã mời"
       />
     </div>
   );

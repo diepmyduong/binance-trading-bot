@@ -2,7 +2,7 @@ import { ServiceSchema } from "moleculer";
 
 import { CustomerModel } from "../../graphql/modules/customer/customer.model";
 import { OrderLoader } from "../../graphql/modules/order/order.model";
-import { CustomerOrderStatsLoader } from "./loader/customerOrderStats.loader";
+import { CustomerOrderStatsLoader } from "../../batch/customerOrderStats.loader";
 
 export default {
   name: "customerContext",

@@ -1,9 +1,9 @@
 import DataLoader from "dataloader";
 import { keyBy, get } from "lodash";
 import { Types } from "mongoose";
-import { CustomerModel } from "../../../graphql/modules/customer/customer.model";
-import { OrderModel, OrderStatus } from "../../../graphql/modules/order/order.model";
-import { ttlCache } from "../../../helpers/ttlCache";
+import { CustomerModel } from "../graphql/modules/customer/customer.model";
+import { OrderModel, OrderStatus } from "../graphql/modules/order/order.model";
+import { ttlCache } from "../helpers/ttlCache";
 
 type CustomerOrderStats = {
   revenue: number; // Tổng doanh số

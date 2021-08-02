@@ -1,8 +1,7 @@
-import DataLoader from "dataloader";
-import { get, keyBy } from "lodash";
 import { Context, ServiceBroker, ServiceSchema } from "moleculer";
-import { Types } from "mongoose";
 
+import { CustomerCommissionLoader } from "../../batch/customerCommission.loader";
+import { EstimateCommissionFromCustomerLoader } from "../../batch/estimateCommissionFromCustomer.loader";
 import { CollaboratorLoader } from "../../graphql/modules/collaborator/collaborator.model";
 import {
   CommissionLogModel,
@@ -12,16 +11,8 @@ import { CustomerLoader, CustomerModel } from "../../graphql/modules/customer/cu
 import { OrderLoader } from "../../graphql/modules/order/order.model";
 import { CommissionBy, IShopConfig } from "../../graphql/modules/shopConfig/shopConfig.model";
 import { DiscountUnit } from "../../graphql/modules/shopVoucher/types/discountItem.schema";
-import { ttlCache } from "../../helpers/ttlCache";
 import { MainConnection } from "../../loaders/database";
 
-const delay = (duration: number) =>
-  new Promise((resolve) => {
-    console.log("delay....");
-    setTimeout(() => {
-      resolve(true);
-    }, duration);
-  });
 export default {
   name: "commission",
   actions: {
@@ -29,22 +20,7 @@ export default {
       params: { id: { type: "string" } },
       async handler(ctx) {
         const { id } = ctx.params;
-        const session = await MainConnection.startSession();
-        let result = 0;
-        try {
-          await session.withTransaction(async () => {
-            const commission = await CustomerCommissionLoader.load(id);
-            await CustomerModel.updateOne(
-              { _id: id },
-              { $set: { commission } },
-              { session }
-            ).exec();
-            result = commission;
-          });
-        } finally {
-          session.endSession();
-          return result;
-        }
+        return await CustomerCommissionLoader.load(id);
       },
     },
     estimateFromCustomer: {
@@ -133,62 +109,3 @@ export default {
     },
   },
 } as ServiceSchema;
-
-const CustomerCommissionLoader = new DataLoader<string, number>(
-  (ids: string[]) => {
-    const objectIds = ids.map(Types.ObjectId);
-    return CommissionLogModel.aggregate([
-      { $match: { customerId: { $in: objectIds } } },
-      { $group: { _id: "$customerId", commission: { $sum: "$value" } } },
-    ]).then((list) => {
-      const keyByIds = keyBy(list, "_id");
-      return ids.map((id) => get(keyByIds, id + ".commission", 0));
-    });
-  },
-  { cache: false }
-);
-
-const EstimateCommissionFromCustomerLoader = new DataLoader<string, number>(
-  (ids: string[]) => {
-    const splits = ids.map((id) => id.split("|"));
-    const presenterIds = splits.map((l) => Types.ObjectId(l[0]));
-    const buyerIds = splits.map((l) => Types.ObjectId(l[1]));
-    return CommissionLogModel.aggregate([
-      {
-        $match: {
-          customerId: { $in: presenterIds },
-          type: CommissionLogType.RECEIVE_COMMISSION_2_FROM_ORDER,
-        },
-      },
-      {
-        $lookup: {
-          from: "orders",
-          localField: "orderId",
-          foreignField: "_id",
-          as: "order",
-        },
-      },
-      { $unwind: "$order" },
-      { $match: { "order.buyerId": { $in: buyerIds } } },
-      {
-        $group: {
-          _id: { buyerId: "$order.buyerId", customerId: "$customerId" },
-          commission: { $sum: "$value" },
-        },
-      },
-    ]).then((list) => {
-      const keyByIds = keyBy(
-        list.map((l) => {
-          l.id = [l._id.customerId, l._id.buyerId].join("|");
-          return l;
-        }),
-        "id"
-      );
-      return ids.map((id) => get(keyByIds, id + ".commission", 0));
-    });
-  },
-  {
-    cache: true,
-    cacheMap: ttlCache({ ttl: 30000, maxSize: 100 }),
-  }
-);

@@ -34,7 +34,7 @@ export function InfoPage() {
             <span className="pt-6 text-sm">Cộng tác viên</span>
             <span className="font-semibold text-lg">{customer.name}</span>
             <span className="pt-6 text-sm">Hoa hồng nhận được</span>
-            <span className="text-lg font-bold pb-2">{NumberPipe(123123123, true)}</span>
+            <span className="text-lg font-bold pb-2">{NumberPipe(customer.commission, true)}</span>
           </div>
         </div>
         <Share link={customer.collaborator.shortUrl} />

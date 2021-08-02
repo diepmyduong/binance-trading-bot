@@ -16,7 +16,7 @@ export function RegisterPage() {
     CollaboratorService.regisCollaborator()
       .then((res) => {
         toast.success("Đăng ký thành công");
-        router.replace(`/${shopCode}/collaborators/info`);
+        router.replace(`/${shopCode}/collaborator/info`);
       })
       .catch((err) => toast.success("Đăng ký thất bại. Đã xảy ra lỗi trong quá trình đăng ký."));
   }

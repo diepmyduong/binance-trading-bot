@@ -17,7 +17,7 @@ export function HistoryDialog(props: HistoryDialogProps) {
   let screenSm = useScreen("sm");
   const { isMobile } = useDevice();
   return (
-    <Dialog {...props}>
+    <Dialog {...props} title={`Lịch sử hoa hồng (${commissions?.length || 0})`}>
       <div
         className={`bg-white shadow relative rounded-md w-full v-scrollbar ${
           isMobile ? "pb-12" : ""

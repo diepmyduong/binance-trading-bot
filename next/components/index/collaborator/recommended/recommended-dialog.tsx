@@ -12,7 +12,7 @@ export function RecommendedDialog(props: RecommendedDialogProps) {
   const { isMobile } = useDevice();
   let screenSm = useScreen("sm");
   return (
-    <Dialog {...props}>
+    <Dialog {...props} title={`Danh sách đã mời (${customersInvited?.length || 0})`}>
       <div
         className={`bg-white shadow relative rounded-md w-full v-scrollbar ${
           isMobile ? "pb-12" : ""

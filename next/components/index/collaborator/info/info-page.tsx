@@ -164,14 +164,12 @@ function MenuCollaborator() {
         onClose={() => setShowSelected(0)}
         slideFromBottom="all"
         mobileSizeMode
-        title="Lịch sử hoa hồng"
       />
       <RecommendedDialog
         isOpen={showSelected === 2}
         onClose={() => setShowSelected(0)}
         slideFromBottom="all"
         mobileSizeMode
-        title="Danh sách đã mời"
       />
     </div>
   );

@@ -36,6 +36,7 @@ export default {
         context.auth(ROLES.MEMBER_STAFF_CUSTOMER);
         const { customerId } = args;
         let presenterId = context.isCustomer() ? context.id : customerId;
+        if (presenterId == "") return [] as any[];
         context.meta.presenterId = presenterId;
         set(args, "q.filter.presenterId", presenterId);
         return customerService.fetch(args.q, "_id name phone avatar presenterId context");

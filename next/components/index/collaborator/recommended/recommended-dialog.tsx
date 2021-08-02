@@ -5,6 +5,7 @@ import useScreen from "../../../../lib/hooks/useScreen";
 import { useCollaboratorContext } from "../providers/collaborator-provider";
 import { Spinner } from "../../../shared/utilities/spinner";
 import { InvitedCustomer } from "../../../../lib/repo/collaborator.repo";
+import { NumberPipe } from "../../../../lib/pipes/number";
 
 interface RecommendedDialogProps extends DialogPropsType {}
 export function RecommendedDialog(props: RecommendedDialogProps) {
@@ -38,7 +39,9 @@ export function RecommendedDialog(props: RecommendedDialogProps) {
                 {item}
               </span> */}
                     </div>
-                    <span className="font-bold text-success text-lg">+{item.commission}</span>
+                    <span className="font-bold text-success text-lg">
+                      +{NumberPipe(item.commission, true)}
+                    </span>
                   </div>
                 ))}{" "}
               </>

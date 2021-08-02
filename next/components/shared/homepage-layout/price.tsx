@@ -10,9 +10,11 @@ interface Propstype extends ReactProps {
 export function Price(props: Propstype) {
   return (
     <div className={`${props.className || ""} transition-all duration-200 flex items-center`}>
-      <p className={`${(props.textDanger && "text-danger") || "text-gray-800"} font-bold text-sm`}>
+      <span
+        className={`${(props.textDanger && "text-danger") || "text-gray-800"} font-bold text-sm`}
+      >
         {NumberPipe(props.price, true)}
-      </p>
+      </span>
       {(props.downPrice && (
         <div className="flex items-center text-sm pl-2 ">
           <span className={`line-through pr-2 font-semibold`}>

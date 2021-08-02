@@ -20,9 +20,9 @@ export function Rating(props: Propstype) {
         <span className="font-bold mx-1">{props.rating}</span>
         {props.numRated && <p className="text-gray-400"> ({props.numRated}+)</p>}
         {props.ratingTime && (
-          <p className="text-gray-400 text-sm">
+          <span className="text-gray-400 text-sm">
             {formatDate(new Date(props.ratingTime), "dd-MM-yyyy HH:mm")}
-          </p>
+          </span>
         )}
       </div>
       {props.soldQty > 0 && (
@@ -30,14 +30,14 @@ export function Rating(props: Propstype) {
           <i className="text-lg ml-3 pr-1">
             <HiShoppingCart />
           </i>
-          <p className="text-gray-400">
+          <span className="text-gray-400">
             (
             {(props.soldQty > 1000 && "999+") ||
               (props.soldQty > 100 && "99+") ||
               (props.soldQty > 10 && "9+") ||
               props.soldQty}
             )
-          </p>
+          </span>
         </div>
       )}
     </div>

@@ -18,7 +18,7 @@ export function CollaboratorProvider(props) {
   let [commissions, setCommissions] = useState<CommissionLog[]>();
   let [customersInvited, setCustomersInvited] = useState<InvitedCustomer[]>();
   async function getCommissions() {
-    CommissionLogService.getAll({ query: { filter: { createdAt: -1 } }, cache: false })
+    CommissionLogService.getAll({ query: { order: { createdAt: -1 } }, cache: false })
       .then((res) => setCommissions(res.data))
       .catch((err) => console.log(err));
   }

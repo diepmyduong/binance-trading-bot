@@ -32,7 +32,7 @@ export function RegisterPage() {
       </div>
       <div className="flex flex-col p-4 pt-2 border-t-2 sticky bottom-0 bg-white">
         <Checkbox
-          placeholder="Tôi đồng ý với diều khoản"
+          placeholder="Tôi đồng ý với điều khoản"
           defaultValue={confirm}
           onChange={(val) => setConfirm(val)}
         />

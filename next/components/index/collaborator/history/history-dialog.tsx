@@ -17,7 +17,7 @@ export function HistoryDialog(props: HistoryDialogProps) {
   let screenSm = useScreen("sm");
   const { isMobile } = useDevice();
   return (
-    <Dialog {...props}>
+    <Dialog {...props} title={`Lịch sử hoa hồng (${commissions?.length || 0})`}>
       <div
         className={`bg-white shadow relative rounded-md w-full v-scrollbar ${
           isMobile ? "pb-12" : ""
@@ -45,7 +45,9 @@ export function HistoryDialog(props: HistoryDialogProps) {
                       <br />
                       <span className="font-semibold">{NumberPipe(item.order.amount, true)}</span>
                     </div>
-                    <span className="font-bold text-success text-lg">+{item.value}</span>
+                    <span className="font-bold text-success text-lg">
+                      +{NumberPipe(item.value)}
+                    </span>
                   </div>
                 ))}
               </>

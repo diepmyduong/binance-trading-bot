@@ -5,6 +5,7 @@ import useScreen from "../../../../lib/hooks/useScreen";
 import { useCollaboratorContext } from "../providers/collaborator-provider";
 import { Spinner } from "../../../shared/utilities/spinner";
 import { InvitedCustomer } from "../../../../lib/repo/collaborator.repo";
+import { NumberPipe } from "../../../../lib/pipes/number";
 
 interface RecommendedDialogProps extends DialogPropsType {}
 export function RecommendedDialog(props: RecommendedDialogProps) {
@@ -12,7 +13,7 @@ export function RecommendedDialog(props: RecommendedDialogProps) {
   const { isMobile } = useDevice();
   let screenSm = useScreen("sm");
   return (
-    <Dialog {...props}>
+    <Dialog {...props} title={`Danh sách đã mời (${customersInvited?.length || 0})`}>
       <div
         className={`bg-white shadow relative rounded-md w-full v-scrollbar ${
           isMobile ? "pb-12" : ""
@@ -38,7 +39,9 @@ export function RecommendedDialog(props: RecommendedDialogProps) {
                 {item}
               </span> */}
                     </div>
-                    <span className="font-bold text-success text-lg">+{item.commission}</span>
+                    <span className="font-bold text-success text-lg">
+                      +{NumberPipe(item.commission, true)}
+                    </span>
                   </div>
                 ))}{" "}
               </>

@@ -23,8 +23,6 @@ export const ShopContext = createContext<
     setShop: Function;
     customer: Customer;
     locationCustomer: any;
-    productIdSelected: any;
-    setProductIdSelected: any;
     customerLogin: Function;
     customerLogout: Function;
     shopCode: string;
@@ -35,6 +33,7 @@ export const ShopContext = createContext<
     loginCustomerByPhone: Function;
     loading: boolean;
     setCustomer: Function;
+    getCustomner: Function;
     customerLoginOTP: (phone: string, otp: string) => any;
   }>
 >({});
@@ -44,7 +43,6 @@ export function ShopProvider(props) {
   let [shopCode, setShopCode] = useState<string>();
   let [branchSelecting, setBranchSelecting] = useState<ShopBranch>();
   let [shop, setShop] = useState<Shop>();
-  const [productIdSelected, setProductIdSelected] = useState<any>(null);
   let [customer, setCustomer] = useState<Customer>();
   let [shopBranchs, setShopBranch] = useState<ShopBranch[]>([]);
   const [locationCustomer, setLocationCustomer] = useState<any>();
@@ -205,8 +203,6 @@ export function ShopProvider(props) {
         locationCustomer,
         customerLogin,
         customerLogout,
-        productIdSelected,
-        setProductIdSelected,
         setShop,
         setShopCode,
         branchSelecting,

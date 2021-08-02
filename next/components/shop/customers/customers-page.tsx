@@ -141,7 +141,6 @@ export function CustomersPage(props: ReactProps) {
                     setOpenCustomerOrder(item.id);
                   }}
                 />
-                <DataTable.CellButton hoverDanger value={item} isDeleteButton />
               </>
             )}
           />

@@ -281,6 +281,60 @@ export function IconEmployee({ hasGradient }: { hasGradient: boolean } = { hasGr
   );
 }
 
+export function IconCollaborator(
+  { hasGradient }: { hasGradient: boolean } = { hasGradient: true }
+) {
+  return (
+    // <svg
+    //   width="24"
+    //   height="24"
+    //   viewBox="0 0 24 24"
+    //   fill={`${hasGradient ? "url(#gradient)" : "currentColor"}`}
+    // >
+    //   {hasGradient && <PrimaryLinearGradient />}
+    //   <path d="M3.25 4a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h2.5a.75.75 0 01.75.75v3.19l3.72-3.72a.75.75 0 01.53-.22h10a.25.25 0 00.25-.25V4.25a.25.25 0 00-.25-.25H3.25zm-1.75.25c0-.966.784-1.75 1.75-1.75h17.5c.966 0 1.75.784 1.75 1.75v12.5a1.75 1.75 0 01-1.75 1.75h-9.69l-3.573 3.573A1.457 1.457 0 015 21.043V18.5H3.25a1.75 1.75 0 01-1.75-1.75V4.25z" />
+    // </svg>
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill={`${hasGradient ? "url(#gradient)" : "currentColor"}`}
+    >
+      {hasGradient && <PrimaryLinearGradient />}
+      <path
+        xmlns="http://www.w3.org/2000/svg"
+        d="M.7,24H7.88a.7.7,0,0,0,.7-.7v-.79a4.31,4.31,0,0,0-2.24-3.77,2.81,2.81,0,1,0-4.1,0A4.31,4.31,0,0,0,0,22.51v.79A.7.7,0,0,0,.7,24Zm2.18-7.18a1.41,1.41,0,1,1,1.41,1.4A1.41,1.41,0,0,1,2.88,16.82Zm1.41,2.81a2.89,2.89,0,0,1,2.89,3H1.41A2.89,2.89,0,0,1,4.29,19.63Z"
+        transform="translate(0 0)"
+      />
+      <path
+        xmlns="http://www.w3.org/2000/svg"
+        d="M21.76,18.74a2.81,2.81,0,1,0-4.1,0,4.31,4.31,0,0,0-2.24,3.77v.79a.7.7,0,0,0,.7.7H23.3a.7.7,0,0,0,.7-.7v-.79A4.31,4.31,0,0,0,21.76,18.74ZM18.3,16.82a1.41,1.41,0,1,1,1.41,1.4A1.41,1.41,0,0,1,18.3,16.82Zm4.29,5.77H16.82a2.89,2.89,0,1,1,5.77,0Z"
+        transform="translate(0 0)"
+      />
+      <path
+        xmlns="http://www.w3.org/2000/svg"
+        d="M16.29,9.29V8.51a4.3,4.3,0,0,0-2.24-3.77,2.81,2.81,0,1,0-4.1,0A4.3,4.3,0,0,0,7.71,8.51v.78a.7.7,0,0,0,.7.71h7.18A.7.7,0,0,0,16.29,9.29Zm-5.7-6.48A1.41,1.41,0,1,1,12,4.22,1.41,1.41,0,0,1,10.59,2.81Zm4.29,5.78H9.12a2.88,2.88,0,1,1,5.76,0Z"
+        transform="translate(0 0)"
+      />
+      <path
+        xmlns="http://www.w3.org/2000/svg"
+        d="M14.84,17.77a9.43,9.43,0,0,1-5.66,0,.7.7,0,1,0-.43,1.34,10.81,10.81,0,0,0,3.21.49,10.58,10.58,0,0,0,3.32-.53.7.7,0,0,0,.45-.88A.71.71,0,0,0,14.84,17.77Z"
+        transform="translate(0 0)"
+      />
+      <path
+        xmlns="http://www.w3.org/2000/svg"
+        d="M5.52,5.83a10.79,10.79,0,0,0-3.09,5.75.71.71,0,0,0,.7.83.71.71,0,0,0,.69-.58,9.27,9.27,0,0,1,2.67-5,.7.7,0,0,0-1-1Z"
+        transform="translate(0 0)"
+      />
+      <path
+        xmlns="http://www.w3.org/2000/svg"
+        d="M18.48,5.83a.7.7,0,0,0-1,1,9.27,9.27,0,0,1,2.67,5,.71.71,0,0,0,.82.57.72.72,0,0,0,.57-.82,10.79,10.79,0,0,0-3.09-5.75Z"
+        transform="translate(0 0)"
+      />
+    </svg>
+  );
+}
+
 export function IconComment({ hasGradient }: { hasGradient: boolean } = { hasGradient: true }) {
   return (
     <svg

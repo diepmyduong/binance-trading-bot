@@ -1,4 +1,5 @@
 import { ObjectId } from "bson";
+import { Request } from "express";
 import { TokenExpiredError } from "jsonwebtoken";
 import _, { get } from "lodash";
 
@@ -26,18 +27,23 @@ export type SignedRequestPayload = {
 
 export class Context {
   public meta: any = {};
-  constructor(
-    public isAuth: boolean = false,
-    public isTokenExpired: boolean = false,
-    public memberCode: string = null,
-    public campaignCode: string = null,
-    public collaboratorId: string = null,
-    public xPageId: string = null,
-    public xPsId: string = null,
-    public tokenData?: TokenData,
-    public token: string = null,
-    public messengerSignPayload?: MessengerTokenDecoded
-  ) {}
+  public req: Request;
+  public isAuth: boolean = false;
+  public isTokenExpired: boolean = false;
+  public memberCode: string = null;
+  public campaignCode: string = null;
+  public collaboratorId: string = null;
+  public xPageId: string = null;
+  public xPsId: string = null;
+  public tokenData: TokenData;
+  public token: string = null;
+  public messengerSignPayload: MessengerTokenDecoded;
+  constructor(props: { req?: Request; connection?: any }) {
+    this.parseSig(props);
+    this.parseToken(props);
+    this.parseHeader(props);
+    this.modifyMemberCode();
+  }
 
   isMember() {
     return get(this.tokenData, "role") == ROLES.MEMBER;
@@ -222,10 +228,6 @@ export class Context {
 }
 
 export async function onContext(params: any) {
-  let context: Context = new Context();
-  await context.parseSig(params);
-  await context.parseToken(params);
-  context.parseHeader(params);
-  await context.modifyMemberCode();
+  let context: Context = new Context(params);
   return context;
 }

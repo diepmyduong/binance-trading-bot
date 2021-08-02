@@ -1,5 +1,6 @@
 import { NextSeo } from "next-seo";
-import LoginPage from "../../components/admin/login/login-page";
+import { LoginPage } from "../../components/admin/login/login-page";
+import { NoneLayout } from "../../layouts/none-layout/none-layout";
 
 export default function Page() {
   return (
@@ -9,3 +10,5 @@ export default function Page() {
     </>
   );
 }
+
+Page.Layout = NoneLayout;

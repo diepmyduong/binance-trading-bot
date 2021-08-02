@@ -5,7 +5,7 @@ export default function Page() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace("/admin/management/dashboard");
+    router.replace("/admin/management/users");
   });
   return null;
 }

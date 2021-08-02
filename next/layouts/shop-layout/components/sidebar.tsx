@@ -4,6 +4,7 @@ import { Button } from "../../../components/shared/utilities/form/button";
 import { Img } from "../../../components/shared/utilities/img";
 import { useAuth } from "../../../lib/providers/auth-provider";
 import {
+  IconCollaborator,
   IconComment,
   IconCustomer,
   IconDiscount,
@@ -143,11 +144,11 @@ export const SIDEBAR_MENUS = [
         path: "/shop/customers",
         icon: (active: boolean) => <IconCustomer hasGradient={!active} />,
       },
-      {
-        title: "Báo cáo",
-        path: "/shop/reports",
-        icon: (active: boolean) => <IconReport hasGradient={!active} />,
-      },
+      // {
+      //   title: "Báo cáo",
+      //   path: "/shop/reports",
+      //   icon: (active: boolean) => <IconReport hasGradient={!active} />,
+      // },
       {
         title: "Tài xế nội bộ",
         path: "/shop/drivers",
@@ -157,6 +158,11 @@ export const SIDEBAR_MENUS = [
         title: "Nhân viên",
         path: "/shop/staffs",
         icon: (active: boolean) => <IconEmployee hasGradient={!active} />,
+      },
+      {
+        title: "Cộng tác viên",
+        path: "/shop/collaborators",
+        icon: (active: boolean) => <IconCollaborator hasGradient={!active} />,
       },
       {
         title: "Bình luận",

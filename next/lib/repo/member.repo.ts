@@ -1,6 +1,3 @@
-import axios from "axios";
-import { GetAuthToken } from "../graphql/auth.link";
-import { Category } from "./category.repo";
 import { BaseModel, CrudRepository } from "./crud.repo";
 
 interface Branch extends BaseModel {
@@ -96,6 +93,7 @@ export class MemberRepository extends CrudRepository<Member> {
     fanpageImage: String
     shopName: String
     shopLogo: String
+    activated: Boolean
   `);
   fullFragment: string = this.parseFragment(`
     id: String

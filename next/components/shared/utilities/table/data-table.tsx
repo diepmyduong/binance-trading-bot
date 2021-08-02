@@ -88,6 +88,14 @@ export function DataTable<T extends BaseModel>({
     });
   };
 
+  const changeRowData = async (item: T, property: string, value: any) => {
+    const row = cloneDeep(items).find((x) => x.id == item.id);
+    if (row) {
+      (row as any)[property] = value;
+      setItems([...items]);
+    }
+  };
+
   const loadAll = async (refresh = false, showLoading: boolean = true) => {
     if (refreshing) {
       await waitUntil(() => !refreshing);
@@ -231,6 +239,7 @@ export function DataTable<T extends BaseModel>({
         onDeleteItem,
         saveItem,
         loadAll,
+        changeRowData,
       }}
     >
       {props.children}
@@ -264,6 +273,7 @@ interface DataTableContextProps<T extends BaseModel> extends ReactProps {
   onDeleteItem: (item: Partial<T>) => Promise<any>;
   saveItem: (data: Partial<T>) => Promise<Partial<T>>;
   loadAll: (refresh?: boolean) => Promise<any>;
+  changeRowData: (item: T, property: string, value: any) => Promise<any>;
 }
 const DataTableContext = createContext<Partial<DataTableContextProps<BaseModel>>>({});
 export const useDataTable = () => useContext(DataTableContext);

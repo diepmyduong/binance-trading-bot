@@ -29,6 +29,7 @@ export interface Product extends BaseModel {
   toppings: ProductTopping[];
   upsaleProductIds: string[];
   upsaleProducts: Product[];
+  commission2: number;
 }
 export interface ProductLabel extends BaseModel {
   name: string;
@@ -94,6 +95,7 @@ export class ProductRepository extends CrudRepository<Product> {
     soldQty: number
     labelIds: string[]
     cover: String
+    commission2: number
     toppings {
       id: String
       createdAt: DateTime

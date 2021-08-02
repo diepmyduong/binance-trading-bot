@@ -57,8 +57,10 @@ export const SettingService = new SettingRepository();
 
 export const SETTING_TYPES: Option[] = [
   { value: "string", label: "Chữ" },
+  { value: "number", label: "Số" },
+  { value: "boolean", label: "Bật tắt" },
   { value: "image", label: "Hình ảnh" },
   { value: "array", label: "Mảng chữ" },
-  { value: "textarea", label: "Đoạn văn" },
+  { value: "richText", label: "Đoạn văn" },
   { value: "object", label: "Tuỳ chỉnh" },
 ];

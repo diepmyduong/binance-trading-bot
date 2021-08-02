@@ -3,6 +3,8 @@ import { RiLock2Line, RiMoreFill } from "react-icons/ri";
 import { Setting } from "../../../../../lib/repo/setting.repo";
 import { ImageInput } from "../../../../shared/utilities/form/image-input";
 import { Input } from "../../../../shared/utilities/form/input";
+import { Switch } from "../../../../shared/utilities/form/switch";
+import { Textarea } from "../../../../shared/utilities/form/textarea";
 import { Dropdown } from "../../../../shared/utilities/popover/dropdown";
 import { MutableSetting } from "./setting-list";
 
@@ -67,6 +69,13 @@ export function SettingItem({ setting, ...props }: PropTypes) {
       </div>
       {
         {
+          boolean: (
+            <Switch
+              readonly={setting.readOnly}
+              value={setting.value}
+              onChange={onSettingValueChanged}
+            />
+          ),
           image: (
             <ImageInput
               readonly={setting.readOnly}
@@ -76,6 +85,21 @@ export function SettingItem({ setting, ...props }: PropTypes) {
           ),
           string: (
             <Input
+              readonly={setting.readOnly}
+              value={setting.value}
+              onChange={onSettingValueChanged}
+            />
+          ),
+          number: (
+            <Input
+              number
+              readonly={setting.readOnly}
+              value={setting.value}
+              onChange={(val, extraVal) => onSettingValueChanged(extraVal)}
+            />
+          ),
+          richText: (
+            <Textarea
               readonly={setting.readOnly}
               value={setting.value}
               onChange={onSettingValueChanged}

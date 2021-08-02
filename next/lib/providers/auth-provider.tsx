@@ -67,7 +67,7 @@ export function AuthProvider(props) {
   useEffect(() => {
     firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
-        UserService.loginUserByToken(await user.getIdToken())
+        UserService.login(await user.getIdToken())
           .then((res) => {
             const { user, token } = res;
             SetAuthToken(token);
@@ -113,12 +113,11 @@ export function AuthProvider(props) {
   const loginFirebaseEmail = async (email: string, password: string) => {
     try {
       const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-      const { user, token } = await UserService.loginUserByToken(
-        await userCredential.user.getIdToken()
-      );
+      const { user, token } = await UserService.login(await userCredential.user.getIdToken());
       SetAuthToken(token);
       setUser(user);
     } catch (err) {
+      console.error(err);
       ClearAuthToken();
       setUser(null);
       let message = "";

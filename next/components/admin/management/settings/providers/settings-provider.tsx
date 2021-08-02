@@ -116,8 +116,17 @@ export function SettingsProvider(props) {
     if (!id) {
       switch (type) {
         case "string":
+        case "richText":
         case "image": {
           newValue = "";
+          break;
+        }
+        case "boolean": {
+          newValue = false;
+          break;
+        }
+        case "number": {
+          newValue = 0;
           break;
         }
         case "array": {

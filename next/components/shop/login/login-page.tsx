@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useEffect } from "react";
 
 import { Footer } from "../../../layouts/admin-layout/components/footer";
@@ -33,55 +34,63 @@ export default function ShopLoginPage() {
     }
   };
 
+  if (member !== null) return <Spinner />;
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="w-screen flex-1 flex items-center justify-center">
-        {member !== null ? (
-          <Spinner />
-        ) : (
-          <Form
-            className="p-6 w-5/12 max-w-screen-xs flex flex-col"
-            onSubmit={async (data) => {
-              await login(data);
-            }}
-          >
-            <img className="h-auto my-6 mx-auto w-32" src="/assets/img/logo-som.png" />
-            <h2 className="text-2xl text-center font-semibold text-primary uppercase mt-2 mb-6">
-              Đăng nhập
-            </h2>
-            <Label className="mb-3 text-base" text="Email đăng nhập" />
-            <Field className="mb-1" name="username" required>
-              <Input
-                className="h-14 shadow-md rounded-md border-0"
-                placeholder="Email đăng nhập"
-                autoFocus
-              />
-            </Field>
-            <Label className="mb-3 text-base" text="Mật khẩu" />
-            <Field className="mb-1" name="password" required>
-              <Input
-                className="h-14 shadow-md rounded-md border-0"
-                type="password"
-                placeholder="Mật khẩu"
-              />
-            </Field>
-            <FormConsumer>
-              {({ loading }) => (
-                <>
-                  <Button
-                    submit
-                    primary
-                    className="mt-4 h-14 bg-gradient shadow"
-                    text="Đăng nhập cửa hàng"
-                    isLoading={loading}
-                  />
-                </>
-              )}
-            </FormConsumer>
-          </Form>
-        )}
+    <div
+      className="flex flex-col min-h-screen bg-no-repeat bg-cover bg-center"
+      style={{ backgroundImage: `url(/assets/img/login-background.jpg)` }}
+    >
+      <div className="w-screen flex-1 flex items-center justify-start">
+        <Form
+          className="w-5/12 max-w-screen-xs flex flex-col ml-40 h-screen"
+          onSubmit={async (data) => {
+            await login(data);
+          }}
+        >
+          <img className="h-auto my-6 mx-auto w-32 mt-auto" src="/assets/img/logo-som.png" />
+          <h2 className="text-2xl text-center font-semibold text-primary uppercase mt-2 mb-6">
+            Đăng nhập
+          </h2>
+          <Label className="mb-3 text-base" text="Email đăng nhập" />
+          <Field className="mb-1" name="username" required>
+            <Input
+              className="h-14 shadow-md rounded-md border-0"
+              placeholder="Email đăng nhập"
+              autoFocus
+            />
+          </Field>
+          <Label className="mb-3 text-base" text="Mật khẩu" />
+          <Field className="mb-1" name="password" required>
+            <Input
+              className="h-14 shadow-md rounded-md border-0"
+              type="password"
+              placeholder="Mật khẩu"
+            />
+          </Field>
+          <FormConsumer>
+            {({ loading }) => (
+              <>
+                <Button
+                  submit
+                  primary
+                  className="mt-4 h-14 bg-gradient shadow"
+                  text="Đăng nhập cửa hàng"
+                  isLoading={loading}
+                />
+              </>
+            )}
+          </FormConsumer>
+          <div className="text-lg text-gray-700 font-semibold text-center mt-6">
+            Bạn chưa có tài khoản?{" "}
+            <Link href="/shop/register">
+              <a className="cursor-pointer text-primary hover:text-primary-dark hover:underline">
+                Đăng ký ngay
+              </a>
+            </Link>
+          </div>
+          <Footer className="mt-auto border-gray-400" />
+        </Form>
       </div>
-      <Footer />
     </div>
   );
 }

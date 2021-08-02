@@ -340,5 +340,5 @@ onApprovedCompletedOrder.subscribe(async (order) => {
 });
 
 onApprovedCompletedOrder.subscribe(async (order) => {
-  LocalBroker.emit("order.completeOrder", { orderId: order._id.toString() });
+  LocalBroker.emit("order.completed", { orderId: order._id.toString() });
 });

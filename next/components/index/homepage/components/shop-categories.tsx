@@ -122,7 +122,7 @@ export function ShopCategory(props: ShopCategoryPropsType) {
   return (
     <div id={props.title} className="relative menu bg-white mb-2">
       <div className=" absolute -top-28 menu-container"></div>
-      <p className="font-semibold text-primary pt-2 pl-4 text-lg menu-title">{props.title}</p>
+      <h3 className="font-semibold text-primary pt-2 pl-4 text-lg menu-title">{props.title}</h3>
       {props.list.length > 0 && (
         <>
           {props.list.map((item: Product, index: number) => (
@@ -140,17 +140,25 @@ export function ShopCategory(props: ShopCategoryPropsType) {
                   //   handleClick(item.code);
                   // }}
                 >
-                  <div className={`flex items-center px-4 `}>
-                    <div className="flex-1 flex flex-col">
-                      <p className="font-semibold items-start">{item.name}</p>
-                      <p className="text-gray-500 text-sm">{item.subtitle}</p>
-                      <Rating rating={item.rating || 4.8} textSm soldQty={item.soldQty} />
-                      <p className="text-gray-400 text-sm">{item.des}</p>
+                  <div className={`flex px-4 `}>
+                    <div className="flex-1 justify-start leading-8">
+                      <span className="font-semibold items-start">{item.name}</span>
+                      {item.subtitle ? (
+                        <span className="text-gray-500 text-sm">{item.subtitle}</span>
+                      ) : (
+                        ""
+                      )}
+                      {item.rating && item.rating > 0 ? (
+                        <Rating rating={item.rating} textSm soldQty={item.soldQty} />
+                      ) : (
+                        ""
+                      )}
+                      {item.des ? <span className="text-gray-400 text-sm">{item.des}</span> : ""}
                       <Price
                         price={item.basePrice}
                         downPrice={item.downPrice}
                         textDanger
-                        className="justify-items-end"
+                        className=""
                       />
                     </div>
                     <ImgProduct

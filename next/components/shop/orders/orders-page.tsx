@@ -14,9 +14,11 @@ import format from "date-fns/format";
 import { Field } from "../../shared/utilities/form/field";
 import { Select } from "../../shared/utilities/form/select";
 import { ShopBranchService } from "../../../lib/repo/shop-branch.repo";
+import { ExportOrderDialog } from "./components/export-orders-dialog";
 
 export function OrdersPage(props: ReactProps) {
   const [orderId, setOrderId] = useState<string>("");
+  const [openExportOrder, setOpenExportOrder] = useState(false);
 
   return (
     <>
@@ -24,6 +26,12 @@ export function OrdersPage(props: ReactProps) {
         <DataTable.Header>
           <ShopPageTitle title="Đơn hàng" subtitle="Kiểm tra trạng thái đơn hàng" />
           <DataTable.Buttons>
+            <DataTable.Button
+              primary
+              className="h-12"
+              text="Xuất danh sách đơn hàng"
+              onClick={() => setOpenExportOrder(true)}
+            />
             <DataTable.Button
               outline
               isRefreshButton
@@ -162,6 +170,21 @@ export function OrdersPage(props: ReactProps) {
           />
         </DataTable.Table>
         <DataTable.Pagination />
+
+        <DataTable.Consumer>
+          {({ filter }) => (
+            <ExportOrderDialog
+              isOpen={openExportOrder}
+              onClose={() => {
+                setOpenExportOrder(false);
+              }}
+              shopBranchId={filter.shopBranchId}
+              pickupMethod={filter.pickupMethod}
+              paymentMethod={filter.paymentMethod}
+              status={filter.status}
+            />
+          )}
+        </DataTable.Consumer>
       </DataTable>
       <OrderDetailsDialog
         orderId={orderId}

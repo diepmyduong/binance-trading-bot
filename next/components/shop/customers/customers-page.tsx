@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { RiBillLine, RiHome3Line, RiPhoneLine, RiTicketLine, RiUserLine } from "react-icons/ri";
+import { saveFile } from "../../../lib/helpers/save-file";
 import { NumberPipe } from "../../../lib/pipes/number";
+import { useToast } from "../../../lib/providers/toast-provider";
 import { Customer, CustomerService } from "../../../lib/repo/customer.repo";
 import { Staff } from "../../../lib/repo/staff.repo";
 import { OrdersDialog } from "../../shared/shop-layout/orders-dialog";
@@ -11,6 +13,18 @@ import { VouchersDialog } from "./components/vouchers-dialog";
 export function CustomersPage(props: ReactProps) {
   const [openCustomerOrder, setOpenCustomerOrder] = useState<string>("");
   const [openCustomerVouchers, setOpenCustomerVouchers] = useState<string>("");
+  const toast = useToast();
+
+  const exportCustomerDialog = async () => {
+    try {
+      await saveFile(
+        () => CustomerService.exportExcel(),
+        "excel",
+        `DANH_SACH_KHACH_HANG.xlsx`,
+        toast
+      );
+    } catch (err) {}
+  };
 
   return (
     <>
@@ -18,6 +32,12 @@ export function CustomersPage(props: ReactProps) {
         <DataTable.Header>
           <ShopPageTitle title="Khách hàng" subtitle="Khách hàng hệ thống" />
           <DataTable.Buttons>
+            <DataTable.Button
+              primary
+              className="h-12"
+              text="Xuất danh sách khách hàng"
+              onClick={exportCustomerDialog}
+            />
             <DataTable.Button
               outline
               isRefreshButton

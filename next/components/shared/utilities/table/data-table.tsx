@@ -26,6 +26,7 @@ interface DataTableProps<T extends BaseModel> extends ReactProps {
   updateItemHref?: (item: Partial<T>) => string;
   postProcessItem?: (item: Partial<T>) => Partial<T>;
   crudService: CrudRepository<Partial<T>>;
+  extraParams?: object;
   autoRefresh?: number;
 }
 export function DataTable<T extends BaseModel>({
@@ -120,7 +121,12 @@ export function DataTable<T extends BaseModel>({
       search,
     };
     await crudService
-      .getAll({ query, fragment: props.fragment, apiName: props.apiName })
+      .getAll({
+        query,
+        fragment: props.fragment,
+        apiName: props.apiName,
+        extraParams: props.extraParams,
+      })
       .then((res) => {
         if (currentQueryNumber != queryNumber) return;
         setItems(res.data.map((x) => (props.postProcessItem ? props.postProcessItem(x) : x)));
@@ -222,6 +228,7 @@ export function DataTable<T extends BaseModel>({
         loadingItems,
         search,
         onSearchChange,
+        filter,
         onFilterChange,
         refreshing,
         onRefresh,
@@ -256,6 +263,7 @@ interface DataTableContextProps<T extends BaseModel> extends ReactProps {
   loadingItems: boolean;
   search: string;
   onSearchChange: (search: string) => any;
+  filter: any;
   onFilterChange: (filter: any) => any;
   refreshing: boolean;
   onRefresh: () => any;
@@ -298,6 +306,7 @@ DataTable.CellButton = Table.CellButton;
 DataTable.CellDate = Table.CellDate;
 DataTable.CellImage = Table.CellImage;
 DataTable.CellNumber = Table.CellNumber;
+DataTable.CellBoolean = Table.CellBoolean;
 DataTable.CellStatus = Table.CellStatus;
 DataTable.CellText = Table.CellText;
 

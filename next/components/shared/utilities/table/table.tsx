@@ -1,6 +1,12 @@
 import formatDate from "date-fns/format";
 import { Children, MouseEvent, useEffect, useRef, useState } from "react";
-import { RiDeleteBinLine, RiEdit2Line, RiMore2Line } from "react-icons/ri";
+import {
+  RiCheckFill,
+  RiCloseFill,
+  RiDeleteBinLine,
+  RiEdit2Line,
+  RiMore2Line,
+} from "react-icons/ri";
 import { NumberPipe } from "../../../../lib/pipes/number";
 import { BaseModel } from "../../../../lib/repo/crud.repo";
 import { Button, ButtonProps } from "../form/button";
@@ -264,6 +270,28 @@ const CellNumber = ({ value, className = "", style = {}, currency }: CellNumberP
 );
 CellNumber.displayName = "CellNumber";
 Table.CellNumber = CellNumber;
+
+interface CellBooleanProps extends CellProps {
+  trueIcon?: JSX.Element;
+  falseIcon?: JSX.Element;
+  trueClassName?: string;
+  falseClassName?: string;
+}
+const CellBoolean = ({
+  value,
+  className = "",
+  style = {},
+  trueIcon = <RiCheckFill />,
+  trueClassName = "text-success",
+  falseIcon = <RiCloseFill />,
+  falseClassName = "text-gray-700",
+}: CellBooleanProps) => (
+  <div className={`flex-center ${className}`} style={{ ...style }}>
+    <i className={`${value ? trueClassName : falseClassName}`}>{value ? trueIcon : falseIcon}</i>
+  </div>
+);
+CellBoolean.displayName = "CellBoolean";
+Table.CellBoolean = CellBoolean;
 
 interface CellImageProps extends CellProps, ImgProps {
   center?: boolean;

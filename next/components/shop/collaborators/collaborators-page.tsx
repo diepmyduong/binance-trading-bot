@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { RiBillLine, RiPhoneLine, RiUser5Line } from "react-icons/ri";
+import { RiBillLine, RiMoneyDollarCircleLine, RiPhoneLine, RiUser5Line } from "react-icons/ri";
 import { NumberPipe } from "../../../lib/pipes/number";
 import {
   Collaborator,
@@ -12,11 +12,13 @@ import { Field } from "../../shared/utilities/form/field";
 import { Input } from "../../shared/utilities/form/input";
 import { Select } from "../../shared/utilities/form/select";
 import { DataTable } from "../../shared/utilities/table/data-table";
+import { CollaboratorCommissionDialog } from "./components/collaborator-commission-dialog copy";
 import { CollaboratorCustomerDialog } from "./components/collaborator-customer-dialog";
 
 export function CollaboratorsPage(props: ReactProps) {
   const [openCollaboratorCustomers, setOpenCollaboratorCustomers] = useState<string>("");
   const [openCollaboratorOrders, setOpenCollaboratorOrders] = useState<string>("");
+  const [openCollaboratorCommissions, setOpenCollaboratorCommissions] = useState("");
 
   return (
     <>
@@ -121,14 +123,22 @@ export function CollaboratorsPage(props: ReactProps) {
             right
             render={(item: Collaborator) => (
               <>
-                {/* <DataTable.CellButton
+                <DataTable.CellButton
+                  value={item}
+                  icon={<RiMoneyDollarCircleLine />}
+                  tooltip="Lịch sử hoa hồng"
+                  onClick={() => {
+                    setOpenCollaboratorCommissions(item.customerId);
+                  }}
+                />
+                <DataTable.CellButton
                   value={item}
                   icon={<RiUser5Line />}
                   tooltip="Khách hàng giới thiệu"
                   onClick={() => {
-                    setOpenCollaboratorCustomers(item.id);
+                    setOpenCollaboratorCustomers(item.customerId);
                   }}
-                /> */}
+                />
                 <DataTable.CellButton
                   value={item}
                   icon={<RiBillLine />}
@@ -177,11 +187,16 @@ export function CollaboratorsPage(props: ReactProps) {
         </DataTable.Consumer>
         <DataTable.Pagination />
       </DataTable>
-      {/* <CollaboratorCustomerDialog
+      <CollaboratorCommissionDialog
+        isOpen={!!openCollaboratorCommissions}
+        onClose={() => setOpenCollaboratorCommissions("")}
+        filter={openCollaboratorCommissions ? { customerId: openCollaboratorCommissions } : null}
+      />
+      <CollaboratorCustomerDialog
         isOpen={!!openCollaboratorCustomers}
         onClose={() => setOpenCollaboratorCustomers("")}
         collaboratorId={openCollaboratorCustomers}
-      /> */}
+      />
       <OrdersDialog
         isOpen={!!openCollaboratorOrders}
         onClose={() => setOpenCollaboratorOrders("")}

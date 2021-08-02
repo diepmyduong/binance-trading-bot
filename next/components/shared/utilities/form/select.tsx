@@ -100,7 +100,6 @@ export function Select({
   // get initial autocomplete data
   useEffect(() => {
     if (value?.length && props.autocompletePromise) {
-      console.log("asdhasdjkaskld", value);
       setLoading(true);
       props
         .autocompletePromise({
@@ -357,7 +356,6 @@ export function Select({
         );
       } else {
         if (option) {
-          console.log(option, "herere");
           if (Array.isArray(option)) {
             props.onChange(
               option.map((x) => x.value),

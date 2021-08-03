@@ -1,12 +1,15 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { ShopsPage } from "../components/index/shops/shops-page";
+import { NextSeo } from "next-seo";
 
 export default function Page(props) {
-  const router = useRouter();
-  useEffect(() => {
-    router.replace(`/not-found-shop`);
-  });
-  return null;
+  return (
+    <>
+      <NextSeo title="Trang chủ" />
+      <ShopsPage />
+    </>
+  );
   // useEffect(() => {
   //   sessionStorage.setItem("shop", JSON.stringify(props.shop));
   //   sessionStorage.setItem("shopCode", props.code);

@@ -7,7 +7,7 @@ import { Button } from "../../../shared/utilities/form/button";
 import Link from "next/link";
 import { useToast } from "../../../../lib/providers/toast-provider";
 import { FaRegCopy, FaShare, FaShareAlt, FaWindowClose } from "react-icons/fa";
-import { FbIcon, TgIcon, QRIcon } from "../../../../public/assets/svg/svg";
+import { FbIcon, TgIcon, QRIcon, IconViber } from "../../../../public/assets/svg/svg";
 import { AiOutlineClose, AiOutlineRight } from "react-icons/ai";
 import QRCode from "qrcode.react";
 import { Dialog } from "../../../shared/utilities/dialog/dialog";
@@ -112,22 +112,30 @@ function Share({ link, ...props }: { link: string }) {
           />
           <Button
             href={{ pathname: "https://www.facebook.com/sharer/sharer.php", query: { u: link } }}
-            className="flex-1"
-            info
+            className="flex-1 text-white hover:text-white"
             icon={<FbIcon />}
             iconPosition="end"
             style={{ backgroundColor: "#4267b2" }}
-            iconClassName="w-6 h-6"
+            iconClassName="w-6 h-6 "
             tooltip="Chia sẻ lên facebook"
           />
           <Button
             href={{ pathname: "https://telegram.me/share/url", query: { url: link } }}
-            className="flex-1 bg-blue-300 text-white hover:text-white"
+            className="flex-1 text-white hover:text-white"
             icon={<TgIcon />}
             iconPosition="end"
             style={{ backgroundColor: "#37AFE2" }}
-            iconClassName="w-6 h-6 text-white hover:text-white"
+            iconClassName="w-6 h-6 "
             tooltip="Chia sẻ lên telegram"
+          />
+          <Button
+            href={{ pathname: "viber://forward", query: { text: link } }}
+            className="flex-1 text-white hover:text-white"
+            icon={<IconViber />}
+            iconPosition="end"
+            style={{ backgroundColor: "#59267c" }}
+            iconClassName="w-6 h-6 "
+            tooltip="Chia sẻ lên viber"
           />
           <Button
             icon={<QRIcon />}

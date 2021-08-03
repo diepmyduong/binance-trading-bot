@@ -15,7 +15,11 @@ import useDevice from "../../../../lib/hooks/useDevice";
 import useScreen from "../../../../lib/hooks/useScreen";
 import { HistoryDialog } from "../history/history-dialog";
 import { RecommendedDialog } from "../recommended/recommended-dialog";
-import { CollaboratorProvider } from "../providers/collaborator-provider";
+import {
+  CollaboratorProvider,
+  CollaboratorContext,
+  useCollaboratorContext,
+} from "../providers/collaborator-provider";
 import { Spinner } from "../../../shared/utilities/spinner";
 
 export function InfoPage() {
@@ -23,25 +27,38 @@ export function InfoPage() {
   if (!customer) return <Spinner />;
   return (
     <CollaboratorProvider>
-      <div className="bg-white shadow  min-h-screen relative rounded-md w-full">
-        <div className="p-4">
-          <BreadCrumbs
-            breadcrumbs={[{ label: "Trang chủ", href: `/${shopCode}` }, { label: "Thông tin CTV" }]}
-            className="pb-2"
-          />
-          <div
-            className="flex flex-col text-white bg-no-repeat bg-cover bg-center rounded-md p-4"
-            style={{ backgroundImage: `url(/assets/img/bg-collab-card.png)` }}
-          >
-            <span className="text-sm">Cộng tác viên</span>
-            <span className="font-semibold text-lg">{customer.name}</span>
-            <span className="pt-6 text-sm">Hoa hồng nhận được</span>
-            <span className="text-lg font-bold">{NumberPipe(customer.commission, true)}</span>
-          </div>
-        </div>
-        <Share link={customer.collaborator.shortUrl} />
-        <MenuCollaborator />
-      </div>
+      <CollaboratorContext.Consumer>
+        {({ colabrator }) =>
+          colabrator ? (
+            <div className="bg-white shadow  min-h-screen relative rounded-md w-full">
+              <div className="p-4">
+                <BreadCrumbs
+                  breadcrumbs={[
+                    { label: "Trang chủ", href: `/${shopCode}` },
+                    { label: "Thông tin CTV" },
+                  ]}
+                  className="pb-2"
+                />
+                <div
+                  className="flex flex-col text-white bg-no-repeat bg-cover bg-center rounded-md p-4"
+                  style={{ backgroundImage: `url(/assets/img/bg-collab-card.png)` }}
+                >
+                  <span className="text-sm">Cộng tác viên</span>
+                  <span className="font-semibold text-lg">{customer.name}</span>
+                  <span className="pt-6 text-sm">Hoa hồng nhận được</span>
+                  <span className="text-lg font-bold">
+                    {NumberPipe(colabrator?.commissionSummary.commission || 0, true)}
+                  </span>
+                </div>
+              </div>
+              <Share link={colabrator?.collaborator.shortUrl} />
+              <MenuCollaborator />
+            </div>
+          ) : (
+            <Spinner />
+          )
+        }
+      </CollaboratorContext.Consumer>
     </CollaboratorProvider>
   );
 }
@@ -132,7 +149,8 @@ function Share({ link, ...props }: { link: string }) {
   );
 }
 function MenuCollaborator() {
-  const { shopCode } = useShopContext();
+  const { shopCode, customer } = useShopContext();
+  const { colabrator } = useCollaboratorContext();
   const [showSelected, setShowSelected] = useState(0);
   const menu = [
     {
@@ -166,6 +184,7 @@ function MenuCollaborator() {
         onClose={() => setShowSelected(0)}
         slideFromBottom="all"
         mobileSizeMode
+        title={`Lịch sử hoa hồng (${colabrator.commissionSummary.order})`}
       />
       <RecommendedDialog
         isOpen={showSelected === 2}

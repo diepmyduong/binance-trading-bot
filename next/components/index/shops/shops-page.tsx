@@ -61,7 +61,7 @@ export function ShopsPage() {
       setOpenAddress(true);
     }
   }, [useAddress]);
-  if (!shops) return <Spinner />;
+  if (!shops || useAddress === undefined) return <Spinner />;
   return (
     <div className="flex flex-col min-h-screen relative bg-gray-800">
       <div className="w-full bg-gray-100 relative min-h-screen max-w-lg mx-auto">

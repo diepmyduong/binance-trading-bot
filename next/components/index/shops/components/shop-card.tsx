@@ -11,7 +11,7 @@ interface PropsType extends ReactProps {
 }
 export function ShopCard({ shop, ...props }: PropsType) {
   return (
-    <Link href="/3MSHOP">
+    <Link href={`/${shop.shopCode}`}>
       <a href="">
         <div className="bg-white rounded-sm overflow-hidden flex">
           <Img src={shop.coverImage} className="w-40" />
@@ -21,13 +21,13 @@ export function ShopCard({ shop, ...props }: PropsType) {
             <span className="sm:text-sm text-xs mt-2">
               Cách bạn <span className="font-bold">{shop.distance}km</span>
             </span>
-            {/* <Button
+            <Button
               text="20 chi nhánh"
-              className="text-sm px-0 justify-start"
+              className="text-sm px-0 justify-start mb-0 mt-auto"
               textPrimary
               icon={<AiOutlineRight />}
               iconPosition="end"
-            /> */}
+            />
           </div>
         </div>
       </a>

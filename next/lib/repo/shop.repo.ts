@@ -35,6 +35,7 @@ export interface PublicShop extends BaseModel {
   distance: string;
   rating: string;
   ratingQty: string;
+  shopCode: string;
 }
 export class ShopRepository extends CrudRepository<Shop> {
   apiName: string = "Shop";
@@ -182,7 +183,9 @@ export class ShopRepository extends CrudRepository<Shop> {
           fullAddress
           distance
           rating
-          ratingQty }
+          ratingQty
+          shopCode
+         }
         }`,
       })
       .then((res) => res.data["getAllShop"] as PublicShop[]);

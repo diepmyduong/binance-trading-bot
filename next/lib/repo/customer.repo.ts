@@ -39,6 +39,10 @@ export interface Customer extends BaseModel {
     completed: number;
     canceled: number;
   };
+  commissionSummary: {
+    commission: number;
+    order: number;
+  };
 }
 interface CustomerPageAccount {
   psid: string;
@@ -140,6 +144,10 @@ export class CustomerRepository extends CrudRepository<Customer> {
       completed: Int
       canceled: Int
     }: CustomerOrderStats
+    commissionSummary{
+      commission: Float
+      order: Int
+    }:CustomerCommissionSummary
   `);
   async loginCustomerByPhone(phone, otp?): Promise<{ customer: Customer; token: string }> {
     return await this.apollo
@@ -149,7 +157,7 @@ export class CustomerRepository extends CrudRepository<Customer> {
         }) {
           token
           customer{
-            ${CustomerService.fullFragment}
+            ${CustomerService.shortFragment}
           }
         }}`,
       })

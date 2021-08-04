@@ -9,12 +9,18 @@ import {
   InvitedCustomer,
 } from "../../../../lib/repo/collaborator.repo";
 import { CommissionLog, CommissionLogService } from "../../../../lib/repo/commission.repo";
+import { Customer, CustomerService } from "../../../../lib/repo/customer.repo";
 export const CollaboratorContext = createContext<
-  Partial<{ commissions: CommissionLog[]; customersInvited: InvitedCustomer[] }>
+  Partial<{
+    colabrator: Customer;
+    commissions: CommissionLog[];
+    customersInvited: InvitedCustomer[];
+  }>
 >({});
 
 export function CollaboratorProvider(props) {
-  const { customer } = useShopContext();
+  const { customer, setCustomer } = useShopContext();
+  const [colabrator, setColabrator] = useState<Customer>(null);
   let [commissions, setCommissions] = useState<CommissionLog[]>();
   let [customersInvited, setCustomersInvited] = useState<InvitedCustomer[]>();
   async function getCommissions() {
@@ -30,11 +36,17 @@ export function CollaboratorProvider(props) {
     }
   }
   useEffect(() => {
+    CustomerService.getCustomer()
+      .then((res) => {
+        console.log(res);
+        setColabrator(res);
+      })
+      .catch((err) => console.log(err));
     getCommissions();
     getAllCustomerInvited();
   }, []);
   return (
-    <CollaboratorContext.Provider value={{ commissions, customersInvited }}>
+    <CollaboratorContext.Provider value={{ commissions, customersInvited, colabrator }}>
       {props.children}
     </CollaboratorContext.Provider>
   );

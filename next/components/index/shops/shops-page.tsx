@@ -10,6 +10,7 @@ import { useToast } from "../../../lib/providers/toast-provider";
 import { Spinner } from "../../shared/utilities/spinner";
 import cloneDeep from "lodash/cloneDeep";
 import { Button } from "../../shared/utilities/form/button";
+import { orderBy } from "lodash";
 
 export function ShopsPage() {
   const [openAddress, setOpenAddress] = useState(false);
@@ -19,7 +20,7 @@ export function ShopsPage() {
     lg: number;
     lat: number;
   }>();
-  const [shops, setShops] = useState<PublicShop[]>();
+  let [shops, setShops] = useState<PublicShop[]>();
   const toast = useToast();
   useEffect(() => {
     if (navigator.geolocation) {
@@ -57,7 +58,9 @@ export function ShopsPage() {
       ShopService.getAllShop(useAddress.lat, useAddress.lg)
         .then((res) => {
           console.log(res);
-          setShops(cloneDeep(res));
+          let shopsData = res;
+          shops = orderBy(shopsData, (o) => o.distance);
+          setShops(shops);
         })
         .catch((err) => toast.error("Lỗi" + err));
     }

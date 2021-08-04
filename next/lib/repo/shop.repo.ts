@@ -27,6 +27,15 @@ export interface Shop extends BaseModel {
   deliveryDistricts: string[];
   config: ShopConfig;
 }
+export interface PublicShop extends BaseModel {
+  id: string;
+  coverImage: string;
+  name: string;
+  fullAddress: string;
+  distance: string;
+  rating: string;
+  ratingQty: string;
+}
 export class ShopRepository extends CrudRepository<Shop> {
   apiName: string = "Shop";
   displayName: string = "shop";
@@ -162,6 +171,21 @@ export class ShopRepository extends CrudRepository<Shop> {
         SetAnonymousToken(token, shopCode);
         return token;
       });
+  }
+  async getAllShop(lat: number, lng: number) {
+    return await this.apollo
+      .query({
+        query: this.gql`query {  getAllShop(lat: ${lat} lng: ${lng}) {
+          id
+          coverImage
+          name
+          fullAddress
+          distance
+          rating
+          ratingQty }
+        }`,
+      })
+      .then((res) => res.data["getAllShop"] as PublicShop[]);
   }
 }
 export const ShopService = new ShopRepository();

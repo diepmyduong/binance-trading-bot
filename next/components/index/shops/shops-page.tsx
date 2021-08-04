@@ -5,10 +5,16 @@ import { Input } from "../../shared/utilities/form/input";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { AddressGongDialog } from "../customer/components/address-gong-dialog";
 import { GoongGeocoderService } from "../../../lib/helpers/goong";
+import { PublicShop, ShopService } from "../../../lib/repo/shop.repo";
+import { useToast } from "../../../lib/providers/toast-provider";
+import { Spinner } from "../../shared/utilities/spinner";
+import cloneDeep from "lodash/cloneDeep";
 
 export function ShopsPage() {
   const [openAddress, setOpenAddress] = useState(false);
   let [useAddress, setUseAddress] = useState<{ fullAddress: string; lg: number; lat: number }>();
+  const [shops, setShops] = useState<PublicShop[]>();
+  const toast = useToast();
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -18,12 +24,16 @@ export function ShopsPage() {
             position.coords.latitude,
             position.coords.longitude
           ).then((res) => {
+            console.log(res);
+
             if (res && res.length > 0) {
               let newUserAddress = {
                 fullAddress: res[0].formatted_address,
                 lat: res[0].geometry.location.lat,
                 lg: res[0].geometry.location.lng,
               };
+              console.log(newUserAddress);
+
               setUseAddress(newUserAddress);
             } else {
               setUseAddress(null);
@@ -37,6 +47,19 @@ export function ShopsPage() {
       );
     }
   }, []);
+  useEffect(() => {
+    console.log(useAddress);
+
+    if (useAddress) {
+      ShopService.getAllShop(useAddress.lat, useAddress.lg)
+        .then((res) => {
+          console.log(res);
+          setShops(cloneDeep(res));
+        })
+        .catch((err) => toast.error("Lỗi" + err));
+    }
+  }, [useAddress]);
+  if (!shops) return <Spinner />;
   return (
     <div className="flex flex-col min-h-screen relative bg-gray-800">
       <div className="w-full bg-gray-100 relative min-h-screen max-w-lg mx-auto">
@@ -58,7 +81,7 @@ export function ShopsPage() {
         </div>
         <div className="flex flex-col gap-2 p-4">
           {shops.map((item, index) => (
-            <ShopCard key={index} />
+            <ShopCard key={index} shop={item} />
           ))}
         </div>
       </div>
@@ -82,16 +105,3 @@ export function ShopsPage() {
     </div>
   );
 }
-const shops = [
-  "123123",
-  "123123",
-  "123123",
-  "123123",
-  "123123",
-  "123123",
-  "123123",
-  "123123",
-  "123123",
-  "123123",
-  "123123",
-];

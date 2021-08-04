@@ -56,11 +56,15 @@ const MoreInfomation = (props) => {
           />
         </div>
         <div className="flex justify-between items-center px-4 ">
-          <Rating
-            numRated={shop.config.ratingQty}
-            rating={shop.config.rating}
-            soldQty={shop.config.soldQty}
-          />
+          {shop.config.rating > 0 ? (
+            <Rating
+              numRated={shop.config.ratingQty}
+              rating={shop.config.rating}
+              soldQty={shop.config.soldQty}
+            />
+          ) : (
+            <div></div>
+          )}
           <Button
             textPrimary
             text="Xem bình luận"

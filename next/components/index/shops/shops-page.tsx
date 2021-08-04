@@ -9,6 +9,7 @@ import { PublicShop, ShopService } from "../../../lib/repo/shop.repo";
 import { useToast } from "../../../lib/providers/toast-provider";
 import { Spinner } from "../../shared/utilities/spinner";
 import cloneDeep from "lodash/cloneDeep";
+import { Button } from "../../shared/utilities/form/button";
 
 export function ShopsPage() {
   const [openAddress, setOpenAddress] = useState(false);
@@ -59,9 +60,10 @@ export function ShopsPage() {
     }
     if (useAddress === null) {
       setOpenAddress(true);
+      setShops([]);
     }
   }, [useAddress]);
-  if (!shops || useAddress === undefined) return <Spinner />;
+  if (useAddress === undefined || shops === undefined) return <Spinner />;
   return (
     <div className="flex flex-col min-h-screen relative bg-gray-800">
       <div className="w-full bg-gray-100 relative min-h-screen max-w-lg mx-auto">
@@ -81,11 +83,17 @@ export function ShopsPage() {
             />
           </div>
         </div>
-        <div className="flex flex-col gap-2 p-4">
-          {shops.map((item, index) => (
-            <ShopCard key={index} shop={item} />
-          ))}
-        </div>
+        {shops.length > 0 ? (
+          <div className="flex flex-col gap-2 p-4">
+            {shops.map((item, index) => (
+              <ShopCard key={index} shop={item} />
+            ))}
+          </div>
+        ) : (
+          <div>
+            Không tìm thấy cửa hàng gần ban <Button text="Chọn địa chỉ" primary />
+          </div>
+        )}
       </div>
       {useAddress !== undefined && (
         <AddressGongDialog
@@ -93,7 +101,7 @@ export function ShopsPage() {
           title="Nhập địa chỉ"
           mobileSizeMode
           isOpen={openAddress}
-          fullAddress={useAddress?.fullAddress || ""}
+          fullAddress={useAddress?.fullAddress}
           onClose={() => setOpenAddress(false)}
           onChange={(data) =>
             setUseAddress({

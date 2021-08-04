@@ -14,6 +14,11 @@ import { Button } from "../../shared/utilities/form/button";
 export function ShopsPage() {
   const [openAddress, setOpenAddress] = useState(false);
   let [useAddress, setUseAddress] = useState<{ fullAddress: string; lg: number; lat: number }>();
+  const [cusomterLoca, setCusomterLoca] = useState<{
+    fullAddress: string;
+    lg: number;
+    lat: number;
+  }>();
   const [shops, setShops] = useState<PublicShop[]>();
   const toast = useToast();
   useEffect(() => {
@@ -102,13 +107,15 @@ export function ShopsPage() {
           isOpen={openAddress}
           fullAddress={useAddress?.fullAddress}
           onClose={() => setOpenAddress(false)}
-          onChange={(data) =>
-            setUseAddress({
-              fullAddress: data.fullAddress,
-              lat: data.lat,
-              lg: data.lg,
-            })
-          }
+          onChange={(data) => {
+            if (data.fullAddress) {
+              setUseAddress({
+                fullAddress: data.fullAddress,
+                lat: data.lat,
+                lg: data.lg,
+              });
+            }
+          }}
         />
       )}
     </div>

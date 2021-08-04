@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { Spinner } from "../../components/shared/utilities/spinner";
 import { SetCustomerToken } from "../../lib/graphql/auth.link";
@@ -11,29 +11,37 @@ import { DefaulLayoutProvider } from "./provider/default-layout-provider";
 
 export function DefaultLayout({ ...props }) {
   const router = useRouter();
-  const shopCode = router.query.code as string;
-  if (typeof sessionStorage != "undefined") {
-    sessionStorage.setItem("shopCode", shopCode);
-    localStorage.setItem("shopCode", shopCode);
-    if (router.query["x-token"]) {
-      SetCustomerToken(router.query["x-token"] as string, shopCode);
+  const [shopCode, setShopCode] = useState<string>();
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    let code = router.query.code as string;
+    console.log(code);
+    if (code) {
+      setLoading(true);
+      setShopCode(code);
+      sessionStorage.setItem("shopCode", code);
+      localStorage.setItem("shopCode", code);
+      if (router.query["x-token"]) {
+        SetCustomerToken(router.query["x-token"] as string, code);
+      }
+      if (router.query["colCode"]) {
+        sessionStorage.setItem(code + "colCode", router.query["colCode"] as string);
+      }
+      setLoading(false);
     }
-    if (router.query["colCode"]) {
-      sessionStorage.setItem(shopCode + "colCode", router.query["colCode"] as string);
-    }
-  }
-
+    return () => setShopCode("");
+  }, [router.query.code]);
   if (!shopCode) return <Spinner />;
   return (
     <DefaulLayoutProvider>
-      <ShopProvider>
-        <NavBar>{props.children}</NavBar>
+      <ShopProvider code={shopCode}>
+        <NavBar loading={loading}>{props.children}</NavBar>
       </ShopProvider>
     </DefaulLayoutProvider>
   );
 }
 
-function NavBar(props) {
+function NavBar({ loading, ...props }) {
   const router = useRouter();
   const { shop, shopCode, customer } = useShopContext();
   if (!shop) return <></>;

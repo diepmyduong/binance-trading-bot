@@ -19,7 +19,7 @@ export function HomeProvider(props) {
     CategoryService.fullFragment
   );
   useEffect(() => {
-    ShopVoucherService.getAll({ query: { limit: 1 } }).then((res) =>
+    ShopVoucherService.getAll({ query: { limit: 1 }, cache: false }).then((res) =>
       setVoucherShow(cloneDeep(res.data[0]))
     );
   }, []);

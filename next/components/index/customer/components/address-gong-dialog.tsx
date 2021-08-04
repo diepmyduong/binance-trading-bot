@@ -51,7 +51,7 @@ export const AddressGongDialog = ({ onChange, fullAddress = "", ...props }: Prop
   }, [placeDetail]);
   return (
     <Dialog {...props}>
-      <div className="relative v-scrollbar" style={{ height: "calc(100vh - 100px" }}>
+      <div className="relative v-scrollbar" style={{ height: "calc(96vh - 150px" }}>
         <div className="p-4 bg-gray-100 sticky top-0">
           <Input
             autoFocus

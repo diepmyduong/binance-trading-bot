@@ -14,7 +14,7 @@ export function ShopCard({ shop, ...props }: PropsType) {
     <Link href={`/${shop.shopCode}`}>
       <a href="">
         <div className="bg-white rounded-sm overflow-hidden flex">
-          <Img src={shop.coverImage} className="w-40" />
+          <Img src={shop.coverImage} className="w-28 sm:w-40" />
           <div className="flex flex-col p-2 leading-7 flex-1">
             <span className="font-semibold text-ellipsis-2">{shop.name}</span>
             {/* <TagsDiscount /> */}

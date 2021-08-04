@@ -93,6 +93,8 @@ export function ShopProvider(props) {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          console.log(position);
+
           setLocationCustomer(position.coords);
         },
         (err) => {

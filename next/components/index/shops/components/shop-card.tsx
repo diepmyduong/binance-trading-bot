@@ -22,7 +22,7 @@ export function ShopCard({ shop, ...props }: PropsType) {
               Cách bạn <span className="font-bold">{shop.distance}km</span>
             </span>
             <Button
-              text="20 chi nhánh"
+              text={`${shop.branchs.length || 0} chi nhánh`}
               className="text-sm px-0 justify-start mb-0 mt-auto"
               textPrimary
               icon={<AiOutlineRight />}

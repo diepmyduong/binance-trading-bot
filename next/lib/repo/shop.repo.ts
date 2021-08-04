@@ -36,6 +36,9 @@ export interface PublicShop extends BaseModel {
   rating: string;
   ratingQty: string;
   shopCode: string;
+  branchs: {
+    name: string;
+  }[];
 }
 export class ShopRepository extends CrudRepository<Shop> {
   apiName: string = "Shop";
@@ -186,6 +189,9 @@ export class ShopRepository extends CrudRepository<Shop> {
           rating
           ratingQty
           shopCode
+          branchs{
+            name
+          }
          }
         }`,
       })

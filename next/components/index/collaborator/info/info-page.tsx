@@ -64,14 +64,13 @@ export function InfoPage() {
 }
 function Share({ link, ...props }: { link: string }) {
   const toast = useToast();
-  const coppyToClip = () => {
+  const coppyToClip = (value: string) => {
     let listener = (e: ClipboardEvent) => {
-      e.clipboardData.setData("text/plain", link);
+      e.clipboardData.setData("text/plain", value);
       e.preventDefault();
     };
     document.addEventListener("copy", listener);
     document.execCommand("copy");
-    toast.success("Đã sao chép");
     document.removeEventListener("copy", listener);
   };
   const [showQRcode, setShowQRcode] = useState(false);
@@ -108,7 +107,7 @@ function Share({ link, ...props }: { link: string }) {
             className="flex-1"
             iconClassName="text-28"
             tooltip="Sao chép"
-            onClick={() => coppyToClip()}
+            onClick={() => coppyToClip(link)}
           />
           <Button
             href={{ pathname: "https://www.facebook.com/sharer/sharer.php", query: { u: link } }}
@@ -130,6 +129,9 @@ function Share({ link, ...props }: { link: string }) {
           />
           <Button
             href={{ pathname: "viber://forward", query: { text: link } }}
+            // href={`https://3p3x.adj.st/?adjust_t=u783g1_kw9yml&adjust_fallback=https%3A%2F%2Fwww.viber.com%2F%3Futm_source%3DPartner%26utm_medium%3DSharebutton%26utm_campaign%3DDefualt&adjust_campaign=Sharebutton&adjust_deeplink=${encodeURIComponent(
+            //   "viber://forward?text="
+            // )}${encodeURIComponent(link + " " + window.location.href)}`}
             className="flex-1 text-white hover:text-white"
             icon={<IconViber />}
             iconPosition="end"

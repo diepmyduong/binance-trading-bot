@@ -121,6 +121,26 @@ class GoongGeocoder {
         })
         .catch((err) => null);
   }
+  async getPlaceDetailByLatLg(lat: any, lg: any): Promise<GoongPlaceDetail[]> {
+    const uri = `${this.hostName}/Geocode`;
+    const params = {
+      api_key: this.apiKey,
+      latlng: `${lat},${lg}`,
+    };
+    const hashedString = JSON.stringify({ uri, params });
+    if (this.hashedData[hashedString]) return this.hashedData[hashedString];
+    else
+      return axios
+        .get(uri, {
+          params,
+        })
+        .then((res) => {
+          this.hashedData[hashedString] = res.data.results;
+          console.log(res.data);
+          return res.data.results;
+        })
+        .catch((err) => null);
+  }
 }
 
 export const GoongGeocoderService = new GoongGeocoder();

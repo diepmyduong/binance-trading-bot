@@ -47,6 +47,7 @@ export function ShopProvider(props) {
   let [shopBranchs, setShopBranch] = useState<ShopBranch[]>([]);
   const [locationCustomer, setLocationCustomer] = useState<any>();
   async function getShop() {
+    await ShopService.clearStore();
     setLoading(true);
     shopCode = sessionStorage.getItem("shopCode");
     if (!shopCode) router.push("404");
@@ -112,6 +113,7 @@ export function ShopProvider(props) {
       fragment: `${ShopBranchService.fullFragment} ${
         coords ? `distance(lat:${coords.latitude}, lng:${coords.longitude})` : ""
       } `,
+      cache: false,
     }).then((res) => {
       let branchs = res.data;
       shopBranchs = orderBy(branchs, (o) => o.distance);
@@ -175,8 +177,12 @@ export function ShopProvider(props) {
     }
   }
   useEffect(() => {
+    if (!props.code) return;
     getShop();
-  }, []);
+    return () => {
+      setShop(null);
+    };
+  }, [props.code]);
   useEffect(() => {
     if (!shop) return;
     loadCustomer();

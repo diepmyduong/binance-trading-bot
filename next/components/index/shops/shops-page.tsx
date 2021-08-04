@@ -26,7 +26,6 @@ export function ShopsPage() {
             position.coords.longitude
           ).then((res) => {
             console.log(res);
-
             if (res && res.length > 0) {
               let newUserAddress = {
                 fullAddress: res[0].formatted_address,
@@ -34,7 +33,6 @@ export function ShopsPage() {
                 lg: res[0].geometry.location.lng,
               };
               console.log(newUserAddress);
-
               setUseAddress(newUserAddress);
             } else {
               setUseAddress(null);
@@ -50,7 +48,7 @@ export function ShopsPage() {
   }, []);
   useEffect(() => {
     console.log(useAddress);
-    if (useAddress) {
+    if (useAddress && useAddress.fullAddress) {
       ShopService.getAllShop(useAddress.lat, useAddress.lg)
         .then((res) => {
           console.log(res);
@@ -90,8 +88,9 @@ export function ShopsPage() {
             ))}
           </div>
         ) : (
-          <div>
-            Không tìm thấy cửa hàng gần ban <Button text="Chọn địa chỉ" primary />
+          <div className="items-center flex flex-col mt-10">
+            <span>Không tìm thấy cửa hàng gần bạn</span>
+            <Button text="Chọn địa chỉ" primary onClick={() => setOpenAddress(true)} />
           </div>
         )}
       </div>

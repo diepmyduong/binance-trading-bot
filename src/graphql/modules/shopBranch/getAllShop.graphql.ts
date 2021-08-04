@@ -17,6 +17,7 @@ export default {
       distance: Float
       rating: Float
       ratingQty: Float
+      shopCode: String
     }
   `,
   resolver: {
@@ -57,6 +58,7 @@ export default {
               distance: 1,
               shopCover: "$member.shopCover",
               shopLogo: "$member.shopLogo",
+              shopCode: "$member.code",
             },
           },
         ]);

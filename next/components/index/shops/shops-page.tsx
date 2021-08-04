@@ -49,7 +49,6 @@ export function ShopsPage() {
   }, []);
   useEffect(() => {
     console.log(useAddress);
-
     if (useAddress) {
       ShopService.getAllShop(useAddress.lat, useAddress.lg)
         .then((res) => {
@@ -57,6 +56,9 @@ export function ShopsPage() {
           setShops(cloneDeep(res));
         })
         .catch((err) => toast.error("Lỗi" + err));
+    }
+    if (useAddress === null) {
+      setOpenAddress(true);
     }
   }, [useAddress]);
   if (!shops) return <Spinner />;

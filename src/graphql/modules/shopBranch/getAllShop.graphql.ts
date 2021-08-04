@@ -18,6 +18,13 @@ export default {
       rating: Float
       ratingQty: Float
       shopCode: String
+      branchs: [PublicShopBranch]
+    }
+    type PublicShopBranch {
+      id: ID
+      name: String
+      fullAddress: String
+      distance: Float
     }
   `,
   resolver: {
@@ -45,6 +52,16 @@ export default {
                 },
               },
               distance: { $first: "$distance" },
+              branchs: {
+                $push: {
+                  id: "$_id",
+                  name: "$name",
+                  fullAddress: {
+                    $concat: ["$address", ", ", "$ward", ", ", "$district", ", ", "$province"],
+                  },
+                  distance: "$distance",
+                },
+              },
             },
           },
           { $lookup: { from: "members", localField: "_id", foreignField: "_id", as: "member" } },
@@ -59,6 +76,7 @@ export default {
               shopCover: "$member.shopCover",
               shopLogo: "$member.shopLogo",
               shopCode: "$member.code",
+              branchs: 1,
             },
           },
         ]);
@@ -82,6 +100,11 @@ export default {
           id: root.id.toString(),
         });
         return shopConfig.ratingQty;
+      },
+    },
+    PublicShopBranch: {
+      distance: async (root: any, args: any, context: Context) => {
+        return parseFloat((root.distance / 1000).toFixed(1));
       },
     },
   },

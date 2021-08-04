@@ -1,5 +1,4 @@
 import { gql } from "apollo-server-express";
-import { AgencyType } from "../luckyWheel/luckyWheel.model";
 import { GiftType } from "../luckyWheelGift/luckyWheelGift.model";
 import { SpinStatus } from "./luckyWheelResult.model";
 
@@ -33,8 +32,6 @@ const schema = gql`
     payPoint: Float
     "mã nhân viên"
     memberId: String
-    "Loại đại lý ${Object.values(AgencyType)}"
-    agencyType: String
     "Loại quà ${Object.values(GiftType)}"
     giftType:String
     "Tình trạng ${Object.values(SpinStatus)}"

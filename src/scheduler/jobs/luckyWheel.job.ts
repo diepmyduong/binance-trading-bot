@@ -3,12 +3,18 @@ import moment from "moment-timezone";
 
 import { onGivenGifts } from "../../events/onGivenGifts.event";
 import { CustomerModel } from "../../graphql/modules/customer/customer.model";
-import { CustomerPointLogType } from "../../graphql/modules/customerPointLog/customerPointLog.model";
-import { customerPointLogService } from "../../graphql/modules/customerPointLog/customerPointLog.service";
 import { EVoucherItemModel } from "../../graphql/modules/eVoucherItem/eVoucherItem.model";
-import { LuckyWheelModel, WheelStatus } from "../../graphql/modules/luckyWheel/luckyWheel.model";
-import { GiftType, ILuckyWheelGift, LuckyWheelGiftModel } from "../../graphql/modules/luckyWheelGift/luckyWheelGift.model";
-import { ILuckyWheelResult, LuckyWheelResultModel, SpinStatus } from "../../graphql/modules/luckyWheelResult/luckyWheelResult.model";
+import { LuckyWheelModel } from "../../graphql/modules/luckyWheel/luckyWheel.model";
+import {
+  GiftType,
+  ILuckyWheelGift,
+  LuckyWheelGiftModel,
+} from "../../graphql/modules/luckyWheelGift/luckyWheelGift.model";
+import {
+  ILuckyWheelResult,
+  LuckyWheelResultModel,
+  SpinStatus,
+} from "../../graphql/modules/luckyWheelResult/luckyWheelResult.model";
 import { Agenda } from "../agenda";
 
 function checkRatioWin(ratioRand: any, limit: any) {
@@ -21,7 +27,6 @@ function checkRatioWin(ratioRand: any, limit: any) {
 }
 
 async function doWin(randomGift: ILuckyWheelGift, result: ILuckyWheelResult, gifts: any) {
-
   let evoucherItem = null;
   if (randomGift.type === GiftType.CUMMULATIVE_POINT) {
     result.giftId = randomGift.id;
@@ -30,24 +35,23 @@ async function doWin(randomGift: ILuckyWheelGift, result: ILuckyWheelResult, gif
     result.giftType = randomGift.type;
     result.status = SpinStatus.WIN;
     randomGift.usedQty = randomGift.usedQty + 1;
-  }
-
-  else if (randomGift.type === GiftType.PRESENT) {
+  } else if (randomGift.type === GiftType.PRESENT) {
     result.giftId = randomGift.id;
     result.giftName = randomGift.name;
     result.giftType = randomGift.type;
     result.status = SpinStatus.WIN;
     randomGift.usedQty = randomGift.usedQty + 1;
-  }
-
-  else if (randomGift.type === GiftType.EVOUCHER) {
+  } else if (randomGift.type === GiftType.EVOUCHER) {
     result.giftId = randomGift.id;
     result.giftName = randomGift.name;
     result.giftType = randomGift.type;
     result.status = SpinStatus.WIN;
     randomGift.usedQty = randomGift.usedQty + 1;
 
-    evoucherItem = await EVoucherItemModel.findOne({ eVoucherId: randomGift.eVoucherId, activated: false });
+    evoucherItem = await EVoucherItemModel.findOne({
+      eVoucherId: randomGift.eVoucherId,
+      activated: false,
+    });
     if (!evoucherItem) {
       // console.log('evoucher not found LOSE = ', evoucherItem);
       await doLose(gifts, result);
@@ -61,14 +65,19 @@ async function doWin(randomGift: ILuckyWheelGift, result: ILuckyWheelResult, gif
   await Promise.all([
     LuckyWheelResultModel.findByIdAndUpdate(result.id, { $set: result }, { new: true }),
     LuckyWheelGiftModel.findByIdAndUpdate(randomGift.id, { $inc: { usedQty: 1 } }, { new: true }),
-    evoucherItem && EVoucherItemModel.findByIdAndUpdate(evoucherItem.id, { $set: { activated: true } }, { new: true }),
+    evoucherItem &&
+      EVoucherItemModel.findByIdAndUpdate(
+        evoucherItem.id,
+        { $set: { activated: true } },
+        { new: true }
+      ),
   ]).then(([savedResult]) => {
     onGivenGifts.next(savedResult);
   });
 }
 
 async function doLose(gifts: ILuckyWheelGift[], result: ILuckyWheelResult) {
-  const loseGift = gifts.find(g => g.type === GiftType.NOTHING);
+  const loseGift = gifts.find((g) => g.type === GiftType.NOTHING);
   result.giftId = loseGift.id;
   result.giftName = loseGift.name;
   result.status = SpinStatus.LOSE;
@@ -159,8 +168,7 @@ async function doBusiness() {
           await doWin(randomGift, result, gifts);
         }
       }
-    }
-    else {
+    } else {
       // console.log('LOSE -- ratio rate');
       await doLose(gifts, result);
     }

@@ -55,6 +55,7 @@ export function ShopsPage() {
   useEffect(() => {
     console.log(useAddress);
     if (useAddress && useAddress.fullAddress) {
+      sessionStorage.setItem("addressSelected", JSON.stringify(useAddress));
       ShopService.getAllShop(useAddress.lat, useAddress.lg)
         .then((res) => {
           console.log(res);

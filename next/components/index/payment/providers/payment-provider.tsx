@@ -141,10 +141,10 @@ export function PaymentProvider(props) {
       ...orderInput,
       buyerName: customer.name || "",
       buyerPhone: customer.phone,
-      buyerFullAddress: customer.fullAddress || "",
+      buyerFullAddress: locationCustomer.fullAddress || customer.fullAddress || "",
       buyerAddressNote: customer.addressNote || "",
-      latitude: customer.latitude || locationCustomer.latitude,
-      longitude: customer.longitude || locationCustomer.longitude,
+      latitude: locationCustomer.lat || customer.latitude,
+      longitude: locationCustomer.lg || customer.longitude,
     };
     setOrderInput(orderInput);
   }, [customer]);

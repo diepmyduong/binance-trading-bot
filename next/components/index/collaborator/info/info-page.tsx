@@ -64,16 +64,52 @@ export function InfoPage() {
 }
 function Share({ link, ...props }: { link: string }) {
   const toast = useToast();
-  const coppyToClip = (value: string) => {
-    let listener = (e: ClipboardEvent) => {
-      e.clipboardData.setData("text/plain", value);
-      e.preventDefault();
-    };
-    document.addEventListener("copy", listener);
+  let [textArea, setTextArea] = useState<any>();
+  function isOS() {
+    return navigator.userAgent.match(/ipad|iphone/i);
+  }
+
+  function createTextArea(text) {
+    textArea = document.createElement("textArea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+  }
+
+  function selectText() {
+    let range, selection;
+    if (isOS()) {
+      range = document.createRange();
+      range.selectNodeContents(textArea);
+      selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      textArea.setSelectionRange(0, 999999);
+    } else {
+      textArea.select();
+    }
+  }
+
+  function copyToClipboard() {
     document.execCommand("copy");
-    toast.success("Đã sao chép");
-    document.removeEventListener("copy", listener);
+    document.body.removeChild(textArea);
+    toast.success("Đã sao chép", { position: "top-center" });
+  }
+
+  const coppyToClip = (value: string) => {
+    createTextArea(value);
+    selectText();
+    copyToClipboard();
   };
+  // const coppyToClip = (value: string) => {
+  //   let listener = (e: ClipboardEvent) => {
+  //     e.clipboardData.setData("text/plain", value);
+  //     e.preventDefault();
+  //   };
+  //   document.addEventListener("copy", listener);
+  //   document.execCommand("copy");
+  //   toast.success("Đã sao chép");
+  //   document.removeEventListener("copy", listener);
+  // };
   const [showQRcode, setShowQRcode] = useState(false);
   const [showShareType, setShowShareType] = useState(false);
   const screenSm = useScreen("sm");

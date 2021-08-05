@@ -15,6 +15,7 @@ import { HiOutlinePhone } from "react-icons/hi";
 import { RatingOrder } from "./components/rating-order";
 import { OrderLog } from "../../../lib/repo/order.repo";
 import { FaCheckCircle, FaDotCircle, FaTimesCircle } from "react-icons/fa";
+import { Img } from "../../shared/utilities/img";
 
 interface ItemStatusOrderProps {
   status?: OrderLog;
@@ -49,7 +50,7 @@ function ItemStatusOrder({ status, text, actived, ...props }: ItemStatusOrderPro
 }
 
 function StatusOrder(props) {
-  const { order } = useOrderDetailContext();
+  const { order, status } = useOrderDetailContext();
   const [pending, setPending] = useState<OrderLog>();
   const [shipping, setShipping] = useState<OrderLog>();
   const [finished, setFinished] = useState<OrderLog>();
@@ -80,10 +81,26 @@ function StatusOrder(props) {
   }, [order.logs]);
   return (
     <div className="flex flex-col">
-      <div className="w-full flex justify-center items-end text-base">
+      <div className="w-full flex justify-center items-end text-base mb-4">
         <div className="text-gray-500">Mã đơn hàng:</div>
         <div className="ml-1 font-bold">{order.code}</div>
       </div>
+      {
+        {
+          PENDING: (
+            <Img src="https://i.imgur.com/FSgtLr3.gif" className="w-1/3 mx-auto rounded-full" />
+          ),
+          CONFIRMED: (
+            <Img src="https://i.imgur.com/z7bwDQx.gif" className="w-1/3 mx-auto rounded-full" />
+          ),
+          DELIVERING: (
+            <Img src="https://i.imgur.com/9d3T4NC.gif" className="w-1/3 mx-auto rounded-full" />
+          ),
+          COMPLETED: (
+            <Img src="https://i.imgur.com/FSgtLr3.gif" className="w-1/3 mx-auto rounded-full" />
+          ),
+        }[status.value]
+      }
       <div className="w-full mx-auto flex items-start justify-center flex-wrap text-base mt-4">
         <ItemStatusOrder
           status={pending}

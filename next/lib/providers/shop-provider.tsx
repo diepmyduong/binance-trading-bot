@@ -36,6 +36,9 @@ export const ShopContext = createContext<
     setCustomer: Function;
     getCustomner: Function;
     customerLoginOTP: (phone: string, otp: string) => any;
+    showGongAddress: boolean;
+    setLocationCustomer: Function;
+    setShowGongAddress: Function;
   }>
 >({});
 export function ShopProvider(props) {
@@ -46,6 +49,7 @@ export function ShopProvider(props) {
   let [shop, setShop] = useState<Shop>();
   let [customer, setCustomer] = useState<Customer>();
   let [shopBranchs, setShopBranch] = useState<ShopBranch[]>([]);
+  const [showGongAddress, setShowGongAddress] = useState(false);
   const [locationCustomer, setLocationCustomer] = useState<{
     fullAddress: string;
     lg: number;
@@ -119,6 +123,9 @@ export function ShopProvider(props) {
                 lat: customer.latitude,
                 lg: customer.longitude,
               });
+            } else {
+              setLocationCustomer(null);
+              setShowGongAddress(true);
             }
           }
         );
@@ -206,7 +213,10 @@ export function ShopProvider(props) {
     loadLocation();
   }, [shop]);
   useEffect(() => {
-    if (!locationCustomer) return;
+    if (locationCustomer === undefined) return;
+    if (locationCustomer === null) loadBrand();
+    if (locationCustomer && locationCustomer.fullAddress)
+      sessionStorage.setItem("addressSelected", JSON.stringify(locationCustomer));
     loadBrand(locationCustomer);
   }, [locationCustomer]);
   useEffect(() => {
@@ -236,6 +246,9 @@ export function ShopProvider(props) {
         loading,
         setCustomer,
         customerLoginOTP,
+        showGongAddress,
+        setLocationCustomer,
+        setShowGongAddress,
       }}
     >
       {props.children}

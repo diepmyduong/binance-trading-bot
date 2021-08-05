@@ -12,6 +12,7 @@ import { ProductDetail } from "../../shared/product-detail/detail";
 import { ProductDetailProvider } from "../../shared/product-detail/provider/product-detail-provider";
 import { HomeProvider, HomeConsumer } from "./providers/homepage-provider";
 import { forceCheck } from "react-lazyload";
+import { AddressGongDialog } from "../customer/components/address-gong-dialog";
 
 function ShopHeader() {
   return (
@@ -43,7 +44,13 @@ function CartButton() {
 }
 
 export function Homepage() {
-  const { shop } = useShopContext();
+  const {
+    shop,
+    showGongAddress,
+    setLocationCustomer,
+    locationCustomer,
+    setShowGongAddress,
+  } = useShopContext();
   const router = useRouter();
   const { product } = router.query;
   console.log("shop home page", shop);
@@ -65,6 +72,23 @@ export function Homepage() {
         />
       </ProductDetailProvider>
       <Footer />
+      <AddressGongDialog
+        slideFromBottom="all"
+        title="Nhập địa chỉ"
+        mobileSizeMode
+        isOpen={showGongAddress}
+        fullAddress={locationCustomer?.fullAddress}
+        onClose={() => setShowGongAddress(false)}
+        onChange={(data) => {
+          if (data.fullAddress) {
+            setLocationCustomer({
+              fullAddress: data.fullAddress,
+              lat: data.lat,
+              lg: data.lg,
+            });
+          }
+        }}
+      />
     </HomeProvider>
   );
 }

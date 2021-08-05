@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineRight } from "react-icons/ai";
 import { HiShoppingCart, HiArrowRight } from "react-icons/hi";
-import { FaPercent } from "react-icons/fa";
+import { FaPercent, FaMapMarkerAlt } from "react-icons/fa";
 
 import { useShopContext } from "../../../../lib/providers/shop-provider";
 import { Rating } from "../../../shared/homepage-layout/rating";
@@ -13,6 +13,8 @@ import { BranchsDialog } from "./branchs-dialog";
 import { CommentsDialog } from "./comments-dialog";
 import { EmotionsEvaluate } from "./emotions-evaluate";
 import { useHomeContext } from "../providers/homepage-provider";
+import { Label } from "../../../shared/utilities/form/label";
+import { Input } from "../../../shared/utilities/form/input";
 
 interface Propstype extends ReactProps {}
 
@@ -86,7 +88,14 @@ interface ShopInfoProps extends ReactProps {}
 
 const ShopBranch = (props: ShopInfoProps) => {
   const [showBranchs, setShowBranchs] = useState(false);
-  const { branchSelecting, setBranchSelecting, shopBranchs, shop } = useShopContext();
+  const {
+    branchSelecting,
+    setBranchSelecting,
+    shopBranchs,
+    shop,
+    setShowGongAddress,
+    locationCustomer,
+  } = useShopContext();
   if (!shopBranchs) return <Spinner />;
   return (
     <div className={`bg-white p-3 pb-0 rounded-md shadow-lg text-center  ${props.className || ""}`}>
@@ -95,6 +104,22 @@ const ShopBranch = (props: ShopInfoProps) => {
         Thời gian làm món khoảng{" "}
         {branchSelecting?.shipPreparationTime || shop.config.shipPreparationTime}
       </p>
+      <div className="sticky top-0 bg-white z-50 py-2">
+        <div
+          className="flex flex-col"
+          onClick={() => {
+            setShowGongAddress(true);
+          }}
+        >
+          <Label text="Giao đến:" />
+          <Input
+            readonly
+            placeholder="Nhập địa chỉ giao đến"
+            prefix={<FaMapMarkerAlt />}
+            value={locationCustomer?.fullAddress}
+          />
+        </div>
+      </div>
       <div className="flex justify-between items-center">
         <p className="whitespace-nowrap">
           {(!branchSelecting && "Chọn chi nhánh") || branchSelecting.name}

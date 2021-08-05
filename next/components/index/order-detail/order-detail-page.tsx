@@ -96,9 +96,6 @@ function StatusOrder(props) {
           DELIVERING: (
             <Img src="https://i.imgur.com/9d3T4NC.gif" className="w-1/3 mx-auto rounded-full" />
           ),
-          COMPLETED: (
-            <Img src="https://i.imgur.com/FSgtLr3.gif" className="w-1/3 mx-auto rounded-full" />
-          ),
         }[status.value]
       }
       <div className="w-full mx-auto flex items-start justify-center flex-wrap text-base mt-4">

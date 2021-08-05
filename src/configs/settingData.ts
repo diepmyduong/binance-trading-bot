@@ -25,6 +25,7 @@ export enum SettingKey {
   SEO_DESCRIPTION = "SEO_DESCRIPTION",
   SEO_IMAGE = "SEO_IMAGE",
   HERE_MAP_KEY = "HERE_MAP_KEY",
+  SCRIPT = "SCRIPT",
 
   // THONG_BAO_CHATBOT
   REGIS_SERVICE_COMMISSION_MSG = "REGIS_SERVICE_COMMISSION_MSG",
@@ -258,6 +259,15 @@ export const SETTING_DATA = [
         value: "x5Skw8UvomphDTa7DCKInmYU0T3qjrs0GfFoLYsrqvA",
         isActive: true,
         isPrivate: false,
+        readOnly: false,
+      },
+      {
+        type: SettingType.richText,
+        name: "Javascript Tuỳ Chỉnh",
+        key: SettingKey.SCRIPT,
+        value: `console.log('My script')`,
+        isActive: true,
+        isPrivate: true,
         readOnly: false,
       },
     ],

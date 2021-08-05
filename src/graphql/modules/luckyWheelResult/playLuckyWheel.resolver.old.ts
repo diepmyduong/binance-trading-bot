@@ -2,7 +2,7 @@ import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
 import { AuthHelper } from "../../../helpers";
 import { Context } from "../../context";
-import { LuckyWheelResultModel, SpinStatus } from "./luckyWheelResult.model";
+import { LuckyWheelResultModel } from "./luckyWheelResult.model";
 import { LuckyWheelModel } from "../luckyWheel/luckyWheel.model";
 import { CustomerModel } from "../customer/customer.model";
 import { LuckyWheelHelper } from "../luckyWheel/luckyWheel.helper";
@@ -51,7 +51,7 @@ const Mutation = {
       customerId: context.id,
       gamePointUsed: luckyWheel.gamePointRequired,
       memberId,
-      status: SpinStatus.PENDING,
+      // status: SpinStatus.PENDING,
       //   agencyType: AgencyType.MOBIFONE,
       luckyWheelId,
       code,

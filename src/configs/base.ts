@@ -42,9 +42,10 @@ export default {
   firebaseView: process.env.FIREBASE_VIEW,
   redis: {
     enable: false,
-    host: process.env.REDIS_HOST || "redis",
+    host: process.env.REDIS_HOST || "127.0.0.1",
     port: Number(process.env.REDIS_PORT || 6379),
     password: process.env.REDIS_PASS,
+    prefix: process.env.REDIS_PREFIX || pjson.name,
   },
   chatbot: {
     host: process.env.CHATBOT_HOST || "https://bot-server.mcom.app",

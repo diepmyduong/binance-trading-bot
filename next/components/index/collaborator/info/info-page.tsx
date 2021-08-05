@@ -71,6 +71,7 @@ function Share({ link, ...props }: { link: string }) {
     };
     document.addEventListener("copy", listener);
     document.execCommand("copy");
+    toast.success("Đã sao chép");
     document.removeEventListener("copy", listener);
   };
   const [showQRcode, setShowQRcode] = useState(false);

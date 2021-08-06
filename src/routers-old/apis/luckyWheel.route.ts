@@ -1,22 +1,16 @@
-import { BaseRoute, Request, Response, NextFunction } from "../../base/baseRoute";
-import { ErrorHelper } from "../../base/error";
+import Excel from "exceljs";
+import { ObjectId } from "mongodb";
+
+import { BaseRoute, Request, Response } from "../../base/baseRoute";
 import { ROLES } from "../../constants/role.const";
 import { Context } from "../../graphql/context";
-import { CampaignModel } from "../../graphql/modules/campaign/campaign.model";
-import {
-  ILuckyWheelResult,
-  LuckyWheelResultModel,
-  SpinStatus,
-} from "../../graphql/modules/luckyWheelResult/luckyWheelResult.model";
-import { MemberModel } from "../../graphql/modules/member/member.model";
-import { ProductModel } from "../../graphql/modules/product/product.model";
-import { auth } from "../../middleware/auth";
-import Excel from "exceljs";
-import { UtilsHelper } from "../../helpers";
-import { LuckyWheelModel } from "../../graphql/modules/luckyWheel/luckyWheel.model";
-import { ObjectId } from "mongodb";
-import { GiftType } from "../../graphql/modules/luckyWheelGift/luckyWheelGift.model";
 import { AddressModel } from "../../graphql/modules/address/address.model";
+import { LuckyWheelModel } from "../../graphql/modules/luckyWheel/luckyWheel.model";
+import { GiftType } from "../../graphql/modules/luckyWheelGift/luckyWheelGift.model";
+import { LuckyWheelResultModel } from "../../graphql/modules/luckyWheelResult/luckyWheelResult.model";
+import { UtilsHelper } from "../../helpers";
+import { auth } from "../../middleware/auth";
+
 class LuckyWheelRoute extends BaseRoute {
   constructor() {
     super();
@@ -50,7 +44,7 @@ class LuckyWheelRoute extends BaseRoute {
       {
         $match: {
           luckyWheelId: new ObjectId(luckyWheelId),
-          status: { $in: [SpinStatus.WIN, SpinStatus.LOSE] },
+          // status: { $in: [SpinStatus.WIN, SpinStatus.LOSE] },
         },
       },
       {
@@ -127,7 +121,7 @@ class LuckyWheelRoute extends BaseRoute {
       result.district = address.district;
       result.province = address.province;
 
-      result.status = result.status === SpinStatus.WIN ? "Thắng" : SpinStatus.LOSE ? "Thua" : "";
+      // result.status = result.status === SpinStatus.WIN ? "Thắng" : SpinStatus.LOSE ? "Thua" : "";
 
       // quà trúng
       result.giftCustomType =

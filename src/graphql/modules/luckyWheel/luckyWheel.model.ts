@@ -27,6 +27,9 @@ export type ILuckyWheel = BaseDocument & {
   useLimit?: number; // Số lượng sử dụng / mỗi khách
   useLimitByDate?: boolean; // Số lượng sử dụng theo ngày
   isPrivate?: boolean; // Vong quay riêng tư
+  issued?: number; // Đã phát hành
+  issuedByDate?: number; // Đã phát hành trong ngày
+  issuedDate?: Date; // Ngày cập nhật
 };
 
 const luckyWheelSchema = new Schema(
@@ -54,6 +57,9 @@ const luckyWheelSchema = new Schema(
     useLimit: { type: Number, default: 0, min: 0 },
     useLimitByDate: { type: Boolean, default: false },
     isPrivate: { type: Boolean, default: false },
+    issued: { type: Number, default: 0 },
+    issuedByDate: { type: Number, default: 0 },
+    issuedDate: { type: Date },
   },
   { timestamps: true }
 );

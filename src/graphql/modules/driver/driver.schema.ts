@@ -35,6 +35,8 @@ const schema = gql`
     avatar: String
     "Biển số xe"
     licensePlates: String
+    "Kích hoạt"
+    isActive: Boolean
   }
 
   type Driver {
@@ -56,6 +58,8 @@ const schema = gql`
     status: String
     "Đơn hàng đang nhận, gần nhất"
     orderIds: [ID]
+    "Kích hoạt"
+    isActive: Boolean
 
     orders: [Order]
   }

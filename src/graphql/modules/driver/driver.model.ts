@@ -18,6 +18,7 @@ export type IDriver = BaseDocument & {
   licensePlates?: string; // Biển số xe
   status?: DriverStatus; // Trạng thái
   orderIds?: string[]; // Đơn hàng đang nhận, gần nhất
+  isActive?: boolean; // Kích hoạt
 };
 
 const driverSchema = new Schema(
@@ -29,6 +30,7 @@ const driverSchema = new Schema(
     licensePlates: { type: String, required: true },
     status: { type: String, enum: Object.values(DriverStatus), default: DriverStatus.ONLINE },
     orderIds: { type: [{ type: Schema.Types.ObjectId, ref: "Order" }], default: [] },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

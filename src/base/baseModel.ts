@@ -7,6 +7,7 @@ import Redis from "redis";
 import RedisDataLoader from "redis-dataloader";
 import { Subject } from "rxjs";
 import { configs } from "../configs";
+import { ttlCache } from "../helpers/ttlCache";
 
 const redisClient = configs.redis.enable
   ? Redis.createClient({
@@ -46,7 +47,7 @@ export function ModelLoader<T>(model: any, modelHook?: ModelHook<T>): DataLoader
   } else {
     loader = new DataLoader<string, T>(
       batchFunction,
-      { cacheMap: new LRUMap({ maxSize: 100, maxAge: 10000 }) } // Giới hạn chỉ cache 100 item sử dụng nhiêu nhất.
+      { cacheMap: ttlCache({ ttl: 10000, maxSize: 100 }) } // Giới hạn chỉ cache 100 item sử dụng nhiêu nhất.
     );
   }
   if (modelHook) {

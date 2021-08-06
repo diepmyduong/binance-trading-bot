@@ -63,6 +63,7 @@ export function TooltipProvider({ theme = "dark", children }: any) {
             content: tooltip,
             placement,
             animation: "shift-away-subtle",
+            appendTo: "parent",
           });
         }
       });

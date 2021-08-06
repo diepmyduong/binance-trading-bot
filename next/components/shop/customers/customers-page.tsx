@@ -3,16 +3,19 @@ import { RiBillLine, RiHome3Line, RiPhoneLine, RiTicketLine, RiUserLine } from "
 import { saveFile } from "../../../lib/helpers/save-file";
 import { NumberPipe } from "../../../lib/pipes/number";
 import { useToast } from "../../../lib/providers/toast-provider";
+import { CustomerGroup } from "../../../lib/repo/customer-group.repo";
 import { Customer, CustomerService } from "../../../lib/repo/customer.repo";
 import { Staff } from "../../../lib/repo/staff.repo";
 import { OrdersDialog } from "../../shared/shop-layout/orders-dialog";
 import { ShopPageTitle } from "../../shared/shop-layout/shop-page-title";
 import { DataTable } from "../../shared/utilities/table/data-table";
+import { CustomerGroups } from "./components/customer-groups";
 import { VouchersDialog } from "./components/vouchers-dialog";
 
 export function CustomersPage(props: ReactProps) {
   const [openCustomerOrder, setOpenCustomerOrder] = useState<string>("");
   const [openCustomerVouchers, setOpenCustomerVouchers] = useState<string>("");
+  const [selectedCustomerGroup, setSelectedCustomerGroup] = useState<CustomerGroup>();
   const toast = useToast();
 
   const exportCustomerDialog = async () => {
@@ -28,7 +31,12 @@ export function CustomersPage(props: ReactProps) {
 
   return (
     <>
-      <DataTable<Customer> crudService={CustomerService} order={{ createdAt: -1 }}>
+      <DataTable<Customer>
+        crudService={CustomerService}
+        order={{ createdAt: -1 }}
+        extraParams={selectedCustomerGroup ? { groupId: selectedCustomerGroup.id } : null}
+        apiName={selectedCustomerGroup ? "fetchCustomerGroup" : ""}
+      >
         <DataTable.Header>
           <ShopPageTitle title="Khách hàng" subtitle="Khách hàng hệ thống" />
           <DataTable.Buttons>
@@ -50,121 +58,145 @@ export function CustomersPage(props: ReactProps) {
 
         <DataTable.Divider />
 
-        <DataTable.Toolbar>
-          <DataTable.Search className="h-12" />
-          <DataTable.Filter></DataTable.Filter>
-        </DataTable.Toolbar>
-
-        <DataTable.Table className="mt-4 bg-white">
-          <DataTable.Column
-            label="Khách hàng"
-            render={(item: Customer) => (
-              <DataTable.CellText
-                value={
-                  <div className="flex font-semibold">
-                    <i className="text-lg mt-1 mr-1">
-                      <RiPhoneLine />
-                    </i>
-                    {item.phone}
-                  </div>
-                }
-                subTextClassName="flex text-sm mt-1"
-                subText={
-                  <>
-                    <i className="mt-0.5 mr-2">
-                      <RiUserLine />
-                    </i>
-                    {item.name || "Khách vãng lai"}
-                  </>
-                }
-              />
-            )}
-          />
-          <DataTable.Column
-            label="Đơn hàng"
-            render={(item: Customer) => (
-              <DataTable.CellText
-                value={
-                  <>
-                    <div className="flex whitespace-nowrap">
-                      <span className="w-28">Thành công:</span>
-                      <span className="text-success font-semibold">
-                        {NumberPipe(item.orderStats?.completed)} đơn
-                      </span>
-                    </div>
-                    <div className="flex whitespace-nowrap">
-                      <span className="w-28">Đã huỷ:</span>
-                      <span className="text-danger font-semibold">
-                        {NumberPipe(item.orderStats?.canceled)} đơn
-                      </span>
-                    </div>
-                    <div className="flex whitespace-nowrap">
-                      <span className="w-28">Tổng cộng:</span>
-                      <span className="font-bold">{NumberPipe(item.orderStats?.total)} đơn</span>
-                    </div>
-                  </>
-                }
-              />
-            )}
-          />
-          <DataTable.Column
-            label="Giảm giá"
-            render={(item: Customer) => (
-              <DataTable.CellText
-                value={
-                  <>
-                    <div className="flex">
-                      <i className="text-lg mt-1 mr-1">
-                        <RiTicketLine />
-                      </i>
-                      Số voucher dùng: {item.orderStats?.voucher}
-                    </div>
-                    <div className="flex">
-                      <i className="text-lg mt-1 mr-1">
-                        <RiHome3Line />
-                      </i>
-                      Tổng giảm giá: {NumberPipe(item.orderStats?.discount, true)}
-                    </div>
-                  </>
-                }
-              />
-            )}
-          />
-          <DataTable.Column
-            right
-            label="Tổng doanh số"
-            render={(item: Customer) => (
-              <DataTable.CellNumber
-                currency
-                className="text-primary font-bold text-lg"
-                value={item.orderStats?.revenue}
-              />
-            )}
-          />
-          <DataTable.Column
-            right
-            render={(item: Staff) => (
+        <div className="flex gap-x-3 mt-4">
+          <DataTable.Consumer>
+            {({ loadAll }) => (
               <>
-                <DataTable.CellButton
-                  value={item}
-                  icon={<RiTicketLine />}
-                  tooltip="Lịch sử khuyến mãi"
-                  onClick={() => {
-                    setOpenCustomerVouchers(item.id);
-                  }}
-                />
-                <DataTable.CellButton
-                  value={item}
-                  icon={<RiBillLine />}
-                  tooltip="Lịch sử đơn hàng"
-                  onClick={() => {
-                    setOpenCustomerOrder(item.id);
-                  }}
-                />
+                <div className="w-96">
+                  <CustomerGroups
+                    customerGroup={selectedCustomerGroup}
+                    onCustomerGroupChange={setSelectedCustomerGroup}
+                    onCustomerGroupUpdate={() => {
+                      setTimeout(() => {
+                        loadAll(true);
+                      }, 300);
+                    }}
+                  />
+                </div>
               </>
             )}
-          />
-        </DataTable.Table>
+          </DataTable.Consumer>
+
+          <div className="flex-1">
+            <DataTable.Toolbar>
+              <DataTable.Search className="h-12" />
+              <DataTable.Filter></DataTable.Filter>
+            </DataTable.Toolbar>
+            <DataTable.Table className="mt-4 bg-white">
+              <DataTable.Column
+                label="Khách hàng"
+                render={(item: Customer) => (
+                  <DataTable.CellText
+                    value={
+                      <div className="flex font-semibold">
+                        <i className="text-lg mt-1 mr-1">
+                          <RiPhoneLine />
+                        </i>
+                        {item.phone}
+                      </div>
+                    }
+                    subTextClassName="flex text-sm mt-1"
+                    subText={
+                      <>
+                        <i className="mt-0.5 mr-2">
+                          <RiUserLine />
+                        </i>
+                        {item.name || "Khách vãng lai"}
+                      </>
+                    }
+                  />
+                )}
+              />
+              <DataTable.Column
+                label="Đơn hàng"
+                render={(item: Customer) => (
+                  <DataTable.CellText
+                    value={
+                      <>
+                        <div className="flex whitespace-nowrap">
+                          <span className="w-28">Thành công:</span>
+                          <span className="text-success font-semibold">
+                            {NumberPipe(item.orderStats?.completed)} đơn
+                          </span>
+                        </div>
+                        <div className="flex whitespace-nowrap">
+                          <span className="w-28">Đã huỷ:</span>
+                          <span className="text-danger font-semibold">
+                            {NumberPipe(item.orderStats?.canceled)} đơn
+                          </span>
+                        </div>
+                        <div className="flex whitespace-nowrap">
+                          <span className="w-28">Tổng cộng:</span>
+                          <span className="font-bold">
+                            {NumberPipe(item.orderStats?.total)} đơn
+                          </span>
+                        </div>
+                      </>
+                    }
+                  />
+                )}
+              />
+              <DataTable.Column
+                label="Giảm giá"
+                render={(item: Customer) => (
+                  <DataTable.CellText
+                    value={
+                      <>
+                        <div className="flex">
+                          <i className="text-lg mt-1 mr-1">
+                            <RiTicketLine />
+                          </i>
+                          Số voucher dùng: {item.orderStats?.voucher}
+                        </div>
+                        <div className="flex">
+                          <i className="text-lg mt-1 mr-1">
+                            <RiHome3Line />
+                          </i>
+                          Tổng giảm giá: {NumberPipe(item.orderStats?.discount, true)}
+                        </div>
+                      </>
+                    }
+                  />
+                )}
+              />
+              <DataTable.Column
+                right
+                label="Tổng doanh số"
+                render={(item: Customer) => (
+                  <DataTable.CellNumber
+                    currency
+                    className="text-primary font-bold text-lg"
+                    value={item.orderStats?.revenue}
+                  />
+                )}
+              />
+              <DataTable.Column
+                right
+                render={(item: Staff) => (
+                  <>
+                    <DataTable.CellButton
+                      value={item}
+                      icon={<RiTicketLine />}
+                      tooltip="Lịch sử khuyến mãi"
+                      onClick={() => {
+                        setOpenCustomerVouchers(item.id);
+                      }}
+                    />
+                    <DataTable.CellButton
+                      value={item}
+                      icon={<RiBillLine />}
+                      tooltip="Lịch sử đơn hàng"
+                      onClick={() => {
+                        setOpenCustomerOrder(item.id);
+                      }}
+                    />
+                  </>
+                )}
+              />
+            </DataTable.Table>
+            <DataTable.Pagination />
+          </div>
+        </div>
         {/* <DataTable.Form
           extraDialogClass="bg-transparent"
           extraHeaderClass="bg-gray-100 text-xl py-3 justify-center rounded-t-xl border-gray-300 pl-16"
@@ -177,7 +209,6 @@ export function CustomersPage(props: ReactProps) {
           grid
         >
         </DataTable.Form> */}
-        <DataTable.Pagination />
       </DataTable>
       <OrdersDialog
         isOpen={!!openCustomerOrder}

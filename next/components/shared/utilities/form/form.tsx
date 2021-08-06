@@ -360,9 +360,10 @@ const ButtonGroup = ({
   submitText = "",
   cancelText = "Đóng",
   onCancel,
+  preventDefaultSubmit = false,
   ...props
 }: SaveButtonGroupProps) => {
-  const { title, onClose, loading } = useForm();
+  const { title, onClose, loading, submit } = useForm();
 
   return (
     <SaveButtonGroup
@@ -373,6 +374,10 @@ const ButtonGroup = ({
         if (onCancel) onCancel();
         else onClose();
       }}
+      onSubmit={async () => {
+        if (preventDefaultSubmit) await submit();
+      }}
+      preventDefaultSubmit={preventDefaultSubmit}
       {...props}
     />
   );

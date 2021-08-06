@@ -12,7 +12,7 @@ Agenda.on("ready", () => {
     JobFiles.filter((f: any) => /(.*).job.js$/.test(f)).map((f: any) => {
       const { default: job } = require(f);
       console.log("Define Job", job.jobName);
-      Agenda.define(job.jobName, { lockLifetime: 10000 }, job.execute);
+      Agenda.define(job.jobName, { lockLifetime: job.lockLifetime || 10000 }, job.execute);
     });
     InitRepeatJobs();
   });

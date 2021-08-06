@@ -74,7 +74,16 @@ export function DataTable<T extends BaseModel>({
     if (loadDone) {
       loadAll();
     }
-  }, [loadDone, search, filter, props.filter, currentOrder, pagination.page, pagination.limit]);
+  }, [
+    loadDone,
+    search,
+    filter,
+    props.filter,
+    currentOrder,
+    pagination.page,
+    pagination.limit,
+    props.extraParams,
+  ]);
 
   const waitUntil = (condition) => {
     return new Promise((resolve) => {

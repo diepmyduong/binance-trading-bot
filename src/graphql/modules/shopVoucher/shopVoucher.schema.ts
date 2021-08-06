@@ -65,6 +65,8 @@ const schema = gql`
     endDate: DateTime
     "Mã giảm giá riêng tư"
     isPrivate: Boolean
+    "Mã giảm giá chỉ dành cho tặng cá nhân"
+    isPersonal: Boolean
     "Hình ảnh"
     image: String
     "Nội dung html"
@@ -122,6 +124,8 @@ const schema = gql`
     endDate: DateTime
     "Mã giảm giá riêng tư"
     isPrivate: Boolean
+    "Mã giảm giá chỉ dành cho tặng cá nhân"
+    isPersonal: Boolean
     "Hình ảnh"
     image: String
     "Nội dung html"

@@ -18,6 +18,11 @@ import { CampaignModel } from "../campaign/campaign.model";
 import { CampaignSocialResultModel } from "../campaignSocialResult/campaignSocialResult.model";
 import { CollaboratorLoader, CollaboratorModel } from "../collaborator/collaborator.model";
 import { ICustomer } from "../customer/customer.model";
+import {
+  CustomerVoucherModel,
+  CustomerVoucherStatus,
+  ICustomerVoucher,
+} from "../customerVoucher/customerVoucher.model";
 import { IMember } from "../member/member.model";
 import { IOrderItem, OrderItemModel } from "../orderItem/orderItem.model";
 import { OrderItemTopping } from "../orderItem/types/orderItemTopping.schema";
@@ -45,26 +50,27 @@ type OrderItemInput = {
   toppings: OrderItemTopping[];
 };
 export type CreateOrderInput = {
-  isPrimary: boolean;
-  items: OrderItemInput[];
-  buyerName: string;
-  buyerPhone: string;
-  buyerAddress: string;
-  buyerProvinceId: string;
-  buyerDistrictId: string;
-  buyerWardId: string;
-  buyerFullAddress: string;
-  buyerAddressNote: string;
-  shipMethod: string;
-  paymentMethod: string;
-  addressDeliveryId: string;
-  note: string;
-  latitude: number;
-  longitude: number;
-  pickupMethod: PickupMethod;
-  shopBranchId: string;
-  pickupTime: Date;
-  promotionCode: string;
+  isPrimary?: boolean;
+  items?: OrderItemInput[];
+  buyerName?: string;
+  buyerPhone?: string;
+  buyerAddress?: string;
+  buyerProvinceId?: string;
+  buyerDistrictId?: string;
+  buyerWardId?: string;
+  buyerFullAddress?: string;
+  buyerAddressNote?: string;
+  shipMethod?: string;
+  paymentMethod?: string;
+  addressDeliveryId?: string;
+  note?: string;
+  latitude?: number;
+  longitude?: number;
+  pickupMethod?: PickupMethod;
+  shopBranchId?: string;
+  pickupTime?: Date;
+  promotionCode?: string;
+  customerVoucherId?: string;
 };
 export class OrderGenerator {
   order: IOrder;
@@ -72,6 +78,7 @@ export class OrderGenerator {
   products: Dictionary<IProduct>;
   unitPrice: number;
   voucher: IShopVoucher;
+  customerVoucher: ICustomerVoucher;
   constructor(
     public orderInput: CreateOrderInput,
     public seller: IMember,
@@ -259,6 +266,23 @@ export class OrderGenerator {
       }
     }
   }
+  private async validateCustomerVoucher() {
+    this.customerVoucher = await CustomerVoucherModel.findById(this.orderInput.customerVoucherId);
+    if (!this.customerVoucher) throw Error();
+    if (this.customerVoucher.voucherId.toString() != this.voucher._id.toString()) throw Error();
+    if (this.customerVoucher.status != CustomerVoucherStatus.STILL_ALIVE)
+      throw Error("Ưu đãi hết hạn");
+    if (this.customerVoucher.issueNumber <= this.customerVoucher.used) {
+      this.customerVoucher.status = CustomerVoucherStatus.EXPIRED;
+      await this.customerVoucher.save();
+      throw Error("Đã hết số lượng ưu đãi");
+    }
+    if (this.customerVoucher.expiredDate && moment().isAfter(this.customerVoucher.expiredDate)) {
+      this.customerVoucher.status = CustomerVoucherStatus.EXPIRED;
+      await this.customerVoucher.save();
+      throw Error("Ưu đãi hết hạn");
+    }
+  }
   private async validateVoucher() {
     this.voucher = await ShopVoucherModel.findOne({
       code: this.orderInput.promotionCode,
@@ -346,6 +370,9 @@ export class OrderGenerator {
         ]).then((res) => get(res, "0.total", 0) as number);
       }
       if (this.voucher.issueNumber <= used) throw Error("Ưu đãi đã hết");
+    }
+    if (this.voucher.isPersonal) {
+      await this.validateCustomerVoucher();
     }
   }
   private async setOrderSeller() {

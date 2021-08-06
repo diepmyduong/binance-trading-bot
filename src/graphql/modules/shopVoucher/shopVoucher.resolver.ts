@@ -15,6 +15,7 @@ const Query = {
     if (!context.isMember()) {
       set(args, "q.filter.isActive", true);
       set(args, "q.filter.isPrivate", false);
+      set(args, "q.filter.isPersonal", false);
       set(args, "q.filter.$and", [
         { $or: [{ startDate: { $exists: false } }, { startDate: { $lte: new Date() } }] },
         { $or: [{ endDate: { $exists: false } }, { endDate: { $gte: new Date() } }] },

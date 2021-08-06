@@ -23,38 +23,44 @@ export function ShopsPage() {
   let [shops, setShops] = useState<PublicShop[]>();
   const toast = useToast();
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          console.log(position);
-          GoongGeocoderService.getPlaceDetailByLatLg(
-            position.coords.latitude,
-            position.coords.longitude
-          ).then((res) => {
-            console.log(res);
-            if (res && res.length > 0) {
-              let newUserAddress = {
-                fullAddress: res[0].formatted_address,
-                lat: res[0].geometry.location.lat,
-                lg: res[0].geometry.location.lng,
-              };
-              console.log(newUserAddress);
-              setUseAddress(newUserAddress);
-            } else {
-              setUseAddress(null);
-            }
-          });
-        },
-        (err) => {
-          setUseAddress(null);
-          setOpenAddress(true);
-        }
-      );
+    let address = sessionStorage.getItem("addressSelected");
+    if (address) {
+      setUseAddress(JSON.parse(address));
+    } else {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            console.log(position);
+            GoongGeocoderService.getPlaceDetailByLatLg(
+              position.coords.latitude,
+              position.coords.longitude
+            ).then((res) => {
+              console.log(res);
+              if (res && res.length > 0) {
+                let newUserAddress = {
+                  fullAddress: res[0].formatted_address,
+                  lat: res[0].geometry.location.lat,
+                  lg: res[0].geometry.location.lng,
+                };
+                console.log(newUserAddress);
+                setUseAddress(newUserAddress);
+              } else {
+                setUseAddress(null);
+              }
+            });
+          },
+          (err) => {
+            setUseAddress(null);
+            setOpenAddress(true);
+          }
+        );
+      }
     }
   }, []);
   useEffect(() => {
     console.log(useAddress);
     if (useAddress && useAddress.fullAddress) {
+      sessionStorage.setItem("addressSelected", JSON.stringify(useAddress));
       ShopService.getAllShop(useAddress.lat, useAddress.lg)
         .then((res) => {
           console.log(res);

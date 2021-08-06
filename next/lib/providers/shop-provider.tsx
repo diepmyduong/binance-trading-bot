@@ -16,6 +16,7 @@ import { UserService } from "../repo/user.repo";
 import sortBy, { orderBy } from "lodash";
 import { Customer, CustomerService } from "../repo/customer.repo";
 import jwt_decode from "jwt-decode";
+import { GoongGeocoderService } from "../helpers/goong";
 
 export const ShopContext = createContext<
   Partial<{
@@ -35,6 +36,9 @@ export const ShopContext = createContext<
     setCustomer: Function;
     getCustomner: Function;
     customerLoginOTP: (phone: string, otp: string) => any;
+    showGongAddress: boolean;
+    setLocationCustomer: Function;
+    setShowGongAddress: Function;
   }>
 >({});
 export function ShopProvider(props) {
@@ -45,7 +49,12 @@ export function ShopProvider(props) {
   let [shop, setShop] = useState<Shop>();
   let [customer, setCustomer] = useState<Customer>();
   let [shopBranchs, setShopBranch] = useState<ShopBranch[]>([]);
-  const [locationCustomer, setLocationCustomer] = useState<any>();
+  const [showGongAddress, setShowGongAddress] = useState(false);
+  const [locationCustomer, setLocationCustomer] = useState<{
+    fullAddress: string;
+    lg: number;
+    lat: number;
+  }>();
   async function getShop() {
     await ShopService.clearStore();
     setLoading(true);
@@ -91,27 +100,42 @@ export function ShopProvider(props) {
     }
   }
   function loadLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          console.log(position);
-
-          setLocationCustomer(position.coords);
-        },
-        (err) => {
-          if (customer && customer.latitude && customer.longitude) {
-            setLocationCustomer({ latitude: customer.latitude, longitude: customer.longitude });
-          } else {
-            setLocationCustomer({ latitude: 10.72883, longitude: 106.725484 });
+    let address = sessionStorage.getItem("addressSelected");
+    if (address) {
+      setLocationCustomer(JSON.parse(address));
+    } else {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            console.log(position);
+            setLocationCustomer({
+              ...locationCustomer,
+              fullAddress: "",
+              lg: position.coords.longitude,
+              lat: position.coords.latitude,
+            });
+          },
+          (err) => {
+            if (customer && customer.latitude && customer.longitude) {
+              setLocationCustomer({
+                ...locationCustomer,
+                fullAddress: customer.fullAddress,
+                lat: customer.latitude,
+                lg: customer.longitude,
+              });
+            } else {
+              setLocationCustomer(null);
+              setShowGongAddress(true);
+            }
           }
-        }
-      );
+        );
+      }
     }
   }
-  function loadBrand(coords?: any) {
+  function loadBrand(coords?: { fullAddress: string; lg: number; lat: number }) {
     ShopBranchService.getAll({
       fragment: `${ShopBranchService.fullFragment} ${
-        coords ? `distance(lat:${coords.latitude}, lng:${coords.longitude})` : ""
+        coords ? `distance(lat:${coords.lat}, lng:${coords.lg})` : ""
       } `,
       cache: false,
     }).then((res) => {
@@ -189,7 +213,10 @@ export function ShopProvider(props) {
     loadLocation();
   }, [shop]);
   useEffect(() => {
-    if (!locationCustomer) return;
+    if (locationCustomer === undefined) return;
+    if (locationCustomer === null) loadBrand();
+    if (locationCustomer && locationCustomer.fullAddress)
+      sessionStorage.setItem("addressSelected", JSON.stringify(locationCustomer));
     loadBrand(locationCustomer);
   }, [locationCustomer]);
   useEffect(() => {
@@ -219,6 +246,9 @@ export function ShopProvider(props) {
         loading,
         setCustomer,
         customerLoginOTP,
+        showGongAddress,
+        setLocationCustomer,
+        setShowGongAddress,
       }}
     >
       {props.children}

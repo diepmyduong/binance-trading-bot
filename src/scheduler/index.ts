@@ -26,7 +26,7 @@ Agenda.on("ready", () => {
         return;
       }
       console.log(chalk.green("Define Job", job.jobName));
-      Agenda.define(job.jobName, { lockLifetime: 10000 }, job.execute);
+      Agenda.define(job.jobName, { lockLifetime: job.lockLifetime || 10000 }, job.execute);
     });
     InitRepeatJobs();
   });

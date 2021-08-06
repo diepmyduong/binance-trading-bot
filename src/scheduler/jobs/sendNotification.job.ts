@@ -1,5 +1,6 @@
 import { Job } from "agenda";
 import { groupBy } from "lodash";
+import moment from "moment";
 import winston from "winston";
 
 import { DeviceInfoModel, IDeviceInfo } from "../../graphql/modules/deviceInfo/deviceInfo.model";
@@ -34,13 +35,15 @@ const errorLogger = winston.createLogger({
 });
 export class SendNotificationJob {
   static jobName = "SendNotification";
+  static lockLifetime = 1000;
   static create(data: any) {
     return Agenda.create(this.jobName, data);
   }
   static async execute(job: Job, done: any) {
-    const count = await NotificationStackModel.count({});
-    if (count == 0) return done();
     try {
+      console.log(moment().format(), "Execute Job " + SendNotificationJob.jobName, process.pid);
+      const count = await NotificationStackModel.count({});
+      if (count == 0) return;
       await Promise.all([
         sendNotificationToMembers(job),
         sendNotificationToStaff(job),

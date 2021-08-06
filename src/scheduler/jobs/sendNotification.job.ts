@@ -35,6 +35,7 @@ const errorLogger = winston.createLogger({
 });
 export class SendNotificationJob {
   static jobName = "SendNotification";
+  static lockLifetime = 1000;
   static create(data: any) {
     return Agenda.create(this.jobName, data);
   }

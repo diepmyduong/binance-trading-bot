@@ -13,6 +13,8 @@ const schema = gql`
     createdAt: DateTime
     updatedAt: DateTime
 
+    "Mã"
+    code: String
     "Mã chủ shop"
     memberId: ID
     "Mã khách hàng"
@@ -29,6 +31,8 @@ const schema = gql`
     expiredDate: DateTime
     "Trạng thái voucher ${Object.values(CustomerVoucherStatus)}"
     status: String
+    "Lịch sử sử dụng"
+    logs: [CustomerVoucherLog]
 
     voucher: ShopVoucher
   }

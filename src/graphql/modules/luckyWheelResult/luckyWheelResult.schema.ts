@@ -23,6 +23,7 @@ const schema = gql`
     gift: Gift
 
     customer: Customer
+    voucher: CustomerVoucher
   }
 
   type LuckyWheelResultPageData {

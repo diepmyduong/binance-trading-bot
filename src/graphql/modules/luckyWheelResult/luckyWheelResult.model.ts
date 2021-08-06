@@ -12,6 +12,7 @@ export type ILuckyWheelResult = BaseDocument & {
   luckyWheelId?: string; //mã vòng quay
   code?: string; // Mã quà
   gift?: Gift; // Quà
+  customerVoucherId?: string; // Mã voucher khách hàng
 };
 
 const luckyWheelResultSchema = new Schema(
@@ -21,6 +22,7 @@ const luckyWheelResultSchema = new Schema(
     luckyWheelId: { type: Schema.Types.ObjectId, ref: "LuckyWheel", required: true },
     code: { type: String, required: true },
     gift: { type: GiftSchema, required: true },
+    customerVoucherId: { type: Schema.Types.ObjectId, ref: "CustomerVoucher" },
   },
   { timestamps: true }
 );

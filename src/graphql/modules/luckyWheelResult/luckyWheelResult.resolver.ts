@@ -4,6 +4,7 @@ import { ROLES } from "../../../constants/role.const";
 import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
 import { CustomerLoader } from "../customer/customer.model";
+import { CustomerVoucherLoader } from "../customerVoucher/customerVoucher.model";
 import { luckyWheelResultService } from "./luckyWheelResult.service";
 
 const Query = {
@@ -19,6 +20,7 @@ const Query = {
 
 const LuckyWheelResult = {
   customer: GraphQLHelper.loadById(CustomerLoader, "customerId"),
+  voucher: GraphQLHelper.loadById(CustomerVoucherLoader, "customerVoucherId"),
 };
 
 export default {

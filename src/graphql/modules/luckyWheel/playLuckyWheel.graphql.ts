@@ -1,14 +1,13 @@
 import { gql } from "apollo-server-express";
 import moment from "moment-timezone";
+
 import { ErrorHelper } from "../../../base/error";
 import { luckyWheelLoader } from "../../../batch/luckyWheel.loader";
 import { ROLES } from "../../../constants/role.const";
 import LocalBroker from "../../../services/broker";
 import { Context } from "../../context";
-import {
-  ILuckyWheelResult,
-  LuckyWheelResultModel,
-} from "../luckyWheelResult/luckyWheelResult.model";
+import { CustomerVoucherModel } from "../customerVoucher/customerVoucher.model";
+import { LuckyWheelResultModel } from "../luckyWheelResult/luckyWheelResult.model";
 import { GiftType } from "./gift.graphql";
 import { LuckyWheelLoader } from "./luckyWheel.model";
 
@@ -62,15 +61,20 @@ export default {
         );
         switch (result.gift.type) {
           case GiftType.VOUCHER: {
-            // await LocalBroker.call("voucher.issueUnlimit", {
-            //   voucherId: result.gift.voucherId,
-            //   customerId: context.id,
-            //   qty: result.gift.voucherQty,
-            //   expired:
-            //     result.gift.voucherExpiredDay > 0
-            //       ? moment().add(result.gift.voucherExpiredDay, "days").endOf("days").toDate()
-            //       : null,
-            // });
+            const customerVoucher = new CustomerVoucherModel(
+              await LocalBroker.call("voucher.issueUnlimit", {
+                voucherId: result.gift.voucherId.toString(),
+                customerId: context.id,
+                qty: result.gift.voucherQty,
+                expired:
+                  result.gift.voucherExpiredDay > 0
+                    ? moment().add(result.gift.voucherExpiredDay, "days").endOf("days").toDate()
+                    : null,
+              })
+            );
+
+            result.customerVoucherId = customerVoucher._id;
+            await result.updateOne({ $set: { customerVoucherId: customerVoucher._id } });
           }
         }
         return result;

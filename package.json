@@ -1,11 +1,7 @@
 {
-  "name": "3mshop-server",
+  "name": "sinh-vat-gay-hai",
   "version": "0.1.0",
-  "description": "3MShop Server By ASM",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ctymcom/3mshop.git"
-  },
+  "description": "Sinh Vật Gay Hại By ASM",
   "author": "Dương Jerry",
   "license": "MIT",
   "scripts": {

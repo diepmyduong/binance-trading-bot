@@ -42,18 +42,8 @@ const schema = gql`
     image: String
     "Ngày gửi"
     sentAt: DateTime
-    "Mã đơn hàng"
-    orderId: ID
-    "Mã sản phẩm"
-    productId: ID
     "Link website"
     link: String
-
-    member: Member
-    staff: Staff
-    customer: Customer
-    order: Order
-    product: Product
   }
 
   type NotificationPageData {

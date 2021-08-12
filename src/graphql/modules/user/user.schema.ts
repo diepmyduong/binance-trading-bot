@@ -77,10 +77,6 @@ type User {
   unseenNotify: Int
   createdAt: DateTime
   updatedAt: DateTime
-  "Mã PSID fanpage chính"
-  psid: String
-
-  subscriber: SubscriberInfo
 }
 
 type LoginData {

@@ -100,9 +100,6 @@ const User = {
   unseenNotify: async (root: IUser, args: any, context: Context) => {
     return await new UserHelper(root).getUnseenNotify();
   },
-  subscriber: async (root: IUser, args: any, context: Context) => {
-    return await new UserHelper(root).getSubscriber();
-  },
 };
 
 export default {

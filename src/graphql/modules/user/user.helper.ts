@@ -6,7 +6,6 @@ import { ErrorHelper } from "../../../base/error";
 import { AddressModel } from "../address/address.model";
 import { DeviceInfoModel } from "../deviceInfo/deviceInfo.model";
 import { NotificationModel } from "../notification/notification.model";
-import { UserSubscriber } from "./loaders/userSubscriber.loader";
 import { IUser } from "./user.model";
 
 export class UserHelper {
@@ -66,9 +65,5 @@ export class UserHelper {
 
   async getUnseenNotify() {
     return await UserHelper.unseenNotifyLoader.load(this.user._id.toString());
-  }
-  async getSubscriber() {
-    if (!this.user.psid) return;
-    return await UserSubscriber.loader.load(this.user.psid);
   }
 }

@@ -9,8 +9,7 @@ import next from "next";
 
 import { configs } from "../configs";
 import { swaggerSpec, swaggerTheme } from "../configs/swagger";
-import router from "../routers-old";
-import routerv2 from "../routers";
+import router from "../routers";
 
 export default ({ app }: { app: express.Application }) => {
   app.use(cors());
@@ -39,7 +38,6 @@ export default ({ app }: { app: express.Application }) => {
   // });
 
   app.use("/", router);
-  app.use("/", routerv2);
 
   const nextApp = next({ dev: configs.nextDev, dir: "./next" });
   const handle = nextApp.getRequestHandler();

@@ -1,6 +1,5 @@
 import { CrudService } from "../../../base/crudService";
 import { ErrorHelper } from "../../../base/error";
-import { VietnamPostHelper } from "../../../helpers";
 import { AddressModel } from "./address.model";
 
 class AddressService extends CrudService<typeof AddressModel> {
@@ -35,21 +34,6 @@ class AddressService extends CrudService<typeof AddressModel> {
       this.setDistrictName(doc),
       this.setWardName(doc),
     ]);
-  }
-
-  async syncAddressWithVietnamPost() {
-    const wards = await VietnamPostHelper.getWards();
-    for (const address of wards) {
-      const data: any = {
-        province: address.TenTinhThanh,
-        provinceId: address.MaTinhThanh,
-        district: address.TenQuanHuyen,
-        districtId: address.MaQuanHuyen,
-        ward: address.TenPhuongXa,
-        wardId: address.MaPhuongXa,
-      };
-      await addressService.create(data);
-    }
   }
 }
 

@@ -4,15 +4,9 @@ import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
 const Schema = mongoose.Schema;
 export enum NotificationType {
   MESSAGE = "MESSAGE", // Tin nhắn
-  ORDER = "ORDER", // Đơn hàng
-  PRODUCT = "PRODUCT", // Sản phẩm
   WEBSITE = "WEBSITE", // Website
 }
-export enum NotificationTarget {
-  MEMBER = "MEMBER", // Gửi tới chủ shop
-  STAFF = "STAFF", // Gưi tới staff
-  CUSTOMER = "CUSTOMER", // Gửi tới khách hàng
-}
+export enum NotificationTarget {}
 export type INotification = BaseDocument & {
   target?: NotificationTarget; // Gửi tới
   memberId?: string; // Mã chủ shop
@@ -25,8 +19,6 @@ export type INotification = BaseDocument & {
   seenAt?: Date; // Ngày xem
   image?: string; // Hình ảnh
   sentAt?: Date; // Ngày gửi
-  orderId?: string; // Mã đơn hàng
-  productId?: string; // Mã sản phẩm
   link?: string; // Link website
 };
 
@@ -43,8 +35,6 @@ const notificationSchema = new Schema(
     seenAt: { type: Date },
     image: { type: String },
     sentAt: { type: Date },
-    orderId: { type: Schema.Types.ObjectId, ref: "Order" },
-    productId: { type: Schema.Types.ObjectId, ref: "Product" },
     link: { type: String },
   },
   { timestamps: true, collation: { locale: "vi" } }

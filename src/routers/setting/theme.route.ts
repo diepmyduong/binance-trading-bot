@@ -1,9 +1,4 @@
-import DataLoader from "dataloader";
 import { Request, Response } from "express";
-import { get, keyBy } from "lodash";
-
-import { MemberModel } from "../../graphql/modules/member/member.model";
-import { ttlCache } from "../../helpers/ttlCache";
 
 export default [
   {
@@ -11,8 +6,7 @@ export default [
     path: "/api/setting/theme/:shopCode",
     midd: [],
     action: async (req: Request, res: Response) => {
-      const { shopCode } = req.params;
-      const shopColor = await ShopColorLoader.load(shopCode);
+      const shopColor = { primaryColor: "#0D57EF", accentColor: "#38D0FF" };
       const primaryHSL = HexToHSL(shopColor.primaryColor);
       const accentHSL = HexToHSL(shopColor.accentColor);
       res.type(".css");
@@ -28,24 +22,6 @@ export default [
     },
   },
 ];
-
-const ShopColorLoader = new DataLoader<string, { primaryColor: string; accentColor: string }>(
-  (ids: string[]) => {
-    return MemberModel.aggregate([
-      { $match: { code: { $in: ids } } },
-      {
-        $lookup: { from: "shopconfigs", localField: "_id", foreignField: "memberId", as: "config" },
-      },
-      { $unwind: "$config" },
-    ]).then((list) => {
-      const keyById = keyBy(list, "code");
-      return ids.map((code) =>
-        get(keyById, code + ".config", { primaryColor: "#0D57EF", accentColor: "#38D0FF" })
-      );
-    });
-  },
-  { cache: true, cacheMap: ttlCache({ ttl: 30000, maxSize: 100 }) }
-);
 
 function LightenDarkenColor(color: string, percent: number) {
   var num = parseInt(color.replace("#", ""), 16),

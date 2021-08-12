@@ -14,12 +14,6 @@ export class NotificationHelper {
       id: this.item._id.toString(),
     };
     switch (this.item.type) {
-      case NotificationType.ORDER:
-        notifyData.orderId = this.item.orderId.toString();
-        break;
-      case NotificationType.PRODUCT:
-        notifyData.productId = this.item.productId.toString();
-        break;
       case NotificationType.WEBSITE:
         notifyData.link = this.item.link.toString();
         break;

@@ -85,20 +85,6 @@ export abstract class CrudService<M extends Model<Document, {}>> extends BaseSer
       };
     });
   }
-  async findAll(options: IParseQuery) {
-    const query = this.model.find(options.filter || {});
-    if (options.select) {
-      query.select(options.select);
-    }
-    if (options.order) {
-      query.sort(options.order);
-    }
-    query.limit(options.limit || configs.query.limit);
-    if (options.offset) {
-      query.skip(options.offset);
-    }
-    return await query.exec();
-  }
 
   async findOne(filter: any) {
     return await this.model.findOne(filter);

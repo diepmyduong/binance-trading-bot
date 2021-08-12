@@ -20,8 +20,6 @@ export type IUser = BaseDocument & {
   provinceId?: string;
   districtId?: string;
   wardId?: string;
-  psid?: string; // Mã PSID fanpage chính
-  facebookAccessToken?: string
 };
 
 const userSchema = new Schema(
@@ -39,8 +37,6 @@ const userSchema = new Schema(
     provinceId: { type: String },
     districtId: { type: String },
     wardId: { type: String },
-    psid: { type: String },
-    facebookAccessToken: { type: String },
   },
   { timestamps: true, collation: { locale: "vi" } }
 );

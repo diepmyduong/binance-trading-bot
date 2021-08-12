@@ -47,25 +47,7 @@ export default {
     password: process.env.REDIS_PASS,
     prefix: process.env.REDIS_PREFIX || pjson.name,
   },
-  chatbot: {
-    host: process.env.CHATBOT_HOST || "https://bot-server.mcom.app",
-  },
-  viettelPost: {
-    host: "https://partner.viettelpost.vn/v2",
-    token: process.env.VIETTEL_TOKEN,
-    secret: process.env.VIETTEL_SECRET || "delivery@Secret123",
-    printToken: process.env.VIETTEL_PRINT_TOKEN,
-  },
-  vietnamPost: {
-    host: "https://donhang.vnpost.vn/api/api",
-    token: process.env.VIETNAM_POST_TOKEN,
-    publicKey:
-      "3G3hLSrPwF4FBBA/0yEZkNwX2++SSCIaGKeb8TBb6loc3NRSvo0oDR0dO7c6bk/CgizQ7ZT0d/rlZunV4UbP2gzVl3p6VN2ykoDhnmdGClk1+js6EqWIWztZrcF2mAq0s3OHIH4tLnLIGWbMws1nQNRUoJDwfGVSZcLzFnWRWb21kYjpSbu44Y2IiQX6y3n2YR9VPyxI9VMYkrTvdzN/cTFyRhrPaH15pXzkQ8zQl561mSYGcucJl56GX9hRaho5zuNSNWq+oVXdIBE6UOVVX4TXJJJw+iKlLYO/2OryJ3fNLKWajBaYGzxZ6QLjpfr/HYtAPGLARLtDtean7JjE5Q==",
-  },
   nextDev: (process.env.NEXT_DEV || "FALSE").toUpperCase() == "TRUE",
-  ahamove: {
-    apiKey: process.env.AHAMOVE_API_KEY || "4cd543d3e4e4fbe97db216828c18644f77558275",
-  },
   scheduler: {
     includes: compact(get(process.env, "SCHEDULER_INCLUDES", "").split(",")),
     excludes: compact(get(process.env, "SCHEDULER_EXCLUDES", "").split(",")),

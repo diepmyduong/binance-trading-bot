@@ -1,13 +1,12 @@
-import { ShopBranch } from "./shop-branch.repo";
-import { PaymentMethod } from "./../../../src/graphql/modules/order/order.model";
-import { String } from "lodash";
+import axios from "axios";
+
+import { GetAuthTokenMember } from "../graphql/auth.link";
 import { BaseModel, CrudRepository } from "./crud.repo";
 import { Customer } from "./customer.repo";
 import { Member } from "./member.repo";
 import { Product } from "./product.repo";
+import { ShopBranch } from "./shop-branch.repo";
 import { User } from "./user.repo";
-import axios from "axios";
-import { GetAuthToken, GetAuthTokenMember } from "../graphql/auth.link";
 
 export interface OrderInput {
   promotionCode?: string;

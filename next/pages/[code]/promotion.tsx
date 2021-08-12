@@ -4,7 +4,6 @@ import { DefaultLayout } from "../../layouts/default-layout/default-layout";
 import PromotionsPage from "../../components/index/promotion/promotions-page";
 import { Redirect } from "../../lib/helpers/redirect";
 import SEO from "../../lib/helpers/seo";
-import { MemberModel } from "./../../../dist/graphql/modules/member/member.model";
 import { GetServerSidePropsContext } from "next";
 
 export default function Promotion(props) {
@@ -20,7 +19,7 @@ Promotion.Layout = DefaultLayout;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { code = "3MSHOP" } = context.params;
-  const shop = await MemberModel.findOne({ code }, "shopName shopLogo shopCover");
+  const shop = null;
   if (!shop) {
     Redirect(context.res, `/not-found-shop`);
   }

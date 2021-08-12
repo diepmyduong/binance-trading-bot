@@ -5,7 +5,6 @@ import { HomeProvider } from "../../components/index/homepage/providers/homepage
 import { DefaultLayout } from "../../layouts/default-layout/default-layout";
 import { Redirect } from "../../lib/helpers/redirect";
 import SEO from "../../lib/helpers/seo";
-import { MemberModel } from "./../../../dist/graphql/modules/member/member.model";
 
 export default function Page(props) {
   return (
@@ -21,7 +20,7 @@ Page.Layout = DefaultLayout;
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { product } = context.query;
   const { code = "3MSHOP" } = context.params;
-  const shop = await MemberModel.findOne({ code }, "shopName shopLogo shopCover");
+  const shop = null;
   if (!shop) {
     Redirect(context.res, `/not-found-shop`);
   }

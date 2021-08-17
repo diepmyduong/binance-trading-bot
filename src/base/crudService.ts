@@ -1,25 +1,32 @@
-import _ from "lodash";
-import { Document, Model } from "mongoose";
+import { set, values } from "lodash";
+import { Model } from "mongoose";
 
-import { configs } from "../configs";
-import { ErrorHelper, IParseQuery } from "../helpers";
-import { BaseService } from "./baseService";
+import { queryErrorNotFound } from "../errors/query.error";
+import { BaseService } from "./service";
 
 // import { IBaseStatic } from "./baseModel";
 // import { baseError } from "./baseError";
-export interface IQueryOptions {}
+export interface IQueryInput {
+  page?: number;
+  limit?: number;
+  offset?: number;
+  order?: any;
+  filter?: any;
+  select?: any;
+  search?: string;
+}
 
-export abstract class CrudService<M extends Model<Document, {}>> extends BaseService {
-  model: M;
+export abstract class CrudService extends BaseService {
+  model: Model<any>;
 
-  constructor(model: M) {
+  constructor(model: Model<any>) {
     super();
     this.model = model;
   }
 
-  async fetch(queryInput: any, select?: string) {
+  async fetch(queryInput: IQueryInput, select?: string) {
     queryInput = { ...queryInput };
-    const limit = queryInput.limit || configs.query.limit;
+    const limit = queryInput.limit || 10;
     const skip = queryInput.offset || (queryInput.page - 1) * limit || 0;
     const order = queryInput.order;
     const search = queryInput.search;
@@ -27,13 +34,13 @@ export abstract class CrudService<M extends Model<Document, {}>> extends BaseSer
 
     if (search) {
       if (search.includes(" ")) {
-        _.set(queryInput, "filter.$text.$search", search);
+        set(queryInput, "filter.$text.$search", search);
         query.select({ _score: { $meta: "textScore" } });
         query.sort({ _score: { $meta: "textScore" } });
       } else {
         const textSearchIndex = this.model.schema
           .indexes()
-          .filter((c: any) => _.values(c[0]!).some((d: any) => d == "text"));
+          .filter((c: any) => values(c[0]!).some((d: any) => d == "text"));
         if (textSearchIndex.length > 0) {
           const or: any[] = [];
           textSearchIndex.forEach((index) => {
@@ -41,7 +48,7 @@ export abstract class CrudService<M extends Model<Document, {}>> extends BaseSer
               or.push({ [key]: { $regex: search, $options: "i" } });
             });
           });
-          _.set(queryInput, "filter.$or", or);
+          set(queryInput, "filter.$or", or);
         }
       }
     }
@@ -90,7 +97,7 @@ export abstract class CrudService<M extends Model<Document, {}>> extends BaseSer
     return await this.model.findOne(filter);
   }
 
-  async count(options: IParseQuery) {
+  async count(options: IQueryInput) {
     return await this.model.countDocuments(options.filter);
   }
 
@@ -101,13 +108,13 @@ export abstract class CrudService<M extends Model<Document, {}>> extends BaseSer
   async updateOne(id: string, data: any) {
     await this.model.updateOne({ _id: id }, data);
     let record = await this.model.findOne({ _id: id });
-    if (!record) throw ErrorHelper.mgRecoredNotFound();
+    if (!record) throw queryErrorNotFound;
     return record;
   }
 
   async deleteOne(id: string) {
     let record = await this.model.findOne({ _id: id });
-    if (!record) throw ErrorHelper.mgRecoredNotFound();
+    if (!record) throw queryErrorNotFound;
     await record.remove();
     return record;
   }

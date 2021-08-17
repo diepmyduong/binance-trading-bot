@@ -1,5 +1,4 @@
 import { ROLES } from "../../../constants/role.const";
-import { GraphQLHelper } from "../../../helpers/graphql.helper";
 import { Context } from "../../context";
 import { notificationService } from "./notification.service";
 

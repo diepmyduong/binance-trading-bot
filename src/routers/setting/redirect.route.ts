@@ -1,5 +1,5 @@
-import { SettingHelper } from "../../graphql/modules/setting/setting.helper";
 import { Request, Response } from "express";
+import { SettingHelper } from "../../graphql/modules/setting/common";
 export default [
   {
     method: "get",

@@ -1,37 +1,26 @@
 import { Request } from "express";
 import { TokenExpiredError } from "jsonwebtoken";
-import _, { get } from "lodash";
+import { get } from "lodash";
 
-import { AuthHelper } from "../helpers";
-import { TokenHelper } from "../helpers/token.helper";
-
-export type TokenData = {
-  role: string;
-  _id: string;
-  [name: string]: string;
-};
-export type SignedRequestPayload = {
-  psid: string;
-  algorithm: string;
-  thread_type: string;
-  tid: string;
-  issued_at: number;
-  page_id: number;
-};
+import BaseError from "../base/error";
+import Token from "../helpers/token";
+import { UserRole } from "./modules/user/user.model";
 
 export class Context {
   public meta: any = {};
   public req: Request;
   public isAuth: boolean = false;
   public isTokenExpired: boolean = false;
-  public tokenData: TokenData;
-  public token: string = null;
+  public token: Token;
   constructor(props: { req?: Request; connection?: any }) {
     this.parseToken(props);
   }
 
   get id() {
-    return get(this.tokenData, "_id");
+    return this.token._id;
+  }
+  get isAdmin() {
+    return this.token.role == UserRole.ADMIN;
   }
 
   parseToken(params: any) {
@@ -40,7 +29,7 @@ export class Context {
       let token;
 
       if (req) {
-        token = _.get(req, "headers.x-token") || _.get(req, "query.x-token");
+        token = get(req, "headers.x-token") || get(req, "query.x-token");
       }
 
       if (connection && connection.context) {
@@ -49,10 +38,8 @@ export class Context {
 
       if (token === "null") token = null;
       if (token) {
-        const decodedToken: any = TokenHelper.decodeToken(token);
+        this.token = Token.decode(token);
         this.isAuth = true;
-        this.tokenData = decodedToken;
-        this.token = token;
       }
     } catch (err) {
       if (err instanceof TokenExpiredError) {
@@ -65,7 +52,13 @@ export class Context {
   }
 
   auth(roles: string[]) {
-    AuthHelper.acceptRoles(this, roles);
+    if (!this.isAuth) throw new BaseError("auth-error", "Chưa xác thực", 401);
+    if (roles.indexOf(this.token.role) !== -1) {
+      return;
+    } else {
+      if (this.isTokenExpired) throw new BaseError("auth-error", "Token hết hạn", 401);
+      throw new BaseError("auth-error", "Không đủ quyền truy cập", 401);
+    }
   }
 }
 

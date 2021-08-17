@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { MainConnection } from "../../../loaders/database";
-import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
+import { MainConnection } from "../../../helpers/mongo";
+import { BaseDocument, ModelLoader } from "../../../base/model";
 const Schema = mongoose.Schema;
 
 export type IDeviceInfo = BaseDocument & {
@@ -30,10 +30,9 @@ deviceInfoSchema.index({ memberId: 1 });
 deviceInfoSchema.index({ customerId: 1 });
 // deviceInfoSchema.index({ name: "text" }, { weights: { name: 2 } });
 
-export const DeviceInfoHook = new ModelHook<IDeviceInfo>(deviceInfoSchema);
 export const DeviceInfoModel: mongoose.Model<IDeviceInfo> = MainConnection.model(
   "DeviceInfo",
   deviceInfoSchema
 );
 
-export const DeviceInfoLoader = ModelLoader<IDeviceInfo>(DeviceInfoModel, DeviceInfoHook);
+export const DeviceInfoLoader = ModelLoader<IDeviceInfo>(DeviceInfoModel);

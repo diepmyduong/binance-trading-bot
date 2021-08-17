@@ -1,6 +1,6 @@
 import { CrudService } from "../../../base/crudService";
 import { ActivityModel } from "./activity.model";
-class ActivityService extends CrudService<typeof ActivityModel> {
+class ActivityService extends CrudService {
   constructor() {
     super(ActivityModel);
   }

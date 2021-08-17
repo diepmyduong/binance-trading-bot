@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { configs } from "../../configs";
+import config from "config";
 export default [
   {
     method: "get",
     path: "/firebase/loginPhone",
     midd: [],
     action: async (req: Request, res: Response) => {
-      res.render("loginPhone", { config: configs.firebaseView });
+      res.render("loginPhone", { config: config.get("firebase.webConfig") });
     },
   },
   {
@@ -14,7 +14,7 @@ export default [
     path: "/firebase/loginEmail",
     midd: [],
     action: async (req: Request, res: Response) => {
-      res.render("loginEmail", { config: configs.firebaseView });
+      res.render("loginEmail", { config: config.get("firebase.webConfig") });
     },
   },
 ];

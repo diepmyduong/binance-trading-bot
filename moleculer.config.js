@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = {
-	namespace: "3mshop",
+	// namespace: "",
 	//transporter: "TCP",
 	logger: true,
 	logLevel: "info",

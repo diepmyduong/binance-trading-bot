@@ -1,30 +1,27 @@
 import { CrudService } from "../../../base/crudService";
-import { ErrorHelper } from "../../../base/error";
+import { notFoundHandler } from "../../../helpers/common";
 import { AddressModel } from "./address.model";
 
-class AddressService extends CrudService<typeof AddressModel> {
+class AddressService extends CrudService {
   constructor() {
     super(AddressModel);
   }
 
   async setProvinceName(doc: any, key = "provinceId", name = "province") {
     if (!doc[key]) return this;
-    const address = await AddressModel.findOne({ provinceId: doc[key] });
-    if (!address) throw ErrorHelper.mgRecoredNotFound("Tỉnh / thành");
+    const address = notFoundHandler(await AddressModel.findOne({ provinceId: doc[key] }));
     doc[name] = address.province;
     return this;
   }
   async setDistrictName(doc: any, key = "districtId", name = "district") {
     if (!doc[key]) return this;
-    const address = await AddressModel.findOne({ districtId: doc[key] });
-    if (!address) throw ErrorHelper.mgRecoredNotFound("Quận / Huyện");
+    const address = notFoundHandler(await AddressModel.findOne({ districtId: doc[key] }));
     doc[name] = address.district;
     return this;
   }
   async setWardName(doc: any, key = "wardId", name = "ward") {
     if (!doc[key]) return this;
-    const address = await AddressModel.findOne({ wardId: doc[key] });
-    if (!address) throw ErrorHelper.mgRecoredNotFound("Phường / Xã");
+    const address = notFoundHandler(await AddressModel.findOne({ wardId: doc[key] }));
     doc[name] = address.ward;
     return this;
   }
@@ -40,14 +37,3 @@ class AddressService extends CrudService<typeof AddressModel> {
 const addressService = new AddressService();
 
 export { addressService };
-
-// syns data tại đây
-// (async () => {
-//   console.log(
-//     "----------------------------- Start sync here -----------------------------"
-//   );
-//   await addressService.syncAddressWithVietnamPost();
-//   console.log(
-//     "----------------------------- End sync here -----------------------------"
-//   );
-// })();

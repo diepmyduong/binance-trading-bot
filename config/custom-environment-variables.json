@@ -1,0 +1,44 @@
+{
+  "tz": "TZ",
+  "secret": "SECRET",
+  "port": {
+    "__name": "PORT",
+    "__format": "number"
+  },
+  "firebase": {
+    "credential": {
+      "__name": "FIREBASE_CREDENTIAL",
+      "__format": "json"
+    },
+    "webConfig": {
+      "__name": "FIREBASE_WEB_CONFIG",
+      "__format": "json"
+    }
+  },
+  "redis": {
+    "host": "REDIS_HOST",
+    "port": {
+      "__name": "REDIS_PORT",
+      "__format": "number"
+    },
+    "pass": "REDIS_PASS",
+    "prefix": "REDIS_PREFIX"
+  },
+  "next": {
+    "devMode": {
+      "name": "NEXT_DEV_MODE",
+      "__format": "boolean"
+    }
+  },
+  "job": {
+    "defines": "JOB_DEFINES",
+    "skips": "JOB_SKIPS"
+  },
+  "mongo": {
+    "main": "MONGO_MAIN"
+  },
+  "format": {
+    "date": "FORMAT_DATE",
+    "datetime": "FORMAT_DATETIME"
+  }
+}

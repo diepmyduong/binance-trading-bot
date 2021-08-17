@@ -8,32 +8,11 @@ const schema = gql`
   }
 
   extend type Mutation {
-    createSetting(data: CreateSettingInput!): Setting
     updateSetting(id: ID!, data: UpdateSettingInput!): Setting
-    deleteOneSetting(id: ID!): Setting
-    deleteManySetting(ids: [ID]): Int
-  }
-
-  input CreateSettingInput {
-    type: String
-    name: String
-    key: String
-    value: Mixed
-    isActive: Boolean
-    isPrivate: Boolean
-    readOnly: Boolean
-    groupId: String
   }
 
   input UpdateSettingInput {
-    type: String
-    name: String
-    key: String
     value: Mixed
-    isActive: Boolean
-    isPrivate: Boolean
-    readOnly: Boolean
-    groupId: String
   }
 
   type Setting {
@@ -44,7 +23,7 @@ const schema = gql`
     value: Mixed
     isActive: Boolean
     isPrivate: Boolean
-    readOnly: Boolean
+    isSecret: Boolean
     groupId: String
     createdAt: DateTime
     updatedAt: DateTime

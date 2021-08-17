@@ -1,16 +1,14 @@
 import { ApolloServer, gql } from "apollo-server-express";
-import { Express } from "express";
+import config from "config";
+import { Express, Request } from "express";
 import GraphQLDateTime from "graphql-type-datetime";
 import { Server } from "http";
-import _ from "lodash";
+import { get, merge } from "lodash";
 import minifyGql from "minify-graphql-loader";
 import morgan from "morgan";
 import path from "path";
-
-import { Request } from "../base/baseRoute";
-import { configs } from "../configs";
-import { UtilsHelper } from "../helpers";
-import { Logger } from "../loaders/logger";
+import { walkSyncFiles } from "../helpers/common";
+import logger from "../helpers/logger";
 import { onContext } from "./context";
 
 export default (app: Express, httpServer: Server) => {
@@ -49,27 +47,22 @@ export default (app: Express, httpServer: Server) => {
   let resolvers = {
     DateTime: GraphQLDateTime,
   };
-  let defaultFragment: any = {};
 
-  const ModuleFiles = UtilsHelper.walkSyncFiles(path.join(__dirname, "modules"));
+  const ModuleFiles = walkSyncFiles(path.join(__dirname, "modules"));
   ModuleFiles.filter((f: any) => /(.*).schema.js$/.test(f)).map((f: any) => {
     const { default: schema } = require(f);
     typeDefs.push(schema);
   });
   ModuleFiles.filter((f: any) => /(.*).resolver.js$/.test(f)).map((f: any) => {
     const { default: resolver } = require(f);
-    resolvers = _.merge(resolvers, resolver);
-  });
-  ModuleFiles.filter((f: any) => /(.*).fragment.js$/.test(f)).map((f: any) => {
-    const { default: fragment } = require(f);
-    defaultFragment = _.merge(defaultFragment, fragment);
+    resolvers = merge(resolvers, resolver);
   });
   ModuleFiles.filter((f: any) => /(.*).graphql.js$/.test(f)).map((f: any) => {
     const {
       default: { resolver, schema },
     } = require(f);
     if (schema) typeDefs.push(schema);
-    if (resolver) resolvers = _.merge(resolvers, resolver);
+    if (resolver) resolvers = merge(resolvers, resolver);
   });
   const server = new ApolloServer({
     typeDefs,
@@ -77,12 +70,12 @@ export default (app: Express, httpServer: Server) => {
     playground: true,
     introspection: true,
     context: onContext,
-    debug: configs.debug,
+    debug: config.util.getEnv("NODE_ENV") != "production",
 
     formatError(err) {
       // Logger.error()
       try {
-        Logger.error(err.message, {
+        logger.error(err.message, {
           metadata: {
             stack: err.stack,
             name: err.name,
@@ -103,7 +96,6 @@ export default (app: Express, httpServer: Server) => {
     },
   });
 
-  const defaultFragmentFields = Object.keys(defaultFragment);
   morgan.token("gql-query", (req: Request) => req.body.query);
   app.use(
     "/graphql",
@@ -111,19 +103,13 @@ export default (app: Express, httpServer: Server) => {
     (req, res, next) => {
       if (req.body && req.body.query) {
         let minify = minifyGql(req.body.query);
-        for (const field of defaultFragmentFields) {
-          minify = minify.replace(
-            new RegExp(field + "( |})", "g"),
-            field + defaultFragment[field] + "$1"
-          );
-        }
         req.body.query = minify;
       }
       next();
     },
     morgan(
       ":remote-addr :remote-user :method :url :gql-query HTTP/:http-version :status :res[content-length] - :response-time ms",
-      { skip: (req: Request) => (_.get(req, "body.query") || "").includes("IntrospectionQuery") }
+      { skip: (req: Request) => (get(req, "body.query") || "").includes("IntrospectionQuery") }
     )
   );
 
@@ -145,5 +131,5 @@ export default (app: Express, httpServer: Server) => {
   });
   server.installSubscriptionHandlers(httpServer);
 
-  console.log(`\n Running Apollo Server on Path: ${configs.domain}${server.graphqlPath}`);
+  logger.info(`Running Apollo Server on Path: http://localhost:${config.get("port")}/graphql`);
 };

@@ -1,22 +1,27 @@
 import { Request, Response } from "express";
+import { SettingHelper } from "../../graphql/modules/setting/common";
 
 export default [
   {
     method: "get",
-    path: "/api/setting/theme/:shopCode",
+    path: "/api/setting/theme.css",
     midd: [],
     action: async (req: Request, res: Response) => {
-      const shopColor = { primaryColor: "#0D57EF", accentColor: "#38D0FF" };
-      const primaryHSL = HexToHSL(shopColor.primaryColor);
-      const accentHSL = HexToHSL(shopColor.accentColor);
+      const [primaryColor, accentColor] = await SettingHelper.loadMany([
+        "ad-color-primary",
+        "ad-color-accent",
+        "ad-color-factor",
+      ]);
+      const primaryHSL = HexToHSL(primaryColor);
+      const accentHSL = HexToHSL(accentColor);
       res.type(".css");
       res.send(`:root {
         --color-primary-light: ${HSLtoHex(primaryHSL[0], primaryHSL[1], 96)} !important;
-        --color-primary: ${shopColor.primaryColor} !important;
-        --color-primary-dark: ${LightenDarkenColor(shopColor.primaryColor, -6)} !important;
+        --color-primary: ${primaryColor} !important;
+        --color-primary-dark: ${LightenDarkenColor(primaryColor, -6)} !important;
         --color-accent-light: ${HSLtoHex(accentHSL[0], accentHSL[1], 96)} !important;
-        --color-accent: ${shopColor.accentColor} !important;
-        --color-accent-dark: ${LightenDarkenColor(shopColor.accentColor, -6)} !important;
+        --color-accent: ${accentColor} !important;
+        --color-accent-dark: ${LightenDarkenColor(accentColor, -6)} !important;
       }`);
       res.end();
     },

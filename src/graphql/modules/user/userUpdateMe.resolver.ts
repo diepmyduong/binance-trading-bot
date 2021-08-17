@@ -1,16 +1,15 @@
-import { ErrorHelper } from "../../../base/error";
 import { ROLES } from "../../../constants/role.const";
-import { AuthHelper } from "../../../helpers";
+import { authErrorPermissionDeny } from "../../../errors/auth.error";
 import { Context } from "../../context";
 import { UserModel } from "./user.model";
 
 const Mutation = {
   userUpdateMe: async (root: any, args: any, context: Context) => {
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR);
+    context.auth(ROLES.ADMIN_EDITOR);
     const { data } = args;
     // kiem tra user co phai chinh no
-    const existedUser = await UserModel.findById(context.tokenData._id);
-    if (!existedUser) throw ErrorHelper.permissionDeny();
+    const existedUser = await UserModel.findById(context.token._id);
+    if (!existedUser) throw authErrorPermissionDeny;
     return await UserModel.findByIdAndUpdate(existedUser.id, { $set: data }, { new: true });
   },
 };

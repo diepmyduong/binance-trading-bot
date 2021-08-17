@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { configs } from "../../configs";
+import config from "config";
 export default [
   {
     method: "get",
     path: "/fcm",
     midd: [],
     action: async (req: Request, res: Response) => {
-      res.render("fcm", { config: configs.firebaseView });
+      res.render("fcm", { config: config.get("firebase.webConfig") });
     },
   },
   {
@@ -18,7 +18,7 @@ export default [
       importScripts('https://www.gstatic.com/firebasejs/8.7.0/firebase-app.js');
       importScripts('https://www.gstatic.com/firebasejs/8.7.0/firebase-messaging.js');
 
-      var firebaseConfig = JSON.parse(${JSON.stringify(configs.firebaseView)});
+      var firebaseConfig = JSON.parse(${JSON.stringify(config.get("firebase.webConfig"))});
       console.log('firebaseConfig', firebaseConfig);
       // Initialize Firebase
       firebase.initializeApp(firebaseConfig);

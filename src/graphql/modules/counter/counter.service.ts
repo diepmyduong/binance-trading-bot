@@ -1,6 +1,6 @@
 import { CrudService } from "../../../base/crudService";
-import { CounterModel } from "./counter.model";
-class CounterService extends CrudService<typeof CounterModel> {
+import { CounterModel } from "../../../services/counter/counter.model";
+class CounterService extends CrudService {
   initedCodes: string[] = [];
   constructor() {
     super(CounterModel);

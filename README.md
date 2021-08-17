@@ -1,28 +1,3 @@
-# GENERATE DATA TOOL
-
-install hygen
-
-`npm i -g hygen`
-
-## GENERATE COMPONENT
-
-`hygen generate component <name>`
-
-## GENERATE ROUTE
-
-`hygen generate route <name>`
-
-## GENERATE SERVICE
-
-`hygen generate service <name>`
-
-## GENERATE MIGRATION
-
-#### COMMAND
-
-`hygen generate migration`
-
-
 ## Các động từ nên dùng trong message title
 Add = Thêm vào mã nguồn. Ví dụ: chức năng, test, thư viện
 Drop = Xóa khỏi mã nguồn. Ví dụ: chức năng, test, thư viện
@@ -34,3 +9,33 @@ Optimize = Sửa đổi nhằm mục đích tối ưu hiệu năng cho mã ngu�
 Reformat = Sửa đổi nhằm mục đích định dạng lại code cũ. Ví dụ: xóa khoảng trắng, dòng trắng sai coding convention
 Rephrase = Sửa đổi liên quan tài liệu trong source code. Ví dụ comment trong source code (TODO / FIXME / …)
 Document = Sửa đổi liên quan đến tài liệu bên ngoài source code. Ví dụ thêm mô tả vào file README.md
+
+# GENERATE DATA TOOL
+
+install hygen
+
+`npm i -g hygen`
+
+## GENERATE COMPONENT
+
+`hygen generate component <name>`
+
+## GENERATE GRAPHQL
+
+`hygen generate graphql <module> -f <function-name>`
+
+## GENERATE API
+
+`hygen generate api <name>`
+
+## GENERATE JOB
+
+`hygen generate job <name>`
+
+## GENERATE PROVIDER
+
+`hygen generate provider <path> -n <name>`
+
+## GENREATE REPOSITORY
+
+`hygen generate provider <path> -n <name>`

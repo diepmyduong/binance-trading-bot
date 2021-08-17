@@ -1,7 +1,8 @@
 import { Workbook } from "exceljs";
 import _ from "lodash";
 import csv from "csv-parser";
-import { ErrorHelper } from "../../base/error";
+import BaseError from "../../base/error";
+import { WorkSheet } from "./errors/excelReader.error";
 
 export const getDataFromExcelStream = async (stream: any) => {
   const workbook = new Workbook();
@@ -28,7 +29,7 @@ export const modifyExcelData = (result: any[], headerData: any[]) => {
   let dataImport = <any[]>result;
   // console.log('dataImport', dataImport);
   // Kiểm tra dữ liệu
-  if (dataImport.length == 0) throw ErrorHelper.requestDataInvalid("File import không có dữ liệu");
+  if (dataImport.length == 0) throw WorkSheet.Error.fileEmpty;
 
   let excelHeaders = <any[]>result;
   [, excelHeaders] = dataImport;
@@ -38,7 +39,7 @@ export const modifyExcelData = (result: any[], headerData: any[]) => {
   for (let i = 0; i < excelHeaders.length; i++) {
     const head = excelHeaders[i];
     if (head != headerData[i]) {
-      throw ErrorHelper.requestDataInvalid("File import không hợp lệ");
+      throw WorkSheet.Error.formatInvalid;
     }
   }
 
@@ -95,14 +96,14 @@ export const modifyCSVData = (result: any[], headerData: any[]) => {
   // Cast type unknown to any
   const dataImport = <any[]>result;
   // Kiểm tra dữ liệu
-  if (dataImport.length == 0) throw ErrorHelper.requestDataInvalid("File import không có dữ liệu");
+  if (dataImport.length == 0) throw WorkSheet.Error.fileEmpty;
   // Kiểm tra cột dữ liệu
   let importHeaders = headerData;
   if (
     Object.keys(dataImport[0]).toString().trim().replace(/,/g, "") !=
     importHeaders.toString().trim().replace(/,/g, "")
   ) {
-    throw ErrorHelper.requestDataInvalid("File import không hợp lệ");
+    throw WorkSheet.Error.formatInvalid;
   }
   importHeaders = Object.keys(dataImport[0]);
 

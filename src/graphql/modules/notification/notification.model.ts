@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { MainConnection } from "../../../loaders/database";
-import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
+import { MainConnection } from "../../../helpers/mongo";
+import { BaseDocument, ModelLoader } from "../../../base/model";
 const Schema = mongoose.Schema;
 export enum NotificationType {
   MESSAGE = "MESSAGE", // Tin nhắn
@@ -42,26 +42,14 @@ const notificationSchema = new Schema(
 
 notificationSchema.index({ memberId: 1 });
 notificationSchema.index({ staffId: 1 });
-notificationSchema.index({ title: "text" }, { weights: { title: 2 } });
+notificationSchema.index({ title: "text" }, { weights: { title: 2 } } as any);
 notificationSchema.index({ sentAt: 1 });
 
 export const NotificationStackModel = MainConnection.model("NotificationStack", notificationSchema);
 
-export const NotificationHook = new ModelHook<INotification>(notificationSchema);
-export const NotificationModel: mongoose.Model<INotification> = MainConnection.model(
+export const NotificationModel = MainConnection.model<INotification>(
   "Notification",
   notificationSchema
 );
 
-export const NotificationLoader = ModelLoader<INotification>(NotificationModel, NotificationHook);
-
-NotificationHook.onSaved.subscribe((notification) => {
-  NotificationStackModel.insertMany([notification]);
-});
-
-export function InsertNotification(notifies: INotification[]) {
-  return Promise.all([
-    NotificationModel.insertMany(notifies),
-    NotificationStackModel.insertMany(notifies),
-  ]);
-}
+export const NotificationLoader = ModelLoader<INotification>(NotificationModel);

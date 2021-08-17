@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { MainConnection } from "../../../loaders/database";
-import { BaseDocument, ModelLoader, ModelHook } from "../../../base/baseModel";
+import { MainConnection } from "../../../helpers/mongo";
+import { BaseDocument, ModelLoader } from "../../../base/model";
 const Schema = mongoose.Schema;
 
 export type IAddress = BaseDocument & {
@@ -24,12 +24,10 @@ const addressSchema = new Schema(
   { timestamps: true, collation: { locale: "vi" } }
 );
 
-addressSchema.index({ province: "text" , district: "text", ward: "text" }, { weights: { province: 2, district:2, ward:2 } });
+addressSchema.index({ province: "text", district: "text", ward: "text" }, {
+  weights: { province: 2, district: 2, ward: 2 },
+} as any);
 
-export const AddressHook = new ModelHook<IAddress>(addressSchema);
-export const AddressModel: mongoose.Model<IAddress> = MainConnection.model(
-  "Address",
-  addressSchema
-);
+export const AddressModel = MainConnection.model<IAddress>("Address", addressSchema);
 
-export const AddressLoader = ModelLoader<IAddress>(AddressModel, AddressHook);
+export const AddressLoader = ModelLoader<IAddress>(AddressModel);

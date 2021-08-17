@@ -1,7 +1,7 @@
 import { CrudService } from "../../../base/crudService";
 import { NotificationModel } from "./notification.model";
 
-class NotificationService extends CrudService<typeof NotificationModel> {
+class NotificationService extends CrudService {
   constructor() {
     super(NotificationModel);
   }

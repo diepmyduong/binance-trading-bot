@@ -16,7 +16,6 @@ extend type Mutation {
   login(idToken: String!, deviceId: String, deviceToken: String): LoginData
   updateUserPassword(id: ID!, password: String!): User
   userUpdateMe(data: UserUpdateMeInput!): User
-  setUserPSID(userId: ID!, psid: String!): User
   # Add Mutation
 }
 

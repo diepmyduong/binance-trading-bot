@@ -1,4 +1,4 @@
-import { firebaseHelper } from "../../../helpers/firebase.helper";
+import Firebase from "../../../helpers/firebase";
 import { Context } from "../../context";
 
 const Mutation = {
@@ -9,7 +9,7 @@ const Mutation = {
       ...data,
     };
     const notification = { title, body };
-    return firebaseHelper.messaging.send({
+    return Firebase.instance.app.messaging().send({
       notification,
       data: notifyData,
       token: deviceToken,

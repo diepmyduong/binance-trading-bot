@@ -1,8 +1,10 @@
-import _ from "lodash";
 import { Cell, Row, ValueType, Workbook, Worksheet } from "exceljs";
-import { CellRange } from "./cell-range";
-import { UtilsHelper } from "../utils.helper";
+import { Response } from "express";
+import { cloneDeep, forEach, isEmpty, startsWith } from "lodash";
 import moment from "moment-timezone";
+
+import { replaceDataToText } from "../common";
+import { CellRange } from "./cell-range";
 
 /**
  * Callback for iterate cells
@@ -11,6 +13,19 @@ import moment from "moment-timezone";
 export type iterateCells = (cell: Cell) => void | false;
 
 export class WorkSheetHelper {
+  static responseExcel(res: Response, workBook: Workbook, filename = "baocao") {
+    res.status(200);
+    res.setHeader(
+      "Content-type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader(
+      "Content-disposition",
+      `attachment; filename=${filename.replace(/\ /g, "-")}.xlsx`
+    );
+    workBook.xlsx.write(res).then(res.end);
+  }
+
   constructor(private worksheet: Worksheet) {}
 
   public get workbook(): Workbook {
@@ -249,7 +264,7 @@ export class WorkSheetHelper {
   private copyRow(rowSrc: Row, rowDest: Row): void {
     /** @var {RowModel} */
     if (rowSrc.model) {
-      const rowModel = _.cloneDeep(rowSrc.model);
+      const rowModel = cloneDeep(rowSrc.model);
       rowModel.number = rowDest.number;
       rowModel.cells = [];
       rowDest.model = rowModel;
@@ -271,7 +286,7 @@ export class WorkSheetHelper {
         }
         this.copyCell(cell, newCell);
       }
-      _.forEach(cellRangeDest, (cellRange) => {
+      forEach(cellRangeDest, (cellRange) => {
         try {
           this.worksheet.mergeCells(
             cellRange.top,
@@ -288,12 +303,12 @@ export class WorkSheetHelper {
 
   private parseCell(cell: Cell, info: any) {
     if (typeof cell.value == "string") {
-      const value = UtilsHelper.parseStringWithInfo({ data: cell.value, info });
-      if (_.isEmpty(value)) {
+      const value = replaceDataToText(cell.value, info);
+      if (isEmpty(value)) {
         cell.value = "";
       } else {
-        cell.value = _.isNaN(Number(value)) ? value : Number(value);
-        if (_.startsWith(cell.value.toString(), "=")) {
+        cell.value = isNaN(Number(value)) ? value : Number(value);
+        if (startsWith(cell.value.toString(), "=")) {
           cell.value = { formula: cell.value.toString().substr(1) } as any;
         }
       }
@@ -314,7 +329,7 @@ export class WorkSheetHelper {
     }
     // console.log('copyCell', cellSrc.address);
     /** @var {CellModel} */
-    const storeCellModel = _.cloneDeep(cellSrc.model) as any;
+    const storeCellModel = cloneDeep(cellSrc.model) as any;
     storeCellModel.address = cellDest.address;
 
     // // Move a merge range

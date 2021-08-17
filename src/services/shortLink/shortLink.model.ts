@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { BaseDocument } from "../../base/baseModel";
-import { MainConnection } from "../../loaders/database";
+import { BaseDocument } from "../../base/model";
+import { MainConnection } from "../../helpers/mongo";
 const Schema = mongoose.Schema;
 
 export type IShortLink = BaseDocument & {

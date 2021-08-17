@@ -1,26 +1,20 @@
-import { Context } from "../../context";
-import { UserModel } from "./user.model";
-import { AuthHelper } from "../../../helpers/auth.helper";
 import { ROLES } from "../../../constants/role.const";
-import { firebaseHelper, ErrorHelper } from "../../../helpers";
+import { authErrorPermissionDeny } from "../../../errors/auth.error";
+import { notFoundHandler } from "../../../helpers/common";
+import Firebase from "../../../helpers/firebase";
+import { Context } from "../../context";
+import { validatePassword } from "./common";
+import { UserModel } from "./user.model";
 
 const Mutation = {
   updateUserPassword: async (root: any, args: any, context: Context) => {
     const { id, password } = args;
-    AuthHelper.acceptRoles(context, ROLES.ADMIN_EDITOR);
-    if (context.tokenData.role != ROLES.ADMIN) AuthHelper.isOwner(context, id);
-    if (password.length < 6) {
-      throw ErrorHelper.updateUserError("mật khẩu phải có ít nhất 6 ký tự");
-    }
-    const user = await UserModel.findById(id);
-    if (!user) {
-      throw ErrorHelper.mgRecoredNotFound("người dùng");
-    }
-    try {
-      return firebaseHelper.updateUser(user.uid, { password }).then((res) => user);
-    } catch (error) {
-      throw ErrorHelper.updateUserError(error);
-    }
+    context.auth(ROLES.ADMIN_EDITOR);
+    if (!context.isAdmin && context.id != id) throw authErrorPermissionDeny;
+    validatePassword(password);
+    const user = notFoundHandler(await UserModel.findById(id));
+    await Firebase.auth.updateUser(user.uid, { password });
+    return user;
   },
 };
 

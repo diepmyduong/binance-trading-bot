@@ -1,11 +1,13 @@
 import AgendaClient from "agenda";
 import mongoose, { Schema } from "mongoose";
-import { BaseDocument, ModelLoader } from "../base/baseModel";
+import { BaseDocument, ModelLoader } from "../base/model";
 
-import { configs } from "../configs";
-import { MainConnection } from "../loaders/database";
+import config from "config";
+import { MainConnection } from "../helpers/mongo";
 
-const agenda = new AgendaClient({ db: { address: configs.maindb, collection: "agendaJobs" } });
+const agenda = new AgendaClient({
+  db: { address: config.get("mongo.main"), collection: "agendaJobs" },
+});
 
 export const Agenda = agenda;
 
@@ -38,7 +40,7 @@ const agendaJobSchema = new Schema(
   { timestamps: true }
 );
 
-export const AgendaJobModel: mongoose.Model<IAgendaJob> = MainConnection.model(
+export const AgendaJobModel = MainConnection.model<IAgendaJob>(
   "AgendaJob",
   agendaJobSchema,
   "agendaJobs"

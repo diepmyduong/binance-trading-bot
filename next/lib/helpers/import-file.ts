@@ -1,5 +1,3 @@
-import saveAs from "file-saver";
-
 export async function importFile(
   promise: () => Promise<any>,
   fileType: "excel",

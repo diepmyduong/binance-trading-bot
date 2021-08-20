@@ -1,17 +1,9 @@
 import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
-import {
-  ClearAuthToken,
-  ClearAuthTokenMember,
-  GetAuthTokenMember,
-  SetAuthToken,
-  SetAuthTokenMember,
-} from "../graphql/auth.link";
+
+import { ClearAuthToken, SetAuthToken } from "../graphql/auth.link";
 import { firebase } from "../helpers/firebase";
-import { GraphService } from "../repo/graph.repo";
-import { Member, MemberService } from "../repo/member.repo";
 import { User, UserService } from "../repo/user.repo";
-import { v4 as uuidv4 } from "uuid";
 
 export const AuthContext = createContext<
   Partial<{
@@ -23,17 +15,8 @@ export const AuthContext = createContext<
     updateUserPassword: (id: string, password: string) => Promise<any>;
     activeUser: (userId: string) => Promise<User>;
     blockUser: (userId: string) => Promise<User>;
-    member: Member;
-    checkMember: () => Promise<any>;
-    loginMemberByPassword: (username: string, password: string) => Promise<any>;
-    logoutMember: () => Promise<any>;
-    memberUpdateMe: (data) => Promise<Member>;
     redirectToAdminLogin: Function;
     redirectToAdmin: Function;
-    redirectToShopLogin: Function;
-    redirectToShop: Function;
-    redirectToWebappLogin: Function;
-    redirectToWebapp: Function;
   }>
 >({});
 
@@ -42,7 +25,6 @@ export const PRE_LOGIN_PATHNAME = "pre-login-pathname";
 export function AuthProvider(props) {
   // undefined = chưa authenticated, null = chưa đăng nhập
   const [user, setUser] = useState<User>(undefined);
-  const [member, setMember] = useState<Member>(undefined);
   const router = useRouter();
   //authentication with firebase
   const throwErrorName = (err) => {
@@ -148,96 +130,6 @@ export function AuthProvider(props) {
     await UserService.clearStore();
   };
 
-  const checkMember = async () => {
-    let memberToken = GetAuthTokenMember();
-    if (memberToken) {
-      if (member === undefined) {
-        try {
-          let res = await GraphService.query({
-            query: `
-              memberGetMe {
-                ${MemberService.fullFragment}
-              }
-            `,
-          });
-          setMember(res.data.g0);
-        } catch (err) {
-          ClearAuthTokenMember();
-          setMember(null);
-          throw err.message;
-        }
-      } else {
-        console.log("has member");
-        return member;
-      }
-    } else {
-      ClearAuthTokenMember();
-      setMember(null);
-    }
-  };
-
-  const loginMemberByPassword = async (username: string, password: string) => {
-    let deviceId = localStorage.getItem("device-id");
-    if (!deviceId) {
-      deviceId = uuidv4();
-      localStorage.setItem("device-id", deviceId);
-    }
-
-    let deviceToken = "";
-    try {
-      const messaging = firebase.messaging();
-      deviceToken = await messaging.getToken({ vapidKey: VAPID_KEY });
-    } catch (err) {
-      console.error(err);
-    }
-
-    try {
-      let res = await GraphService.mutate({
-        mutation: `
-          loginMemberByPassword(username: "${username}", password: "${password}", deviceId: "${deviceId}", deviceToken: "${deviceToken}") {
-            member { ${MemberService.fullFragment} } token
-          }
-        `,
-      });
-      SetAuthTokenMember(res.data.g0.token);
-      setMember(res.data.g0.member);
-    } catch (err) {
-      ClearAuthTokenMember();
-      setMember(null);
-      throw err.message;
-    }
-  };
-
-  const logoutMember = async () => {
-    localStorage.removeItem("device-id");
-    ClearAuthTokenMember();
-    setMember(null);
-    await MemberService.clearStore();
-  };
-
-  const memberUpdateMe = async (data) => {
-    return MemberService.mutate({
-      mutation: `
-        memberUpdateMe(data: $data) {
-          ${MemberService.fullFragment}
-        }
-      `,
-      variablesParams: `($data: UpdateMemberInput!)`,
-      options: {
-        variables: {
-          data,
-        },
-      },
-    })
-      .then((res) => {
-        setMember(res.data.g0);
-        return res.data.g0;
-      })
-      .catch((err) => {
-        throw err;
-      });
-  };
-
   const activeUser = async (userId) => {
     return UserService.activeUser(userId);
   };
@@ -265,33 +157,6 @@ export function AuthProvider(props) {
     }
   };
 
-  const redirectToShopLogin = () => {
-    sessionStorage.setItem(PRE_LOGIN_PATHNAME, location.pathname);
-    router.replace("/shop/login");
-  };
-
-  const redirectToShop = () => {
-    let pathname = sessionStorage.getItem(PRE_LOGIN_PATHNAME);
-    if (member) {
-      if (pathname?.includes("/shop")) router.replace(pathname || "/shop");
-      else router.replace("/shop");
-    } else {
-      router.replace("/");
-    }
-  };
-
-  const redirectToWebappLogin = () => {
-    sessionStorage.setItem(PRE_LOGIN_PATHNAME, location.pathname);
-    router.replace("/login");
-  };
-
-  const redirectToWebapp = () => {
-    let pathname = sessionStorage.getItem(PRE_LOGIN_PATHNAME);
-    if (pathname?.includes("/admin")) {
-      router.replace("/");
-    } else router.replace(pathname || "/");
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -303,17 +168,8 @@ export function AuthProvider(props) {
         loginFirebaseEmail,
         resetPasswordFirebaseEmail,
         logout,
-        member,
-        checkMember,
-        loginMemberByPassword,
-        logoutMember,
-        memberUpdateMe,
         redirectToAdminLogin,
         redirectToAdmin,
-        redirectToShopLogin,
-        redirectToShop,
-        redirectToWebappLogin,
-        redirectToWebapp,
       }}
     >
       {props.children}
@@ -322,5 +178,3 @@ export function AuthProvider(props) {
 }
 
 export const useAuth = () => useContext(AuthContext);
-
-const VAPID_KEY = `BKh34EjqetrcY6C1ZSSzbVXLlk0CZElMcjByujFcZUpgqbAQ8mAhWDl62g-EhsWx9_r7fz_jp91PikA9IVsUvgg`;

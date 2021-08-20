@@ -1,4 +1,5 @@
 import axios from "axios";
+import config from "next/config";
 
 export interface GoongAutocompletePlace {
   description: string;
@@ -52,12 +53,26 @@ export interface GooongGeocodePlace {
   types: string[];
 }
 
-class GoongGeocoder {
-  apiKey = "SD0vJABEWMql2sKaK6S4rUJyuDDJUGUwuNK4RelX";
-  mapKey = "HbBUo65oqVDPKoGF3oQJda0Ixb7MvmEYfvVjZM3F";
+export class GoongGeocoder {
+  private static _instance: GoongGeocoder;
+  static get instance() {
+    if (!this._instance) this._instance = new GoongGeocoder();
+    return this._instance;
+  }
+  apiKey = "";
+  mapKey = "";
   hostName = `https://rsapi.goong.io`;
 
   hashedData = {};
+  constructor() {
+    const {
+      publicRuntimeConfig: {
+        goongjs: { apiKey, mapKey },
+      },
+    } = config();
+    this.apiKey = apiKey;
+    this.mapKey = mapKey;
+  }
 
   async geocode(address: string = ""): Promise<GooongGeocodePlace[]> {
     const uri = `${this.hostName}/geocode`;
@@ -142,5 +157,3 @@ class GoongGeocoder {
         .catch((err) => null);
   }
 }
-
-export const GoongGeocoderService = new GoongGeocoder();

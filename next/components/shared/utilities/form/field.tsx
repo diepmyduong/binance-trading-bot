@@ -22,6 +22,7 @@ interface PropsType extends ReactProps {
   constraints?: FieldConstraint;
   description?: string;
   cols?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+  onClick?: Function;
   validate?: (value: any, data?: any) => Promise<string>;
 }
 export function Field({ className = "", style = {}, ...props }: PropsType) {

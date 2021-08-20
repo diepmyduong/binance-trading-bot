@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
 import {
   HiChevronLeft,
   HiChevronRight,

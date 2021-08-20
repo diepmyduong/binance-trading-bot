@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 interface PropsType extends ReactProps {
   breadcrumbs: {

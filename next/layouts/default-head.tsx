@@ -16,7 +16,8 @@ export function DefaultHead({ shopCode, shopLogo }: { shopCode: string; shopLogo
           href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        <link rel="stylesheet" href={`/api/setting/theme/${shopCode || "DEFAULT"}`}></link>
+        <link rel="stylesheet" href={`/api/setting/theme.css`}></link>
+        <link rel="stylesheet" href={`/api/setting/style.css`}></link>
       </Head>
     </>
   );

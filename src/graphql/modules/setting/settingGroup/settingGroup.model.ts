@@ -7,6 +7,7 @@ export type ISettingGroup = BaseDocument & {
   slug: string;
   name: string;
   desc: string;
+  sort: number;
 };
 
 const settingGroupSchema = new Schema<ISettingGroup>(
@@ -14,6 +15,7 @@ const settingGroupSchema = new Schema<ISettingGroup>(
     slug: { type: String, required: true },
     name: { type: String, required: true },
     desc: { type: String },
+    sort: { type: Number },
   },
   { timestamps: true, collation: { locale: "vi" } }
 );

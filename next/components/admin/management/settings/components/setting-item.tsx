@@ -53,7 +53,7 @@ export function SettingItem({ setting, ...props }: PropTypes) {
             <RiLock2Line />
           </i>
         )}
-        <div
+        {/* <div
           className="h-6 pl-4 pr-2 flex items-center text-gray-600 hover:text-primary cursor-pointer ml-auto"
           ref={ref}
           onClick={(e) => e.preventDefault()}
@@ -65,17 +65,12 @@ export function SettingItem({ setting, ...props }: PropTypes) {
         <Dropdown placement="right-start" reference={ref}>
           <Dropdown.Item text="Chỉnh sửa" onClick={() => props.onEdit(setting)} />
           <Dropdown.Item hoverDanger text="Xoá" onClick={() => props.onDelete(setting)} />
-        </Dropdown>
+        </Dropdown> */}
       </div>
+      {setting.desc && <div className="text-sm text-gray-500 py-2">{setting.desc}</div>}
       {
         {
-          boolean: (
-            <Switch
-              readonly={setting.readOnly}
-              value={setting.value}
-              onChange={onSettingValueChanged}
-            />
-          ),
+          boolean: <Switch value={setting.value} onChange={onSettingValueChanged} />,
           image: (
             <ImageInput
               readonly={setting.readOnly}

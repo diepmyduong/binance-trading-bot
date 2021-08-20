@@ -16,6 +16,8 @@ class MyDocument extends Document {
           <div id="dialog-root"></div>
           <div id="popover-root"></div>
           <div id="alert-root"></div>
+
+          <script src="/api/setting/script.js"></script>
         </body>
       </Html>
     )

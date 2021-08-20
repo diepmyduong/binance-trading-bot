@@ -1,9 +1,9 @@
-import { MutableRefObject, useRef } from "react";
+import { HTMLProps, MutableRefObject, ReactNode, useRef } from "react";
 
-interface PropsType extends ReactProps {
+type AccordionProps = ReactProps & {
   isOpen: boolean;
-}
-export function Accordion(props: PropsType) {
+};
+export function Accordion(props: AccordionProps) {
   const ref: MutableRefObject<HTMLDivElement> = useRef();
   return (
     <div

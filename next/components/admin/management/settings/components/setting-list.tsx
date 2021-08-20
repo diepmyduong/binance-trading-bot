@@ -133,7 +133,7 @@ export function SettingList(props: PropTypes) {
                                 onDelete={deleteSetting}
                               />
                             ))}{" "}
-                            <AddButton />
+                            {/* <AddButton /> */}
                           </>
                         )}
                       </>

@@ -10,6 +10,7 @@ const schema = gql`
     slug: String
     name: String
     desc: String
+    sort: Int
     settings: [Setting]
   }
 

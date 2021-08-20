@@ -19,12 +19,14 @@ const schema = gql`
     id: String
     type: String
     name: String
+    desc: String
     key: String
     value: Mixed
     isActive: Boolean
     isPrivate: Boolean
     isSecret: Boolean
     groupId: String
+    sort: Int
     createdAt: DateTime
     updatedAt: DateTime
 

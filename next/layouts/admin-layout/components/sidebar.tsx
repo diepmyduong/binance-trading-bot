@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import { RiEdit2Line, RiSettings3Line, RiStore2Line, RiUser2Line } from "react-icons/ri";
+import { RiSettings3Line, RiUser2Line } from "react-icons/ri";
+
 import { Accordion } from "../../../components/shared/utilities/accordion/accordion";
 import { Button } from "../../../components/shared/utilities/form/button";
 import { useAdminLayoutContext } from "../providers/admin-layout-provider";
@@ -89,57 +90,16 @@ export const SIDEBAR_MENUS = [
   {
     title: "Quản trị",
     submenus: [
-      // {
-      //   title: "Bảng điều khiển",
-      //   path: "/admin/management/dashboard",
-      //   icon: <RiDashboard2Line />,
-      // },
       {
         title: "Tài khoản",
         path: "/admin/management/users",
         icon: <RiUser2Line />,
       },
       {
-        title: "Chủ shop",
-        path: "/admin/management/members",
-        icon: <RiStore2Line />,
-      },
-      {
-        title: "Đăng ký cửa hàng",
-        path: "/admin/management/registrations",
-        icon: <RiEdit2Line />,
-        showRegistrations: true,
-      },
-      {
         title: "Cấu hình",
         path: "/admin/management/settings",
         icon: <RiSettings3Line />,
       },
-      // {
-      //   title: "Lịch sử thao tác",
-      //   path: "/admin/management/activity",
-      //   icon: <RiHistoryLine />,
-      // },
     ],
   },
-  // {
-  //   title: "Truyền thông",
-  //   submenus: [
-  //     {
-  //       title: "Biểu mẫu",
-  //       path: "/admin/marketing/forms",
-  //       icon: <RiFileList3Line />,
-  //     },
-  //     {
-  //       title: "Bài viết",
-  //       path: "/admin/marketing/posts",
-  //       icon: <RiNewspaperLine />,
-  //     },
-  //     {
-  //       title: "Email",
-  //       path: "/admin/marketing/email",
-  //       icon: <RiMailSettingsLine />,
-  //     },
-  //   ],
-  // },
 ];

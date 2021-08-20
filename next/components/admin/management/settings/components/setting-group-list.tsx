@@ -24,14 +24,14 @@ export function SettingGroupList(props: PropTypes) {
           onDelete={deleteSettingGroup}
         />
       ))}
-      <Button
+      {/* <Button
         className="w-full"
         icon={<RiAddCircleLine />}
         text="Thêm nhóm cấu hình mới"
         onClick={() => {
           setOpenSettingGroup({ name: "", slug: "", desc: "", readOnly: false });
         }}
-      />
+      /> */}
       <Form
         title={`${openSettingGroup ? "Cập nhật" : "Tạo"} nhóm cấu hình`}
         dialog

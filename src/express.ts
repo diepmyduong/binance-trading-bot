@@ -26,7 +26,7 @@ export default function startExpressApp() {
   morgan.token("trueIp", (req) => requestIp.getClientIp(req));
   app.use(
     morgan(":trueIp :method :url :status - :response-time ms", {
-      skip: (req: Request) => /(_ah\/health)|graphql/.test(req.originalUrl),
+      skip: (req: Request) => /(_ah\/health)|graphql|(_next)/.test(req.originalUrl),
       stream: { write: (msg: string) => logger.info(msg.trim()) },
     })
   );

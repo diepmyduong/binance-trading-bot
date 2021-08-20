@@ -5,11 +5,12 @@ import { SettingGroup } from "./setting-group.repo";
 export interface Setting extends BaseModel {
   type: string;
   name: string;
+  desc: string;
   key: string;
   value: any;
   isActive: boolean;
   isPrivate: boolean;
-  readOnly: boolean;
+  isSecret: boolean;
   groupId: string;
   group: SettingGroup;
 }
@@ -20,11 +21,12 @@ export class SettingRepository extends CrudRepository<Setting> {
     id: String
     type: String
     name: String
+    desc: String
     key: String
     value: Mixed
     isActive: Boolean
     isPrivate: Boolean
-    readOnly: Boolean
+    isSecret: Boolean
     groupId: String
     createdAt: DateTime
     updatedAt: DateTime
@@ -33,11 +35,12 @@ export class SettingRepository extends CrudRepository<Setting> {
     id: String
     type: String
     name: String
+    desc: String
     key: String
     value: Mixed
     isActive: Boolean
     isPrivate: Boolean
-    readOnly: Boolean
+    isSecret: Boolean
     groupId: String
     createdAt: DateTime
     updatedAt: DateTime
@@ -55,7 +58,7 @@ export class SettingRepository extends CrudRepository<Setting> {
 
 export const SettingService = new SettingRepository();
 
-export const SETTING_TYPES: Option[] = [
+export const SETTING_TYPES = [
   { value: "string", label: "Chữ" },
   { value: "number", label: "Số" },
   { value: "boolean", label: "Bật tắt" },

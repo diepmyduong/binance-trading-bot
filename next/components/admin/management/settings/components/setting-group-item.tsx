@@ -26,7 +26,7 @@ export function SettingGroupItem(props: PropTypes) {
           <strong className={`group-hover:text-primary ${isActive && "text-primary"}`}>
             {props.settingGroup.name}
           </strong>
-          <div
+          {/* <div
             className="h-8 pl-4 pr-1 flex items-center text-gray-600 hover:text-primary cursor-pointer"
             ref={ref}
             onClick={(e) => e.preventDefault()}
@@ -42,7 +42,7 @@ export function SettingGroupItem(props: PropTypes) {
               text="Xoá"
               onClick={() => props.onDelete(props.settingGroup)}
             />
-          </Dropdown>
+          </Dropdown> */}
         </div>
         {props.settingGroup.desc && (
           <div className="text-gray-500 text-sm">{props.settingGroup.desc}</div>

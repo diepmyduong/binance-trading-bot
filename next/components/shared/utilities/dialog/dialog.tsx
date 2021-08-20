@@ -74,16 +74,16 @@ export function Dialog({
 
   useScrollBlock({ rootId: ROOT_ID, dependencies: [isOpen] });
 
-  let header = Children.map(props.children, (child) =>
+  let header = Children.map(props.children, (child: any) =>
     child?.type?.displayName === "Header" ? child : null
   );
-  let body = Children.map(props.children, (child) =>
+  let body = Children.map(props.children, (child: any) =>
     child?.type?.displayName === "Body" ? child : null
   );
-  let footer = Children.map(props.children, (child) =>
+  let footer = Children.map(props.children, (child: any) =>
     child?.type?.displayName === "Footer" ? child : null
   );
-  let children = Children.map(props.children, (child) =>
+  let children = Children.map(props.children, (child: any) =>
     !child?.type?.displayName ? child : null
   );
 

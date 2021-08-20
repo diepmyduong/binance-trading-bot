@@ -11,6 +11,7 @@ const Query = {
       set(args, "q.filter.isPrivate", false);
       set(args, "q.filter.isSecret", false);
     }
+    set(args, "q.order", { sort: -1 });
     return settingService.fetch(args.q);
   },
 };

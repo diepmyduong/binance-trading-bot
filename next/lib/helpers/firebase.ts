@@ -3,9 +3,11 @@ import firebase from "firebase/app";
 import "firebase/messaging";
 import "firebase/auth";
 
-const { publicRuntimeConfig } = getConfig();
+const {
+  publicRuntimeConfig: { firebaseView },
+} = getConfig();
 if (firebase.apps.length == 0) {
-  firebase.initializeApp(JSON.parse(publicRuntimeConfig.firebaseView));
+  firebase.initializeApp(firebaseView);
 }
 
 export { firebase };

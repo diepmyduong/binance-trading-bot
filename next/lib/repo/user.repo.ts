@@ -129,5 +129,5 @@ export const UserService = new UserRepository();
 
 export const USER_ROLES: Option[] = [
   { value: "ADMIN", label: "Quản trị", color: "primary" },
-  { value: "USER", label: "Biên tập viên", color: "success" },
+  { value: "EDITOR", label: "Biên tập viên", color: "success" },
 ];

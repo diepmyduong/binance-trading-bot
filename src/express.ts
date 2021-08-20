@@ -5,6 +5,7 @@ import express, { Request } from "express";
 import morgan from "morgan";
 import next from "next";
 import config from "config";
+import requestIp from "request-ip";
 
 import router from "./routers";
 import logger from "./helpers/logger";
@@ -14,14 +15,20 @@ export default function startExpressApp() {
 
   // Config CORS
   app.use(cors());
+
   // Compress Response
   app.use(compression());
   // Body Parser
   app.use(json({ limit: "10mb" }));
   app.use(urlencoded({ extended: true, limit: "10mb" }));
   // Request Log
+  app.set("trust proxy", true);
+  morgan.token("trueIp", (req) => requestIp.getClientIp(req));
   app.use(
-    morgan("short", { skip: (req: Request) => /(_ah\/health)|graphql/.test(req.originalUrl) })
+    morgan(":trueIp :method :url :status - :response-time ms", {
+      skip: (req: Request) => /(_ah\/health)|graphql/.test(req.originalUrl),
+      stream: { write: (msg: string) => logger.info(msg.trim()) },
+    })
   );
   // Setup View Template
   app.set("view engine", "hbs");

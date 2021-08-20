@@ -3,7 +3,7 @@ to: src/graphql/modules/<%= h.inflection.camelize(name, true) %>/<%= h.inflectio
 ---
 import { CrudService } from "../../../base/crudService";
 import { <%= h.inflection.camelize(name) %>Model } from "./<%= h.inflection.camelize(name, true) %>.model";
-class <%= h.inflection.camelize(name) %>Service extends CrudService<typeof <%= h.inflection.camelize(name) %>Model> {
+class <%= h.inflection.camelize(name) %>Service extends CrudService {
   constructor() {
     super(<%= h.inflection.camelize(name) %>Model);
   }

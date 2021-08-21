@@ -108,7 +108,7 @@ export default (app: Express, httpServer: Server) => {
       next();
     },
     morgan(
-      ":remote-addr GRAPHQL :gql-query - :status - :response-time ms",
+      ":trueIp GRAPHQL :gql-query - :status - :response-time ms",
       // ":remote-addr :remote-user :method :url :gql-query HTTP/:http-version :status :res[content-length] - :response-time ms",
       {
         skip: (req: Request) => (get(req, "body.query") || "").includes("IntrospectionQuery"),

@@ -15,8 +15,8 @@ function createApolloClient() {
   return new ApolloClient({
     ssrMode: typeof window === "undefined", // set to true for SSR
     link: ApolloLink.from([
-      (ErrorLink as unknown) as ApolloLink,
-      (AuthLink as unknown) as ApolloLink,
+      ErrorLink as unknown as ApolloLink,
+      AuthLink as unknown as ApolloLink,
       new HttpLink({ uri: `/graphql` }),
       // split(
       //   ({ query }) => {

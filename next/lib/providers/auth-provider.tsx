@@ -1,9 +1,10 @@
 import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
 
-import { ClearAuthToken, SetAuthToken } from "../graphql/auth.link";
+import { ClearAuthToken, GetAuthToken, SetAuthToken } from "../graphql/auth.link";
 import { firebase } from "../helpers/firebase";
 import { User, UserService } from "../repo/user.repo";
+import jwtDecoder from "jwt-decode";
 
 export const AuthContext = createContext<
   Partial<{
@@ -27,43 +28,42 @@ export function AuthProvider(props) {
   const [user, setUser] = useState<User>(undefined);
   const router = useRouter();
   //authentication with firebase
-  const throwErrorName = (err) => {
+  const getFirebaseErrorMsg = (err) => {
     switch (err.code) {
       case "auth/email-already-in-use":
-        return `Email address ${this.state.email} already in use.`;
-        break;
+        return `Email đã được sử dụng.`;
       case "auth/invalid-email":
-        return `Email address ${this.state.email} is invalid.`;
-        break;
+        return `Email không hợp lệ.`;
       case "auth/operation-not-allowed":
-        return `Error during sign up.`;
-        break;
+        return `Không thể thực hiện chức năng này.`;
       case "auth/weak-password":
-        return "Password is not strong enough. Add additional characters including special characters and numbers.";
-        break;
+        return `Mật khẩu yếu.`;
+      case "auth/user-not-found":
+        return `Không tìm thấy người dùng`;
+      case "auth/wrong-password":
+        return "Sai mật khẩu";
       default:
         return err.message;
-        break;
     }
   };
   useEffect(() => {
-    firebase.auth().onAuthStateChanged(async (user) => {
-      if (user) {
-        UserService.login(await user.getIdToken())
-          .then((res) => {
-            const { user, token } = res;
-            SetAuthToken(token);
-            setUser(user);
-          })
+    const userToken = GetAuthToken();
+    if (userToken) {
+      const decodedToken = jwtDecoder<any>(userToken);
+      if (decodedToken.exp && new Date().getTime() > decodedToken.exp * 1000) {
+        waitForFirebase();
+      } else {
+        console.log("try current token login");
+        UserService.userGetMe()
+          .then((res) => setUser(res))
           .catch((err) => {
             ClearAuthToken();
-            setUser(null);
+            waitForFirebase();
           });
-      } else {
-        ClearAuthToken();
-        setUser(null);
       }
-    });
+    } else {
+      waitForFirebase();
+    }
   }, []);
 
   const updateUser = async (data: User) => {
@@ -75,20 +75,7 @@ export function AuthProvider(props) {
       let res = await firebase.auth().sendPasswordResetEmail(email);
       return res;
     } catch (err) {
-      let message = "";
-      switch (err.code) {
-        case "auth/email-already-in-use":
-          message = `Email "${email}" đã được sử dụng.`;
-        case "auth/invalid-email":
-          message = `Email "${email}" không hợp lệ.`;
-        case "auth/operation-not-allowed":
-          message = `Không thể thực hiện chức năng này.`;
-        case "auth/weak-password":
-          message = `Mật khẩu yếu.`;
-        default:
-          message = err.message;
-      }
-      throw new Error(message);
+      throw new Error(getFirebaseErrorMsg(err));
     }
   };
 
@@ -102,26 +89,7 @@ export function AuthProvider(props) {
       console.error(err);
       ClearAuthToken();
       setUser(null);
-      let message = "";
-      switch (err.code) {
-        case "auth/user-not-found": {
-          message = "Không tìm thấy người dùng";
-          break;
-        }
-        case "auth/invalid-email": {
-          message = "Email không hợp lệ";
-          break;
-        }
-        case "auth/wrong-password": {
-          message = "Sai mật khẩu";
-          break;
-        }
-        default: {
-          message = "Có lỗi xảy ra";
-          break;
-        }
-      }
-      throw new Error(message);
+      throw new Error(getFirebaseErrorMsg(err));
     }
   };
 
@@ -175,6 +143,27 @@ export function AuthProvider(props) {
       {props.children}
     </AuthContext.Provider>
   );
+
+  function waitForFirebase() {
+    console.log("wait for firebase login");
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (user) {
+        UserService.login(await user.getIdToken())
+          .then((res) => {
+            const { user, token } = res;
+            SetAuthToken(token);
+            setUser(user);
+          })
+          .catch((err) => {
+            ClearAuthToken();
+            setUser(null);
+          });
+      } else {
+        ClearAuthToken();
+        setUser(null);
+      }
+    });
+  }
 }
 
 export const useAuth = () => useContext(AuthContext);
